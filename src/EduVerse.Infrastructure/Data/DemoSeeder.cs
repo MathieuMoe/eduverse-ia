@@ -1,3 +1,5 @@
+using EduVerse.Core.Tutor;
+using EduVerse.Core.Ideas;
 using EduVerse.Core.Catalog;
 using EduVerse.Core.Common;
 using EduVerse.Core.Curriculum;
@@ -107,6 +109,8 @@ public static class DemoSeeder
         await SeedMarketplaceAsync(db, users, ids, now, ct).ConfigureAwait(false);
         await SeedGamificationAsync(db, users, ids, clock, ct).ConfigureAwait(false);
         await SeedTradesAsync(db, ids["Sara"], clock.GetUtcNow(), ct).ConfigureAwait(false);
+        await SeedIdeasAsync(db, ids, clock.GetUtcNow(), ct).ConfigureAwait(false);
+        await SeedLearnerAsync(db, ids["Sara"], clock.GetUtcNow(), ct).ConfigureAwait(false);
 
         // Laura already talked with Leo about one of his recurring mistakes: an alert handled after a few hours
         var handled = await db.Alerts.Where(a => a.StudentId == ids["Leo"] && a.Kind == AlertKind.RecurringMisconception)
@@ -196,6 +200,81 @@ public static class DemoSeeder
             var record = new MasteryRecord { UserId = sara, SubjectId = astronomy.Key, ConceptKey = concept.Key };
             LearningStore.Copy(MasteryState.New(concept.Key) with { PKnown = 0.94, Attempts = 4, Correct = 4, Streak = 3, Status = MasteryStatus.Mastered, NeedsExplanation = false, LastAttemptAt = now.AddHours(-20 + i) }, record);
             db.Mastery.Add(record);
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    /// <summary>Sara's learner card: kinds of mistakes she told the tutor, a note about herself and exercises after two explanation methods.</summary>
+    private static async Task SeedLearnerAsync(EduVerseDb db, string sara, DateTimeOffset now, CancellationToken ct)
+    {
+        var wrong = await db.QuizAnswers.Where(a => a.UserId == sara && !a.Correct).OrderByDescending(a => a.Id).Take(6).ToListAsync(ct).ConfigureAwait(false);
+        ThinkingError[] errors = [ThinkingError.Rushed, ThinkingError.Slip, ThinkingError.Rushed, ThinkingError.Concept, ThinkingError.Rushed, ThinkingError.Forgot];
+        foreach (var (answer, i) in wrong.Select((a, i) => (a, i)))
+        {
+            db.ThinkingNotes.Add(new ThinkingNote { UserId = sara, AttemptId = answer.AttemptId, Number = answer.Number, Area = answer.Area, Level = answer.Level, Topic = answer.Topic, Error = errors[i % errors.Length], At = now.AddDays(-2 - i) });
+        }
+
+        db.LearnerNotes.Add(new LearnerNote { UserId = sara, Text = "Entiendo mejor con dibujos", At = now.AddDays(-6) });
+        (ExplanationMethod Method, bool[] Results)[] practice =
+        [
+            (ExplanationMethod.Visual, [true, true, true, false, true, true]),
+            (ExplanationMethod.StepByStep, [true, false, false, true, false]),
+        ];
+        var n = 0;
+        foreach (var (method, results) in practice)
+        {
+            foreach (var correct in results)
+            {
+                db.Attempts.Add(new Attempt
+                {
+                    UserId = sara, SubjectId = "trade-garden", ConceptKey = "needs", ExerciseId = "demo-learner-" + n, Question = "…", Answer = "…",
+                    Correct = correct, Method = method, Difficulty = 2, At = now.AddDays(-10).AddHours(n++),
+                });
+            }
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    /// <summary>Ideas of the students (anonymous to the others) and ratings of the adventures, for the moderation page and the Tutor's news.</summary>
+    private static async Task SeedIdeasAsync(EduVerseDb db, Dictionary<string, string> ids, DateTimeOffset now, CancellationToken ct)
+    {
+        (IdeaKind Kind, string Text, IdeaStatus Status, int Days, string Proposer, string? Reason, string[] Voters)[] ideas =
+        [
+            (IdeaKind.Figure, "Frida Kahlo", IdeaStatus.Approved, 9, "Alex", "Pintaba su propia vida", ["Leo", "Nora", "Elena", "Iker"]),
+            (IdeaKind.Figure, "Nikola Tesla", IdeaStatus.InProgress, 14, "Leo", "Inventó la corriente alterna", ["Omar", "Noa", "Sara"]),
+            (IdeaKind.Figure, "Napoleón Bonaparte", IdeaStatus.New, 1, "Omar", null, []),
+            (IdeaKind.Adventure, "Piratas", IdeaStatus.Approved, 7, "Alex", "Buscar un tesoro con mapas", ["Leo", "Mia", "Nora", "Iker", "Elena"]),
+            (IdeaKind.Adventure, "Antiguo Egipto", IdeaStatus.Approved, 5, "Noa", null, ["Hugo", "Omar"]),
+            (IdeaKind.Adventure, "Dinosaurios", IdeaStatus.New, 1, "Mia", "Me encantan los dinosaurios", []),
+            (IdeaKind.Trade, "Robótica", IdeaStatus.Approved, 6, "Iker", "Construir robots con sensores", ["Omar", "Alex"]),
+            (IdeaKind.Trade, "Peluquería", IdeaStatus.New, 2, "Elena", null, []),
+            (IdeaKind.Hobby, "Fotografía", IdeaStatus.Approved, 4, "Nora", null, ["Elena"]),
+            (IdeaKind.Hobby, "Ajedrez", IdeaStatus.Available, 20, "Sara", "Para jugar con mi abuelo", ["Leo"]),
+        ];
+        foreach (var (kind, text, status, days, proposer, reason, voters) in ideas)
+        {
+            var idea = new StudentIdea { Kind = kind, Key = IdeaRules.Normalize(text), Text = text, Status = status, CreatedAt = now.AddDays(-days), UpdatedAt = now.AddDays(-days / 2.0) };
+            idea.Votes.Add(new IdeaVote { UserId = ids[proposer], Proposed = true, Reason = reason, At = now.AddDays(-days) });
+            foreach (var (voter, i) in voters.Select((v, i) => (v, i)))
+            {
+                idea.Votes.Add(new IdeaVote { UserId = ids[voter], At = now.AddDays(-days + 1 + i * 0.5) });
+            }
+
+            db.Ideas.Add(idea);
+        }
+
+        (Theme Theme, int Stars, Felt Felt, bool Fun)[] ratings =
+        [
+            (Theme.Space, 5, Felt.JustRight, true), (Theme.Space, 4, Felt.JustRight, true), (Theme.Space, 5, Felt.TooEasy, true), (Theme.Space, 3, Felt.TooHard, false), (Theme.Space, 4, Felt.JustRight, true),
+            (Theme.Ocean, 4, Felt.JustRight, true), (Theme.Ocean, 3, Felt.TooEasy, false), (Theme.Ocean, 5, Felt.JustRight, true),
+            (Theme.Jungle, 2, Felt.TooHard, false), (Theme.Jungle, 4, Felt.JustRight, true),
+        ];
+        var students = new[] { "Alex", "Leo", "Nora", "Iker", "Elena", "Omar", "Noa", "Hugo", "Mia", "Leo" };
+        foreach (var ((theme, stars, felt, fun), i) in ratings.Select((r, i) => (r, i)))
+        {
+            db.AdventureRatings.Add(new AdventureRating { AttemptId = "demo-rating-" + i, UserId = ids[students[i]], Theme = theme, Stars = stars, Felt = felt, Fun = fun, At = now.AddDays(-i) });
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -305,6 +384,12 @@ public static class DemoSeeder
                 (record.Level, record.Placed) = (p, true);
             }
         }
+
+        // Older tests (more than 30 days ago), so the progress report has a "before" to compare with
+        Test("Sara", Area.Mathematics, Level.Primary3, 44, "CWWCWCWWCW");
+        Test("Sara", Area.Geography, Level.Primary3, 38, "WCWCCWWCWC");
+        Test("Alex", Area.Mathematics, Level.Primary3, 41, "CCWCWCCWCC");
+        Test("Leo", Area.Mathematics, Level.Primary3, 40, "WWCWCWWCWW");
 
         // Sara: a week in a row, a perfect test, a placement test, physics still weak
         Test("Sara", Area.Mathematics, Level.Primary3, 9, "CCWCCCCWCC");

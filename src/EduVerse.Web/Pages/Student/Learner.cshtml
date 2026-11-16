@@ -1,0 +1,246 @@
+@page
+@model EduVerse.Web.Pages.Student.LearnerModel
+@using EduVerse.Core.Tutor
+@{
+    ViewData["Title"] = L["Nav_Learner"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var s = Model.Stats;
+    var best = LearnerProfile.BestMethod(s);
+    var autonomy = LearnerProfile.Autonomy(s);
+    var maxError = Math.Max(1, s.Errors.Values.DefaultIfEmpty(0).Max());
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🧭 @L["Nav_Learner"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Learner_Subtitle"]</p>
+    </div>
+</div>
+
+<section class="@Ui.Card p-5 tone-lavender" aria-labelledby="lr-summary-title">
+    <div class="flex items-start gap-4">
+        <span class="size-14 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🦉</span>
+        <div class="min-w-0 flex-1">
+            <h2 id="lr-summary-title" class="text-base font-semibold text-foreground">@L["Learner_SummaryTitle"]</h2>
+            <p class="mt-1 text-sm text-foreground whitespace-pre-line" id="lr-summary" aria-live="polite" data-testid="learner-summary">@LearnerProfile.Summary(s, language)</p>
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+                <button type="button" id="lr-summary-ai" class="@Ui.BtnLight" data-testid="learner-summary-ai">@Html.Raw(Ui.Sparkle) @L["Learner_SummaryAi"]</button>
+                <span class="text-xs text-foreground/70" id="lr-summary-engine"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="@Ui.Card p-5" aria-labelledby="lr-interests-title" data-testid="interests">
+    <h2 id="lr-interests-title" class="text-base font-semibold text-foreground">💛 @L["Interests_Title"]</h2>
+    <p class="text-xs text-muted-foreground-1">@L["Interests_Hint"]</p>
+    <div class="mt-3 flex flex-wrap gap-2" id="lr-interests" role="group" aria-labelledby="lr-interests-title">
+        @foreach (var i in EduVerse.Core.Tutor.Interests.All)
+        {
+            var on = Model.Interests.Contains(i.Key);
+            <button type="button" class="px-3 py-1.5 rounded-full border text-sm @(on ? "border-primary bg-primary/10 text-foreground font-medium" : "border-line-2 text-muted-foreground-1")" data-interest="@i.Key" aria-pressed="@(on ? "true" : "false")" data-testid="interest-@i.Key">@i.Icon @EduVerse.Core.Tutor.Interests.Name(i, language)</button>
+        }
+    </div>
+    <p class="mt-2 text-xs text-muted-foreground-1" id="lr-interests-state" aria-live="polite"></p>
+</section>
+
+@if (Model.Cases.Count > 0)
+{
+    <section class="@Ui.Card p-5" aria-labelledby="lr-detective-title" data-testid="detective">
+        <h2 id="lr-detective-title" class="text-base font-semibold text-foreground">🕵️ @L["Detective_Title"]</h2>
+        <p class="text-xs text-muted-foreground-1">@L["Detective_Hint"]</p>
+        <ul class="mt-3 space-y-3">
+            @foreach (var (c, topic, below, text) in Model.Cases)
+            {
+                <li class="p-3 rounded-2xl bg-surface/60" data-testid="detective-case" data-verdict="@c.Verdict">
+                    <p class="text-sm font-medium text-foreground">@topic <span class="font-normal text-muted-foreground-1">(@c.Percent %)</span> ← @below</p>
+                    <p class="mt-1 text-sm text-foreground">@text</p>
+                    <div class="mt-2">
+                        @if (c.Verdict == EduVerse.Core.Tutor.RootVerdict.Here)
+                        {
+                            <a class="@Ui.BtnLight" href="/Student/Quiz?area=@c.Area&level=@c.Level&mode=Focus&topic=@c.Topic" data-testid="detective-go">@string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Detective_Practise"].Value, topic)</a>
+                        }
+                        else
+                        {
+                            <a class="@Ui.BtnPrimary" href="/Student/Quiz?area=@c.Area&level=@c.Below.Level&mode=Focus&topic=@c.Below.Topic" data-testid="detective-go">@string.Format(System.Globalization.CultureInfo.CurrentCulture, L[c.Verdict == EduVerse.Core.Tutor.RootVerdict.Root ? "Detective_Practise" : "Detective_Check"].Value, below)</a>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </section>
+}
+
+<section class="@Ui.Card p-5" aria-labelledby="lr-map-title" data-testid="confidence-map">
+    <h2 id="lr-map-title" class="text-base font-semibold text-foreground">🎯 @L["Map_Title"]</h2>
+    <p class="text-xs text-muted-foreground-1">@L["Map_Hint"]</p>
+    @if (Model.Bets == 0)
+    {
+        <p class="mt-3 text-sm text-muted-foreground-1" data-testid="confidence-empty">@L["Map_Empty"]</p>
+    }
+    else
+    {
+        @if (Model.CalibrationText.Length > 0)
+        {
+            <p class="mt-3 p-3 rounded-2xl tone-lavender text-sm text-foreground" data-testid="confidence-say">@Model.CalibrationText</p>
+        }
+        <div class="mt-3 grid sm:grid-cols-2 gap-3">
+            @foreach (var (cell, topics) in Model.Map)
+            {
+                var tone = cell.Quadrant switch { EduVerse.Core.Tutor.Quadrant.Solid => "tone-mint", EduVerse.Core.Tutor.Quadrant.FalseCertainty => "tone-pink", EduVerse.Core.Tutor.Quadrant.HiddenStrength => "tone-sky", _ => "tone-sun" };
+                var icon = cell.Quadrant switch { EduVerse.Core.Tutor.Quadrant.Solid => "✅", EduVerse.Core.Tutor.Quadrant.FalseCertainty => "🔁", EduVerse.Core.Tutor.Quadrant.HiddenStrength => "💪", _ => "🌱" };
+                <div class="p-3 rounded-2xl @tone" data-testid="quadrant-@cell.Quadrant" data-count="@cell.Count">
+                    <p class="flex items-baseline justify-between gap-2 text-sm font-semibold text-foreground"><span>@icon @EduVerse.Core.Tutor.Calibration.Name(cell.Quadrant, language)</span><span class="text-lg">@cell.Count</span></p>
+                    <p class="mt-1 text-xs text-foreground/80">@EduVerse.Core.Tutor.Calibration.Hint(cell.Quadrant, language)</p>
+                    @if (topics.Count > 0)
+                    {
+                        <p class="mt-2 text-sm text-foreground">@string.Join(" · ", topics)</p>
+                    }
+                </div>
+            }
+        </div>
+        @if (Model.Certainties.Count > 0)
+        {
+            <ul class="mt-3 space-y-2" data-testid="false-certainties">
+                @foreach (var (f, topic) in Model.Certainties)
+                {
+                    <li class="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground" data-testid="false-certainty">
+                        <span>🔁 @topic · @string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Certain_Count"].Value, f.SureWrong, f.Sure)</span>
+                        <a class="@Ui.BtnLight py-1! px-3! text-xs" href="/Student/Quiz?area=@f.Area&level=@f.Level&mode=Focus&topic=@f.Topic">@L["Certain_Go"]</a>
+                    </li>
+                }
+            </ul>
+        }
+    }
+</section>
+
+<div class="grid xl:grid-cols-2 gap-4 items-start">
+    <section class="@Ui.Card min-w-0" aria-labelledby="lr-insights-title">
+        <div class="@Ui.CardHeader">
+            <div class="min-w-0">
+                <h2 id="lr-insights-title" class="text-base font-semibold text-foreground">🔎 @L["Learner_Insights"]</h2>
+                <p class="text-xs text-muted-foreground-1">@L["Learner_InsightsHint"]</p>
+            </div>
+        </div>
+        @if (Model.Insights.Count == 0)
+        {
+            <p class="p-5 text-sm text-muted-foreground-1" data-testid="learner-empty">@L["Learner_Empty"]</p>
+        }
+        else
+        {
+            <ul class="p-4 md:p-5 space-y-3" data-testid="learner-insights">
+                @foreach (var i in Model.Insights)
+                {
+                    <li class="flex items-start gap-3 p-3 rounded-2xl @(i.Hidden ? "bg-surface/60 opacity-60" : "bg-surface/60")" data-testid="insight-@i.Key">
+                        <span class="size-10 shrink-0 rounded-2xl tone-sun grid place-items-center text-xl" aria-hidden="true">@i.Icon</span>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold text-foreground @(i.Hidden ? "line-through" : "")">@i.Text</p>
+                            @if (!i.Hidden)
+                            {
+                                <p class="text-sm text-muted-foreground-1">👉 @i.Advice</p>
+                            }
+                            else
+                            {
+                                <p class="text-xs text-muted-foreground-1">@L["Learner_HiddenNote"]</p>
+                            }
+                        </div>
+                        <button type="button" class="@Ui.BtnLight py-1! px-3! text-xs shrink-0" data-insight="@i.Key" data-hide="@(i.Hidden ? "false" : "true")" data-testid="insight-toggle-@i.Key">@(i.Hidden ? L["Learner_Show"] : L["Learner_NotMe"])</button>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="@Ui.Card min-w-0" aria-labelledby="lr-notes-title">
+        <div class="@Ui.CardHeader">
+            <div class="min-w-0">
+                <h2 id="lr-notes-title" class="text-base font-semibold text-foreground">✍️ @L["Learner_Notes"]</h2>
+                <p class="text-xs text-muted-foreground-1">@L["Learner_NotesHint"]</p>
+            </div>
+        </div>
+        <div class="p-4 md:p-5 space-y-3">
+            <ul class="space-y-2" data-testid="learner-notes">
+                @foreach (var n in Model.Notes)
+                {
+                    <li class="flex items-center gap-3 p-2.5 rounded-2xl bg-surface/60">
+                        <span class="min-w-0 flex-1 text-sm text-foreground">“@n.Text”</span>
+                        <button type="button" class="size-8 shrink-0 inline-flex items-center justify-center rounded-full text-muted-foreground-1 hover:bg-layer hover:text-foreground" data-note-delete="@n.Id" aria-label="@L["Learner_DeleteNote"]" title="@L["Learner_DeleteNote"]">✕</button>
+                    </li>
+                }
+            </ul>
+            @if (Model.Notes.Count < LearnerProfile.MaxNotes)
+            {
+                <form id="lr-note-form" class="flex flex-wrap gap-2" novalidate>
+                    <label for="lr-note" class="sr-only">@L["Learner_NotePlaceholder"]</label>
+                    <input id="lr-note" class="@Ui.Input flex-1 min-w-48 w-auto!" maxlength="@LearnerProfile.MaxNote" autocomplete="off" placeholder="@L["Learner_NotePlaceholder"]" data-testid="learner-note" />
+                    <button type="submit" class="@Ui.BtnPrimary" data-testid="learner-note-send">@L["Learner_AddNote"]</button>
+                </form>
+            }
+            <p class="text-sm text-red-700 dark:text-red-300 hidden" role="alert" id="lr-note-error"></p>
+            <p class="text-xs text-muted-foreground-1">🔒 @L["Learner_NotesPrivacy"]</p>
+        </div>
+    </section>
+</div>
+
+<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+    <section class="@Ui.Card p-5 min-w-0" data-testid="learner-methods">
+        <h2 class="text-base font-semibold text-foreground">🎯 @L["Learner_Methods"]</h2>
+        <p class="text-xs text-muted-foreground-1">@L["Learner_MethodsHint"]</p>
+        @if (s.Methods.Count == 0)
+        {
+            <p class="mt-3 text-sm text-muted-foreground-1">@L["Learner_NoData"]</p>
+        }
+        <ul class="mt-3 space-y-2.5">
+            @foreach (var m in s.Methods)
+            {
+                <li>
+                    <div class="flex justify-between text-sm"><span class="text-foreground">@LearnerProfile.MethodName(m.Method, language)@(m.Method == best ? " ⭐" : "")</span><span class="text-muted-foreground-1">@m.Correct/@m.Attempts</span></div>
+                    <div class="mt-1 h-2 rounded-full bg-surface overflow-hidden"><div class="h-full rounded-full @(m.Method == best ? "bg-emerald-500" : "bg-primary")" style="width:@m.Rate%"></div></div>
+                </li>
+            }
+        </ul>
+    </section>
+
+    <section class="@Ui.Card p-5 min-w-0" data-testid="learner-autonomy">
+        <h2 class="text-base font-semibold text-foreground">🚀 @L["Learner_Autonomy"]</h2>
+        <p class="text-xs text-muted-foreground-1">@L["Learner_AutonomyHint"]</p>
+        @if (autonomy is { } a)
+        {
+            <p class="mt-3 text-4xl font-semibold tracking-tight text-foreground">@a %</p>
+            <div class="mt-2 h-2.5 rounded-full bg-surface overflow-hidden"><div class="h-full rounded-full bg-emerald-500" style="width:@a%"></div></div>
+            <p class="mt-2 text-xs text-muted-foreground-1">@string.Format(culture, L["Learner_AutonomyDetail"], s.CorrectAlone, s.Correct)</p>
+        }
+        else
+        {
+            <p class="mt-3 text-sm text-muted-foreground-1">@string.Format(culture, L["Learner_NeedAnswers"], LearnerProfile.MinAnswers)</p>
+        }
+        <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div class="p-3 rounded-2xl bg-surface/60"><dt class="text-xs text-muted-foreground-1">😎 @L["Learner_SureRight"]</dt><dd class="font-semibold text-foreground">@(s.SureTotal == 0 ? "–" : $"{s.SureTotal - s.SureWrong}/{s.SureTotal}")</dd></div>
+            <div class="p-3 rounded-2xl bg-surface/60"><dt class="text-xs text-muted-foreground-1">🤔 @L["Learner_UnsureRight"]</dt><dd class="font-semibold text-foreground">@(s.UnsureTotal == 0 ? "–" : $"{s.UnsureRight}/{s.UnsureTotal}")</dd></div>
+        </dl>
+    </section>
+
+    <section class="@Ui.Card p-5 min-w-0" data-testid="learner-errors">
+        <h2 class="text-base font-semibold text-foreground">🧠 @L["Learner_Errors"]</h2>
+        <p class="text-xs text-muted-foreground-1">@L["Learner_ErrorsHint"]</p>
+        @if (s.Reflections == 0)
+        {
+            <p class="mt-3 text-sm text-muted-foreground-1">@L["Learner_NoReflections"]</p>
+        }
+        <ul class="mt-3 space-y-2.5">
+            @foreach (var (error, count) in s.Errors.OrderByDescending(e => e.Value).ThenBy(e => e.Key))
+            {
+                <li>
+                    <div class="flex justify-between text-sm"><span class="text-foreground">@Thinking.Label(error, language)</span><span class="text-muted-foreground-1">@count</span></div>
+                    <div class="mt-1 h-2 rounded-full bg-surface overflow-hidden"><div class="h-full rounded-full bg-primary" style="width:@(100 * count / maxError)%"></div></div>
+                </li>
+            }
+        </ul>
+    </section>
+</div>
+<p class="text-xs text-muted-foreground-1 max-w-3xl">ℹ️ @L["Learner_Footer"]</p>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/learner.js" asp-append-version="true"></script>
+}

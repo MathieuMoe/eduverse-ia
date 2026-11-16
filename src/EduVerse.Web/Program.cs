@@ -22,6 +22,7 @@ builder.Services.AddRazorPages(o =>
     o.Conventions.AuthorizeFolder("/Teacher", CurrentUser.TeacherPolicy);
     o.Conventions.AuthorizeFolder("/Institution", CurrentUser.DirectorPolicy);
     o.Conventions.AuthorizeFolder("/Tutor", CurrentUser.TutorPolicy);
+    o.Conventions.AuthorizeFolder("/Moderation", CurrentUser.ModeratorPolicy);
     o.Conventions.AuthorizePage("/Marketplace/Bookings", CurrentUser.StudentPolicy);
 });
 // Write accented characters (é, ñ, ç, à…) as-is in the HTML instead of &#xE9; entities.
@@ -46,7 +47,8 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(CurrentUser.StudentPolicy, p => p.RequireRole(Roles.Student))
     .AddPolicy(CurrentUser.TeacherPolicy, p => p.RequireRole(Roles.Teacher))
     .AddPolicy(CurrentUser.DirectorPolicy, p => p.RequireRole(Roles.Director))
-    .AddPolicy(CurrentUser.TutorPolicy, p => p.RequireRole(Roles.Tutor));
+    .AddPolicy(CurrentUser.TutorPolicy, p => p.RequireRole(Roles.Tutor))
+    .AddPolicy(CurrentUser.ModeratorPolicy, p => p.RequireRole(Roles.Teacher, Roles.Director));
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHealthChecks();
 builder.Services.AddProblemDetails();
@@ -66,6 +68,9 @@ builder.Services.AddRateLimiter(options =>
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 40, Window = TimeSpan.FromMinutes(1) }));
 
     // Explain it to Evo and interviews: short messages, often answered offline
+    options.AddPolicy("ideas", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1) }));
     options.AddPolicy("tutor", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1) }));
@@ -126,6 +131,14 @@ app.MapTeaching();
 app.MapLearning();
 app.MapQuiz();
 app.MapTutor();
+app.MapIdeas();
+app.MapLearner();
+app.MapPlan();
+app.MapHomework();
+app.MapDefence();
+app.MapPip();
+app.MapFading();
+app.MapMaterials();
 app.MapContent();
 app.MapInstitution();
 app.MapEngineSelection();

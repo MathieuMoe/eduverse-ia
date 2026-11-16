@@ -134,7 +134,7 @@
             stage.innerHTML = `<article class="max-w-3xl">
                 <div class="flex flex-wrap items-center gap-2">${pill(t("Step_Learn"))}${badge(fmt(t("MethodLabel"), t("Method_" + x.method)), "bg-surface text-foreground")}
                     <span class="ms-auto">${small(engineLabel(d.engine))}</span></div>
-                <p class="mt-3 text-sm text-muted-foreground-1">${esc(t("Reason_" + next.reason))}${switched ? " " + esc(t("SwitchedHint")) : ""}</p>
+                <p class="mt-3 text-sm text-muted-foreground-1">${esc(t("Reason_" + next.reason))}${switched ? " " + esc(t("SwitchedHint")) : ""}${d.preferred ? " 🎯 " + esc(t("PreferredMethod")) : ""}</p>
                 <h2 class="mt-2 text-xl font-semibold text-foreground">${esc(x.title)}</h2>
                 <div class="mt-3 text-[15px] leading-relaxed text-foreground whitespace-pre-line">${esc(x.body)}</div>
                 ${x.example ? `<div class="mt-4 p-4 rounded-2xl tone-lavender"><h3 class="text-xs font-semibold uppercase text-muted-foreground-1">${esc(t("Example"))}</h3><p class="mt-1 text-sm text-foreground whitespace-pre-line">${esc(x.example)}</p></div>` : ""}

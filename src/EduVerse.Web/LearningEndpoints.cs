@@ -29,7 +29,7 @@ public static class LearningEndpoints
             return subject is null ? Results.NotFound() : Results.Ok(await StatePayloadAsync(context, store, subject));
         });
 
-        api.MapPost("/{subjectId}/explain/{conceptKey}", async (string subjectId, string conceptKey, HttpContext context, LearningStore store, AiEngines engines, DemoLearningAi demo, ILogger<AnswerRequest> logger) =>
+        api.MapPost("/{subjectId}/explain/{conceptKey}", async (string subjectId, string conceptKey, HttpContext context, LearningStore store, Infrastructure.Tutor.LearnerStore learner, AiEngines engines, DemoLearningAi demo, ILogger<AnswerRequest> logger) =>
         {
             var (subject, profile) = await LoadAsync(context, store, subjectId);
             var concept = subject?.Find(conceptKey);
@@ -39,13 +39,25 @@ public static class LearningEndpoints
             }
 
             var state = await store.StateAsync(context.User.Id(), subject.Key, concept.Key, context.RequestAborted);
-            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture());
+            var stats = await learner.StatsAsync(context.User.Id(), context.RequestAborted);
+            var preferred = false;
+            if (state.Attempts == 0 && state.MethodsTried.Count <= 1 && !stats.Hidden.Contains("method")
+                && Core.Tutor.LearnerProfile.BestMethod(stats) is { } best && best != state.Method)
+            {
+                // A new concept starts with the method that works best for this student (learner card), not always step by step
+                state = state with { Method = best, MethodsTried = [best] };
+                await store.SaveStateAsync(context.User.Id(), subject.Key, state, context.RequestAborted);
+                preferred = true;
+            }
+
+            preferred = preferred || (state.Attempts == 0 && !stats.Hidden.Contains("method") && Core.Tutor.LearnerProfile.BestMethod(stats) == state.Method);
+            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture()) with { Learner = Core.Tutor.LearnerProfile.ForPrompt(stats), TeacherNotes = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.TeacherNoteStore>().ForStudentAsync(context.User.Id(), context.RequestAborted), Material = Core.Tutor.Materials.ForPrompt(await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(context.User.Id(), Core.Tutor.MaterialTarget.Course, subject.Key, concept.Name, context.RequestAborted)) };
             return await AiRunner.GuardAsync(async () =>
             {
                 var run = await AiRunner.RunAsync(context, engines, logger,
                     ai => new AiLearning(ai).ExplainAsync(subject, concept, state.Method, student, context.RequestAborted),
                     () => demo.ExplainAsync(subject, concept, state.Method, student, context.RequestAborted));
-                return Results.Ok(new { engine = run.Engine, fallback = run.Fallback, explanation = run.Result, methodsTried = state.MethodsTried });
+                return Results.Ok(new { engine = run.Engine, fallback = run.Fallback, explanation = run.Result, methodsTried = state.MethodsTried, preferred });
             });
         })
         .RequireRateLimiting("ai");
@@ -211,7 +223,7 @@ public static class LearningEndpoints
             return Results.Ok(messages.Select(m => new { fromStudent = m.FromStudent, text = m.Text }));
         });
 
-        api.MapPost("/{subjectId}/chat/{conceptKey}", async (string subjectId, string conceptKey, ChatRequest request, HttpContext context, LearningStore store, AiEngines engines, DemoLearningAi demo, ILogger<ChatRequest> logger) =>
+        api.MapPost("/{subjectId}/chat/{conceptKey}", async (string subjectId, string conceptKey, ChatRequest request, HttpContext context, LearningStore store, Infrastructure.Tutor.LearnerStore learner, AiEngines engines, DemoLearningAi demo, ILogger<ChatRequest> logger) =>
         {
             var (subject, profile) = await LoadAsync(context, store, subjectId);
             var concept = subject?.Find(conceptKey);
@@ -230,7 +242,7 @@ public static class LearningEndpoints
             await store.AddChatAsync(userId, subject.Key, concept.Key, true, message, context.RequestAborted);
             var history = (await store.ChatAsync(userId, subject.Key, concept.Key, context.RequestAborted)).Select(m => new ChatTurn(m.FromStudent, m.Text)).ToList();
             var state = await store.StateAsync(userId, subject.Key, concept.Key, context.RequestAborted);
-            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture());
+            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture()) with { Learner = Core.Tutor.LearnerProfile.ForPrompt(await learner.StatsAsync(userId, context.RequestAborted)), TeacherNotes = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.TeacherNoteStore>().ForStudentAsync(userId, context.RequestAborted), Material = Core.Tutor.Materials.ForPrompt(await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(userId, Core.Tutor.MaterialTarget.Course, subject.Key, concept.Name + " " + message, context.RequestAborted)) };
             return await AiRunner.GuardAsync(async () =>
             {
                 var run = await AiRunner.RunAsync(context, engines, logger,

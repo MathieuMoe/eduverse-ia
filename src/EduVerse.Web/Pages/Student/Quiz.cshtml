@@ -28,13 +28,14 @@
     }
 }
 <div id="qz-root" class="w-full space-y-4 sm:space-y-5 @(Model.Kids ? "kids" : "")"
-     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-kids="@(Model.Kids ? "1" : "0")">
+     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-material="@Model.MaterialId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-kids="@(Model.Kids ? "1" : "0")"
+     data-reasons="@System.Text.Json.JsonSerializer.Serialize(Enum.GetValues<EduVerse.Core.Tutor.ThinkingError>().ToDictionary(e => e.ToString(), e => EduVerse.Core.Tutor.Thinking.Label(e, EduVerse.Web.Localization.LanguageForCurrentCulture())))">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
             <span class="size-12 shrink-0 rounded-2xl @(Model.Mode switch { QuizMode.Review => "tone-sun", QuizMode.Notebook => "tone-lavender", _ => "tone-" + info.Tone }) grid place-items-center text-2xl" aria-hidden="true">@(Model.Mode switch { QuizMode.Review => "⚡", QuizMode.Notebook => "📓", QuizMode.Adventure => Adventure.Emoji(Model.Theme), QuizMode.Interview => Model.Figure!.Emoji, _ => info.Icon })</span>
             <div class="min-w-0">
                 <h1 class="text-xl font-semibold text-foreground truncate" id="qz-title">@(Model.Mode switch { QuizMode.Review => L["Review_Title"].Value, QuizMode.Notebook => L["Notebook_Title"].Value, QuizMode.Interview => Model.Figure!.Name, _ => L[$"Area_{Model.Area}"].Value })@(Model.Topic is { } t ? $" · {t}" : "")</h1>
-                <p class="text-sm text-muted-foreground-1">@if (Model.Mode is not (QuizMode.Review or QuizMode.Notebook)) { <span id="qz-level">@L[$"Level_{Model.Level}"]</span> <text>·</text> } else { <span id="qz-level" class="hidden"></span> }@(Model.Mode switch { QuizMode.Review => L["Review_Sub"], QuizMode.Notebook => L["Notebook_Sub"], _ => L[$"QuizMode_{Model.Mode}"] })@(Model.Rival is { } r ? " · " + string.Format(culture, L["Duel_Against"], r) : "")</p>
+                <p class="text-sm text-muted-foreground-1">@if (Model.Mode is not (QuizMode.Review or QuizMode.Notebook)) { <span id="qz-level">@L[$"Level_{Model.Level}"]</span> <text>·</text> } else { <span id="qz-level" class="hidden"></span> }@(Model.Mode switch { QuizMode.Review => L["Review_Sub"], QuizMode.Notebook => L["Notebook_Sub"], _ => Model.MaterialId is null ? L[$"QuizMode_{Model.Mode}"] : L["Materials_TestOf"] })@(Model.Rival is { } r ? " · " + string.Format(culture, L["Duel_Against"], r) : "")</p>
             </div>
         </div>
         <div class="flex items-center gap-2">

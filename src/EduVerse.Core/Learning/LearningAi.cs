@@ -4,7 +4,20 @@ using EduVerse.Core.Curriculum;
 namespace EduVerse.Core.Learning;
 
 /// <summary>What the tutor knows about the student when it writes (no name, no personal data).</summary>
-public sealed record StudentContext(Stage Stage, TeachLanguage Language, IReadOnlyList<string> RecentMisconceptions, double PKnown, IReadOnlyList<ExplanationMethod> MethodsTried);
+public sealed record StudentContext(Stage Stage, TeachLanguage Language, IReadOnlyList<string> RecentMisconceptions, double PKnown, IReadOnlyList<ExplanationMethod> MethodsTried)
+{
+    /// <summary>How this student learns, as measured by the platform (one line of data for the prompts).</summary>
+    public string? Learner { get; init; }
+
+    /// <summary>What the student likes (keys of the fixed list): examples may be set in those worlds.</summary>
+    public IReadOnlyList<string> Interests { get; init; } = [];
+
+    /// <summary>Short notes the student's teacher left about them (text written by a person: data, not instructions).</summary>
+    public IReadOnlyList<string> TeacherNotes { get; init; } = [];
+
+    /// <summary>Pieces of the teacher's documents chosen for this question, ready for the prompt ("" = none).</summary>
+    public string Material { get; init; } = "";
+}
 
 public sealed record ChatTurn(bool FromStudent, string Text);
 

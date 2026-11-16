@@ -91,6 +91,7 @@ else
         }
     </div>
     <p class="text-xs text-muted-foreground-1">🎭 @L["Interview_Simulation"]</p>
+    <partial name="_Ideas" model="EduVerse.Core.Ideas.IdeaKind.Figure" />
 }
 
 @section Scripts {
@@ -106,6 +107,8 @@ else
     }
     else
     {
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/ideas.js" asp-append-version="true"></script>
         <script src="~/js/avatars.js" asp-append-version="true"></script>
         <script>
             // The dossier chip of a card opens the dossier instead of the interview.

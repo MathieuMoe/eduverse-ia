@@ -1,6 +1,8 @@
 using EduVerse.Core.Catalog;
 using EduVerse.Core.Curriculum;
 using EduVerse.Core.Learning;
+using EduVerse.Core.Ideas;
+using EduVerse.Infrastructure.Ideas;
 using EduVerse.Infrastructure.Learning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,7 +13,7 @@ namespace EduVerse.Web.Pages.Student;
 public sealed record LearnChoice(Subject Subject, string Icon, string Tone, int Mastered, int Total, DateTimeOffset? LastAt, Level? Level = null);
 
 /// <summary>Without a subject: the catalog to choose what to learn. With one: the learning loop (learn.js and /api/learn).</summary>
-public sealed class LearnModel(LearningStore store, ICatalogNames names, CertificateStore certificates) : PageModel
+public sealed class LearnModel(LearningStore store, ICatalogNames names, CertificateStore certificates, IdeaStore ideas) : PageModel
 {
     public IReadOnlyList<Subject> Subjects { get; private set; } = [];
 
@@ -82,6 +84,7 @@ public sealed class LearnModel(LearningStore store, ICatalogNames names, Certifi
         if (Tab != "subjects")
         {
             var kind = Tab == "hobbies" ? TradeKind.Hobby : TradeKind.Trade;
+            await ideas.MarkSeenAsync(User.Id(), kind == TradeKind.Hobby ? IdeaKind.Hobby : IdeaKind.Trade, ct);
             TradeProgress = [.. (await certificates.ProgressAsync(User.Id(), ct)).Where(p => p.Trade.Kind == kind)];
         }
 

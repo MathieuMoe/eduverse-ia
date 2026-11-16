@@ -43,6 +43,12 @@ public static class Hints
         var rest = masked.Replace(Hidden, "", StringComparison.Ordinal).Count(char.IsLetterOrDigit);
         if (answer.Length > 0 && (masked.Contains(answer, StringComparison.OrdinalIgnoreCase) || rest < 30))
         {
+            if (answer.Length < 2)
+            {
+                // The first character of a one-character answer would be the answer itself
+                return Text.Of("Say the rule in your own words first: which operation or idea do you need here?|Di primero la regla con tus palabras: ¿qué operación o idea necesitas aquí?|Dis d'abord la règle avec tes mots : de quelle opération ou idée as-tu besoin ici ?|Digues primer la regla amb les teves paraules: quina operació o idea necessites aquí?").In(language);
+            }
+
             return Text.Of("It starts with «{0}…».|Empieza por «{0}…».|Ça commence par « {0}… ».|Comença per «{0}…».").Format(language, answer[..1]);
         }
 

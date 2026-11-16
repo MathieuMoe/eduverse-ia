@@ -24,6 +24,57 @@
     </div>
 </div>
 
+@if (Model.Opening is { } opening)
+{
+    <a href="@opening.Url" class="@Ui.Card p-4 tone-lavender hover:opacity-95" data-testid="opening"><span class="flex items-center gap-3 w-full text-start">
+        <span class="size-10 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center text-xl" aria-hidden="true">🦉</span>
+        <span class="min-w-0 grow text-sm text-foreground">@opening.Text</span>
+        <span class="shrink-0 text-sm font-semibold text-foreground">@L["Opening_Go"] →</span>
+    </span></a>
+}
+
+@if (Model.Assignments.Count > 0)
+{
+    var writingTasks = EduVerse.Core.Tutor.Writing.Tasks(EduVerse.Web.Localization.LanguageForCurrentCulture());
+    <section class="@Ui.Card p-4" aria-labelledby="hw-title" data-testid="assignments">
+        <h2 id="hw-title" class="text-sm font-semibold text-foreground">🗓️ @L["Assign_Mine"]</h2>
+        <ul class="mt-2 space-y-2">
+            @foreach (var a in Model.Assignments.Take(6))
+            {
+                var x = a.Assignment;
+                var name = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => EduVerse.Web.QuizEndpoints.TopicName(x.Topic, L), EduVerse.Infrastructure.Data.AssignmentKind.Writing => writingTasks.FirstOrDefault(t => t.Key == x.WritingKey)?.Title ?? x.WritingKey, _ => a.MaterialTitle ?? "" };
+                var url = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => $"/Student/Quiz?area={x.Area}&level={x.Level}&mode=Focus&topic={x.Topic}", EduVerse.Infrastructure.Data.AssignmentKind.Writing => $"/Student/Writing?task={x.WritingKey}", _ => $"/Student/Quiz?material={x.MaterialId}" };
+                var late = !a.Status.Done && DateOnly.FromDateTime(x.DueOn) < Model.Today;
+                <li class="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground" data-testid="assignment" data-done="@(a.Status.Done ? "1" : "0")">
+                    <span class="min-w-0">@(x.Kind == EduVerse.Infrastructure.Data.AssignmentKind.Practice ? "🎯" : x.Kind == EduVerse.Infrastructure.Data.AssignmentKind.Writing ? "✍️" : "📄") @name
+                        <span class="text-xs @(late ? "text-rose-700 dark:text-rose-300 font-medium" : "text-muted-foreground-1")">· @a.ClassName · @x.DueOn.ToString("d MMM", System.Globalization.CultureInfo.CurrentCulture)</span></span>
+                    @if (a.Status.Done)
+                    {
+                        <span class="text-emerald-700 dark:text-emerald-300 font-medium">✓ @a.Status.Score/@a.Status.Total</span>
+                    }
+                    else
+                    {
+                        <a class="@Ui.BtnPrimary py-1! px-3! text-xs" href="@url" data-testid="assignment-go">@L["Assign_Do"]</a>
+                    }
+                </li>
+            }
+        </ul>
+    </section>
+}
+
+@if (Model.TeacherNotes.Count > 0)
+{
+    <section class="@Ui.Card p-4 tone-sun" aria-labelledby="tn-title" data-testid="teacher-notes-student">
+        <h2 id="tn-title" class="text-sm font-semibold text-foreground">📝 @L["TNote_ForYou"]</h2>
+        <ul class="mt-1 space-y-1">
+            @foreach (var n in Model.TeacherNotes)
+            {
+                <li class="text-sm text-foreground">@n</li>
+            }
+        </ul>
+    </section>
+}
+
 <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5" data-testid="game-kpis">
     <div class="@Ui.Kpi tone-lavender">
         <p class="@Ui.KpiLabel">@L["Game_Xp"]</p>

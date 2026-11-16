@@ -9,7 +9,7 @@ namespace EduVerse.Web;
 
 public sealed record QuizStartRequest(Area Area, Level Level, QuizMode Mode, string? Topic, int? DuelId, string? Figure = null);
 
-public sealed record QuizAnswerRequest(int Choice, int? Confidence = null);
+public sealed record QuizAnswerRequest(int Choice, int? Confidence = null, int? Seconds = null);
 
 public sealed record AdventureRequest(Area Area, Level Level, Theme Theme);
 
@@ -25,7 +25,12 @@ public static class QuizEndpoints
 
         api.MapPost("/start", async (QuizStartRequest request, HttpContext context, QuizStore store, GamificationStore game, IStringLocalizer<SharedResource> l) =>
         {
-            if (request is null || !Enum.IsDefined(request.Area) || !Enum.IsDefined(request.Level) || request.Mode is not (QuizMode.Practice or QuizMode.Placement or QuizMode.Duel or QuizMode.Evo or QuizMode.Notebook or QuizMode.Review or QuizMode.Interview))
+            if (request is null || !Enum.IsDefined(request.Area) || !Enum.IsDefined(request.Level) || request.Mode is not (QuizMode.Practice or QuizMode.Placement or QuizMode.Duel or QuizMode.Evo or QuizMode.Notebook or QuizMode.Review or QuizMode.Interview or QuizMode.Focus))
+            {
+                return Results.BadRequest();
+            }
+
+            if (request.Mode == QuizMode.Focus && (string.IsNullOrWhiteSpace(request.Topic) || !Core.Curriculum.AreaSubjects.Topics(request.Area, request.Level).Contains(request.Topic)))
             {
                 return Results.BadRequest();
             }
@@ -54,7 +59,7 @@ public static class QuizEndpoints
                 return Results.Json(new { code = "nothing_to_review" }, statusCode: StatusCodes.Status409Conflict);
             }
 
-            var question = await store.StartAsync(context.User.Id(), request.Area, request.Level, request.Mode, Localization.LanguageForCurrentCulture(), request.DuelId, ct: context.RequestAborted);
+            var question = await store.StartAsync(context.User.Id(), request.Area, request.Level, request.Mode, Localization.LanguageForCurrentCulture(), request.DuelId, topic: request.Mode == QuizMode.Focus ? request.Topic : null, ct: context.RequestAborted);
             return Results.Ok(new { engine = "bank", question = QuestionPayload(question, l) });
         })
         .RequireRateLimiting("quiz");
@@ -112,7 +117,7 @@ public static class QuizEndpoints
 
         api.MapPost("/{attemptId}/answer", async (string attemptId, QuizAnswerRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
         {
-            var result = request is null ? null : await store.AnswerAsync(context.User.Id(), attemptId, request.Choice, request.Confidence ?? 1, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            var result = request is null ? null : await store.AnswerAsync(context.User.Id(), attemptId, request.Choice, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
             if (result is null)
             {
                 return Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest);
@@ -123,7 +128,9 @@ public static class QuizEndpoints
                 correct = result.Correct,
                 correctIndex = result.CorrectIndex,
                 hints = result.Hints,
+                rungs = result.Rungs,
                 confidence = result.Confidence,
+                pace = result.Pace == EduVerse.Core.Tutor.PaceSignal.None ? null : new { kind = result.Pace.ToString(), text = EduVerse.Core.Tutor.Pace.Advice(result.Pace, Localization.LanguageForCurrentCulture()) },
                 explanation = result.Explanation,
                 run = result.Run,
                 next = result.Next is { } n ? QuestionPayload(n, l) : null,
@@ -166,7 +173,7 @@ public static class QuizEndpoints
         return name.ResourceNotFound ? topic : name.Value;
     }
 
-    private static object QuestionPayload(QuestionView q, IStringLocalizer l) => new
+    public static object QuestionPayload(QuestionView q, IStringLocalizer l) => new
     {
         id = q.AttemptId,
         number = q.Number,

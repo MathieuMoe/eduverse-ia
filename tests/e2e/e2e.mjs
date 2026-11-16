@@ -131,6 +131,13 @@ async function demo(page, role) {
     check(await page.locator("[data-testid=heatmap] tbody tr").count() === 4, "heatmap shows the 4 students");
     check(await page.locator("[data-testid=alerts] li").count() >= 2, "alerts from the tutor are listed");
     await page.screenshot({ path: join(DOCS, "screenshot-teacher.png"), fullPage: true });
+    // Ideas of the students: the teacher approves one so that the others can vote for it
+    await page.goto(BASE + "/Moderation/Ideas");
+    check(await page.locator("[data-testid=mod-ideas] > li").count() >= 10, "the teacher sees the ideas of the students with their votes");
+    await page.screenshot({ path: join(DOCS, "screenshot-moderation.png"), fullPage: true });
+    await page.locator("[data-testid=mod-ideas] > li:has-text('Napoleón Bonaparte') button[data-testid$='-Approved']").click();
+    await page.locator("[data-testid=mod-saved]").waitFor();
+    check(true, "an idea is approved in one click");
     await page.goto(BASE + "/Teacher");
     await page.screenshot({ path: join(DOCS, "screenshot-classes.png") });
     await page.goto(BASE + "/Teacher/Class?id=1");
@@ -138,6 +145,15 @@ async function demo(page, role) {
     await page.locator("[data-testid=heatmap] tbody tr th a").first().click();
     await page.waitForSelector("#student table");
     check(true, "student history opens from the heatmap");
+    await page.fill("[data-testid=teacher-note-text]", "Praise the effort, fractions need more time");
+    await page.click("[data-testid=teacher-note-send]");
+    await page.locator("[data-testid=teacher-note]").first().waitFor();
+    check(true, "the teacher leaves a note for a student of their class");
+    await page.fill("[data-testid=teacher-note-text]", "call me at bob@mail.com");
+    await page.click("[data-testid=teacher-note-send]");
+    await page.locator("[data-testid=teacher-note-error]").waitFor();
+    check(true, "a note with contact data is refused");
+    await page.locator("[data-testid=teacher-notes]").screenshot({ path: join(DOCS, "screenshot-teacher-note.png") });
 
     await page.goto(BASE + "/Teacher/Pack");
     await page.click("#pk-sample");
@@ -294,6 +310,33 @@ async function demo(page, role) {
     await page.locator("[data-testid=adventure-end]").waitFor();
     check(await page.locator("[data-testid=adventure-end]").isVisible(), "the adventure ends with the story's ending");
 
+    // Short survey at the end of the adventure, then ideas: propose the next world and vote
+    await page.click("[data-testid=rate-send]");
+    check((await page.locator("#qz-rate-status").textContent()).length > 0, "the rating asks for the stars first");
+    await page.locator("[data-testid=rate-star-4]").check({ force: true });
+    await page.click("[data-testid=rate-send]");
+    await page.locator("[data-testid=rate-thanks]").waitFor();
+    check(true, "the adventure is rated in a few seconds");
+    await page.click("[data-testid=rate-thanks] a");
+    await page.locator("[data-testid=idea-list-Adventure] li[data-testid]").first().waitFor();
+    await page.fill("[data-testid=idea-text-Adventure]", "Volcanes");
+    await page.click("[data-testid=idea-send-Adventure]");
+    await page.locator("[data-ideas=Adventure] [data-idea-status][data-outcome=Created]").waitFor();
+    check(await page.locator("[data-testid=idea-list-Adventure] li:has-text('Volcanes')").count() === 1, "a student proposes the next adventure and sees it waiting for an adult");
+    const pirates = page.locator("[data-testid=idea-list-Adventure] li:has-text('Piratas') [data-vote]");
+    const votes = parseInt((await pirates.textContent()).replace(/\D/g, ""), 10);
+    await pirates.click();
+    await page.locator("[data-testid=idea-list-Adventure] li:has-text('Piratas') [data-vote][aria-pressed=true]").waitFor();
+    check(parseInt((await page.locator("[data-testid=idea-list-Adventure] li:has-text('Piratas') [data-vote]").textContent()).replace(/\D/g, ""), 10) === votes + 1, "a vote is added to an approved idea, once");
+    await page.locator("[data-testid=ideas-Adventure]").screenshot({ path: join(DOCS, "screenshot-ideas.png") });
+    await page.goto(BASE + "/Student/Interview");
+    await page.locator("[data-testid=idea-list-Figure] li[data-testid]").first().waitFor();
+    check(await page.locator("[data-testid=idea-list-Figure] li:has-text('Napoleón Bonaparte')").count() === 1, "the figure approved by the teacher is open to votes");
+    await page.fill("[data-testid=idea-text-Figure]", "Newton");
+    await page.click("[data-testid=idea-send-Figure]");
+    await page.locator("[data-ideas=Figure] [data-idea-status][data-outcome=Exists]").waitFor();
+    check((await page.locator("[data-ideas=Figure] [data-idea-status]").textContent()).includes("Isaac Newton"), "a figure that already exists is not proposed again");
+
     // Evo, the tutor of every page: knows the progress and proposes actions
     await page.goto(BASE + "/Student/Explore");
     await page.click("[data-testid=companion-open]");
@@ -409,7 +452,7 @@ async function demo(page, role) {
     check(true, "interview check finished");
 
     await page.goto(BASE + "/Student/Achievements");
-    check(await page.locator("[data-testid=badges] li").count() === 26, "all badges with their progress");
+    check(await page.locator("[data-testid=badges] li").count() === 28, "all badges with their progress");
     await page.screenshot({ path: join(DOCS, "screenshot-achievements.png"), fullPage: true });
     await page.goto(BASE + "/Student");
     await page.screenshot({ path: join(DOCS, "screenshot-student.png") });
@@ -541,6 +584,278 @@ async function demo(page, role) {
     await context.close();
 }
 
+// ---------- Student: Socratic ladder, "tell me how you thought", "How I learn" ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
+    await page.locator("[data-testid=quiz-options] button").first().waitFor();
+    await page.click("[data-testid=ladder-open]");
+    await page.locator("[data-testid=ladder-question]").first().waitFor();
+    await page.fill("[data-testid=ladder-reply]", "I think I should add first");
+    await page.click("[data-testid=ladder-next]");
+    await page.waitForFunction(() => document.querySelectorAll("[data-testid=ladder-question]").length >= 2);
+    check(await page.locator("[data-testid=ladder-question]").count() >= 2, "the ladder asks a second guiding question");
+    await page.locator("[data-testid=ladder]").screenshot({ path: join(DOCS, "screenshot-ladder.png") });
+    let thought = false;
+    for (let i = 0; i < 10 && !thought; i++) {
+        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().waitFor();
+        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().click();
+        await page.locator("[data-testid=quiz-next]").waitFor();
+        if (await page.locator("[data-testid=thinking]").count()) {
+            thought = true;
+            await page.click("[data-testid=reason-Slip]");
+            await page.locator("[data-testid=thinking-error]").waitFor();
+            check((await page.locator("[data-testid=thinking-error]").getAttribute("data-error")) === "Slip", "the chosen reason is diagnosed as a slip");
+            check(await page.locator("[data-testid=thinking-tip]").isVisible(), "the Tutor gives a tip for the way of thinking");
+        } else {
+            await page.click("[data-testid=quiz-next]");
+        }
+    }
+    check(thought, "a wrong answer offers \"tell me how you thought\"");
+    await page.goto(BASE + "/Student/Learner");
+    check(await page.locator("[data-testid=learner-summary]").isVisible(), "How I learn shows the summary");
+    check(await page.locator("[data-testid=learner-insights] li").count() >= 1, "How I learn lists insights from the demo history");
+    const toggle = page.locator("[data-testid^=insight-toggle-]").first();
+    await toggle.click();
+    await page.waitForLoadState("networkidle");
+    await page.reload();
+    check(await page.locator("[data-testid=learner-insights] li.opacity-60, [data-testid=learner-insights] li[class*=opacity-60]").count() >= 1, "\"That is not me\" hides an insight");
+    await page.fill("[data-testid=learner-note]", "I learn better with a quiet start");
+    await page.click("[data-testid=learner-note-send]");
+    await page.waitForFunction(() => document.querySelector("[data-testid=learner-notes]")?.textContent.includes("quiet start"));
+    check(true, "a note is added to How I learn");
+    await page.click("[data-testid=learner-summary-ai]");
+    await page.waitForFunction(() => document.querySelector("#lr-summary")?.dataset.engine);
+    check(true, "the summary can be rewritten (offline fallback)");
+    await page.screenshot({ path: join(DOCS, "screenshot-learner.png"), fullPage: true });
+    await context.close();
+}
+
+// ---------- Student: exam plan, homework review, defend your answers, session opening, interests ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    // Interests first, so the tests that follow can use them
+    await page.goto(BASE + "/Student/Learner");
+    await page.click("[data-testid=interest-football]");
+    await page.waitForLoadState("networkidle");
+    check((await page.locator("[data-testid=interest-football]").getAttribute("aria-pressed")) === "true", "an interest is saved and shown as picked");
+    await page.locator("[data-testid=interests]").screenshot({ path: join(DOCS, "screenshot-interests.png") });
+
+    // Plan for an exam
+    await page.goto(BASE + "/Student/Plan");
+    await page.fill("[data-testid=plan-name]", "Maths test");
+    await page.click("[data-testid=plan-save]");
+    await page.locator("[data-testid=plan-summary]").waitFor();
+    check(await page.locator("[data-testid=plan-task]").count() >= 1, "the plan lists today's tasks");
+    // (earlier blocks already practised some topics today, so a task can be done: then open a focus session by hand)
+    if (await page.locator("[data-testid=plan-start]").count()) {
+        await page.locator("[data-testid=plan-start]").first().click();
+        await page.waitForURL("**/Student/Quiz**");
+    } else {
+        await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Focus&topic=math.percent");
+    }
+    await page.locator("[data-testid=quiz-options] button").first().waitFor();
+    while (!(await page.locator("[data-testid=quiz-summary]").count())) {
+        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().click();
+        await page.locator("[data-testid=quiz-next]").waitFor();
+        await page.click("[data-testid=quiz-next]");
+    }
+    check(await page.locator("[data-testid=focus-back]").count() === 1, "a finished plan session offers the way back to the plan");
+    await page.goto(BASE + "/Student/Plan");
+    await page.screenshot({ path: join(DOCS, "screenshot-plan.png"), fullPage: true });
+
+    // Homework: typed steps, the wrong line is found by the code
+    await page.goto(BASE + "/Student/Homework");
+    await page.fill("[data-testid=hw-steps]", "3 + 4 = 7\n7 x 2 = 15\n15 - 1 = 14");
+    await page.click("[data-testid=hw-send]");
+    await page.locator("[data-testid=hw-line]").first().waitFor();
+    check(await page.locator("[data-testid=hw-line][data-verdict=Wrong]").count() >= 1, "homework review finds the wrong step");
+    await page.screenshot({ path: join(DOCS, "screenshot-homework.png"), fullPage: true });
+
+    // Defend: finish a test with a right answer, then defend it
+    let defended = false;
+    for (let t = 0; t < 6 && !defended; t++) {
+        await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
+        for (let i = 0; !(await page.locator("[data-testid=quiz-summary]").count()) && i < 40; i++) {
+            await page.locator("[data-testid=quiz-options] button:not([disabled])").first().waitFor();
+            await page.locator("[data-testid=quiz-options] button:not([disabled])").nth(i % 2).click();
+            await page.locator("[data-testid=quiz-next]").waitFor();
+            await page.click("[data-testid=quiz-next]");
+        }
+        await page.locator("[data-testid=quiz-summary]").waitFor();
+        defended = (await page.locator("[data-testid=quiz-defend]").count()) > 0;
+    }
+    check(defended, "a finished test with right answers offers to defend them");
+    await page.click("[data-testid=quiz-defend]");
+    await page.locator("[data-testid=defend-prompt]").waitFor();
+    await page.locator("[data-testid=defend-options] button").first().click();
+    await page.fill("[data-testid=defend-why]", "Because I split the number into groups and counted them");
+    await page.screenshot({ path: join(DOCS, "screenshot-defend.png") });
+    await page.click("[data-testid=defend-send]");
+    await page.waitForFunction(() => document.querySelector("[data-testid=defend-card]")?.textContent.includes("💬"));
+    check(true, "defending an answer is judged on the answer and the reason");
+
+    // Session opening on the dashboard
+    await page.goto(BASE + "/Student");
+    check(await page.locator("[data-testid=opening]").isVisible(), "the dashboard opens with what the Tutor remembers");
+    await page.locator("[data-testid=opening]").screenshot({ path: join(DOCS, "screenshot-opening.png") });
+    // Rhythm, detective and "Pip makes your mistakes": answer fast (mostly wrong) on one topic
+    let paced = false, detected = false;
+    for (let t = 0; t < 4 && !detected; t++) {
+        await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Focus&topic=math.percent");
+        for (let i = 0; !(await page.locator("[data-testid=quiz-summary]").count()) && i < 12; i++) {
+            await page.locator("[data-testid=quiz-options] button:not([disabled])").first().waitFor();
+            await page.locator("[data-confidence='2']").click(); // bet: sure
+            await page.locator("[data-testid=quiz-options] button:not([disabled])").first().click();
+            await page.locator("[data-testid=quiz-next]").waitFor();
+            if (!paced && await page.locator("[data-testid=quiz-pace]").count()) {
+                paced = true;
+                await page.locator("#qz-feedback").screenshot({ path: join(DOCS, "screenshot-pace.png") });
+            }
+            await page.click("[data-testid=quiz-next]");
+        }
+        if (t === 0) check(await page.locator("[data-testid=quiz-bets]").count() === 1, "the test ends with how the bets went");
+        await page.goto(BASE + "/Student/Learner");
+        detected = (await page.locator("[data-testid=detective-case]").count()) > 0;
+    }
+    check(paced, "answering very fast and wrong gets a gentle rhythm warning");
+    check(detected, "the detective points at the step below a weak topic");
+    await page.locator("[data-testid=detective]").screenshot({ path: join(DOCS, "screenshot-detective.png") });
+    const sureCount = Number(await page.locator("[data-testid=quadrant-Solid]").getAttribute("data-count")) + Number(await page.locator("[data-testid=quadrant-FalseCertainty]").getAttribute("data-count"));
+    check(sureCount >= 5, "the confidence map fills with the answers given as sure");
+    await page.locator("[data-testid=confidence-map]").screenshot({ path: join(DOCS, "screenshot-confidence-map.png") });
+    let own = false;
+    for (let t = 0; t < 3 && !own; t++) {
+        await page.goto(BASE + "/Student/Pip");
+        await page.click("[data-testid=pip-start]");
+        await page.locator("[data-testid=pip-lines]").waitFor();
+        own = (await page.locator("[data-testid=pip-own]").count()) > 0;
+    }
+    check(own, "Pip stumbles on a topic the student got wrong");
+    await page.screenshot({ path: join(DOCS, "screenshot-pip-own.png") });
+
+    // Step by step (fading examples): read, then fill in less and less help, then alone
+    await page.goto(BASE + "/Student/Fading");
+    await page.click("[data-testid=fading-kind-Order]");
+    await page.locator("[data-testid=fading-problem]").waitFor();
+    check(await page.locator("[data-testid=fading-input]").count() === 0, "the first example is fully worked");
+    await page.screenshot({ path: join(DOCS, "screenshot-fading.png") });
+    await page.click("[data-testid=fading-send]");
+    for (let stage = 1; stage <= 3; stage++) {
+        await page.locator(`[data-testid=fading-stage][data-stage="${stage}"]`).waitFor();
+        const [a, b, c] = (await page.locator("[data-testid=fading-problem]").innerText()).split(/[^0-9]+/).filter(Boolean).map(Number);
+        const inputs = page.locator("[data-testid=fading-input]");
+        if (stage === 2) {
+            await inputs.nth(0).fill(String(b * c));
+            await inputs.nth(1).fill(String(a + b * c));
+            await page.screenshot({ path: join(DOCS, "screenshot-fading-2.png") });
+        } else {
+            await inputs.first().fill(String(a + b * c));
+        }
+        await page.click("[data-testid=fading-send]");
+    }
+    await page.locator("[data-testid=fading-finished]").waitFor();
+    check(true, "the help fades stage by stage until the student solves one alone");
+
+    await page.goto(BASE + "/Student/Pip");
+    await page.click("[data-testid=pip-start]");
+    await page.locator("[data-testid=pip-lines]").waitFor();
+    check(await page.locator("[data-testid=pip-lines] button").count() >= 2, "Pip shows its work line by line");
+    await page.screenshot({ path: join(DOCS, "screenshot-pip.png") });
+    await page.click("[data-testid=pip-line-0]");
+    await page.click("[data-testid=pip-reason-0]");
+    await page.click("[data-testid=pip-send]");
+    await page.locator("[data-testid=pip-result]").waitFor();
+    check(true, "the student corrects Pip and the code checks the line and the reason");
+    await page.waitForFunction(() => { const v = document.querySelector("[data-testid=pip-voice]"); return !v || (v.textContent.length > 8 && !v.textContent.includes("…")); });
+    check(true, "Pip answers back (AI or offline line)");
+    await page.goto(BASE + "/Student/Pip");
+    check(await page.locator("[data-testid=pip-stats] li").count() >= 1, "the Pip page shows which mistakes the student spots");
+    await page.goto(BASE + "/Student/Pip");
+    await page.click("[data-testid=pip-start-language]");
+    await page.locator("[data-testid=pip-lines]").waitFor();
+    check(await page.locator("[data-testid=pip-lines] button").count() >= 2, "Pip also brings language problems");
+    await page.screenshot({ path: join(DOCS, "screenshot-pip-language.png") });
+    await page.goto(BASE + "/Student/Letter");
+    check(await page.locator("[data-testid=letter-part]").count() >= 2, "the family letter is written from the week's facts");
+    await page.locator("[data-testid=letter]").screenshot({ path: join(DOCS, "screenshot-letter.png") });
+    await context.close();
+}
+
+// ---------- Teacher documents, assignments, open answers and the progress report ----------
+{
+    const VOLCANO = "A volcano is an opening in the crust of the Earth. Under the volcano there is a chamber full of magma, which is melted rock. When the pressure grows, the magma rises through the chimney and leaves the crater as lava. An eruption can also throw ashes and gases into the atmosphere. The lava cools down and becomes solid rock, so each eruption makes the volcano a little bigger. Scientists who study volcanoes are called volcanologists. They measure small earthquakes around the mountain, because the tremors often announce an eruption several days before it happens. Some volcanoes are extinct and will never erupt again, while others are only dormant and may wake up after many centuries.";
+    const teacher = await session();
+    await demo(teacher.page, "teacher");
+    await teacher.page.click("[data-testid=class-card]");
+    await teacher.page.click("[data-testid=course-link]");
+    await teacher.page.waitForSelector("[data-testid=materials]");
+    const courseUrl = teacher.page.url().split("#")[0];
+    await teacher.page.fill("[data-testid=material-title]", "Volcanoes");
+    await teacher.page.selectOption("[data-testid=material-target]", "Test");
+    await teacher.page.fill("[data-testid=material-text]", "too short");
+    await teacher.page.click("[data-testid=material-add]");
+    await teacher.page.locator("[data-testid=material-error]").waitFor();
+    check(true, "a document that is too short is refused");
+    await teacher.page.fill("[data-testid=material-title]", "Volcanoes");
+    await teacher.page.selectOption("[data-testid=material-target]", "Test");
+    await teacher.page.fill("[data-testid=material-text]", VOLCANO);
+    await teacher.page.click("[data-testid=material-add]");
+    await teacher.page.locator("[data-testid=material]").first().waitFor();
+    check(await teacher.page.locator("[data-testid=material]").count() === 1, "the teacher adds a document for the class");
+    for (const kind of ["practice", "writing", "material"]) {
+        await teacher.page.click(`[data-testid=assign-${kind}]`);
+        await teacher.page.waitForLoadState("networkidle");
+    }
+    check(await teacher.page.locator("[data-testid=assign-row]").count() === 3, "the teacher sets three assignments (topic, open answer, document)");
+
+    const student = await session();
+    await demo(student.page, "student");
+    await student.page.goto(BASE + "/Student");
+    check(await student.page.locator("[data-testid=assignment][data-done='0']").count() === 3, "the student sees the work of the teacher on the dashboard");
+    await student.page.locator("[data-testid=assignments]").screenshot({ path: join(DOCS, "screenshot-assignments.png") });
+    await student.page.goto(BASE + "/Student/Materials");
+    check(await student.page.locator("[data-testid=student-material]").count() === 1, "the student sees the documents of their class");
+    await student.page.screenshot({ path: join(DOCS, "screenshot-materials.png") });
+    await student.page.click("[data-testid=material-quiz]");
+    await student.page.locator("[data-testid=quiz-options] button").first().waitFor();
+    check((await student.page.locator("[data-testid=quiz-stage]").innerText()).includes("_____"), "without an AI the document becomes fill-the-gap questions");
+    await student.page.screenshot({ path: join(DOCS, "screenshot-material-quiz.png") });
+    for (let i = 0; !(await student.page.locator("[data-testid=quiz-summary]").count()) && i < 12; i++) {
+        await student.page.locator("[data-testid=quiz-options] button:not([disabled])").first().click();
+        await student.page.locator("[data-testid=quiz-next]").waitFor();
+        await student.page.click("[data-testid=quiz-next]");
+    }
+    await student.page.locator("[data-testid=quiz-summary]").waitFor();
+
+    await student.page.goto(BASE + "/Student/Writing");
+    await student.page.click("[data-testid=writing-task-weekend]");
+    await student.page.fill("[data-testid=writing-text]", "I played.");
+    await student.page.click("[data-testid=writing-send]");
+    await student.page.locator("[data-testid=writing-score]").waitFor();
+    check((await student.page.locator("[data-testid=writing-check][data-key=length]").getAttribute("data-ok")) === "false", "a text that is too short is told so by the code");
+    await student.page.fill("[data-testid=writing-text]", "Last weekend I went to the mountains with my family because the weather was sunny. First we walked to a small lake, and then we ate sandwiches near the water.\n\nAfter lunch my sister found a frog, but it jumped away very fast. Finally we came back home tired and happy, and I want to go again soon.");
+    await student.page.click("[data-testid=writing-send]");
+    await student.page.locator("[data-testid=writing-before]").waitFor();
+    const score = student.page.locator("[data-testid=writing-score]");
+    check((await score.getAttribute("data-passed")) === (await score.getAttribute("data-total")), "the second version meets every measured criterion and is compared with the first");
+    await student.page.screenshot({ path: join(DOCS, "screenshot-writing.png"), fullPage: true });
+    await student.page.goto(BASE + "/Student");
+    check(await student.page.locator("[data-testid=assignment][data-done='1']").count() === 2, "work really done is ticked by itself");
+    await student.context.close();
+
+    await teacher.page.goto(courseUrl);
+    check(await teacher.page.locator("[data-testid=assign-row] td[data-done='1']").count() === 2, "the teacher sees who did the work and the result");
+    await teacher.page.screenshot({ path: join(DOCS, "screenshot-course.png"), fullPage: true });
+    await teacher.page.locator("[data-testid=report-open]").nth(3).click();
+    await teacher.page.waitForSelector("[data-testid=report]");
+    check(await teacher.page.locator("[data-testid=report-work] li").count() === 3, "the progress report of a student can be printed");
+    await teacher.page.locator("[data-testid=report]").screenshot({ path: join(DOCS, "screenshot-report.png") });
+    await teacher.context.close();
+}
+
 // ---------- Mobile 390 px, every page, light and dark ----------
 for (const dark of [false, true]) {
     for (const role of ["student", "teacher", "director", "tutor"]) {
@@ -549,8 +864,8 @@ for (const dark of [false, true]) {
         await noOverflow(page, `mobile${dark ? " dark" : ""} /`);
         await demo(page, role);
         const pages = {
-            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Learn?subject=fractions", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
-            teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary"],
+            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
+            teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Course?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary", "/Moderation/Ideas"],
             director: ["/Institution", "/Institution/Risk", "/Institution/Quality"],
             tutor: ["/Tutor", "/Tutor/Profile", "/Marketplace"],
         }[role];

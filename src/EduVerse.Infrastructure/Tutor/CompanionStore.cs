@@ -12,7 +12,7 @@ namespace EduVerse.Infrastructure.Tutor;
 public sealed record CompanionNames(Func<string, string> Topic, Func<Area, string> Area, Func<string, string> Rank, Func<QuizMode, string> Mode);
 
 /// <summary>What Evo knows of a student (tests, topics, reviews, streak, explanations, interviews) and the conversation with Evo.</summary>
-public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, GamificationStore game, TimeProvider clock)
+public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, GamificationStore game, Ideas.IdeaStore ideas, LearnerStore learner, PlanStore plans, TimeProvider clock)
 {
     public const int Kept = 200;
 
@@ -54,7 +54,20 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
             displayName, profile.Level, summary.Level, names.Rank(summary.Rank), summary.Streak, summary.PlayedToday, due, misconceptions, tests,
             weak.Select(w => new WeakTopic(w.Area, w.Level, w.Topic, names.Topic(w.Topic), names.Area(w.Area), (int)Math.Round(100 * w.PKnown))).ToList(),
             recent.Select(r => new RecentTest(names.Area(r.Area), names.Mode(r.Mode), r.Correct, r.Length, DateOnly.FromDateTime(r.FinishedAt!.Value.UtcDateTime))).ToList(),
-            taught, interviews, page ?? "", title ?? "", evolution);
+            taught, interviews, page ?? "", title ?? "", evolution, await ideas.NewsAsync(userId, ct).ConfigureAwait(false), await learner.StatsAsync(userId, ct).ConfigureAwait(false), await PlanBriefAsync(userId, names, ct).ConfigureAwait(false));
+    }
+
+    private async Task<PlanBrief?> PlanBriefAsync(string userId, CompanionNames names, CancellationToken ct)
+    {
+        var view = await plans.GetAsync(userId, ct).ConfigureAwait(false);
+        if (view is null)
+        {
+            return null;
+        }
+
+        var left = view.Today.Count(t => !t.Done) + (view.MockToday && !view.MockDone ? 1 : 0);
+        var title = string.IsNullOrWhiteSpace(view.Goal.Title) ? names.Area(view.Goal.Area) : view.Goal.Title;
+        return new PlanBrief(title, view.Plan, left);
     }
 
     public async Task<IReadOnlyList<CompanionMessage>> HistoryAsync(string userId, int take = 30, CancellationToken ct = default)

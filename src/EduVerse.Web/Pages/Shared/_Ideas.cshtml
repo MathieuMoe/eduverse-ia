@@ -1,0 +1,35 @@
+@model EduVerse.Core.Ideas.IdeaKind
+@* Ideas of the students: propose (a figure, an adventure world, a trade, a hobby) and vote for the ideas approved by an adult. *@
+@{
+    var kind = Model.ToString();
+}
+<section class="@Ui.Card min-w-0" data-ideas="@kind" data-testid="ideas-@kind" id="ideas">
+    <div class="@Ui.CardHeader">
+        <div class="min-w-0">
+            <h2 class="text-base font-semibold text-foreground">💡 @L[$"Ideas_Title_{kind}"]</h2>
+            <p class="text-xs text-muted-foreground-1">@L["Ideas_Subtitle"]</p>
+        </div>
+    </div>
+    <div class="p-4 md:p-5 grid lg:grid-cols-2 gap-5">
+        <form class="space-y-3" data-idea-form novalidate>
+            <div>
+                <label class="@Ui.Label" for="idea-text-@kind">@L[$"Ideas_Ask_{kind}"]</label>
+                <input id="idea-text-@kind" name="text" class="@Ui.Input" maxlength="@EduVerse.Core.Ideas.IdeaRules.MaxLength" required autocomplete="off"
+                       placeholder="@L[$"Ideas_Placeholder_{kind}"]" data-testid="idea-text-@kind" />
+            </div>
+            <div>
+                <label class="@Ui.Label" for="idea-reason-@kind">@L["Ideas_Reason"]</label>
+                <input id="idea-reason-@kind" name="reason" class="@Ui.Input" maxlength="@EduVerse.Core.Ideas.IdeaRules.MaxReason" autocomplete="off" placeholder="@L["Ideas_ReasonPlaceholder"]" />
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="@Ui.BtnPrimary" data-testid="idea-send-@kind">💡 @L["Ideas_Send"]</button>
+                <p class="text-sm text-foreground" role="status" aria-live="polite" data-idea-status></p>
+            </div>
+            <p class="text-xs text-muted-foreground-1">🔒 @L["Ideas_Privacy"]</p>
+        </form>
+        <div class="min-w-0">
+            <h3 class="text-sm font-semibold text-foreground">🗳️ @L["Ideas_Top"]</h3>
+            <ul class="mt-2 space-y-2" data-idea-list data-testid="idea-list-@kind"><li class="text-sm text-muted-foreground-1">…</li></ul>
+        </div>
+    </div>
+</section>

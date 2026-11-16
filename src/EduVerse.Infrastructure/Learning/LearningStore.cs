@@ -154,7 +154,7 @@ public sealed class LearningStore(EduVerseDb db, TimeProvider clock, ICatalogNam
         ArgumentNullException.ThrowIfNull(state);
         var mistakes = state.Misconceptions.OrderByDescending(m => m.Value).ThenBy(m => m.Key, StringComparer.Ordinal)
             .Take(ContextMisconceptions).Select(m => m.Key).ToList();
-        return new StudentContext(profile.Stage, language, mistakes, state.PKnown, state.MethodsTried);
+        return new StudentContext(profile.Stage, language, mistakes, state.PKnown, state.MethodsTried) { Interests = EduVerse.Core.Tutor.Interests.Parse(profile.Interests) };
     }
 
     // ---------- Mastery ----------

@@ -61,8 +61,36 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
 
     public DbSet<Certificate> Certificates => Set<Certificate>();
 
+    public DbSet<StudentIdea> Ideas => Set<StudentIdea>();
+
+    public DbSet<IdeaVote> IdeaVotes => Set<IdeaVote>();
+
+    public DbSet<AdventureRating> AdventureRatings => Set<AdventureRating>();
+
+    public DbSet<ThinkingNote> ThinkingNotes => Set<ThinkingNote>();
+
+    public DbSet<LearnerNote> LearnerNotes => Set<LearnerNote>();
+
+    public DbSet<TeacherNote> TeacherNotes => Set<TeacherNote>();
+
+    public DbSet<PipChallenge> PipChallenges => Set<PipChallenge>();
+
+    public DbSet<FadingRun> FadingRuns => Set<FadingRun>();
+
+    public DbSet<Material> Materials => Set<Material>();
+
+    public DbSet<WritingSubmission> WritingSubmissions => Set<WritingSubmission>();
+
+    public DbSet<Assignment> Assignments => Set<Assignment>();
+
+    public DbSet<LearnerHidden> LearnerHidden => Set<LearnerHidden>();
+
+    public DbSet<StudyGoal> StudyGoals => Set<StudyGoal>();
+
+    public DbSet<DefenceResult> DefenceResults => Set<DefenceResult>();
+
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 9;
+    public const int DatabaseVersion = 17;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -145,6 +173,77 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
         builder.Entity<BadgeAward>().HasKey(b => new { b.UserId, b.Key });
         builder.Entity<QuestClaim>().HasKey(q => new { q.UserId, q.Day, q.Key });
         builder.Entity<CompanionMessage>(e => e.HasIndex(m => new { m.UserId, m.At }));
+        builder.Entity<ThinkingNote>(e =>
+        {
+            e.HasIndex(t => new { t.AttemptId, t.Number }).IsUnique();
+            e.HasIndex(t => new { t.UserId, t.At });
+            e.Property(t => t.AttemptId).HasMaxLength(40);
+        });
+        builder.Entity<StudyGoal>(e =>
+        {
+            e.HasKey(g => g.UserId);
+            e.Property(g => g.Title).HasMaxLength(60);
+        });
+        builder.Entity<DefenceResult>(e =>
+        {
+            e.HasIndex(d => new { d.UserId, d.At });
+            e.HasIndex(d => new { d.AttemptId, d.Topic }).IsUnique();
+            e.Property(d => d.AttemptId).HasMaxLength(40);
+        });
+        builder.Entity<Material>(e =>
+        {
+            e.HasIndex(m => m.ClassroomId);
+            e.Property(m => m.Title).HasMaxLength(80);
+            e.Property(m => m.Key).HasMaxLength(40);
+        });
+        builder.Entity<WritingSubmission>(e => e.HasIndex(w => new { w.UserId, w.At }));
+        builder.Entity<Assignment>(e => e.HasIndex(a => a.ClassroomId));
+        builder.Entity<FadingRun>(e =>
+        {
+            e.HasKey(c => c.Id);
+            e.Property(c => c.Id).HasMaxLength(40);
+            e.HasIndex(c => new { c.UserId, c.At });
+        });
+        builder.Entity<PipChallenge>(e =>
+        {
+            e.HasKey(c => c.Id);
+            e.Property(c => c.Id).HasMaxLength(40);
+            e.HasIndex(c => new { c.UserId, c.At });
+        });
+        builder.Entity<TeacherNote>(e =>
+        {
+            e.HasIndex(n => n.StudentId);
+            e.Property(n => n.Text).HasMaxLength(160);
+        });
+        builder.Entity<LearnerNote>(e =>
+        {
+            e.HasIndex(n => n.UserId);
+            e.Property(n => n.Text).HasMaxLength(160);
+        });
+        builder.Entity<LearnerHidden>(e =>
+        {
+            e.HasKey(h => new { h.UserId, h.Key });
+            e.Property(h => h.Key).HasMaxLength(40);
+        });
+        builder.Entity<StudentIdea>(e =>
+        {
+            e.HasIndex(i => new { i.Kind, i.Key }).IsUnique();
+            e.Property(i => i.Key).HasMaxLength(80);
+            e.Property(i => i.Text).HasMaxLength(80);
+            e.HasMany(i => i.Votes).WithOne().HasForeignKey(v => v.IdeaId).OnDelete(DeleteBehavior.Cascade);
+        });
+        builder.Entity<IdeaVote>(e =>
+        {
+            e.HasKey(v => new { v.IdeaId, v.UserId });
+            e.HasIndex(v => new { v.UserId, v.At });
+            e.Property(v => v.Reason).HasMaxLength(160);
+        });
+        builder.Entity<AdventureRating>(e =>
+        {
+            e.HasKey(r => r.AttemptId);
+            e.Property(r => r.AttemptId).HasMaxLength(40);
+            e.HasIndex(r => r.Theme);
+        });
         builder.Entity<Certificate>(e =>
         {
             e.HasIndex(c => new { c.UserId, c.SubjectKey }).IsUnique();

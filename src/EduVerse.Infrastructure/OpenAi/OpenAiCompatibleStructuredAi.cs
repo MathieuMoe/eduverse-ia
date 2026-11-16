@@ -40,7 +40,7 @@ public sealed partial class OpenAiCompatibleStructuredAi(
         ["messages"] = new JsonArray
         {
             new JsonObject { ["role"] = "system", ["content"] = prompt.System },
-            new JsonObject { ["role"] = "user", ["content"] = prompt.User },
+            new JsonObject { ["role"] = "user", ["content"] = UserContent(prompt) },
         },
         ["tools"] = new JsonArray
         {
@@ -57,6 +57,14 @@ public sealed partial class OpenAiCompatibleStructuredAi(
         },
         ["tool_choice"] = "required",
     };
+
+    private static JsonNode UserContent(StructuredPrompt prompt) => prompt.Image is not { } image
+        ? JsonValue.Create(prompt.User)!
+        : new JsonArray
+        {
+            new JsonObject { ["type"] = "text", ["text"] = prompt.User },
+            new JsonObject { ["type"] = "image_url", ["image_url"] = new JsonObject { ["url"] = $"data:{image.MediaType};base64,{Convert.ToBase64String(image.Data)}" } },
+        };
 
     internal static JsonElement ParseResponse(string body)
     {

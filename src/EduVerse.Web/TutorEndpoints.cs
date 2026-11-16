@@ -68,13 +68,20 @@ public static class TutorEndpoints
             var language = Localization.LanguageForCurrentCulture();
             var level = (await learning.ProfileAsync(context.User.Id(), context.RequestAborted)).Level;
             var history = (request!.History ?? []).TakeLast(Interviews.MaxTurns).ToList();
+            // Documents the teacher attached to this figure: the AI answers from them; offline, the piece that matches the question is quoted
+            var excerpts = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(context.User.Id(), MaterialTarget.Figure, f.Key, question, context.RequestAborted);
             return await AiRunner.GuardAsync(async () =>
             {
                 var run = await AiRunner.RunAsync(context, engines, logger,
-                    async ai => (Answer: InterviewPrompt.Parse(await ai.GenerateAsync(InterviewPrompt.Build(f, level, question, history, language), context.RequestAborted)), Matched: true),
+                    async ai => (Answer: InterviewPrompt.Parse(await ai.GenerateAsync(InterviewPrompt.Build(f, level, question, history, language, Materials.ForPrompt(excerpts)), context.RequestAborted)), Matched: true),
                     () =>
                     {
                         var match = Interviews.Match(f, question, language);
+                        if (match is null && Materials.Quote(excerpts.Where(e => Materials.Score(e.Text, question) > 0).ToList(), language) is { } quote)
+                        {
+                            return Task.FromResult((Answer: quote, Matched: true));
+                        }
+
                         return Task.FromResult((Answer: match?.Answer.In(language) ?? string.Format(System.Globalization.CultureInfo.CurrentCulture, l["Interview_DemoOnly"].Value, f.Name), Matched: match is not null));
                     });
                 return Results.Ok(new { answer = run.Result.Answer, matched = run.Result.Matched, engine = run.Engine, fallback = run.Fallback });

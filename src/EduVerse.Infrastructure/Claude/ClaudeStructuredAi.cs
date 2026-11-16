@@ -37,7 +37,7 @@ public sealed partial class ClaudeStructuredAi(HttpClient httpClient, ClaudeOpti
         ["model"] = options.Model,
         ["max_tokens"] = Math.Max(prompt.MaxTokens, options.MaxTokens),
         ["system"] = prompt.System,
-        ["messages"] = new JsonArray { new JsonObject { ["role"] = "user", ["content"] = prompt.User } },
+        ["messages"] = new JsonArray { new JsonObject { ["role"] = "user", ["content"] = UserContent(prompt) } },
         ["tools"] = new JsonArray
         {
             new JsonObject
@@ -49,6 +49,14 @@ public sealed partial class ClaudeStructuredAi(HttpClient httpClient, ClaudeOpti
         },
         ["tool_choice"] = new JsonObject { ["type"] = "tool", ["name"] = prompt.ToolName },
     };
+
+    private static JsonNode UserContent(StructuredPrompt prompt) => prompt.Image is not { } image
+        ? JsonValue.Create(prompt.User)!
+        : new JsonArray
+        {
+            new JsonObject { ["type"] = "image", ["source"] = new JsonObject { ["type"] = "base64", ["media_type"] = image.MediaType, ["data"] = Convert.ToBase64String(image.Data) } },
+            new JsonObject { ["type"] = "text", ["text"] = prompt.User },
+        };
 
     internal static JsonElement ParseResponse(string body)
     {

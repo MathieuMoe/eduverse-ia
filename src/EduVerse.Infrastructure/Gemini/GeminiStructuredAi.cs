@@ -41,7 +41,7 @@ public sealed partial class GeminiStructuredAi(HttpClient httpClient, OpenAiComp
         ["systemInstruction"] = new JsonObject { ["parts"] = new JsonArray { new JsonObject { ["text"] = prompt.System } } },
         ["contents"] = new JsonArray
         {
-            new JsonObject { ["role"] = "user", ["parts"] = new JsonArray { new JsonObject { ["text"] = prompt.User } } },
+            new JsonObject { ["role"] = "user", ["parts"] = UserParts(prompt) },
         },
         ["tools"] = new JsonArray
         {
@@ -67,6 +67,18 @@ public sealed partial class GeminiStructuredAi(HttpClient httpClient, OpenAiComp
             },
         },
     };
+
+    private static JsonArray UserParts(StructuredPrompt prompt)
+    {
+        var parts = new JsonArray();
+        if (prompt.Image is { } image)
+        {
+            parts.Add(new JsonObject { ["inline_data"] = new JsonObject { ["mime_type"] = image.MediaType, ["data"] = Convert.ToBase64String(image.Data) } });
+        }
+
+        parts.Add(new JsonObject { ["text"] = prompt.User });
+        return parts;
+    }
 
     internal static JsonElement ParseResponse(string body)
     {

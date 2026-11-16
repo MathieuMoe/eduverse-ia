@@ -10,6 +10,9 @@ public static class CurrentUser
     public const string DirectorPolicy = "Director";
     public const string TutorPolicy = "Tutor";
 
+    /// <summary>Adults who review the ideas of the students: teachers and directors.</summary>
+    public const string ModeratorPolicy = "Moderator";
+
     public static string Id(this ClaimsPrincipal user)
     {
         ArgumentNullException.ThrowIfNull(user);

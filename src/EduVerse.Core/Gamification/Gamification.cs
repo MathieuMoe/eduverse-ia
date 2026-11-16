@@ -176,7 +176,7 @@ public static class Quests
 }
 
 /// <summary>Everything a student has done, for the badges.</summary>
-public sealed record BadgeStats(int Correct, int BestStreak, int Tests, int PerfectTests, int Areas, int Placements, int DuelsWon, int Mastered, int Xp, bool AdvancedLevel, int Reviews = 0, int EvoCaught = 0, int Adventures = 0, int Taught = 0, int Interviews = 0, int Certificates = 0, int Hobbies = 0);
+public sealed record BadgeStats(int Correct, int BestStreak, int Tests, int PerfectTests, int Areas, int Placements, int DuelsWon, int Mastered, int Xp, bool AdvancedLevel, int Reviews = 0, int EvoCaught = 0, int Adventures = 0, int Taught = 0, int Interviews = 0, int Certificates = 0, int Hobbies = 0, int Ideas = 0, int Reflections = 0);
 
 public sealed record Badge(string Key, string Icon, int Goal, Func<BadgeStats, int> Measure)
 {
@@ -215,6 +215,8 @@ public static class Badges
         new("Apprentice", "🛠️", 1, s => s.Certificates),
         new("MasterCraftsman", "🏅", 3, s => s.Certificates),
         new("Hobbyist", "🎨", 1, s => s.Hobbies),
+        new("IdeaMaker", "💡", 1, s => s.Ideas),
+        new("Thinker", "🧠", 5, s => s.Reflections),
     ];
 
     public static IReadOnlyList<Badge> Earned(BadgeStats stats) => All.Where(b => b.Earned(stats)).ToList();

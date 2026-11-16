@@ -1,0 +1,31 @@
+@page
+@model EduVerse.Web.Pages.Student.DefendModel
+@{
+    ViewData["Title"] = L["Defend_Title"];
+    EduVerse.Web.Breadcrumb.Set(ViewData, L["Defend_Title"], ("/Student/History", L["Nav_History"]));
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🛡️ @L["Defend_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Defend_Subtitle"]</p>
+    </div>
+</div>
+
+<div id="df-root" data-attempt="@Model.Attempt">
+    @if (Model.Attempt.Length == 0)
+    {
+        <p class="@Ui.Card p-5 text-sm text-muted-foreground-1" data-testid="defend-none">@L["Defend_None"] <a class="font-semibold text-primary underline" href="/Student/History">@L["Nav_History"]</a></p>
+    }
+    else
+    {
+        <section class="@Ui.Card p-5 space-y-4" id="df-card" aria-live="polite" data-testid="defend-card">
+            <p class="text-sm text-muted-foreground-1" id="df-loading">@L["Defend_Loading"]</p>
+        </section>
+    }
+</div>
+<p class="text-xs text-muted-foreground-1 max-w-3xl">ℹ️ @L["Defend_Footer"]</p>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/defend.js" asp-append-version="true"></script>
+}

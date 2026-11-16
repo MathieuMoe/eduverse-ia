@@ -55,6 +55,7 @@
     {
         <p class="text-sm text-muted-foreground-1 max-w-3xl">@(Model.Tab == "hobbies" ? L["Hobbies_Subtitle"] : L["Trades_Subtitle"])</p>
         <partial name="_TradeCards" model="Model.TradeProgress" />
+        <partial name="_Ideas" model="@(Model.Tab == "hobbies" ? EduVerse.Core.Ideas.IdeaKind.Hobby : EduVerse.Core.Ideas.IdeaKind.Trade)" />
     }
     else
     {
@@ -181,5 +182,10 @@ else
         <script src="~/js/common.js" asp-append-version="true"></script>
         <script src="~/js/diagrams.js" asp-append-version="true"></script>
         <script src="~/js/learn.js" asp-append-version="true"></script>
+    }
+    else if (Model.Tab != "subjects")
+    {
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/ideas.js" asp-append-version="true"></script>
     }
 }

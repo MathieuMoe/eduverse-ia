@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace EduVerse.Web.Pages.Student;
 
 /// <summary>Runs a test (practice, placement, duel or AI topic). The questions come one by one from /api/quiz.</summary>
-public sealed class QuizModel(LearningStore learning, GamificationStore game) : PageModel
+public sealed class QuizModel(LearningStore learning, GamificationStore game, EduVerse.Infrastructure.Tutor.MaterialStore materials) : PageModel
 {
     public Area Area { get; private set; }
 
@@ -16,6 +16,9 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game) : 
     public QuizMode Mode { get; private set; }
 
     public string? Topic { get; private set; }
+
+    /// <summary>The teacher's document this test is about (the questions come from /api/materials/{id}/quiz).</summary>
+    public int? MaterialId { get; private set; }
 
     public int? DuelId { get; private set; }
 
@@ -27,8 +30,19 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game) : 
 
     public EduVerse.Core.Tutor.Figure? Figure { get; private set; }
 
-    public async Task<IActionResult> OnGetAsync(Area? area, Level? level, QuizMode? mode, string? topic, int? duel, Theme? theme, string? figure)
+    public async Task<IActionResult> OnGetAsync(Area? area, Level? level, QuizMode? mode, string? topic, int? duel, Theme? theme, string? figure, int? material)
     {
+        if (material is { } materialId)
+        {
+            var found = await materials.FindForStudentAsync(User.Id(), materialId, HttpContext.RequestAborted);
+            if (found is null)
+            {
+                return RedirectToPage("/Student/Materials");
+            }
+
+            (MaterialId, mode, topic, area) = (materialId, QuizMode.Topic, found.Material.Title, Area.Language);
+        }
+
         Figure = EduVerse.Core.Tutor.Interviews.Find(figure);
         if (mode == QuizMode.Interview && Figure is null)
         {
@@ -43,7 +57,11 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game) : 
         var profile = await learning.ProfileAsync(User.Id(), HttpContext.RequestAborted);
         Mode = mode is { } m && Enum.IsDefined(m) ? m : QuizMode.Practice;
         Topic = string.IsNullOrWhiteSpace(topic) ? null : topic.Trim()[..Math.Min(topic.Trim().Length, TopicQuizPrompt.MaxTopicLength)];
-        if (Topic is not null)
+        if (mode == QuizMode.Focus)
+        {
+            Mode = QuizMode.Focus;
+        }
+        else if (Topic is not null)
         {
             Mode = QuizMode.Topic;
         }
@@ -67,6 +85,11 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game) : 
         if (!Catalog.Available(Area, Level))
         {
             Level = Catalog.Info(Area).MinLevel;
+        }
+
+        if (Mode == QuizMode.Focus && (Topic is null || !EduVerse.Core.Curriculum.AreaSubjects.Topics(Area, Level).Contains(Topic)))
+        {
+            return RedirectToPage("/Student/Plan");
         }
 
         return Page();

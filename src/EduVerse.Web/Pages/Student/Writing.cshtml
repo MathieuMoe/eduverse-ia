@@ -1,0 +1,54 @@
+@page
+@model EduVerse.Web.Pages.Student.WritingModel
+@{
+    ViewData["Title"] = L["Nav_Writing"];
+}
+<div class="min-w-0">
+    <h1 class="text-3xl font-semibold tracking-tight text-foreground">✍️ @L["Nav_Writing"]</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Writing_Subtitle"]</p>
+</div>
+
+@if (!Model.Available)
+{
+    <p class="@Ui.Card p-5 text-sm text-muted-foreground-1" data-testid="writing-unavailable">@L["Writing_Unavailable"]</p>
+}
+else
+{
+    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3" id="wr-tasks" data-selected="@Model.Selected">
+        @foreach (var t in Model.Tasks)
+        {
+            var best = Model.Best.GetValueOrDefault(t.Key);
+            <button type="button" class="@Ui.Card p-4 text-start hover:-translate-y-0.5 transition-transform aria-pressed:ring-2 aria-pressed:ring-primary" aria-pressed="false"
+                    data-task="@t.Key" data-spoken="@(t.Spoken ? "1" : "0")" data-min="@t.MinWords" data-max="@t.MaxWords" data-prompt="@t.Prompt" data-title="@t.Title" data-testid="writing-task-@t.Key">
+                <span class="text-2xl" aria-hidden="true">@t.Icon</span>
+                <span class="mt-1 block text-sm font-semibold text-foreground">@t.Title</span>
+                <span class="block text-xs text-muted-foreground-1">@(t.Spoken ? "🎙️ " + L["Writing_Spoken"].Value : "⌨️ " + L["Writing_Written"].Value) · @t.MinWords–@t.MaxWords</span>
+                @if (best is not null)
+                {
+                    <span class="mt-1 block text-xs font-medium text-foreground" data-testid="writing-best">🏅 @best.Passed/@best.Checks</span>
+                }
+            </button>
+        }
+    </div>
+
+    <section class="@Ui.Card p-5 space-y-3 hidden" id="wr-card" data-testid="writing-card">
+        <p class="text-sm font-semibold text-foreground" id="wr-title"></p>
+        <p class="text-sm text-foreground" id="wr-prompt"></p>
+        <label class="sr-only" for="wr-text">@L["Writing_Yours"]</label>
+        <textarea id="wr-text" rows="9" maxlength="@EduVerse.Core.Tutor.Writing.MaxChars" class="@Ui.Input" placeholder="@L["Writing_Yours"]" data-testid="writing-text"></textarea>
+        <div class="flex flex-wrap items-center gap-3">
+            <button type="button" class="@Ui.BtnPrimary" id="wr-send" data-testid="writing-send">@L["Writing_Send"]</button>
+            <button type="button" class="@Ui.BtnLight" id="wr-mic" data-testid="writing-mic">🎙️ @L["Writing_Dictate"]</button>
+            <span class="text-sm text-muted-foreground-1" id="wr-count" aria-live="polite" data-testid="writing-count"></span>
+        </div>
+        <p class="text-sm text-red-700 dark:text-red-300 hidden" role="alert" id="wr-error" data-testid="writing-error"></p>
+        <div id="wr-result" class="space-y-3" aria-live="polite"></div>
+    </section>
+}
+<p class="text-xs text-muted-foreground-1 max-w-3xl">ℹ️ @L["Writing_Footer"]</p>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/voice.js" asp-append-version="true"></script>
+    <script src="~/js/writing.js" asp-append-version="true"></script>
+}

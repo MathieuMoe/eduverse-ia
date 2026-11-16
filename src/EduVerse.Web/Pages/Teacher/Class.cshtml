@@ -17,6 +17,7 @@
         <h1 class="text-2xl font-semibold text-foreground">@d.Classroom.Name</h1>
         <p class="mt-1 text-sm text-muted-foreground-1">@d.Subject.Name</p>
     </div>
+    <a class="@Ui.BtnLight" href="/Teacher/Course?id=@d.Classroom.Id" data-testid="course-link">📚 @L["Course_Title"]</a>
     <div class="flex items-center gap-2 p-1.5 ps-4 rounded-full border border-layer-line bg-layer">
         <span class="text-xs text-muted-foreground-1">@L["Teacher_Code"]</span>
         <span class="font-mono text-lg font-semibold tracking-widest text-foreground" data-testid="class-code">@d.Classroom.Code</span>
@@ -80,6 +81,7 @@
                             <th scope="col" class="py-2 px-1 font-medium text-muted-foreground-1 text-xs min-w-16 max-w-24" title="@c.Name"><span class="line-clamp-2">@c.Name</span></th>
                         }
                         <th scope="col" class="py-2 px-4 text-end font-medium text-muted-foreground-1">@L["Heat_Progress"]</th>
+                        <th scope="col" class="py-2 px-4 text-end font-medium text-muted-foreground-1" title="@L["Heat_VerifiedHint"]">@L["Heat_Verified"]</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-card-divider">
@@ -102,6 +104,7 @@
                                 </td>
                             }
                             <td class="py-2 px-4 text-end text-foreground">@row.Progress %</td>
+                            <td class="py-2 px-4 text-end whitespace-nowrap text-foreground" data-testid="verified-@row.StudentId">@(Model.Defences.TryGetValue(row.StudentId, out var v) ? $"✅ {v.Verified}/{v.Total}" : "–")</td>
                         </tr>
                     }
                 </tbody>
@@ -229,6 +232,39 @@
         <div class="@Ui.CardHeader">
             <h2 id="student-title" class="text-base font-semibold text-foreground">@string.Format(culture, L["History_Student"], s.Name)</h2>
             <a href="/Teacher/Class?id=@d.Classroom.Id" class="text-sm text-primary hover:underline">@L["Close"]</a>
+        </div>
+        @if (Model.Signals.Count > 0)
+        {
+            <div class="p-4 md:p-5 border-b border-card-divider" data-testid="tutor-signals">
+                <h3 class="text-sm font-semibold text-foreground">🦉 @L["Signals_Title"]</h3>
+                <ul class="mt-2 space-y-1.5">
+                    @foreach (var signal in Model.Signals)
+                    {
+                        <li class="text-sm text-foreground">@signal</li>
+                    }
+                </ul>
+            </div>
+        }
+        <div class="p-4 md:p-5 border-b border-card-divider" data-testid="teacher-notes">
+            <h3 class="text-sm font-semibold text-foreground">📝 @L["TNote_Title"]</h3>
+            <p class="text-xs text-muted-foreground-1">@L["TNote_Hint"]</p>
+            @if (TempData["NoteResult"] is string noteResult && noteResult != "Saved")
+            {
+                <p class="mt-2 text-xs text-red-700 dark:text-red-300" role="alert" data-testid="teacher-note-error">@L["TNote_" + noteResult]</p>
+            }
+            <ul class="mt-2 space-y-1.5">
+                @foreach (var n in Model.Notes)
+                {
+                    <li class="flex items-center justify-between gap-3 text-sm text-foreground" data-testid="teacher-note">
+                        <span>@n.Text</span>
+                        <form method="post" asp-page-handler="NoteDelete" asp-route-id="@d.Classroom.Id" asp-route-student="@Model.StudentId" asp-route-note="@n.Id"><button class="text-xs text-primary hover:underline" type="submit">@L["Js_Delete"]</button></form>
+                    </li>
+                }
+            </ul>
+            <form method="post" asp-page-handler="Note" asp-route-id="@d.Classroom.Id" asp-route-student="@Model.StudentId" class="mt-3 flex flex-wrap gap-2">
+                <input name="text" maxlength="160" autocomplete="off" class="@Ui.Input max-w-md" placeholder="@L["TNote_Placeholder"]" aria-label="@L["TNote_Title"]" data-testid="teacher-note-text" />
+                <button type="submit" class="@Ui.BtnPrimary" data-testid="teacher-note-send">@L["TNote_Add"]</button>
+            </form>
         </div>
         @if (s.Attempts.Count == 0)
         {

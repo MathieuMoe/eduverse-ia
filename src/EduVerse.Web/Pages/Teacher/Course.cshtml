@@ -1,0 +1,198 @@
+@page
+@model EduVerse.Web.Pages.Teacher.CourseModel
+@using EduVerse.Core.Catalog
+@using EduVerse.Core.Tutor
+@using EduVerse.Infrastructure.Data
+@{
+    var c = Model.Classroom;
+    var language = Localization.LanguageForCurrentCulture();
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    ViewData["Title"] = L["Course_Title"];
+    EduVerse.Web.Breadcrumb.Set(ViewData, L["Course_Title"], ("/Teacher", L["Nav_Classes"]), ($"/Teacher/Class?id={c.Id}", c.Name));
+    var due = Model.Today.AddDays(7).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    var min = Model.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    var tasks = Writing.Tasks(language);
+    string Work(Assignment a, string? materialTitle) => a.Kind switch
+    {
+        AssignmentKind.Practice => $"🎯 {EduVerse.Web.QuizEndpoints.TopicName(a.Topic, L)} · {L[$"Level_{a.Level}"].Value}",
+        AssignmentKind.Writing => $"✍️ {tasks.FirstOrDefault(t => t.Key == a.WritingKey)?.Title ?? a.WritingKey}",
+        _ => $"📄 {materialTitle}",
+    };
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-2xl font-semibold text-foreground">📚 @L["Course_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@c.Name · @L["Course_Subtitle"]</p>
+    </div>
+    <a class="@Ui.BtnLight" href="/Teacher/Class?id=@c.Id">← @L["Course_Back"]</a>
+</div>
+
+<section class="@Ui.Card" id="materials" aria-labelledby="mat-title" data-testid="materials">
+    <div class="@Ui.CardHeader"><h2 id="mat-title" class="text-base font-semibold text-foreground">📄 @L["Mat_Title"]</h2></div>
+    <div class="p-4 md:p-5 space-y-4">
+        <p class="text-sm text-muted-foreground-1">@L["Mat_Hint"]</p>
+        @if (TempData["MaterialResult"] is string mr && mr != "Saved")
+        {
+            <p class="text-sm text-red-700 dark:text-red-300" role="alert" data-testid="material-error">@L["Mat_" + mr]</p>
+        }
+        @if (Model.Materials.Count > 0)
+        {
+            <ul class="space-y-2">
+                @foreach (var m in Model.Materials)
+                {
+                    <li class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface/60" data-testid="material">
+                        <span class="min-w-0 text-sm text-foreground"><span class="font-medium">@m.Title</span>
+                            <span class="text-muted-foreground-1">· @L["MatTarget_" + m.Target]@(m.Target == MaterialTarget.Figure ? " (" + Interviews.Find(m.Key)?.Name + ")" : "") · @string.Format(culture, L["Mat_Chars"].Value, m.Text.Length)</span></span>
+                        <form method="post" asp-page-handler="MaterialDelete" asp-route-id="@c.Id" asp-route-material="@m.Id"><button class="text-xs text-primary hover:underline" type="submit">@L["Js_Delete"]</button></form>
+                    </li>
+                }
+            </ul>
+        }
+        <form method="post" asp-page-handler="Material" asp-route-id="@c.Id" class="grid sm:grid-cols-2 gap-3">
+            <div><label class="@Ui.Label" for="mat-name">@L["Mat_Name"]</label><input id="mat-name" name="title" maxlength="@Materials.MaxTitle" required class="@Ui.Input" data-testid="material-title" /></div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="@Ui.Label" for="mat-target">@L["Mat_For"]</label>
+                    <select id="mat-target" name="target" class="@Ui.Input" data-testid="material-target">@foreach (var t in Enum.GetValues<MaterialTarget>()) { <option value="@t">@L["MatTarget_" + t]</option> }</select></div>
+                <div><label class="@Ui.Label" for="mat-key">@L["Mat_Figure"]</label>
+                    <select id="mat-key" name="key" class="@Ui.Input" data-testid="material-key">@foreach (var f in Interviews.All) { <option value="@f.Key">@f.Name</option> }</select></div>
+            </div>
+            <div class="sm:col-span-2">
+                <div class="flex items-center justify-between gap-3"><label class="@Ui.Label" for="mat-text">@L["Mat_Text"]</label>
+                    <label class="text-sm font-medium text-primary hover:underline cursor-pointer">@L["Lesson_Upload"]<input id="mat-file" type="file" accept=".txt,.md,.pdf,text/plain,application/pdf" class="sr-only" /></label></div>
+                <textarea id="mat-text" name="text" rows="6" maxlength="@Materials.MaxText" required class="@Ui.Input" data-testid="material-text"></textarea>
+                <p class="mt-1 text-xs text-muted-foreground-1">@string.Format(culture, L["Mat_Limits"].Value, Materials.MinText, Materials.MaxText)</p>
+            </div>
+            <div class="sm:col-span-2"><button type="submit" class="@Ui.BtnPrimary" data-testid="material-add">@L["Mat_Add"]</button></div>
+        </form>
+    </div>
+</section>
+
+<section class="@Ui.Card" id="assignments" aria-labelledby="as-title" data-testid="assignments">
+    <div class="@Ui.CardHeader"><h2 id="as-title" class="text-base font-semibold text-foreground">🗓️ @L["Assign_Title"]</h2></div>
+    <div class="p-4 md:p-5 space-y-4">
+        <p class="text-sm text-muted-foreground-1">@L["Assign_Hint"]</p>
+        @if (TempData["AssignResult"] is string ar && ar != "Saved")
+        {
+            <p class="text-sm text-red-700 dark:text-red-300" role="alert" data-testid="assign-error">@L["Assign_" + ar]</p>
+        }
+        <div class="grid xl:grid-cols-3 gap-3">
+            <div class="p-3 rounded-2xl bg-surface/60 space-y-2">
+                <p class="text-sm font-semibold text-foreground">🎯 @L["Assign_Practice"]</p>
+                <form method="get" class="grid grid-cols-2 gap-2">
+                    <input type="hidden" name="id" value="@c.Id" />
+                    <select name="area" class="@Ui.Input" aria-label="@L["Assign_Area"]" onchange="this.form.submit()">@foreach (var a in Enum.GetValues<Area>()) { <option value="@a" selected="@(a == Model.Area)">@L[$"Area_{a}"]</option> }</select>
+                    <select name="level" class="@Ui.Input" aria-label="@L["Assign_Level"]" onchange="this.form.submit()">@foreach (var l in Enum.GetValues<Level>().Where(l => Catalog.Available(Model.Area, l))) { <option value="@l" selected="@(l == Model.Level)">@L[$"Level_{l}"]</option> }</select>
+                </form>
+                <form method="post" asp-page-handler="Assign" asp-route-id="@c.Id" class="space-y-2">
+                    <input type="hidden" name="kind" value="Practice" /><input type="hidden" name="area" value="@Model.Area" /><input type="hidden" name="level" value="@Model.Level" />
+                    <select name="topic" class="@Ui.Input" aria-label="@L["Assign_Topic"]" data-testid="assign-topic">@foreach (var t in Model.Topics) { <option value="@t">@EduVerse.Web.QuizEndpoints.TopicName(t, L)</option> }</select>
+                    <div class="flex gap-2"><input type="date" name="due" value="@due" min="@min" required class="@Ui.Input" aria-label="@L["Assign_Due"]" />
+                        <button type="submit" class="@Ui.BtnPrimary" data-testid="assign-practice">@L["Assign_Set"]</button></div>
+                </form>
+            </div>
+            <form method="post" asp-page-handler="Assign" asp-route-id="@c.Id" class="p-3 rounded-2xl bg-surface/60 space-y-2">
+                <p class="text-sm font-semibold text-foreground">✍️ @L["Assign_Writing"]</p>
+                <input type="hidden" name="kind" value="Writing" />
+                <select name="writing" class="@Ui.Input" aria-label="@L["Assign_Writing"]">@foreach (var t in tasks) { <option value="@t.Key">@t.Icon @t.Title</option> }</select>
+                <div class="flex gap-2"><input type="date" name="due" value="@due" min="@min" required class="@Ui.Input" aria-label="@L["Assign_Due"]" />
+                    <button type="submit" class="@Ui.BtnPrimary" data-testid="assign-writing">@L["Assign_Set"]</button></div>
+            </form>
+            <form method="post" asp-page-handler="Assign" asp-route-id="@c.Id" class="p-3 rounded-2xl bg-surface/60 space-y-2">
+                <p class="text-sm font-semibold text-foreground">📄 @L["Assign_Material"]</p>
+                <input type="hidden" name="kind" value="Material" />
+                @if (Model.Materials.Count == 0)
+                {
+                    <p class="text-sm text-muted-foreground-1">@L["Assign_NoMaterial"]</p>
+                }
+                else
+                {
+                    <select name="material" class="@Ui.Input" aria-label="@L["Assign_Material"]">@foreach (var m in Model.Materials) { <option value="@m.Id">@m.Title</option> }</select>
+                    <div class="flex gap-2"><input type="date" name="due" value="@due" min="@min" required class="@Ui.Input" aria-label="@L["Assign_Due"]" />
+                        <button type="submit" class="@Ui.BtnPrimary" data-testid="assign-material">@L["Assign_Set"]</button></div>
+                }
+            </form>
+        </div>
+
+        @if (Model.Assignments.Count > 0)
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm" data-testid="assign-table">
+                    <thead><tr class="text-left text-xs text-muted-foreground-1">
+                        <th scope="col" class="py-2 pe-4 font-medium">@L["Assign_Work"]</th><th scope="col" class="py-2 pe-4 font-medium">@L["Assign_Due"]</th>
+                        @foreach (var p in Model.Progress) { <th scope="col" class="py-2 pe-4 font-medium whitespace-nowrap">@p.Name</th> }
+                        <th scope="col" class="py-2"><span class="sr-only">@L["Js_Delete"]</span></th></tr></thead>
+                    <tbody>
+                        @foreach (var a in Model.Assignments)
+                        {
+                            <tr class="border-t border-card-divider" data-testid="assign-row">
+                                <td class="py-2 pe-4 text-foreground">@Work(a.Assignment, a.MaterialTitle)</td>
+                                <td class="py-2 pe-4 text-foreground whitespace-nowrap">@a.Assignment.DueOn.ToString("d MMM", culture)</td>
+                                @foreach (var p in Model.Progress)
+                                {
+                                    var st = a.ByStudent.GetValueOrDefault(p.StudentId);
+                                    <td class="py-2 pe-4 whitespace-nowrap" data-done="@(st?.Done == true ? "1" : "0")">@if (st?.Done == true) { <span class="text-emerald-700 dark:text-emerald-300 font-medium">✓ @st.Score/@st.Total</span> } else { <span class="text-muted-foreground-1">—</span> }</td>
+                                }
+                                <td class="py-2"><form method="post" asp-page-handler="AssignDelete" asp-route-id="@c.Id" asp-route-assignment="@a.Assignment.Id"><button class="text-xs text-primary hover:underline" type="submit">@L["Js_Delete"]</button></form></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="@Ui.Card" id="progress" aria-labelledby="pr-title" data-testid="progress">
+    <div class="@Ui.CardHeader"><h2 id="pr-title" class="text-base font-semibold text-foreground">📈 @L["Progress_Title"]</h2></div>
+    <div class="p-4 md:p-5">
+        <p class="text-sm text-muted-foreground-1">@string.Format(culture, L["Progress_Hint"].Value, EduVerse.Infrastructure.Tutor.AssignmentStore.PeriodDays, EduVerse.Infrastructure.Tutor.AssignmentStore.MinAnswers)</p>
+        @if (Model.Progress.Count == 0)
+        {
+            <p class="mt-3 text-sm text-muted-foreground-1">@L["Progress_Empty"]</p>
+        }
+        else
+        {
+            <div class="mt-3 overflow-x-auto">
+                <table class="min-w-full text-sm" data-testid="progress-table">
+                    <thead><tr class="text-left text-xs text-muted-foreground-1">
+                        <th scope="col" class="py-2 pe-4 font-medium">@L["Kpi_Students"]</th><th scope="col" class="py-2 pe-4 font-medium">@L["Progress_Before"]</th>
+                        <th scope="col" class="py-2 pe-4 font-medium">@L["Progress_Now"]</th><th scope="col" class="py-2 pe-4 font-medium">@L["Progress_Change"]</th>
+                        <th scope="col" class="py-2 pe-4 font-medium">@L["Assign_Title"]</th><th scope="col" class="py-2"><span class="sr-only">@L["Report_Open"]</span></th></tr></thead>
+                    <tbody>
+                        @foreach (var p in Model.Progress)
+                        {
+                            <tr class="border-t border-card-divider" data-testid="progress-row">
+                                <td class="py-2 pe-4 text-foreground font-medium">@p.Name</td>
+                                <td class="py-2 pe-4 text-foreground">@(p.PercentBefore is { } b ? $"{b} %" : "—") <span class="text-xs text-muted-foreground-1">(@p.AnswersBefore)</span></td>
+                                <td class="py-2 pe-4 text-foreground">@(p.PercentNow is { } n ? $"{n} %" : "—") <span class="text-xs text-muted-foreground-1">(@p.AnswersNow)</span></td>
+                                <td class="py-2 pe-4 font-semibold @(p.Change > 0 ? "text-emerald-700 dark:text-emerald-300" : p.Change < 0 ? "text-rose-700 dark:text-rose-300" : "text-muted-foreground-1")">@(p.Change is { } ch ? (ch > 0 ? "+" : "") + ch + " pt" : "—")</td>
+                                <td class="py-2 pe-4 text-foreground">@p.Done/@p.Assigned</td>
+                                <td class="py-2"><a class="text-xs text-primary hover:underline" href="/Teacher/Report?id=@c.Id&student=@p.StudentId" data-testid="report-open">@L["Report_Open"]</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script>
+        (() => {
+            const target = document.getElementById("mat-target"), key = document.getElementById("mat-key");
+            const sync = () => { key.disabled = target.value !== "Figure"; key.closest("div").classList.toggle("opacity-40", key.disabled); };
+            target.addEventListener("change", sync); sync();
+            document.getElementById("mat-file").addEventListener("change", async (e) => {
+                const f = e.target.files[0];
+                if (!f) return;
+                try {
+                    document.getElementById("mat-text").value = (await Edu.readFile(f)).replace(/[ \t]+/g, " ").trim().slice(0, @Materials.MaxText);
+                    const name = document.getElementById("mat-name");
+                    if (!name.value) name.value = f.name.replace(/\.[^.]+$/, "").slice(0, @Materials.MaxTitle);
+                } catch { /* the teacher can still paste the text */ }
+            });
+        })();
+    </script>
+}

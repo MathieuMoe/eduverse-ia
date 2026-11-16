@@ -1,5 +1,6 @@
 using System.Text.Json;
 using EduVerse.Core.Catalog;
+using EduVerse.Core.Tutor;
 using EduVerse.Core.Common;
 using EduVerse.Core.Gamification;
 using EduVerse.Core.Learning;
@@ -39,7 +40,15 @@ public sealed record AnswerResult(bool Correct, int CorrectIndex, string Explana
     public int Hints { get; init; }
 
     public int Confidence { get; init; } = 1;
+
+    public int Rungs { get; init; }
+
+    /// <summary>What the rhythm of the test says after this answer (advice only).</summary>
+    public EduVerse.Core.Tutor.PaceSignal Pace { get; init; }
 }
+
+/// <summary>Where the student is on the ladder of the current question (the question stays on the server).</summary>
+public sealed record LadderState(int Rung, bool Done, QuizQuestion Question, Level Level);
 
 public sealed record SubjectProgress(Area Area, Level Level, bool Placed, int Answers, int Accuracy, IReadOnlyList<TopicSkill> Weak, int Tests = 0);
 
@@ -118,7 +127,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             attempt.UsedJson = JsonSerializer.Serialize(await SeenAsync(userId, attempt.Area, mode == QuizMode.Placement ? null : attempt.Level, ct).ConfigureAwait(false), JsonOptions);
         }
 
-        var question = NextQuestion(attempt, language);
+        var question = NextQuestion(attempt, language, await InterestsOfAsync(userId, ct).ConfigureAwait(false));
         attempt.CurrentJson = JsonSerializer.Serialize(question, JsonOptions);
         db.QuizAttempts.Add(attempt);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -169,7 +178,34 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     }
 
     /// <summary>A new question, different from the ones already asked in this test (the same sequence for both sides of a duel).</summary>
-    private static QuizQuestion NextQuestion(QuizAttempt attempt, TeachLanguage language)
+    private async Task<IReadOnlyList<string>> InterestsOfAsync(string userId, CancellationToken ct) =>
+        Interests.Parse(await db.StudentProfiles.Where(p => p.UserId == userId).Select(p => p.Interests).FirstOrDefaultAsync(ct).ConfigureAwait(false));
+
+    /// <summary>Every few questions of primary maths, a word problem about what the student likes (the numbers are computed in code).</summary>
+    private static QuizQuestion WithInterest(QuizAttempt attempt, QuizQuestion question, IReadOnlyList<string> interests, TeachLanguage language, List<string> used)
+    {
+        var due = attempt.Mode == QuizMode.Focus ? attempt.Answered % 2 == 1 : attempt.Mode == QuizMode.Practice && attempt.Answered % 3 == 2;
+        if (!due || interests.Count == 0 || !InterestProblems.Supports(attempt.Area, attempt.Level, attempt.Mode == QuizMode.Focus ? attempt.Topic : null))
+        {
+            return question;
+        }
+
+        var interest = Interests.Find(interests[attempt.Answered % interests.Count])!;
+        var topic = attempt.Mode == QuizMode.Focus ? attempt.Topic : null;
+        var swapped = question;
+        for (var retry = 0; retry < 20; retry++)
+        {
+            swapped = InterestProblems.Generate(interest, attempt.Level, topic, attempt.Difficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, 7), language);
+            if (!used.Contains(KeyOf(swapped)))
+            {
+                break;
+            }
+        }
+
+        return topic is not null && swapped.Topic != topic ? question : swapped;
+    }
+
+    private static QuizQuestion NextQuestion(QuizAttempt attempt, TeachLanguage language, IReadOnlyList<string> interests)
     {
         var used = JsonSerializer.Deserialize<List<string>>(attempt.UsedJson, JsonOptions) ?? [];
         QuizQuestion question;
@@ -206,6 +242,19 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
 
             used.Add(KeyOf(question));
         }
+        else if (attempt.Mode == QuizMode.Focus)
+        {
+            // Study session of the plan: one topic, adaptive difficulty, no repeated question
+            var seed = QuestionBanks.Seed(attempt.Seed, attempt.Answered, attempt.Difficulty);
+            question = QuestionBanks.ForTopic(attempt.Area, attempt.Level, attempt.Topic ?? "", attempt.Difficulty, seed, language);
+            for (var retry = 1; retry < 20 && used.Contains(KeyOf(question)); retry++)
+            {
+                question = QuestionBanks.ForTopic(attempt.Area, attempt.Level, attempt.Topic ?? "", attempt.Difficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, attempt.Difficulty), language);
+            }
+
+            question = WithInterest(attempt, question, interests, language, used);
+            used.Add(KeyOf(question));
+        }
         else if (attempt.Mode == QuizMode.Review)
         {
             var plan = JsonSerializer.Deserialize<List<ReviewItem>>(attempt.PlanJson!, JsonOptions)!;
@@ -224,6 +273,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
                 question = QuestionBanks.Generate(attempt.Area, attempt.Level, difficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, difficulty), language);
             }
 
+            question = WithInterest(attempt, question, interests, language, used);
             used.Add(KeyOf(question));
             if (attempt.Mode == QuizMode.Evo)
             {
@@ -239,7 +289,11 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         await AnswerAsync(userId, attemptId, choice, 1, language, ct).ConfigureAwait(false);
 
     /// <summary>Records an answer. <paramref name="confidence"/>: 0 not sure, 1 I think so, 2 sure (said before answering).</summary>
-    public async Task<AnswerResult?> AnswerAsync(string userId, string attemptId, int choice, int confidence, TeachLanguage language, CancellationToken ct = default)
+    public async Task<AnswerResult?> AnswerAsync(string userId, string attemptId, int choice, int confidence, TeachLanguage language, CancellationToken ct = default) =>
+        await AnswerAsync(userId, attemptId, choice, confidence, 0, language, ct).ConfigureAwait(false);
+
+    /// <summary><paramref name="seconds"/>: time the question was on screen, as measured by the page (0 = unknown); only used for rhythm advice.</summary>
+    public async Task<AnswerResult?> AnswerAsync(string userId, string attemptId, int choice, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
     {
         var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
         if (attempt is null || attempt.FinishedAt is not null || choice is < 0 or >= QuizQuestion.Choices)
@@ -250,8 +304,10 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         var question = Current(attempt);
         var correct = choice == question.CorrectIndex;
         var hints = attempt.CurrentHints;
+        var rungs = attempt.CurrentRungs;
         confidence = Math.Clamp(confidence, 0, Spaced.Sure);
         attempt.CurrentHints = 0;
+        attempt.CurrentRungs = 0;
         attempt.Answered++;
         attempt.Correct += correct ? 1 : 0;
         attempt.Run = correct ? attempt.Run + 1 : 0;
@@ -262,7 +318,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             Difficulty = question.Difficulty, Correct = correct, At = Now, Number = attempt.Answered, Key = KeyOf(question),
             Prompt = question.Prompt, OptionsJson = JsonSerializer.Serialize(question.Options, JsonOptions), Choice = choice,
             CorrectIndex = question.CorrectIndex, Explanation = question.Explanation, Visual = question.Visual, Code = question.Code,
-            Evo = question.Evo, Hints = hints, Confidence = confidence,
+            Evo = question.Evo, Hints = hints, Confidence = confidence, Rungs = rungs, Seconds = EduVerse.Core.Tutor.Pace.Clean(seconds),
         });
         await UpdateSkillAsync(userId, attempt, question, correct, confidence, ct).ConfigureAwait(false);
 
@@ -300,7 +356,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        var reward = await game.AnswerAsync(userId, correct, question.Difficulty, attempt.Run, "answer", hints, confidence == Spaced.Sure, ct).ConfigureAwait(false);
+        var reward = await game.AnswerAsync(userId, correct, question.Difficulty, attempt.Run, "answer", Math.Min(Hints.Max, hints + Ladder.HintCost(rungs)), confidence == Spaced.Sure, ct).ConfigureAwait(false);
         attempt.Xp += reward.Xp;
 
         QuestionView? next = null;
@@ -312,14 +368,21 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
         else
         {
-            var nextQuestion = NextQuestion(attempt, language);
+            var nextQuestion = NextQuestion(attempt, language, await InterestsOfAsync(userId, ct).ConfigureAwait(false));
             attempt.CurrentJson = JsonSerializer.Serialize(nextQuestion, JsonOptions);
             next = View(attempt, nextQuestion);
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        var pace = EduVerse.Core.Tutor.PaceSignal.None;
+        if (!finished && attempt.Mode is not (QuizMode.Placement or QuizMode.Duel))
+        {
+            var points = await db.QuizAnswers.AsNoTracking().Where(a => a.AttemptId == attempt.Id).OrderBy(a => a.Number).Select(a => new { a.Seconds, a.Correct }).ToListAsync(ct).ConfigureAwait(false);
+            pace = EduVerse.Core.Tutor.Pace.Read(points.Select(a => new EduVerse.Core.Tutor.PacePoint(a.Seconds, a.Correct)).ToList());
+        }
+
         return new AnswerResult(correct, question.CorrectIndex, question.Explanation, reward.Xp, attempt.Run, next,
-            summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Hints = hints, Confidence = confidence };
+            summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Hints = hints, Confidence = confidence, Rungs = rungs, Pace = pace };
     }
 
     private async Task UpdateSkillAsync(string userId, QuizAttempt attempt, QuizQuestion question, bool correct, int confidence, CancellationToken ct)
@@ -419,6 +482,28 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         attempt.CurrentHints = Math.Min(Hints.Max, attempt.CurrentHints + 1);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
         return Hints.For(Current(attempt), attempt.CurrentHints, QuestionBanks.Seed(attempt.Seed, attempt.Answered, 7), language);
+    }
+
+    /// <summary>
+    /// "Think with the Tutor": climbs one rung of the ladder on the current question (not in a placement test or a duel).
+    /// After the last rung nothing more is given.
+    /// </summary>
+    public async Task<LadderState?> LadderAsync(string userId, string attemptId, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || !Ladder.Allowed(attempt.Mode))
+        {
+            return null;
+        }
+
+        if (attempt.CurrentRungs >= Ladder.Max)
+        {
+            return new LadderState(Ladder.Max, true, Current(attempt), attempt.Level);
+        }
+
+        attempt.CurrentRungs++;
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return new LadderState(attempt.CurrentRungs, false, Current(attempt), attempt.Level);
     }
 
     /// <summary>

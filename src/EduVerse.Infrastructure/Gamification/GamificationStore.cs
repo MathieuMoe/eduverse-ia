@@ -242,7 +242,9 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
             await db.TeachSessions.Where(t => t.UserId == userId && t.FinishedAt != null && t.Xp >= 50).Select(t => t.Concept).Distinct().CountAsync(ct).ConfigureAwait(false),
             tests.Count(t => t.Mode == QuizMode.Interview),
             certificates.Count,
-            certificates.Count(k => Trades.Find(k)?.Kind == TradeKind.Hobby));
+            certificates.Count(k => Trades.Find(k)?.Kind == TradeKind.Hobby),
+            await db.IdeaVotes.CountAsync(v => v.UserId == userId && v.Proposed && db.Ideas.Any(i => i.Id == v.IdeaId && i.Status == EduVerse.Core.Ideas.IdeaStatus.Available), ct).ConfigureAwait(false),
+            await db.ThinkingNotes.CountAsync(t => t.UserId == userId, ct).ConfigureAwait(false));
     }
 
     public async Task<int> TotalXpAsync(string userId, CancellationToken ct = default) =>

@@ -33,6 +33,9 @@ public enum QuizMode
 
     /// <summary>Comprehension test at the end of an interview with a historical figure (checked facts).</summary>
     Interview,
+
+    /// <summary>Study session of the plan towards an exam: 5 questions of one topic.</summary>
+    Focus,
 }
 
 /// <summary>Rules of a test: length, adaptive difficulty, stars.</summary>
@@ -50,6 +53,7 @@ public static class AdaptiveQuiz
         QuizMode.Notebook => 6,
         QuizMode.Adventure => Adventure.Doors + Adventure.BossHp,
         QuizMode.Interview => 3,
+        QuizMode.Focus => 5,
         _ => Length,
     };
 

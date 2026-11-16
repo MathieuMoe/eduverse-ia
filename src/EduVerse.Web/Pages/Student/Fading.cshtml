@@ -1,0 +1,39 @@
+@page
+@model EduVerse.Web.Pages.Student.FadingModel
+@{
+    ViewData["Title"] = L["Fading_Title"];
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🪄 @L["Fading_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Fading_Subtitle"]</p>
+    </div>
+    @if (Model.Done > 0)
+    {
+        <span class="@Ui.Pill tone-mint text-foreground py-1 px-3 text-sm" data-testid="fading-done-count">🏅 @string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Fading_Done"].Value, Model.Done)</span>
+    }
+</div>
+
+@if (Model.Kinds.Count == 0)
+{
+    <p class="@Ui.Card p-5 text-sm text-muted-foreground-1" data-testid="fading-unavailable">@L["Fading_Unavailable"]</p>
+}
+else
+{
+    <section class="@Ui.Card p-5 space-y-4" id="fd-card" aria-live="polite" data-testid="fading-card">
+        <p class="text-sm text-foreground">@L["Fading_Pick"]</p>
+        <div class="flex flex-wrap gap-2">
+            @foreach (var kind in Model.Kinds)
+            {
+                <button type="button" class="@Ui.BtnLight" data-fading-kind="@kind" data-testid="fading-kind-@kind">@EduVerse.Core.Tutor.Fading.Name(kind, language)</button>
+            }
+        </div>
+    </section>
+}
+<p class="text-xs text-muted-foreground-1 max-w-3xl">ℹ️ @L["Fading_Footer"]</p>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/fading.js" asp-append-version="true"></script>
+}

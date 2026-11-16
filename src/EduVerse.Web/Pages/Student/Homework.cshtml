@@ -1,0 +1,66 @@
+@page
+@model EduVerse.Web.Pages.Student.HomeworkModel
+@{
+    ViewData["Title"] = L["Nav_Homework"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">📓 @L["Nav_Homework"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Homework_Subtitle"]</p>
+    </div>
+</div>
+
+<section class="@Ui.Card p-5" aria-labelledby="hw-title">
+    <h2 id="hw-title" class="sr-only">@L["Nav_Homework"]</h2>
+    <form id="hw-form" class="space-y-4" novalidate>
+        <div>
+            <label class="@Ui.Label" for="hw-steps">@L["Homework_Steps"]</label>
+            <textarea id="hw-steps" rows="6" maxlength="1500" class="@Ui.Input font-mono" placeholder="@L["Homework_StepsPlaceholder"]" data-testid="hw-steps"></textarea>
+        </div>
+
+        @if (Model.Kids)
+        {
+            <p class="text-sm text-muted-foreground-1" data-testid="hw-kids">📷 @L["Homework_PhotoKids"]</p>
+        }
+        else
+        {
+            <fieldset class="p-4 rounded-2xl bg-surface/60 space-y-3">
+                <legend class="px-1 text-sm font-semibold text-foreground">📷 @L["Homework_Photo"]</legend>
+                <p class="text-xs text-muted-foreground-1">@L["Homework_PhotoHint"]</p>
+                <input id="hw-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="block w-full text-sm text-foreground file:me-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground" data-testid="hw-photo" />
+                <div id="hw-preview" class="hidden items-center gap-3">
+                    <img id="hw-thumb" alt="" class="h-24 rounded-xl border border-layer-line" />
+                    <button type="button" class="@Ui.BtnLight" id="hw-remove" data-testid="hw-remove">🗑️ @L["Homework_RemovePhoto"]</button>
+                </div>
+                <label class="flex items-start gap-2 text-sm text-foreground"><input id="hw-consent" type="checkbox" class="mt-1 shrink-0" data-testid="hw-consent" /> <span>@L["Homework_Consent"]</span></label>
+            </fieldset>
+        }
+
+        <div class="flex flex-wrap items-center gap-3">
+            <button type="submit" class="@Ui.BtnPrimary" id="hw-send" data-testid="hw-send">@L["Homework_Review"]</button>
+            <span class="text-sm text-muted-foreground-1 hidden" id="hw-wait" role="status">@L["Js_HwReading"]</span>
+        </div>
+        <p class="text-sm text-red-700 dark:text-red-300 hidden" role="alert" id="hw-error"></p>
+    </form>
+</section>
+
+<section class="@Ui.Card p-5 tone-lavender hidden" id="hw-result" aria-live="polite" data-testid="hw-result">
+    <div class="flex items-start gap-4">
+        <span class="size-12 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center text-2xl" aria-hidden="true">🦉</span>
+        <div class="min-w-0 grow space-y-3">
+            <ol id="hw-lines" class="space-y-1.5 font-mono text-sm" data-testid="hw-lines"></ol>
+            <p id="hw-feedback" class="text-sm text-foreground" data-testid="hw-feedback"></p>
+            <p id="hw-hint" class="text-sm text-foreground hidden" data-testid="hw-hint"></p>
+            <p id="hw-tip" class="text-sm text-foreground/80 hidden"></p>
+            <p id="hw-engine" class="text-xs text-foreground/70"></p>
+        </div>
+    </div>
+</section>
+
+<p class="text-xs text-muted-foreground-1 max-w-3xl">🔒 @L["Homework_Privacy"]</p>
+<p class="text-xs text-muted-foreground-1 max-w-3xl">ℹ️ @L["Homework_Footer"]</p>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/homework.js" asp-append-version="true"></script>
+}

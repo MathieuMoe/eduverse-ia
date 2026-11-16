@@ -15,7 +15,7 @@ namespace EduVerse.Web.Pages.Student;
 public sealed record SubjectCard(Subject Subject, IReadOnlyList<(Concept Concept, MasteryState? State)> Concepts, int Mastered, int Progress, NextStep Next);
 
 /// <summary>Student dashboard: subjects with their mastery map and next step, classes, settings.</summary>
-public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes) : PageModel
+public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
 {
     public IReadOnlyList<SubjectCard> Subjects { get; private set; } = [];
 
@@ -43,6 +43,17 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
 
     /// <summary>The subject of the catalog worked on most recently (or mathematics).</summary>
     public SubjectProgress? Practice => CatalogProgress.Where(c => c.Answers > 0).OrderByDescending(c => c.Answers).FirstOrDefault() ?? (CatalogProgress.Count > 0 ? CatalogProgress[0] : null);
+
+    /// <summary>"Last time we…": what the tutor remembers, with where to go next (null for a new student).</summary>
+    public EduVerse.Core.Tutor.OpeningNote? Opening { get; private set; }
+
+    /// <summary>Notes the student's teachers left for them (the Tutor takes them into account too).</summary>
+    public IReadOnlyList<string> TeacherNotes { get; private set; } = [];
+
+    /// <summary>Work set by the student's teachers: pending first.</summary>
+    public IReadOnlyList<EduVerse.Infrastructure.Tutor.StudentAssignment> Assignments { get; private set; } = [];
+
+    public DateOnly Today => assignments.Today;
 
     public ActivitySummary Activity { get; private set; } = null!;
 
@@ -83,6 +94,14 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
         Subjects = cards;
         Classes = await classrooms.ClassesOfStudentAsync(userId, HttpContext.RequestAborted);
         Activity = await store.ActivityAsync([userId], null, HttpContext.RequestAborted);
+        TeacherNotes = await teacherNotes.ForStudentAsync(userId, HttpContext.RequestAborted);
+        Assignments = await assignments.ForStudentAsync(userId, HttpContext.RequestAborted);
+        var facts = await openings.FactsAsync(userId, HttpContext.RequestAborted);
+        Opening = EduVerse.Core.Tutor.Opening.Build(facts with
+        {
+            LastTopic = facts.LastTopic is null ? null : QuizEndpoints.TopicName(facts.LastTopic, l),
+            HardTopic = facts.HardTopic is null ? null : QuizEndpoints.TopicName(facts.HardTopic, l),
+        }, language);
     }
 
     public async Task<IActionResult> OnPostJoinAsync(string? code)

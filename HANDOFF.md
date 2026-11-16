@@ -158,3 +158,55 @@ complement question could lack distinct options.
 1. Ideas left from the tutor list: 6 student-made tests for the class; then phase 2 virtual labs and phase 3 knowledge generator.
 2. Real payments (Stripe Connect), video lessons, courses in the marketplace, CSV import of students.
 3. EF Core migrations + SQL Server option; parental consent for minors; teacher can edit an AI concept map before assigning it.
+
+## Students' ideas and adventure ratings (Nov 2026)
+Core/Ideas/Ideas.cs: IdeaKind (Figure, Adventure, Trade, Hobby), IdeaStatus (New, Approved, InProgress, Available, Rejected), IdeaRules
+(Normalize = grouping key, Check = length + no links/e-mails/phones/rude words, Existing = already offered, DailyLimit 5, AvailableXp 30),
+IdeaNews. Infrastructure: entities StudentIdea (unique Kind+Key), IdeaVote (key IdeaId+UserId, Proposed, Reason, SeenAt), AdventureRating
+(key AttemptId); Ideas/IdeaStore (ListAsync shows public ideas + the student's own pending ones, ProposeAsync, VoteAsync, AllAsync,
+SetStatusAsync awards XP to proposers when Available, NewsAsync/MarkSeenAsync, RateAdventureAsync, AdventureRatingsAsync).
+Web: IdeaEndpoints (/api/ideas/{kind} GET/POST, /api/ideas/vote/{id}, /api/adventure-rating/{attemptId}; limiter "ideas"), partial
+Shared/_Ideas + js/ideas.js on Interview (list), Adventures and the trades/hobbies tabs of Learn; survey in quiz.js at the end of an
+adventure; /Moderation/Ideas (policy Moderator = Teacher or Director) in both menus. The Tutor (StudentSnapshot.News) greets with the
+idea that became available and proposes it as first action. Badge IdeaMaker (27 badges; 28 with Thinker). DatabaseVersion = 10. Demo: 10 seeded ideas
+and 10 ratings. Possible next steps: AI check that a proposed figure is real, e-mail digest for the director, ideas per institution.
+
+## Think with the Tutor, reasoning diagnosis, How I learn (Nov 2026)
+Core/Tutor/Thinking.cs: ThinkingError (Misread, Concept, Procedure, Slip, Guess, Forgot, Rushed) -> Remedy via RemedyFor; offline keyword
+Classify; ThinkingPrompt (tool thinking_diagnosis, enum schema, text in a <reasoning> data tag). Ladder.cs: 4 rungs, Free 2,
+HintCost(rungs) = Clamp(rungs-2,0,2) added to the hints XP cost, not allowed in Placement/Duel, leak check + fallback question on rung 4.
+LearnerProfile.cs: LearnerStats -> Insights (method, autonomy, overconfident, underconfident, error, reflective; minimum samples so nothing is
+said without evidence), Summary (offline), ForPrompt (notes in <note> tags) and LearnerPrompt. Hints.cs guards one-character answers.
+Infrastructure: entities ThinkingNote (kind only, unique AttemptId+Number), LearnerNote (<=160), LearnerHidden; QuizAttempt.CurrentRungs,
+QuizAnswer.Rungs; Tutor/LearnerStore (WrongAnswerAsync, SaveThinkingAsync: +5 XP, 5 a day, Review remedy makes the topic due now; StatsAsync
+over the last 200 answers; notes; hidden insights); QuizStore.LadderAsync. DatabaseVersion = 11.
+Web: LearnerEndpoints (POST /api/quiz/{id}/ladder, POST /api/thinking, notes, /api/learner/insight/{key}, /api/learner/summary; limiter
+"tutor"), Pages/Student/Learner + js/learner.js, quiz.js (ladder panel, thinking block), learn.js starts new concepts with the best method.
+The Companion knows StudentSnapshot.Learner ("how do I learn?"). Badge Thinker (5 reflections). Demo: Sara has 6 notes of reasoning and
+a visual-vs-step-by-step history. Possible next steps: notebook photo, interests woven into problems, goal and plan, weekly narrative report,
+AI check of proposals.
+
+## Plan, homework, defence, opening, interests (Nov 2026)
+
+- Database version **12** at the time (now 13, recreated in Development): `StudyGoals` (PK UserId), `DefenceResults`, `StudentProfile.Interests` (csv of keys, max 3).
+- **Plan**: `Core/Tutor/StudyPlan.cs` (pure, rebuilt daily from mastery), `Infrastructure/Tutor/PlanStore.cs`, `Web/PlanEndpoints.cs` (POST/DELETE `/api/plan`), page `/Student/Plan`, `QuizMode.Focus` (one topic, length 5). The Companion gets a `PlanBrief`.
+- **Homework**: `Core/Tutor/Homework.cs` (the code checks the arithmetic, `Merge` never lets the AI mark a right line wrong), `Web/HomeworkEndpoints.cs` (`POST /api/homework/check`, photo: consent + not kids + magic bytes + ≤ 4 MB, memory only; demo engine with a photo → 409 `needs_ai`), `StructuredPrompt.Image` in the three providers.
+- **Defence**: `Core/Tutor/Defence.cs`, `Infrastructure/Tutor/DefenceStore.cs` (stores seed, correct index and result, never the explanation), `Web/DefenceEndpoints.cs`, page `/Student/Defend`, column *Understood* in `/Teacher/Class`.
+- **Opening**: `Core/Tutor/Opening.cs` + `Infrastructure/Tutor/OpeningStore.cs`; card `data-testid=opening` on `/Student`.
+- **Interests**: `Core/Tutor/Interests.cs` (fixed list, prompt line, `InterestProblems` for primary maths), `POST /api/learner/interests`, card on `/Student/Learner`; `QuizStore.WithInterest` swaps a word problem in Practice (every 3rd question) and Focus (every 2nd); `StudentContext.Interests` goes into the AI prompts.
+- **Letter**: `Core/Tutor/WeeklyLetter.cs` + `Infrastructure/Tutor/LetterStore.cs`, page `/Student/Letter` (code only, printable).
+- **Teacher notes**: DB version **13** (`TeacherNotes`), `Infrastructure/Tutor/TeacherNoteStore.cs` (only students of the teacher's classes, max 3 per student, 160 chars), form in `/Teacher/Class?id=…&student=…`, shown on `/Student`, `StudentContext.TeacherNotes` goes into the Explain and Chat prompts.
+- **Correct Pip**: DB version **14** (`PipChallenges`), `Core/Tutor/Pip.cs` (5 injected mistakes, `Generate(level, seed, language)` is deterministic), `Infrastructure/Tutor/PipStore.cs`, `Web/PipEndpoints.cs` (`POST /api/pip/start`, `POST /api/pip/{id}/answer`), page `/Student/Pip`. Pip's reply: `PipVoice` (AI tool `pip_reply` from the facts, offline fallback in code), `POST /api/pip/{id}/voice`; the per-mistake stats are rebuilt from the seeds (no extra column). Next: a real chat with Pip (the mistakes stay chosen by code), DB version now **15** (`PipChallenge.Subject`); 9 maths kinds + 3 language kinds (`PipSubject.Language`: agreement, past, capital; lexicon in `Pip.Lexicon`, 5 verbs per language: add verbs there); next: science kinds, more language kinds (articles, gender), Pip stats in `/Student/Learner` and for the teacher.
+- **Detective, fading, rhythm, own mistakes (DB version 16)**: `QuizAnswer.Seconds`, `PipChallenge.Forced`, table `FadingRuns`.
+  - `Core/Tutor/Prerequisites.cs` (map topic → step below, mathematics only; `Verdict` needs 4 answers: < 60 % root, ≥ 75 % solid) + `Infrastructure/Tutor/DetectiveStore.cs` (`CasesAsync`, `FalseCertaintiesAsync`, last 300 answers); cards on `/Student/Learner`, block "What the Tutor has found" in `/Teacher/Class?student=…`. A test checks every link of the map is a real topic of its level. To extend: add links for other areas in `Prerequisites.Map`.
+  - `Core/Tutor/Fading.cs` (6 kinds, 4 stages, `Check`) + `FadingStore` + `Web/FadingEndpoints.cs` (`POST /api/fading/start`, `POST /api/fading/{id}/answer`), page `/Student/Fading` ("Step by step").
+  - `Core/Tutor/Pace.cs` (`Read` → Rushing / Stuck / Tired). The seconds come from the page (`quiz.js`, clamped to 600 on the server) and are used only for advice; the answer API returns `pace`.
+  - `PipStore.OwnMistakeAsync` + `Pip.ForTopic` (topic of the tests → kind of mistake; the mapping is approximate: multiply/integers/equations → order of operations).
+  - Confidence map: `Core/Tutor/Calibration.cs` (`Map` → 4 quadrants, `Score` needs 8 bets, `Trend` compares the last 15 with the 15 before), `DetectiveStore.BetsAsync`, card `data-testid=confidence-map` on `/Student/Learner`; `quiz.js` shows the bets of the test in the summary (`quiz-bets`, counted in the page).
+  - Confidence already existed in the tests (`QuizAnswer.Confidence`, calibration in Achievements); new: per-topic false certainties and the two lines of the family letter (`WeekFacts.SureWrongTopic`, `UnsureRightTopic`).
+- **Teacher documents, open answers, assignments, progress (DB version 17)**: tables `Materials`, `WritingSubmissions`, `Assignments`; `QuizAttempt.MaterialId`. The demo seeder now adds a few tests older than 30 days (Sara, Alex, Leo) so the report has a "before".
+  - `Core/Tutor/Materials.cs`: `Clean`, `Chunks`, `Excerpts` (word overlap, budget 1800 chars), `ForPrompt` (`<material>` block, data not instructions), `Quote` (offline), `MaterialQuiz.Offline` (cloze from the document's key terms) and `MaterialQuiz.Build` (AI, questions only from the document, reuses the `topic_quiz` schema). `Infrastructure/Tutor/MaterialStore.cs` (teacher owns the class; students of the class only). Used in `LearningEndpoints` (explain + chat → `StudentContext.Material`, only when the subject is the class's subject), `TutorEndpoints` interview, `POST /api/materials/{id}/quiz` (`MaterialEndpoints.cs`), `/Student/Quiz?material=ID`, page `/Student/Materials`. Targets: `MaterialTarget { Course, Figure, Test }`; a document of any target can be taken as a test.
+  - `Core/Tutor/Writing.cs`: tasks (fixed list, 4 languages), `Measure`, `Check` (code criteria), `Merge` (drops quotes that are not in the text, clamps scores), `WritingPrompt` (tool `writing_review`). `WritingStore` keeps measures only. `POST /api/writing/check`, page `/Student/Writing` (`writing.js`, dictation through `voice.js`).
+  - `Infrastructure/Tutor/AssignmentStore.cs`: `CreateAsync`, status derived from activity (`Focus` attempt on the topic, writing submission, attempt with `MaterialId`), `ProgressAsync` (30 days vs 30 before, min 5 answers), `TopicsAsync`. Teacher pages `/Teacher/Course?id=` (documents, assignments, progress; Razor post handlers) and `/Teacher/Report?id=&student=` (printable); student card `data-testid=assignments` on `/Student`.
+  - Limits of this basic version: a document is plain text (no images/tables; PDFs are read in the browser, 30 pages); retrieval is word overlap (no embeddings), so a question worded very differently from the document finds nothing; the offline cloze test is simple (distractors are other key terms of the document); the oral task is dictation measured as text (no pronunciation); the AI paths (document test, rubric, interview with material) are covered by prompt/parse tests but were not run against a real engine here.
+- Next ideas: student's own notes as material; documents for an adventure or a duel; the teacher sees the open answer (needs consent to store text); "pride moments", detective maps for other areas; fading kinds for language.

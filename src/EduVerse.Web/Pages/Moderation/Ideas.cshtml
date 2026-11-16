@@ -1,0 +1,88 @@
+@page
+@model EduVerse.Web.Pages.Moderation.IdeasModel
+@using EduVerse.Core.Ideas
+@{
+    ViewData["Title"] = L["Nav_Ideas"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var pills = new Dictionary<IdeaStatus, string>
+    {
+        [IdeaStatus.New] = "bg-surface text-foreground", [IdeaStatus.Approved] = "tone-sky text-foreground", [IdeaStatus.InProgress] = "tone-sun text-foreground",
+        [IdeaStatus.Available] = "tone-mint text-foreground", [IdeaStatus.Rejected] = "bg-surface text-muted-foreground-1 line-through",
+    };
+}
+<div class="min-w-0">
+    <h1 class="text-3xl font-semibold tracking-tight text-foreground">💡 @L["Nav_Ideas"]</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Mod_Subtitle"]</p>
+</div>
+@if (Model.Saved)
+{
+    <p class="p-3 rounded-2xl tone-mint text-sm text-foreground" role="status" data-testid="mod-saved">✅ @L["Mod_Saved"]</p>
+}
+
+<nav class="flex flex-wrap gap-2 p-1.5 rounded-full bg-layer border border-layer-line w-fit" aria-label="@L["Nav_Ideas"]">
+    @foreach (var (k, label) in new (IdeaKind?, string)[] { (null, L["Mod_All"].Value) }.Concat(Enum.GetValues<IdeaKind>().Select(x => ((IdeaKind?)x, IdeaRules.Icon(x) + " " + L[$"IdeaKind_{x}"].Value))))
+    {
+        var active = Model.Kind == k;
+        <a href="/Moderation/Ideas@(k is null ? "" : "?kind=" + k)" aria-current="@(active ? "page" : null)"
+           class="py-2 px-4 rounded-full text-sm font-semibold @(active ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-layer-hover")">@label</a>
+    }
+</nav>
+
+<section class="@Ui.Card min-w-0">
+    @if (Model.Rows.Count == 0)
+    {
+        <p class="p-5 text-sm text-muted-foreground-1">@L["Mod_Empty"]</p>
+    }
+    else
+    {
+        <ul class="divide-y divide-card-divider" data-testid="mod-ideas">
+            @foreach (var row in Model.Rows)
+            {
+                <li class="p-4 md:p-5 flex flex-wrap items-start gap-4" data-testid="mod-idea-@row.Id">
+                    <span class="size-11 shrink-0 rounded-2xl tone-lavender grid place-items-center text-2xl" aria-hidden="true">@IdeaRules.Icon(row.Kind)</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold text-foreground">@row.Text <span class="@Ui.Pill @pills[row.Status] ms-1">@L[$"IdeaStatus_{row.Status}"]</span></p>
+                        <p class="text-xs text-muted-foreground-1">@L[$"IdeaKind_{row.Kind}"] · 👍 @L["Mod_Votes"]: @row.Votes · @string.Format(culture, L["Mod_Proposers"], row.Proposers) · @row.CreatedAt.ToString("d MMM", culture)</p>
+                        @foreach (var reason in row.Reasons)
+                        {
+                            <p class="mt-1 text-sm text-foreground/80">“@reason”</p>
+                        }
+                    </div>
+                    <form method="post" asp-page-handler="Status" class="flex flex-wrap gap-1.5">
+                        <input type="hidden" name="id" value="@row.Id" />
+                        <input type="hidden" name="kind" value="@Model.Kind" />
+                        @foreach (var status in Enum.GetValues<IdeaStatus>().Where(s => s != row.Status))
+                        {
+                            <button type="submit" name="status" value="@status" class="@Ui.BtnLight py-1! px-3! text-xs" data-testid="mod-@row.Id-@status">@L[$"IdeaStatus_{status}"]</button>
+                        }
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+<section class="@Ui.Card min-w-0" data-testid="mod-ratings">
+    <div class="@Ui.CardHeader"><h2 class="text-base font-semibold text-foreground">🗺️ @L["Mod_Ratings"]</h2></div>
+    <div class="p-4 md:p-5 grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
+        @foreach (var r in Model.Ratings)
+        {
+            <div class="p-4 rounded-2xl bg-surface/60">
+                <p class="font-semibold text-foreground">@EduVerse.Core.Catalog.Adventure.Emoji(r.Theme) @L[$"Theme_{r.Theme}"]</p>
+                @if (r.Count == 0)
+                {
+                    <p class="text-sm text-muted-foreground-1">@L["Mod_NoRatings"]</p>
+                }
+                else
+                {
+                    <p class="text-2xl font-semibold text-foreground">⭐ @r.Stars.ToString("0.0", culture)</p>
+                    <p class="text-xs text-muted-foreground-1">@string.Format(culture, L["Mod_RatingsCount"], r.Count) · @string.Format(culture, L["Mod_Fun"], 100 * r.Fun / r.Count)</p>
+                    <div class="mt-2 flex h-2 rounded-full overflow-hidden bg-layer" title="@L["Js_Felt_TooEasy"] @r.TooEasy · @L["Js_Felt_JustRight"] @r.JustRight · @L["Js_Felt_TooHard"] @r.TooHard">
+                        <span class="bg-sky-400" style="width:@(100 * r.TooEasy / r.Count)%"></span><span class="bg-emerald-500" style="width:@(100 * r.JustRight / r.Count)%"></span><span class="bg-rose-500" style="width:@(100 * r.TooHard / r.Count)%"></span>
+                    </div>
+                    <p class="mt-1 text-[11px] text-muted-foreground-1">@L["Js_Felt_TooEasy"] @r.TooEasy · @L["Js_Felt_JustRight"] @r.JustRight · @L["Js_Felt_TooHard"] @r.TooHard</p>
+                }
+            </div>
+        }
+    </div>
+</section>

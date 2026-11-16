@@ -1,0 +1,142 @@
+@page
+@model EduVerse.Web.Pages.Student.PlanModel
+@using EduVerse.Core.Catalog
+@using EduVerse.Core.Tutor
+@{
+    ViewData["Title"] = L["Nav_Plan"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var goal = Model.Goal;
+    var today = Model.Today;
+    var minDate = today.AddDays(1).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    var maxDate = today.AddDays(StudyPlan.MaxDays).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    var levels = Enum.GetValues<Level>();
+    var area = goal?.Goal.Area ?? Area.Mathematics;
+    var level = goal?.Goal.Level ?? Model.DefaultLevel;
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🎯 @L["Nav_Plan"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Goal_Subtitle"]</p>
+    </div>
+</div>
+
+@if (goal is not null)
+{
+    var plan = goal.Plan;
+    var title = string.IsNullOrWhiteSpace(goal.Goal.Title) ? L[$"Area_{goal.Goal.Area}"].Value : goal.Goal.Title;
+    <section class="@Ui.Card p-5 tone-lavender" aria-labelledby="pl-title" data-testid="plan-summary">
+        <div class="flex items-start gap-4">
+            <span class="size-14 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🦉</span>
+            <div class="min-w-0 grow">
+                <h2 id="pl-title" class="text-base font-semibold text-foreground">@title · @goal.ExamOn.ToString("d MMM yyyy", culture)</h2>
+                <p class="mt-1 text-sm text-foreground" data-testid="plan-advice">@StudyPlan.Advice(plan, goal.Goal.Title, language)</p>
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                    @if (!plan.Over)
+                    {
+                        <span class="@Ui.Pill tone-sun text-foreground py-1 px-3 text-sm" data-testid="plan-days">📅 @string.Format(culture, L["Goal_DaysLeft"].Value, plan.DaysLeft)</span>
+                    }
+                    <span class="@Ui.Pill tone-mint text-foreground py-1 px-3 text-sm" data-testid="plan-ready">📈 @string.Format(culture, L["Goal_Ready"].Value, plan.Readiness)</span>
+                    <span class="@Ui.Pill tone-sky text-foreground py-1 px-3 text-sm" data-testid="plan-feasibility">@L[$"Goal_Feas_{plan.Feasibility}"]</span>
+                    <span class="text-xs text-foreground/70">⏱️ @string.Format(culture, L["Goal_MinutesDay"].Value, goal.Goal.Minutes)</span>
+                </div>
+                <div class="mt-3 h-2 rounded-full bg-white/60 dark:bg-white/10 overflow-hidden" role="presentation"><div class="h-full rounded-full bg-primary" style="width:@plan.Readiness%"></div></div>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button type="button" class="@Ui.BtnLight" id="pl-change" data-testid="plan-change">✏️ @L["Goal_Change"]</button>
+                    <button type="button" class="@Ui.BtnLight" id="pl-remove" data-testid="plan-remove">🗑️ @L["Goal_Remove"]</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (!plan.Over)
+    {
+        <section class="@Ui.Card p-5" aria-labelledby="pl-today" data-testid="plan-today">
+            <h2 id="pl-today" class="text-base font-semibold text-foreground">📌 @L["Goal_Today"]</h2>
+            @if (goal.Today.Count == 0 && !goal.MockToday)
+            {
+                <p class="mt-2 text-sm text-muted-foreground-1" data-testid="plan-rest">@L["Goal_TodayNothing"]</p>
+            }
+            <ul class="mt-3 space-y-2">
+                @foreach (var task in goal.Today)
+                {
+                    <li class="flex flex-wrap items-center gap-3 p-3 rounded-2xl bg-surface/60" data-testid="plan-task">
+                        <span class="size-9 shrink-0 rounded-full grid place-items-center @(task.Done ? "bg-emerald-100 dark:bg-emerald-900/40" : "bg-white/70 dark:bg-white/10")" aria-hidden="true">@(task.Done ? "✅" : "📖")</span>
+                        <span class="min-w-0 grow"><span class="block text-sm font-medium text-foreground">@EduVerse.Web.QuizEndpoints.TopicName(task.Topic, L)</span><span class="block text-xs text-muted-foreground-1">@string.Format(culture, L["Goal_Known"].Value, task.Known) · @string.Format(culture, L["Goal_Minutes"].Value, StudyPlan.MinutesPerSession)</span></span>
+                        @if (task.Done)
+                        {
+                            <span class="@Ui.Pill tone-mint text-foreground">@L["Goal_Done"]</span>
+                        }
+                        else
+                        {
+                            <a class="@Ui.BtnPrimary" href="/Student/Quiz?area=@goal.Goal.Area&level=@goal.Goal.Level&mode=Focus&topic=@Uri.EscapeDataString(task.Topic)" data-testid="plan-start">@L["Goal_Start"]</a>
+                        }
+                    </li>
+                }
+                @if (goal.MockToday)
+                {
+                    <li class="flex flex-wrap items-center gap-3 p-3 rounded-2xl tone-sun" data-testid="plan-mock">
+                        <span class="size-9 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center" aria-hidden="true">📝</span>
+                        <span class="min-w-0 grow"><span class="block text-sm font-medium text-foreground">@L["Goal_Mock"]</span><span class="block text-xs text-foreground/70">@L["Goal_MockHint"]</span></span>
+                        @if (goal.MockDone) { <span class="@Ui.Pill tone-mint text-foreground">@L["Goal_Done"]</span> }
+                        else { <a class="@Ui.BtnPrimary" href="/Student/Quiz?area=@goal.Goal.Area&level=@goal.Goal.Level&mode=Practice" data-testid="plan-mock-start">@L["Goal_Start"]</a> }
+                    </li>
+                }
+            </ul>
+        </section>
+
+        <section class="@Ui.Card p-5" aria-labelledby="pl-calendar" data-testid="plan-calendar">
+            <h2 id="pl-calendar" class="text-base font-semibold text-foreground">🗓️ @L["Goal_Calendar"]</h2>
+            <ol class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                @foreach (var day in plan.Days.Take(14))
+                {
+                    <li class="p-3 rounded-2xl @(day.Mock ? "tone-sun" : "bg-surface/60") @(day.Date == today ? "ring-2 ring-primary" : "")">
+                        <p class="text-xs font-semibold text-foreground">@day.Date.ToString("ddd d MMM", culture)</p>
+                        <p class="mt-1 text-xs text-foreground/80">@(day.Mock ? "📝 " + L["Goal_MockShort"] : string.Format(culture, L["Goal_Sessions"].Value, day.Topics.Count))</p>
+                    </li>
+                }
+            </ol>
+            <p class="mt-3 text-xs text-muted-foreground-1">ℹ️ @L["Goal_Adjusts"]</p>
+        </section>
+
+        <section class="@Ui.Card p-5" aria-labelledby="pl-topics" data-testid="plan-topics">
+            <h2 id="pl-topics" class="text-base font-semibold text-foreground">🧩 @L["Goal_Topics"]</h2>
+            <ul class="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-2.5">
+                @foreach (var topic in goal.Topics.OrderBy(t => t.Known))
+                {
+                    <li>
+                        <div class="flex justify-between text-sm"><span class="text-foreground">@EduVerse.Web.QuizEndpoints.TopicName(topic.Topic, L)</span><span class="text-muted-foreground-1">@topic.Known %</span></div>
+                        <div class="mt-1 h-2 rounded-full bg-surface overflow-hidden"><div class="h-full rounded-full @(topic.Known >= 80 ? "bg-emerald-500" : "bg-primary")" style="width:@topic.Known%"></div></div>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+}
+else
+{
+    <p class="p-5 text-sm text-muted-foreground-1 @Ui.Card" data-testid="plan-empty">@L["Goal_Empty"]</p>
+}
+
+<section class="@Ui.Card p-5 @(goal is null ? "" : "hidden")" id="pl-form-card" aria-labelledby="pl-form-title">
+    <h2 id="pl-form-title" class="text-base font-semibold text-foreground">✨ @L["Goal_New"]</h2>
+    <form id="pl-form" class="mt-3 grid sm:grid-cols-2 gap-4" novalidate data-levels="@System.Text.Json.JsonSerializer.Serialize(Enum.GetValues<Area>().ToDictionary(a => a.ToString(), a => levels.Where(l => Catalog.Available(a, l)).Select(l => new { value = l.ToString(), name = L[$"Level_{l}"].Value })))">
+        <div><label class="@Ui.Label" for="pl-area">@L["Goal_Subject"]</label>
+            <select id="pl-area" class="@Ui.Input" data-testid="plan-area">@foreach (var a in Enum.GetValues<Area>()) { <option value="@a" selected="@(a == area)">@L[$"Area_{a}"]</option> }</select></div>
+        <div><label class="@Ui.Label" for="pl-level">@L["Goal_Level"]</label>
+            <select id="pl-level" class="@Ui.Input" data-testid="plan-level">@foreach (var l in levels.Where(l => Catalog.Available(area, l))) { <option value="@l" selected="@(l == level)">@L[$"Level_{l}"]</option> }</select></div>
+        <div><label class="@Ui.Label" for="pl-name">@L["Goal_Name"]</label>
+            <input id="pl-name" class="@Ui.Input" maxlength="@EduVerse.Infrastructure.Tutor.PlanStore.MaxTitle" autocomplete="off" placeholder="@L["Goal_NamePlaceholder"]" value="@goal?.Goal.Title" data-testid="plan-name" /></div>
+        <div><label class="@Ui.Label" for="pl-date">@L["Goal_Date"]</label>
+            <input id="pl-date" type="date" class="@Ui.Input" min="@minDate" max="@maxDate" value="@(goal is null ? today.AddDays(14).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) : goal.ExamOn.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture))" data-testid="plan-date" /></div>
+        <div><label class="@Ui.Label" for="pl-minutes">@L["Goal_MinutesLabel"]</label>
+            <select id="pl-minutes" class="@Ui.Input" data-testid="plan-minutes">@foreach (var m in new[] { 10, 15, 20, 30, 45, 60 }) { <option value="@m" selected="@(m == (goal?.Goal.Minutes ?? 15))">@string.Format(culture, L["Goal_MinutesDay"].Value, m)</option> }</select></div>
+        <div class="flex items-end"><button type="submit" class="@Ui.BtnPrimary" data-testid="plan-save">@L["Goal_Save"]</button></div>
+        <p class="sm:col-span-2 text-sm text-red-700 dark:text-red-300 hidden" role="alert" id="pl-error"></p>
+    </form>
+</section>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/plan.js" asp-append-version="true"></script>
+}

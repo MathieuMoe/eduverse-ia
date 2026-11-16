@@ -1177,4 +1177,377 @@
   <data name="Hobbies_Subtitle" xml:space="preserve"><value>Cosas divertidas para aprender por gusto —astronomía, música, magia, supervivencia, ajedrez, dinosaurios— con la ciencia que hay detrás de cada una. Domina todos los conceptos para conseguir tu certificado e insignia.</value></data>
   <data name="Badge_Hobbyist" xml:space="preserve"><value>Mente curiosa</value></data>
   <data name="BadgeHint_Hobbyist" xml:space="preserve"><value>Consigue {0} certificado de afición</value></data>
+  <data name="Badge_IdeaMaker" xml:space="preserve"><value>Inventor de ideas</value></data>
+  <data name="BadgeHint_IdeaMaker" xml:space="preserve"><value>Propón {0} idea que llegue a estar disponible</value></data>
+  <data name="Ideas_Title_Figure" xml:space="preserve"><value>¿A quién te gustaría entrevistar?</value></data>
+  <data name="Ideas_Title_Adventure" xml:space="preserve"><value>Propón la próxima aventura</value></data>
+  <data name="Ideas_Title_Trade" xml:space="preserve"><value>¿Qué oficio te gustaría aprender?</value></data>
+  <data name="Ideas_Title_Hobby" xml:space="preserve"><value>¿Qué afición te gustaría aprender?</value></data>
+  <data name="Ideas_Subtitle" xml:space="preserve"><value>Propón una idea o vota las de otros alumnos: las más pedidas se preparan primero.</value></data>
+  <data name="Ideas_Ask_Figure" xml:space="preserve"><value>Personaje histórico</value></data>
+  <data name="Ideas_Ask_Adventure" xml:space="preserve"><value>Mundo de la aventura</value></data>
+  <data name="Ideas_Ask_Trade" xml:space="preserve"><value>Oficio</value></data>
+  <data name="Ideas_Ask_Hobby" xml:space="preserve"><value>Afición</value></data>
+  <data name="Ideas_Placeholder_Figure" xml:space="preserve"><value>p. ej. Napoleón, Frida Kahlo, Nikola Tesla</value></data>
+  <data name="Ideas_Placeholder_Adventure" xml:space="preserve"><value>p. ej. Piratas, Antiguo Egipto, Volcanes</value></data>
+  <data name="Ideas_Placeholder_Trade" xml:space="preserve"><value>p. ej. Robótica, Peluquería, Mecánica</value></data>
+  <data name="Ideas_Placeholder_Hobby" xml:space="preserve"><value>p. ej. Fotografía, Origami, Skate</value></data>
+  <data name="Ideas_Reason" xml:space="preserve"><value>¿Por qué? (opcional)</value></data>
+  <data name="Ideas_ReasonPlaceholder" xml:space="preserve"><value>Con una línea basta</value></data>
+  <data name="Ideas_Send" xml:space="preserve"><value>Proponer</value></data>
+  <data name="Ideas_Privacy" xml:space="preserve"><value>Tu nombre nunca se muestra. Un adulto revisa las ideas antes de que las vean otros alumnos.</value></data>
+  <data name="Ideas_Top" xml:space="preserve"><value>Los más pedidos</value></data>
+  <data name="Nav_Ideas" xml:space="preserve"><value>Ideas de los alumnos</value></data>
+  <data name="Mod_Subtitle" xml:space="preserve"><value>Lo que proponen los alumnos y cómo valoran las aventuras. Aprueba una idea para que otros puedan votarla y márcala como disponible cuando esté lista: el Tutor avisa a los alumnos que la pidieron.</value></data>
+  <data name="Mod_All" xml:space="preserve"><value>Todas</value></data>
+  <data name="Mod_Votes" xml:space="preserve"><value>Votos</value></data>
+  <data name="Mod_Proposers" xml:space="preserve"><value>Alumnos que la propusieron: {0}</value></data>
+  <data name="Mod_Empty" xml:space="preserve"><value>Todavía no hay ideas.</value></data>
+  <data name="Mod_Saved" xml:space="preserve"><value>Estado actualizado.</value></data>
+  <data name="Mod_Ratings" xml:space="preserve"><value>Cómo valoran los alumnos las aventuras</value></data>
+  <data name="Mod_RatingsCount" xml:space="preserve"><value>{0} valoraciones</value></data>
+  <data name="Mod_Fun" xml:space="preserve"><value>{0} % se divirtió</value></data>
+  <data name="Mod_NoRatings" xml:space="preserve"><value>Sin valoraciones todavía</value></data>
+  <data name="IdeaKind_Figure" xml:space="preserve"><value>Personajes históricos</value></data>
+  <data name="IdeaKind_Adventure" xml:space="preserve"><value>Aventuras</value></data>
+  <data name="IdeaKind_Trade" xml:space="preserve"><value>Oficios</value></data>
+  <data name="IdeaKind_Hobby" xml:space="preserve"><value>Aficiones</value></data>
+  <data name="IdeaStatus_New" xml:space="preserve"><value>Por revisar</value></data>
+  <data name="IdeaStatus_Approved" xml:space="preserve"><value>Aprobada (abierta a votos)</value></data>
+  <data name="IdeaStatus_InProgress" xml:space="preserve"><value>En preparación</value></data>
+  <data name="IdeaStatus_Available" xml:space="preserve"><value>Disponible</value></data>
+  <data name="IdeaStatus_Rejected" xml:space="preserve"><value>Descartada</value></data>
+  <data name="Js_IdeaPending" xml:space="preserve"><value>Pendiente de que la revise un adulto</value></data>
+  <data name="Js_IdeaApproved" xml:space="preserve"><value>Abierta a votos</value></data>
+  <data name="Js_IdeaInProgress" xml:space="preserve"><value>En preparación</value></data>
+  <data name="Js_IdeaAvailable" xml:space="preserve"><value>¡Disponible!</value></data>
+  <data name="Js_IdeaVote" xml:space="preserve"><value>Yo también lo quiero</value></data>
+  <data name="Js_IdeaVoted" xml:space="preserve"><value>Ya has votado</value></data>
+  <data name="Js_IdeaMine" xml:space="preserve"><value>tu idea</value></data>
+  <data name="Js_IdeaNone" xml:space="preserve"><value>Todavía no hay ideas: ¡sé el primero!</value></data>
+  <data name="Js_IdeaThanksVote" xml:space="preserve"><value>Voto guardado. ¡Gracias!</value></data>
+  <data name="Js_Idea_Created" xml:space="preserve"><value>¡Gracias! Un adulto revisará tu idea; el Tutor te avisará cuando esté disponible.</value></data>
+  <data name="Js_Idea_Joined" xml:space="preserve"><value>Otros alumnos tuvieron la misma idea ({0}): se ha sumado tu voto.</value></data>
+  <data name="Js_Idea_Exists" xml:space="preserve"><value>Ya existe: {0}. ¡Pruébalo!</value></data>
+  <data name="Js_Idea_TooShort" xml:space="preserve"><value>Escribe un poco más.</value></data>
+  <data name="Js_Idea_TooLong" xml:space="preserve"><value>Es demasiado largo: hazlo corto.</value></data>
+  <data name="Js_Idea_NotAllowed" xml:space="preserve"><value>Este texto no se puede enviar (sin enlaces, datos de contacto ni palabrotas).</value></data>
+  <data name="Js_Idea_Limit" xml:space="preserve"><value>Hoy has propuesto muchas ideas: ¡vuelve mañana!</value></data>
+  <data name="Js_RateTitle" xml:space="preserve"><value>¿Qué te ha parecido esta aventura?</value></data>
+  <data name="Js_RateStars" xml:space="preserve"><value>Tu nota</value></data>
+  <data name="Js_RateFelt" xml:space="preserve"><value>Ha sido…</value></data>
+  <data name="Js_Felt_TooEasy" xml:space="preserve"><value>Demasiado fácil</value></data>
+  <data name="Js_Felt_JustRight" xml:space="preserve"><value>Justo bien</value></data>
+  <data name="Js_Felt_TooHard" xml:space="preserve"><value>Demasiado difícil</value></data>
+  <data name="Js_RateFun" xml:space="preserve"><value>¿Te has divertido?</value></data>
+  <data name="Js_Yes" xml:space="preserve"><value>Sí</value></data>
+  <data name="Js_No" xml:space="preserve"><value>No mucho</value></data>
+  <data name="Js_RateSend" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Js_RateNeedStars" xml:space="preserve"><value>Elige de 1 a 5 estrellas.</value></data>
+  <data name="Js_RateThanks" xml:space="preserve"><value>¡Gracias! Tu opinión ayuda a mejorar las aventuras.</value></data>
+  <data name="Js_RateProposeNext" xml:space="preserve"><value>Propón la próxima aventura</value></data>
+  <data name="Nav_Learner" xml:space="preserve"><value>Cómo aprendo</value></data>
+  <data name="Badge_Thinker" xml:space="preserve"><value>Pensador</value></data>
+  <data name="BadgeHint_Thinker" xml:space="preserve"><value>Cuéntale al Tutor cómo lo pensaste después de {0} fallos</value></data>
+  <data name="Thinking_ActionReview" xml:space="preserve"><value>Hacer el repaso de hoy</value></data>
+  <data name="Thinking_ActionLearn" xml:space="preserve"><value>Aprender esta materia con el tutor</value></data>
+  <data name="Thinking_ActionPractise" xml:space="preserve"><value>Practicar más preguntas</value></data>
+  <data name="Learner_Subtitle" xml:space="preserve"><value>Lo que el Tutor ha observado sobre tu forma de aprender, medido a partir de tus respuestas. Es tuyo: puedes corregirlo y añadir lo que sabes de ti. El Tutor lo usa para explicarte las cosas a tu manera.</value></data>
+  <data name="Learner_SummaryTitle" xml:space="preserve"><value>Lo que el Tutor ha aprendido de ti</value></data>
+  <data name="Learner_SummaryAi" xml:space="preserve"><value>Escríbemelo</value></data>
+  <data name="Learner_Insights" xml:space="preserve"><value>Lo que el Tutor ha observado</value></data>
+  <data name="Learner_InsightsHint" xml:space="preserve"><value>Calculado a partir de tus respuestas. Si alguna no es verdad, dilo: el Tutor dejará de usarla.</value></data>
+  <data name="Learner_Empty" xml:space="preserve"><value>Todavía nada: haz algunos tests, aprende un tema con el tutor y cuéntame cómo lo pensaste después de un fallo.</value></data>
+  <data name="Learner_NotMe" xml:space="preserve"><value>Eso no soy yo</value></data>
+  <data name="Learner_Show" xml:space="preserve"><value>Volver a usarla</value></data>
+  <data name="Learner_HiddenNote" xml:space="preserve"><value>Has dicho que esto no eres tú: el Tutor no lo usa.</value></data>
+  <data name="Learner_Notes" xml:space="preserve"><value>Lo que yo sé de mí</value></data>
+  <data name="Learner_NotesHint" xml:space="preserve"><value>Dile al Tutor qué te ayuda a aprender. Lo tendrá en cuenta.</value></data>
+  <data name="Learner_NotePlaceholder" xml:space="preserve"><value>p. ej. Entiendo mejor con dibujos</value></data>
+  <data name="Learner_AddNote" xml:space="preserve"><value>Añadir</value></data>
+  <data name="Learner_DeleteNote" xml:space="preserve"><value>Borrar esta nota</value></data>
+  <data name="Learner_NotesPrivacy" xml:space="preserve"><value>Solo tú y el Tutor veis estas notas. No escribas datos personales.</value></data>
+  <data name="Learner_Methods" xml:space="preserve"><value>Qué explicaciones me funcionan</value></data>
+  <data name="Learner_MethodsHint" xml:space="preserve"><value>Ejercicios acertados después de cada forma de explicar.</value></data>
+  <data name="Learner_NoData" xml:space="preserve"><value>Aprende un tema con el tutor para verlo.</value></data>
+  <data name="Learner_Autonomy" xml:space="preserve"><value>Yo solo</value></data>
+  <data name="Learner_AutonomyHint" xml:space="preserve"><value>Aciertos conseguidos sin pistas ni escalera.</value></data>
+  <data name="Learner_AutonomyDetail" xml:space="preserve"><value>{0} de {1} aciertos sin ayuda</value></data>
+  <data name="Learner_NeedAnswers" xml:space="preserve"><value>Responde al menos {0} preguntas para verlo.</value></data>
+  <data name="Learner_SureRight" xml:space="preserve"><value>Acierto cuando estoy seguro</value></data>
+  <data name="Learner_UnsureRight" xml:space="preserve"><value>Acierto cuando dudo</value></data>
+  <data name="Learner_Errors" xml:space="preserve"><value>Mis tipos de error</value></data>
+  <data name="Learner_ErrorsHint" xml:space="preserve"><value>Según lo que le contaste al Tutor después de un fallo.</value></data>
+  <data name="Learner_NoReflections" xml:space="preserve"><value>Después de un fallo, cuéntale al Tutor cómo lo pensaste.</value></data>
+  <data name="Learner_Footer" xml:space="preserve"><value>Son observaciones para ayudarte, no una etiqueta: cambian a medida que aprendes. Tus explicaciones después de un fallo no se guardan, solo el tipo de error.</value></data>
+  <data name="Js_LadderOpen" xml:space="preserve"><value>Pensar con el Tutor</value></data>
+  <data name="Js_LadderReply" xml:space="preserve"><value>Tu idea (opcional)</value></data>
+  <data name="Js_LadderNext" xml:space="preserve"><value>Siguiente peldaño</value></data>
+  <data name="Js_LadderNextCosts" xml:space="preserve"><value>Siguiente peldaño (cuenta como pista)</value></data>
+  <data name="Js_LadderStep" xml:space="preserve"><value>Peldaño {0} de {1}</value></data>
+  <data name="Js_LadderFree" xml:space="preserve"><value>gratis</value></data>
+  <data name="Js_LadderCosts" xml:space="preserve"><value>cuenta como pista</value></data>
+  <data name="Js_LadderRule" xml:space="preserve"><value>El Tutor pregunta y tú piensas: nunca da la respuesta. Los dos primeros peldaños son gratis.</value></data>
+  <data name="Js_LadderHelpedFree" xml:space="preserve"><value>Lo has pensado con el Tutor: XP completos.</value></data>
+  <data name="Js_LadderHelped" xml:space="preserve"><value>Has llegado paso a paso con el Tutor.</value></data>
+  <data name="Js_ThinkTitle" xml:space="preserve"><value>Cuéntame cómo lo has pensado.</value></data>
+  <data name="Js_ThinkXp" xml:space="preserve"><value>Elige un motivo o escríbelo (+5 XP).</value></data>
+  <data name="Js_ThinkPlaceholder" xml:space="preserve"><value>Elegí esa porque…</value></data>
+  <data name="Js_ThinkSend" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Js_ThinkPrivacy" xml:space="preserve"><value>Tu explicación no se guarda: solo el tipo de error, para ayudarte mejor.</value></data>
+  <data name="Js_ThinkResult" xml:space="preserve"><value>Qué ha pasado</value></data>
+  <data name="Js_ThinkCard" xml:space="preserve"><value>Cómo aprendo</value></data>
+  <data name="Js_PreferredMethod" xml:space="preserve"><value>Empiezo así porque es como mejor entiendes.</value></data>
+  <data name="Js_Err_no_ladder" xml:space="preserve"><value>El Tutor no puede ayudar en este test.</value></data>
+  <data name="Js_Err_thinking_text" xml:space="preserve"><value>Escribe un poco más (o elige un motivo).</value></data>
+  <data name="Js_Err_thinking_answer" xml:space="preserve"><value>Ya me has contado esta respuesta.</value></data>
+  <data name="Js_Err_note_TooShort" xml:space="preserve"><value>Escribe un poco más.</value></data>
+  <data name="Js_Err_note_TooLong" xml:space="preserve"><value>Es demasiado largo: hazlo corto.</value></data>
+  <data name="Js_Err_note_NotAllowed" xml:space="preserve"><value>Este texto no se puede guardar (sin enlaces, datos de contacto ni palabrotas).</value></data>
+  <data name="Js_Err_note_Full" xml:space="preserve"><value>Ya tienes 5 notas: borra una primero.</value></data>
+  <data name="Nav_Plan" xml:space="preserve"><value>Plan para el examen</value></data>
+  <data name="Goal_Subtitle" xml:space="preserve"><value>Dile al Tutor cuándo es tu examen y cuántos minutos al día puedes estudiar. Prepara un plan con los temas que más importan y lo ajusta cada día.</value></data>
+  <data name="Goal_Empty" xml:space="preserve"><value>Aún no tienes ningún examen. Elige la materia, la fecha y tus minutos al día, y el Tutor te prepara el plan.</value></data>
+  <data name="Goal_New" xml:space="preserve"><value>Mi próximo examen</value></data>
+  <data name="Goal_Subject" xml:space="preserve"><value>Materia</value></data>
+  <data name="Goal_Level" xml:space="preserve"><value>Nivel</value></data>
+  <data name="Goal_Name" xml:space="preserve"><value>¿Cómo se llama? (opcional)</value></data>
+  <data name="Goal_NamePlaceholder" xml:space="preserve"><value>Examen de fracciones</value></data>
+  <data name="Goal_Date" xml:space="preserve"><value>Día del examen</value></data>
+  <data name="Goal_MinutesLabel" xml:space="preserve"><value>Tiempo que puedo estudiar</value></data>
+  <data name="Goal_MinutesDay" xml:space="preserve"><value>{0} min al día</value></data>
+  <data name="Goal_Save" xml:space="preserve"><value>Hacer mi plan</value></data>
+  <data name="Goal_Change" xml:space="preserve"><value>Cambiar</value></data>
+  <data name="Goal_Remove" xml:space="preserve"><value>Quitar</value></data>
+  <data name="Goal_DaysLeft" xml:space="preserve"><value>Faltan {0} días</value></data>
+  <data name="Goal_Ready" xml:space="preserve"><value>Preparado: {0} %</value></data>
+  <data name="Goal_Feas_Comfortable" xml:space="preserve"><value>Tiempo de sobra</value></data>
+  <data name="Goal_Feas_OnTrack" xml:space="preserve"><value>Vas bien</value></data>
+  <data name="Goal_Feas_Tight" xml:space="preserve"><value>Justo</value></data>
+  <data name="Goal_Feas_NotEnough" xml:space="preserve"><value>No hay tiempo suficiente</value></data>
+  <data name="Goal_Today" xml:space="preserve"><value>Hoy</value></data>
+  <data name="Goal_TodayNothing" xml:space="preserve"><value>Hoy no hay nada previsto. Descansa: te lo has ganado.</value></data>
+  <data name="Goal_Known" xml:space="preserve"><value>sabes un {0} %</value></data>
+  <data name="Goal_Minutes" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Goal_Start" xml:space="preserve"><value>Empezar</value></data>
+  <data name="Goal_Done" xml:space="preserve"><value>Hecho</value></data>
+  <data name="Goal_Mock" xml:space="preserve"><value>Simulacro de examen</value></data>
+  <data name="Goal_MockHint" xml:space="preserve"><value>Un test completo de la materia, el día antes.</value></data>
+  <data name="Goal_MockShort" xml:space="preserve"><value>Simulacro</value></data>
+  <data name="Goal_Calendar" xml:space="preserve"><value>Los próximos días</value></data>
+  <data name="Goal_Sessions" xml:space="preserve"><value>Sesiones: {0}</value></data>
+  <data name="Goal_Topics" xml:space="preserve"><value>Temas y cuánto sabes de cada uno</value></data>
+  <data name="Goal_Adjusts" xml:space="preserve"><value>El plan se rehace cada día con lo que sabes, así que se ajusta solo: practica y el plan de mañana cambia.</value></data>
+  <data name="QuizMode_Focus" xml:space="preserve"><value>Sesión de estudio</value></data>
+  <data name="Js_PlanBack" xml:space="preserve"><value>Volver a mi plan</value></data>
+  <data name="Js_Err_bad_date" xml:space="preserve"><value>Elige un día entre mañana y dentro de 120 días.</value></data>
+  <data name="Js_Err_bad_title" xml:space="preserve"><value>Este nombre no se puede guardar (sin enlaces, datos de contacto ni palabrotas).</value></data>
+  <data name="Js_Err_not_available" xml:space="preserve"><value>Esta materia no está disponible en ese nivel.</value></data>
+  <data name="Nav_Homework" xml:space="preserve"><value>Revisar mis pasos</value></data>
+  <data name="Homework_Subtitle" xml:space="preserve"><value>Escribe los pasos de un ejercicio o haz una foto de tu cuaderno. El Tutor encuentra la primera línea donde algo salió mal, sin darte la respuesta.</value></data>
+  <data name="Homework_Steps" xml:space="preserve"><value>Escribe tus pasos, una cuenta por línea</value></data>
+  <data name="Homework_StepsPlaceholder" xml:space="preserve"><value>12 + 7 = 19
+19 × 3 = 57
+57 - 5 = 52</value></data>
+  <data name="Homework_Photo" xml:space="preserve"><value>O haz una foto de tu cuaderno</value></data>
+  <data name="Homework_PhotoHint" xml:space="preserve"><value>Necesita un motor de IA (elige uno en la cabecera). Solo el ejercicio, por favor: sin caras, nombres ni direcciones.</value></data>
+  <data name="Homework_PhotoKids" xml:space="preserve"><value>Las fotos son para alumnos mayores. Aquí puedes escribir tus pasos.</value></data>
+  <data name="Homework_Consent" xml:space="preserve"><value>Acepto enviar esta foto al motor de IA que he elegido, solo para revisar mis pasos. No se guarda. No hay nada personal en ella.</value></data>
+  <data name="Homework_RemovePhoto" xml:space="preserve"><value>Quitar la foto</value></data>
+  <data name="Homework_Review" xml:space="preserve"><value>Revisar mis pasos</value></data>
+  <data name="Homework_Privacy" xml:space="preserve"><value>La foto se reduce en tu navegador, la lee el motor de IA que has elegido mientras responde y EduVerse nunca la guarda.</value></data>
+  <data name="Homework_Footer" xml:space="preserve"><value>El Tutor comprueba cada cuenta en el código, no con la IA, así que un resultado erróneo no se cuela. Te ayuda a encontrar la línea; la corrección es tuya.</value></data>
+  <data name="Js_HwReading" xml:space="preserve"><value>Leyendo tus pasos…</value></data>
+  <data name="Js_HwRight" xml:space="preserve"><value>bien</value></data>
+  <data name="Js_HwWrong" xml:space="preserve"><value>revísala</value></data>
+  <data name="Js_HwUnchecked" xml:space="preserve"><value>no puedo comprobar esta línea en el código</value></data>
+  <data name="Js_HwCodeOnly" xml:space="preserve"><value>Comprobado en el código, sin IA.</value></data>
+  <data name="Js_Err_photo_consent" xml:space="preserve"><value>Marca la casilla para aceptar antes de enviar una foto.</value></data>
+  <data name="Js_Err_photo_kids" xml:space="preserve"><value>Las fotos son para alumnos mayores: escribe tus pasos.</value></data>
+  <data name="Js_Err_photo_bad" xml:space="preserve"><value>Esta foto no se puede leer. Usa una imagen JPEG, PNG o WebP de menos de 4 MB.</value></data>
+  <data name="Js_Err_homework_empty" xml:space="preserve"><value>Escribe al menos un paso o añade una foto.</value></data>
+  <data name="Defend_Title" xml:space="preserve"><value>Defiende tus respuestas</value></data>
+  <data name="Defend_Subtitle" xml:space="preserve"><value>El Tutor te vuelve a preguntar los temas que acertaste, con otros números, y te pregunta por qué. Así se ve que los entiendes, no solo que los recuerdas.</value></data>
+  <data name="Defend_None" xml:space="preserve"><value>Termina primero un test y luego podrás defenderlo desde tus tests.</value></data>
+  <data name="Defend_Loading" xml:space="preserve"><value>Preparando tus preguntas…</value></data>
+  <data name="Defend_Footer" xml:space="preserve"><value>La respuesta la comprueba el servidor. Tu explicación la juzga el código (debe ser un intento real que toque el método) o el motor de IA elegido, y no se guarda. El profe solo ve cuántas has verificado.</value></data>
+  <data name="Heat_Verified" xml:space="preserve"><value>Entendido</value></data>
+  <data name="Heat_VerifiedHint" xml:space="preserve"><value>Temas defendidos con otros números y una explicación: verificados de preguntados.</value></data>
+  <data name="Js_DefendOpen" xml:space="preserve"><value>Defender mis respuestas</value></data>
+  <data name="Js_DefendBack" xml:space="preserve"><value>Volver a mis tests</value></data>
+  <data name="Js_DefendNumber" xml:space="preserve"><value>Pregunta {0} de {1}</value></data>
+  <data name="Js_DefendOther" xml:space="preserve"><value>La misma idea, otros números. Elige y luego dime por qué.</value></data>
+  <data name="Js_DefendWhy" xml:space="preserve"><value>¿Por qué? Explícalo con tus palabras</value></data>
+  <data name="Js_DefendWhyPlaceholder" xml:space="preserve"><value>Primero hice esto porque…</value></data>
+  <data name="Js_DefendSend" xml:space="preserve"><value>Defender</value></data>
+  <data name="Js_DefendPick" xml:space="preserve"><value>Elige primero una respuesta.</value></data>
+  <data name="Js_DefendRight" xml:space="preserve"><value>Respuesta correcta</value></data>
+  <data name="Js_DefendWrong" xml:space="preserve"><value>La respuesta era {0}</value></data>
+  <data name="Js_DefendReasoned" xml:space="preserve"><value>buena explicación</value></data>
+  <data name="Js_DefendShort" xml:space="preserve"><value>explicación corta</value></data>
+  <data name="Js_DefendNext" xml:space="preserve"><value>Siguiente</value></data>
+  <data name="Js_DefendVerified" xml:space="preserve"><value>{0} de {1} temas verificados</value></data>
+  <data name="Js_DefendAll" xml:space="preserve"><value>Los entiendes de verdad. El profe puede verlo.</value></data>
+  <data name="Js_DefendSome" xml:space="preserve"><value>Repasa los que han fallado con el Tutor y vuelve a defenderlos más tarde.</value></data>
+  <data name="Js_Err_defence_why" xml:space="preserve"><value>Elige una respuesta y escribe por qué (unas palabras).</value></data>
+  <data name="Js_Err_no_defence" xml:space="preserve"><value>Aquí no hay nada que defender (solo tests con respuestas acertadas).</value></data>
+  <data name="Interests_Title" xml:space="preserve"><value>Lo que me gusta</value></data>
+  <data name="Interests_Hint" xml:space="preserve"><value>Elige hasta 3. Tus problemas y ejemplos hablarán de ello. Las mates siguen siendo las mismas.</value></data>
+  <data name="Js_InterestsMax" xml:space="preserve"><value>Puedes elegir 3 como máximo: quita uno primero.</value></data>
+  <data name="Js_InterestsError" xml:space="preserve"><value>No se pudo guardar. Inténtalo de nuevo.</value></data>
+  <data name="Opening_Go" xml:space="preserve"><value>Vamos</value></data>
+  <data name="Nav_Letter" xml:space="preserve"><value>Carta para la familia</value></data>
+  <data name="Letter_Subtitle" xml:space="preserve"><value>La semana en una carta corta que puedes imprimir y compartir. El Tutor la escribe con lo medido: no se envía nada.</value></data>
+  <data name="Letter_Print" xml:space="preserve"><value>Imprimir</value></data>
+  <data name="Letter_Empty" xml:space="preserve"><value>Responde unas preguntas esta semana y tu carta estará lista.</value></data>
+  <data name="TNote_Title" xml:space="preserve"><value>Nota para este alumno</value></data>
+  <data name="TNote_Hint" xml:space="preserve"><value>El alumno la lee y el Tutor la tiene en cuenta (hasta 3 notas, 160 caracteres).</value></data>
+  <data name="TNote_Placeholder" xml:space="preserve"><value>Ej.: valora el esfuerzo; las fracciones necesitan más tiempo</value></data>
+  <data name="TNote_Add" xml:space="preserve"><value>Añadir nota</value></data>
+  <data name="TNote_ForYou" xml:space="preserve"><value>Una nota de tu profesor</value></data>
+  <data name="TNote_TooShort" xml:space="preserve"><value>Escribe un poco más.</value></data>
+  <data name="TNote_TooLong" xml:space="preserve"><value>Demasiado largo: 160 caracteres como máximo.</value></data>
+  <data name="TNote_NotAllowed" xml:space="preserve"><value>Este texto no se puede guardar (sin enlaces, datos de contacto ni palabrotas).</value></data>
+  <data name="TNote_Full" xml:space="preserve"><value>Este alumno ya tiene 3 notas tuyas: borra una primero.</value></data>
+  <data name="Nav_Pip" xml:space="preserve"><value>Corrige a Pip</value></data>
+  <data name="Pip_Title" xml:space="preserve"><value>Corrige a Pip</value></data>
+  <data name="Pip_Subtitle" xml:space="preserve"><value>Pip es un alumno-IA que resolvió un problema con un error. Encuentra la primera línea mal y di qué falló: enseñar es la mejor forma de aprender.</value></data>
+  <data name="Pip_Start" xml:space="preserve"><value>¿Qué trae Pip hoy?</value></data>
+  <data name="Pip_Solved" xml:space="preserve"><value>{0} resueltos</value></data>
+  <data name="Pip_Unavailable" xml:space="preserve"><value>Los problemas de Pip empiezan en 2.º de primaria. Cambia tu nivel en el panel si quieres probar.</value></data>
+  <data name="Pip_Footer" xml:space="preserve"><value>El problema y el error de Pip los genera la plataforma, que siempre sabe qué línea está mal y por qué. No hace falta IA.</value></data>
+  <data name="Js_PipSolved" xml:space="preserve"><value>Pip resolvió esto:</value></data>
+  <data name="Js_PipTapLine" xml:space="preserve"><value>Toca la primera línea donde Pip se equivoca.</value></data>
+  <data name="Js_PipWhy" xml:space="preserve"><value>¿Qué falló?</value></data>
+  <data name="Js_PipCheck" xml:space="preserve"><value>Comprobar</value></data>
+  <data name="Js_PipPick" xml:space="preserve"><value>Elige primero una línea y un motivo.</value></data>
+  <data name="Js_PipBoth" xml:space="preserve"><value>¡Lo encontraste y sabes por qué!</value></data>
+  <data name="Js_PipLineOnly" xml:space="preserve"><value>Encontraste la línea, pero no el motivo.</value></data>
+  <data name="Js_PipMissed" xml:space="preserve"><value>Esta vez no: mira la línea correcta.</value></data>
+  <data name="Js_PipAgain" xml:space="preserve"><value>Otro más</value></data>
+  <data name="Js_PipLoading" xml:space="preserve"><value>Pip está buscando su cuaderno…</value></data>
+  <data name="Js_Err_pip_level" xml:space="preserve"><value>Los problemas de Pip empiezan en 2.º de primaria.</value></data>
+  <data name="Js_Err_pip_answer" xml:space="preserve"><value>Elige una línea y un motivo.</value></data>
+  <data name="Js_Err_no_pip" xml:space="preserve"><value>Este problema ya está respondido. Pide otro.</value></data>
+  <data name="Pip_Stats" xml:space="preserve"><value>Errores que detectas (encontrados / vistos)</value></data>
+  <data name="Pip_Maths" xml:space="preserve"><value>Mates</value></data>
+  <data name="Pip_Language" xml:space="preserve"><value>Lengua</value></data>
+  <data name="Js_PipOwn" xml:space="preserve"><value>Pip está practicando algo que tú también has trabajado: {0}.</value></data>
+  <data name="Detective_Title" xml:space="preserve"><value>El detective: de dónde viene de verdad la dificultad</value></data>
+  <data name="Detective_Hint" xml:space="preserve"><value>Cuando un tema no sale, la causa suele estar un escalón más abajo. El Tutor comprueba ese escalón con tus respuestas.</value></data>
+  <data name="Detective_Check" xml:space="preserve"><value>Comprobar: {0}</value></data>
+  <data name="Detective_Practise" xml:space="preserve"><value>Practicar: {0}</value></data>
+  <data name="Certain_Title" xml:space="preserve"><value>Seguro… pero todavía no</value></data>
+  <data name="Certain_Hint" xml:space="preserve"><value>Temas donde dijiste «seguro» y fallaste. Son los más útiles de repasar: hay una idea aprendida al revés.</value></data>
+  <data name="Certain_Count" xml:space="preserve"><value>seguro y mal {0} de {1} veces</value></data>
+  <data name="Certain_Go" xml:space="preserve"><value>Repasarlo</value></data>
+  <data name="Certain_Teacher" xml:space="preserve"><value>Se siente seguro pero falla en {0} ({1} de {2} respuestas «seguro» fueron incorrectas).</value></data>
+  <data name="Signals_Title" xml:space="preserve"><value>Lo que ha encontrado el Tutor</value></data>
+  <data name="Nav_Fading" xml:space="preserve"><value>Paso a paso</value></data>
+  <data name="Fading_Title" xml:space="preserve"><value>Paso a paso</value></data>
+  <data name="Fading_Subtitle" xml:space="preserve"><value>El Tutor resuelve un problema delante de ti. Luego la ayuda desaparece poco a poco: primero el último resultado, después todos, y al final resuelves uno tú solo.</value></data>
+  <data name="Fading_Pick" xml:space="preserve"><value>¿Qué quieres aprender a hacer?</value></data>
+  <data name="Fading_Done" xml:space="preserve"><value>{0} terminados solo</value></data>
+  <data name="Fading_Unavailable" xml:space="preserve"><value>Paso a paso empieza en los últimos cursos de primaria. Cambia tu nivel en el panel si quieres probar.</value></data>
+  <data name="Fading_Footer" xml:space="preserve"><value>Cada problema y cada comprobación los calcula la plataforma. No hace falta IA.</value></data>
+  <data name="Js_FadingStage0" xml:space="preserve"><value>1 de 4 · Lee cómo se resuelve</value></data>
+  <data name="Js_FadingStage1" xml:space="preserve"><value>2 de 4 · El último resultado es tuyo</value></data>
+  <data name="Js_FadingStage2" xml:space="preserve"><value>3 de 4 · Todos los resultados son tuyos</value></data>
+  <data name="Js_FadingStage3" xml:space="preserve"><value>4 de 4 · Tú solo</value></data>
+  <data name="Js_FadingRead" xml:space="preserve"><value>Lo he leído, siguiente</value></data>
+  <data name="Js_FadingCheck" xml:space="preserve"><value>Comprobar</value></data>
+  <data name="Js_FadingOther" xml:space="preserve"><value>Elegir otra cosa</value></data>
+  <data name="Js_FadingAnswer" xml:space="preserve"><value>Tu respuesta:</value></data>
+  <data name="Js_FadingResultOf" xml:space="preserve"><value>Resultado del paso {0}</value></data>
+  <data name="Js_FadingRight" xml:space="preserve"><value>¡Bien! Ahora con un poco menos de ayuda.</value></data>
+  <data name="Js_FadingWrong" xml:space="preserve"><value>Todavía no. Así se resolvía ese; prueba otro del mismo tipo:</value></data>
+  <data name="Js_FadingFinished" xml:space="preserve"><value>¡Lo has resuelto tú solo, sin ninguna ayuda!</value></data>
+  <data name="Js_Err_fading_kind" xml:space="preserve"><value>Este tipo de problema no está disponible para tu nivel.</value></data>
+  <data name="Js_Err_fading_answer" xml:space="preserve"><value>Escribe un número en cada hueco.</value></data>
+  <data name="Js_Err_no_fading" xml:space="preserve"><value>Esta serie ha terminado. Elige un tipo de problema para empezar otra.</value></data>
+  <data name="Map_Title" xml:space="preserve"><value>Mi mapa de confianza</value></data>
+  <data name="Map_Hint" xml:space="preserve"><value>Antes de cada respuesta puedes decir lo seguro que estás. Aquí está lo que creías frente a lo que pasó.</value></data>
+  <data name="Map_Empty" xml:space="preserve"><value>En tu próximo test, toca 😎 Seguro o 🤔 No estoy seguro antes de responder y el mapa se irá llenando.</value></data>
+  <data name="Js_BetSure" xml:space="preserve"><value>Cuando dijiste «seguro»: {0} de {1} bien.</value></data>
+  <data name="Js_BetUnsure" xml:space="preserve"><value>Cuando dijiste «no estoy seguro»: {0} de {1} bien.</value></data>
+  <data name="Js_BetMap" xml:space="preserve"><value>Ver mi mapa de confianza</value></data>
+  <data name="Course_Title" xml:space="preserve"><value>Materiales y tareas</value></data>
+  <data name="Course_Subtitle" xml:space="preserve"><value>documentos que usa el Tutor, trabajo para la clase y progreso medido</value></data>
+  <data name="Course_Back" xml:space="preserve"><value>Seguimiento de la clase</value></data>
+  <data name="Mat_Title" xml:space="preserve"><value>Documentos para el Tutor</value></data>
+  <data name="Mat_Hint" xml:space="preserve"><value>Añade tus apuntes o textos. El Tutor los usa con los alumnos de esta clase: en las lecciones del curso, en la entrevista con un personaje histórico, o como test sobre el documento. El Tutor los trata como información, nunca como órdenes.</value></data>
+  <data name="Mat_Name" xml:space="preserve"><value>Título</value></data>
+  <data name="Mat_For" xml:space="preserve"><value>Asociar a</value></data>
+  <data name="Mat_Figure" xml:space="preserve"><value>Personaje</value></data>
+  <data name="Mat_Text" xml:space="preserve"><value>Texto del documento</value></data>
+  <data name="Mat_Limits" xml:space="preserve"><value>Entre {0} y {1} caracteres. Puedes pegar el texto o cargar un archivo .txt, .md o .pdf (se lee en tu navegador).</value></data>
+  <data name="Mat_Add" xml:space="preserve"><value>Añadir documento</value></data>
+  <data name="Mat_Chars" xml:space="preserve"><value>{0} caracteres</value></data>
+  <data name="MatTarget_Course" xml:space="preserve"><value>El curso</value></data>
+  <data name="MatTarget_Figure" xml:space="preserve"><value>Un personaje histórico</value></data>
+  <data name="MatTarget_Test" xml:space="preserve"><value>Un test</value></data>
+  <data name="Mat_BadTitle" xml:space="preserve"><value>El título necesita entre 3 y 80 caracteres.</value></data>
+  <data name="Mat_TooShort" xml:space="preserve"><value>El texto es demasiado corto: al menos 200 caracteres.</value></data>
+  <data name="Mat_TooLong" xml:space="preserve"><value>El texto es demasiado largo: 20.000 caracteres como máximo.</value></data>
+  <data name="Mat_BadTarget" xml:space="preserve"><value>Elige a qué se asocia el documento.</value></data>
+  <data name="Mat_Full" xml:space="preserve"><value>Esta clase ya tiene 20 documentos: borra uno primero.</value></data>
+  <data name="Mat_NotAllowed" xml:space="preserve"><value>Esta clase no es tuya.</value></data>
+  <data name="Assign_Title" xml:space="preserve"><value>Tareas</value></data>
+  <data name="Assign_Hint" xml:space="preserve"><value>Pon trabajo con fecha. Nadie marca nada a mano: cuenta como hecho cuando el alumno lo hace de verdad después de ponerlo, y ves el resultado.</value></data>
+  <data name="Assign_Practice" xml:space="preserve"><value>Practicar un tema</value></data>
+  <data name="Assign_Writing" xml:space="preserve"><value>Escribir o hablar</value></data>
+  <data name="Assign_Material" xml:space="preserve"><value>Test sobre un documento</value></data>
+  <data name="Assign_NoMaterial" xml:space="preserve"><value>Añade antes un documento arriba.</value></data>
+  <data name="Assign_Area" xml:space="preserve"><value>Materia</value></data>
+  <data name="Assign_Level" xml:space="preserve"><value>Nivel</value></data>
+  <data name="Assign_Topic" xml:space="preserve"><value>Tema</value></data>
+  <data name="Assign_Due" xml:space="preserve"><value>Para el</value></data>
+  <data name="Assign_Set" xml:space="preserve"><value>Poner</value></data>
+  <data name="Assign_Work" xml:space="preserve"><value>Trabajo</value></data>
+  <data name="Assign_NotDone" xml:space="preserve"><value>sin hacer</value></data>
+  <data name="Assign_BadDate" xml:space="preserve"><value>Elige una fecha entre hoy y dentro de 120 días.</value></data>
+  <data name="Assign_BadWork" xml:space="preserve"><value>Elige qué deben hacer los alumnos.</value></data>
+  <data name="Assign_Full" xml:space="preserve"><value>Esta clase ya tiene 30 tareas: borra una primero.</value></data>
+  <data name="Assign_NotAllowed" xml:space="preserve"><value>Esta clase no es tuya.</value></data>
+  <data name="Assign_Mine" xml:space="preserve"><value>Tareas de tu profesor</value></data>
+  <data name="Assign_Do" xml:space="preserve"><value>Hacerla</value></data>
+  <data name="Progress_Title" xml:space="preserve"><value>Progreso medido</value></data>
+  <data name="Progress_Hint" xml:space="preserve"><value>Aciertos de los últimos {0} días frente a los {0} días anteriores. Un porcentaje necesita al menos {1} respuestas en el periodo; entre paréntesis, el número de respuestas.</value></data>
+  <data name="Progress_Empty" xml:space="preserve"><value>Todavía no hay alumnos en esta clase.</value></data>
+  <data name="Progress_Before" xml:space="preserve"><value>Antes</value></data>
+  <data name="Progress_Now" xml:space="preserve"><value>Ahora</value></data>
+  <data name="Progress_Change" xml:space="preserve"><value>Cambio</value></data>
+  <data name="Report_Open" xml:space="preserve"><value>Informe</value></data>
+  <data name="Report_Title" xml:space="preserve"><value>Informe de progreso</value></data>
+  <data name="Report_Answers" xml:space="preserve"><value>{0} respuestas</value></data>
+  <data name="Report_Work" xml:space="preserve"><value>Tareas hechas: {0} de {1}</value></data>
+  <data name="Report_Topics" xml:space="preserve"><value>Tema a tema</value></data>
+  <data name="Report_Footer" xml:space="preserve"><value>Hecho por el Tutor con las respuestas del propio alumno. Nada de esto es la opinión de una IA.</value></data>
+  <data name="Nav_Materials" xml:space="preserve"><value>Documentos de mi profesor</value></data>
+  <data name="Materials_Subtitle" xml:space="preserve"><value>Lo que tus profesores han añadido para tus clases. Puedes leerlos, ponerte a prueba, y el Tutor los tiene en cuenta cuando te ayuda.</value></data>
+  <data name="Materials_Empty" xml:space="preserve"><value>Tus profesores aún no han añadido documentos. Únete a una clase con su código para verlos aquí.</value></data>
+  <data name="Materials_Read" xml:space="preserve"><value>Leer el documento</value></data>
+  <data name="Materials_Test" xml:space="preserve"><value>Ponme a prueba</value></data>
+  <data name="Materials_Ask" xml:space="preserve"><value>Preguntar a {0}</value></data>
+  <data name="Materials_Footer" xml:space="preserve"><value>Sin IA, el test se hace con frases del documento a las que les falta una palabra. Con IA, las preguntas salen solo del documento.</value></data>
+  <data name="Nav_Writing" xml:space="preserve"><value>Escríbelo, dilo</value></data>
+  <data name="Writing_Subtitle" xml:space="preserve"><value>Respuestas que son tuyas: un texto para escribir o algo que decir en voz alta. El Tutor lo mide, te dice qué mejorar y lo vuelves a intentar.</value></data>
+  <data name="Writing_Unavailable" xml:space="preserve"><value>Escríbelo, dilo empieza en 2.º de primaria.</value></data>
+  <data name="Writing_Spoken" xml:space="preserve"><value>en voz alta</value></data>
+  <data name="Writing_Written" xml:space="preserve"><value>escrito</value></data>
+  <data name="Writing_Yours" xml:space="preserve"><value>Tu respuesta</value></data>
+  <data name="Writing_Send" xml:space="preserve"><value>Revisarlo</value></data>
+  <data name="Writing_Dictate" xml:space="preserve"><value>Decirlo</value></data>
+  <data name="Writing_Footer" xml:space="preserve"><value>Tu texto no se guarda: solo se conservan las medidas (palabras, criterios cumplidos), para que tu profesor vea que el trabajo está hecho.</value></data>
+  <data name="Js_WritingCount" xml:space="preserve"><value>{0} palabras (entre {1} y {2})</value></data>
+  <data name="Js_WritingScore" xml:space="preserve"><value>Criterios cumplidos: {0} de {1}</value></data>
+  <data name="Js_WritingRubric" xml:space="preserve"><value>La valoración del Tutor: {0} de {1}</value></data>
+  <data name="Js_WritingOffline" xml:space="preserve"><value>Sin IA, el Tutor solo mide lo que se puede contar. Conecta una IA para recibir consejos sobre el contenido, el orden, la lengua y el vocabulario.</value></data>
+  <data name="Js_WritingAgain" xml:space="preserve"><value>Cambia tu texto y vuelve a enviarlo: verás si ha mejorado.</value></data>
+  <data name="Js_WritingBetter" xml:space="preserve"><value>Mejor que antes: de {0}/{1} a {2}/{3}.</value></data>
+  <data name="Js_WritingSame" xml:space="preserve"><value>Igual que antes: {2}/{3}. Mira los criterios que faltan.</value></data>
+  <data name="Js_WritingWorse" xml:space="preserve"><value>Antes era {0}/{1}, ahora {2}/{3}: mira qué ha cambiado.</value></data>
+  <data name="Js_Err_writing_empty" xml:space="preserve"><value>Elige una tarea y escribe antes tu respuesta.</value></data>
+  <data name="Js_Err_writing_long" xml:space="preserve"><value>Demasiado largo: 4.000 caracteres como máximo.</value></data>
+  <data name="Materials_TestOf" xml:space="preserve"><value>Test sobre el documento de tu profesor</value></data>
 </root>

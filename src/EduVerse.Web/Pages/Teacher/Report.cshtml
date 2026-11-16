@@ -1,0 +1,65 @@
+@page
+@model EduVerse.Web.Pages.Teacher.ReportModel
+@using EduVerse.Core.Tutor
+@using EduVerse.Infrastructure.Data
+@{
+    var r = Model.Row;
+    var language = Localization.LanguageForCurrentCulture();
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    ViewData["Title"] = L["Report_Title"];
+    EduVerse.Web.Breadcrumb.Set(ViewData, r.Name, ("/Teacher", L["Nav_Classes"]), ($"/Teacher/Course?id={Model.ClassId}", L["Course_Title"]));
+    var tasks = Writing.Tasks(language);
+    string Pct(int? p) => p is { } v ? $"{v} %" : "—";
+}
+<div class="flex flex-wrap justify-between items-end gap-3 print:hidden">
+    <a class="@Ui.BtnLight" href="/Teacher/Course?id=@Model.ClassId#progress">← @L["Course_Title"]</a>
+    <button type="button" class="@Ui.BtnPrimary" onclick="window.print()" data-testid="report-print">🖨️ @L["Letter_Print"]</button>
+</div>
+
+<article class="@Ui.Card p-6 sm:p-8 max-w-3xl print:shadow-none print:border-0" data-testid="report">
+    <h1 class="text-2xl font-semibold text-foreground">📈 @L["Report_Title"]: @r.Name</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1">@Model.ClassName · @Model.Today.ToString("d MMMM yyyy", culture)</p>
+
+    <div class="mt-5 grid grid-cols-3 gap-3">
+        <div class="p-3 rounded-2xl tone-sky"><p class="text-xs text-foreground/80">@L["Progress_Before"]</p><p class="text-2xl font-semibold text-foreground" data-testid="report-before">@Pct(r.PercentBefore)</p><p class="text-xs text-foreground/70">@string.Format(culture, L["Report_Answers"].Value, r.AnswersBefore)</p></div>
+        <div class="p-3 rounded-2xl tone-mint"><p class="text-xs text-foreground/80">@L["Progress_Now"]</p><p class="text-2xl font-semibold text-foreground" data-testid="report-now">@Pct(r.PercentNow)</p><p class="text-xs text-foreground/70">@string.Format(culture, L["Report_Answers"].Value, r.AnswersNow)</p></div>
+        <div class="p-3 rounded-2xl tone-lavender"><p class="text-xs text-foreground/80">@L["Progress_Change"]</p><p class="text-2xl font-semibold text-foreground">@(r.Change is { } ch ? (ch > 0 ? "+" : "") + ch + " pt" : "—")</p><p class="text-xs text-foreground/70">@string.Format(culture, L["Report_Work"].Value, r.Done, r.Assigned)</p></div>
+    </div>
+    <p class="mt-2 text-xs text-muted-foreground-1">@string.Format(culture, L["Progress_Hint"].Value, EduVerse.Infrastructure.Tutor.AssignmentStore.PeriodDays, EduVerse.Infrastructure.Tutor.AssignmentStore.MinAnswers)</p>
+
+    @if (Model.Topics.Count > 0)
+    {
+        <h2 class="mt-6 text-base font-semibold text-foreground">@L["Report_Topics"]</h2>
+        <table class="mt-2 min-w-full text-sm" data-testid="report-topics">
+            <thead><tr class="text-left text-xs text-muted-foreground-1"><th scope="col" class="py-1.5 pe-4 font-medium">@L["Assign_Topic"]</th><th scope="col" class="py-1.5 pe-4 font-medium">@L["Progress_Before"]</th><th scope="col" class="py-1.5 font-medium">@L["Progress_Now"]</th></tr></thead>
+            <tbody>
+                @foreach (var (topic, before, now, answers) in Model.Topics)
+                {
+                    <tr class="border-t border-card-divider"><td class="py-1.5 pe-4 text-foreground">@topic</td><td class="py-1.5 pe-4 text-foreground">@Pct(before)</td><td class="py-1.5 text-foreground">@Pct(now) <span class="text-xs text-muted-foreground-1">(@answers)</span></td></tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (Model.Work.Count > 0)
+    {
+        <h2 class="mt-6 text-base font-semibold text-foreground">@L["Assign_Title"]</h2>
+        <ul class="mt-2 space-y-1.5" data-testid="report-work">
+            @foreach (var (a, st) in Model.Work)
+            {
+                var name = a.Assignment.Kind switch { AssignmentKind.Practice => EduVerse.Web.QuizEndpoints.TopicName(a.Assignment.Topic, L), AssignmentKind.Writing => tasks.FirstOrDefault(t => t.Key == a.Assignment.WritingKey)?.Title ?? a.Assignment.WritingKey, _ => a.MaterialTitle ?? "" };
+                <li class="flex justify-between gap-3 text-sm text-foreground"><span>@name <span class="text-muted-foreground-1">· @a.Assignment.DueOn.ToString("d MMM", culture)</span></span>
+                    <span>@if (st.Done) { <span class="text-emerald-700 dark:text-emerald-300 font-medium">✓ @st.Score/@st.Total</span> } else { <span class="text-muted-foreground-1">@L["Assign_NotDone"]</span> }</span></li>
+            }
+        </ul>
+    }
+
+    @if (Model.Signals.Count > 0)
+    {
+        <h2 class="mt-6 text-base font-semibold text-foreground">🦉 @L["Signals_Title"]</h2>
+        <ul class="mt-2 space-y-1.5">
+            @foreach (var s in Model.Signals) { <li class="text-sm text-foreground">@s</li> }
+        </ul>
+    }
+    <p class="mt-6 text-xs text-muted-foreground-1">🦉 @L["Report_Footer"]</p>
+</article>
