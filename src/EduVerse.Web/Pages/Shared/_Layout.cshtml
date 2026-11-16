@@ -129,7 +129,7 @@
 
                 @if (user.IsStudent())
                 {
-                    <!-- Evo, the tutor of every page -->
+                    <!-- The Tutor of every page -->
                     <button type="button" id="companion-open" class="h-9 inline-flex items-center gap-x-1.5 ps-1 pe-2.5 sm:pe-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
                             aria-controls="companion" aria-expanded="false" title="@L["Companion_Open"]" data-testid="companion-open">
                         <partial name="_Mascot" model="@("size-7")" />
@@ -315,7 +315,14 @@
 
     <!-- ========== CONTENT ========== -->
     <main class="w-full lg:ps-[17.25rem] lg:sb-collapsed:ps-[6.5rem] lg:focus-mode:ps-0! transition-[padding] duration-300">
-        <div class="p-3 sm:p-6 lg:ps-3 space-y-6 max-w-[1600px] focus-mode:max-w-4xl focus-mode:mx-auto lg:focus-mode:ps-6">
+        <div class="p-3 sm:p-6 lg:ps-3 space-y-6 w-full focus-mode:max-w-4xl focus-mode:mx-auto lg:focus-mode:ps-6">
+            @{
+                var crumbs = EduVerse.Web.Breadcrumb.For(ViewData, current, signedIn ? user.Home() : "/", L["Crumb_Home"], nav.Select(n => (n.Page, n.Href, n.Label)));
+            }
+            @if (crumbs is not null)
+            {
+                <partial name="_Breadcrumb" model="crumbs" />
+            }
             @RenderBody()
         </div>
     </main>

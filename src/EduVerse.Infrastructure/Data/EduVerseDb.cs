@@ -59,8 +59,10 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
 
     public DbSet<CompanionMessage> CompanionMessages => Set<CompanionMessage>();
 
+    public DbSet<Certificate> Certificates => Set<Certificate>();
+
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 8;
+    public const int DatabaseVersion = 9;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -143,6 +145,12 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
         builder.Entity<BadgeAward>().HasKey(b => new { b.UserId, b.Key });
         builder.Entity<QuestClaim>().HasKey(q => new { q.UserId, q.Day, q.Key });
         builder.Entity<CompanionMessage>(e => e.HasIndex(m => new { m.UserId, m.At }));
+        builder.Entity<Certificate>(e =>
+        {
+            e.HasIndex(c => new { c.UserId, c.SubjectKey }).IsUnique();
+            e.HasIndex(c => c.Code).IsUnique();
+            e.Property(c => c.Code).HasMaxLength(20);
+        });
         builder.Entity<TeachSession>(e =>
         {
             e.Property(t => t.Id).HasMaxLength(40);

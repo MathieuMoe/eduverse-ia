@@ -375,8 +375,10 @@ internal static class BiologyBank
         var reversed = new string(answer.Reverse().ToArray());
         var swapped = string.Concat(strand.Select(c => c switch { 'A' => "G", 'G' => "A", 'C' => "T", _ => "C" }));
         var other = rna ? answer.Replace('U', 'T') : answer.Replace('T', 'U');
+        var rotated = answer[1..] + answer[0];
+        var mutated = answer[..^1] + (answer[^1] == 'G' ? 'C' : 'G');
         return q.Choice("biology.dna", q.F(rna ? "Which mRNA is transcribed from the DNA template strand {0}?|¿Qué ARNm se transcribe de la hebra molde de ADN {0}?|Quel ARNm est transcrit à partir du brin matrice d'ADN {0} ?|Quin ARNm es transcriu de la cadena motlle d'ADN {0}?" : "Complementary strand of the DNA {0}?|¿Hebra complementaria del ADN {0}?|Brin complémentaire de l'ADN {0} ?|Cadena complementària de l'ADN {0}?", strand),
-            answer, [reversed, swapped, strand, other], q.T(rna ? "A pairs with U in RNA, T with A, C with G.|En el ARN la A se empareja con U, la T con A y la C con G.|Dans l'ARN, A s'apparie avec U, T avec A, C avec G.|A l'ARN, l'A s'aparella amb U, la T amb A i la C amb G." : "A pairs with T and C pairs with G.|La A se empareja con la T y la C con la G.|A s'apparie avec T et C avec G.|L'A s'aparella amb la T i la C amb la G."));
+            answer, [reversed, swapped, strand, other, rotated, mutated], q.T(rna ? "A pairs with U in RNA, T with A, C with G.|En el ARN la A se empareja con U, la T con A y la C con G.|Dans l'ARN, A s'apparie avec U, T avec A, C avec G.|A l'ARN, l'A s'aparella amb U, la T amb A i la C amb G." : "A pairs with T and C pairs with G.|La A se empareja con la T y la C con la G.|A s'apparie avec T et C avec G.|L'A s'aparella amb la T i la C amb la G."));
     }
 
     private static QuizQuestion HardyWeinberg(Mc q)

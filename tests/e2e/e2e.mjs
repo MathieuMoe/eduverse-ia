@@ -273,7 +273,7 @@ async function demo(page, role) {
     await page.goto(BASE + "/Student/Explore");
     await page.click("[data-testid=evo-History]");
     await page.locator("[data-testid=evo-answer]").waitFor();
-    check((await page.locator("[data-testid=quiz-options]").textContent()).includes("Evo is right"), "check Evo offers \"Evo is right\"");
+    check((await page.locator("[data-testid=quiz-options]").textContent()).includes("Tutor is right"), "check the Tutor offers \"The Tutor is right\"");
 
     // Adventure: doors, hearts and a friendly guardian, story written offline
     await page.goto(BASE + "/Student/Adventures");
@@ -312,6 +312,47 @@ async function demo(page, role) {
     check(true, "the conversation follows the student to another page");
     await page.keyboard.press("Escape");
     check(await page.locator("[data-testid=companion]").isHidden(), "Esc closes the panel");
+
+    // Learn starts with a catalog: every subject at the student's level, the own subjects and the trades
+    await page.goto(BASE + "/Student/Learn");
+    check(await page.locator("[data-testid=learn-subjects] a").count() >= 10, "learn offers every subject of the catalog");
+    await page.screenshot({ path: join(DOCS, "screenshot-learn-catalog.png"), fullPage: true });
+    await page.click("[data-testid^=learn-area-History]");
+    await page.locator("#ln-map li").first().waitFor();
+    check(await page.locator("#ln-map li").count() >= 1, "history is learned with the tutor, topic by topic");
+
+    // Trades and practical skills, with the science behind and an internal certificate
+    await page.goto(BASE + "/Student/Learn");
+    await page.click("[data-testid=learn-tab-trades]");
+    await page.locator("[data-testid=trades]").waitFor();
+    check(await page.locator("[data-testid=trades] article").count() === 10, "ten trades, from electricity to beekeeping");
+    await page.screenshot({ path: join(DOCS, "screenshot-trades.png"), fullPage: true });
+    await page.click("[data-testid=learn-tab-hobbies]");
+    await page.locator("[data-testid=trade-trade-chess]").waitFor();
+    check(await page.locator("[data-testid=trades] article").count() === 6, "six hobbies in their own tab: astronomy, music, magic, survival, chess, dinosaurs");
+    await page.screenshot({ path: join(DOCS, "screenshot-hobbies.png"), fullPage: true });
+    await page.click("[data-testid=learn-trade-astronomy]");
+    await page.locator("#ln-map li").first().waitFor();
+    check(await page.locator("[data-testid=breadcrumb] a[href='/Student/Learn?tab=hobbies']").count() >= 1, "a hobby is learned with the tutor and its breadcrumb goes back to the hobbies");
+    await page.goto(BASE + "/Student/Certificate?subject=trade-garden");
+    check((await page.locator("[data-testid=certificate-code]").textContent()).trim() === "EV-GARDEN26", "the certificate of the garden shows its code");
+    await page.screenshot({ path: join(DOCS, "screenshot-certificate.png") });
+    await page.goto(BASE + "/Student/Learn?subject=trade-electricity");
+    await page.locator("[data-testid=ln-certificate]").waitFor();
+    check(true, "a trade is learned with the tutor and shows the certificate goal");
+
+    // Breadcrumb at the top of the pages: back button and navigable path
+    await page.goto(BASE + "/Student/Dossier?figure=darwin");
+    check((await page.locator("[data-testid=breadcrumb]").textContent()).includes("Charles Darwin"), "the breadcrumb shows the path of the page");
+    await page.click("[data-testid=breadcrumb-back]");
+    await page.waitForURL("**/Student/Interview?figure=darwin");
+    check(true, "the back button of the breadcrumb goes up one level");
+
+    // Dossier of a figure: discovery, dates, evidence
+    await page.goto(BASE + "/Student/Dossier?figure=galileo");
+    await page.locator("[data-testid=dossier] [data-discovery] svg").waitFor();
+    check(await page.locator("[data-testid=dossier] ol li").count() >= 5, "the dossier has the life in dates");
+    await page.screenshot({ path: join(DOCS, "screenshot-dossier.png"), fullPage: true });
 
     // Some questions come with a picture drawn in the browser
     await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
@@ -353,6 +394,10 @@ async function demo(page, role) {
     await page.locator("[data-testid=iv-check]").waitFor();
     check(await page.locator("[data-testid=iv-answer]").count() === 4, "the figure greets and answers the suggested questions offline");
     await page.screenshot({ path: join(DOCS, "screenshot-interview.png") });
+    await page.click("[data-testid=iv-tab-dossier]");
+    await page.locator("#iv-panel-dossier [data-discovery] svg").waitFor();
+    check(await page.locator("#iv-panel-dossier [data-testid=dossier-source]").count() >= 1, "the dossier shows the discovery and links to the historical source");
+    await page.click("#iv-tab-chat");
     await page.click("[data-testid=iv-check]");
     for (let i = 0; i < 3; i++) {
         await page.locator("[data-testid=quiz-options] button").first().waitFor();
@@ -364,7 +409,7 @@ async function demo(page, role) {
     check(true, "interview check finished");
 
     await page.goto(BASE + "/Student/Achievements");
-    check(await page.locator("[data-testid=badges] li").count() === 23, "all badges with their progress");
+    check(await page.locator("[data-testid=badges] li").count() === 26, "all badges with their progress");
     await page.screenshot({ path: join(DOCS, "screenshot-achievements.png"), fullPage: true });
     await page.goto(BASE + "/Student");
     await page.screenshot({ path: join(DOCS, "screenshot-student.png") });

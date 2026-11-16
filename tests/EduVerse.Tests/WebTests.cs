@@ -135,6 +135,8 @@ public class WebTests(App app) : IClassFixture<App>
     [InlineData("/Student/Teach?concept=pythagoras")]
     [InlineData("/Student/Interview")]
     [InlineData("/Student/Interview?figure=curie")]
+    [InlineData("/Student/Dossier?figure=champollion")]
+    [InlineData("/Student/Dossier?figure=franklin")]
     [InlineData("/Student/Quiz?mode=Interview&figure=lovelace")]
     [InlineData("/Student/Quiz?mode=Adventure&area=History&level=Primary3&theme=Jungle")]
     [InlineData("/Student/History?area=Geography")]
@@ -210,6 +212,20 @@ public class WebTests(App app) : IClassFixture<App>
         Assert.Equal((3, 5), (adventure.GetProperty("hearts").GetInt32(), adventure.GetProperty("doors").GetInt32()));
         Assert.False(string.IsNullOrEmpty(adventure.GetProperty("intro").GetString()));
         Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/quiz/adventure", new { area = "Geography", level = "Primary3", theme = "Volcano" })).StatusCode);
+    }
+
+    [Fact]
+    public async Task Pages_show_a_navigable_breadcrumb_but_not_the_home()
+    {
+        var client = await app.DemoAsync("Student");
+        var dossier = await client.GetStringAsync("/Student/Dossier?figure=galileo");
+        Assert.Contains("data-testid=\"breadcrumb\"", dossier, StringComparison.Ordinal);
+        Assert.Contains("href=\"/Student/Interview?figure=galileo\"", dossier, StringComparison.Ordinal);
+        Assert.Contains("aria-current=\"page\"", dossier, StringComparison.Ordinal);
+        Assert.Contains("data-testid=\"breadcrumb\"", await client.GetStringAsync("/Student/Explore"), StringComparison.Ordinal);
+        Assert.DoesNotContain("data-testid=\"breadcrumb\"", await client.GetStringAsync("/Student"), StringComparison.Ordinal);
+        var teacher = await app.DemoAsync("Teacher");
+        Assert.Contains("data-testid=\"breadcrumb\"", await teacher.GetStringAsync("/Teacher/Pack"), StringComparison.Ordinal);
     }
 
     [Fact]

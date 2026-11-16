@@ -1,4 +1,4 @@
-// Evo, the tutor of every page of the student. The panel loads the conversation and the ideas (computed by the server
+// The Tutor of every page of the student. The panel loads the conversation and the ideas (computed by the server
 // from the tests, topics and reviews of the student) and sends the page the student is on. Self-contained: it does not
 // depend on common.js, which some pages load after it.
 (() => {

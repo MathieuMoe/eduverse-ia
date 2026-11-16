@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using EduVerse.Core.Content;
 using EduVerse.Core.Learning;
 using EduVerse.Infrastructure.Data;
@@ -57,6 +58,7 @@ public static class DependencyInjection
         services.AddSingleton<DemoPackGenerator>();
         services.AddScoped<AiEngines>();
         services.AddScoped<LearningStore>();
+        services.TryAddSingleton<Core.Curriculum.ICatalogNames, Core.Curriculum.KeyCatalogNames>();
         services.AddScoped<ClassroomStore>();
         services.AddScoped<InstitutionStore>();
         services.AddScoped<MarketplaceStore>();
@@ -64,6 +66,7 @@ public static class DependencyInjection
         services.AddScoped<Quizzes.QuizStore>();
         services.AddScoped<Tutor.TeachStore>();
         services.AddScoped<Tutor.CompanionStore>();
+        services.AddScoped<Learning.CertificateStore>();
         services.AddSingleton<Core.Institutions.DemoFamilyWriter>();
         services.AddOptions<MarketplaceOptions>().Bind(configuration.GetSection(MarketplaceOptions.SectionName));
         return services;

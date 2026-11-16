@@ -106,6 +106,7 @@ public static class DemoSeeder
         await SeedInstitutionAsync(db, users, sim, teacher, ids, now, ct).ConfigureAwait(false);
         await SeedMarketplaceAsync(db, users, ids, now, ct).ConfigureAwait(false);
         await SeedGamificationAsync(db, users, ids, clock, ct).ConfigureAwait(false);
+        await SeedTradesAsync(db, ids["Sara"], clock.GetUtcNow(), ct).ConfigureAwait(false);
 
         // Laura already talked with Leo about one of his recurring mistakes: an alert handled after a few hours
         var handled = await db.Alerts.Where(a => a.StudentId == ids["Leo"] && a.Kind == AlertKind.RecurringMisconception)
@@ -170,6 +171,36 @@ public static class DemoSeeder
     /// Tests of the catalog, XP, streaks, teams and duels for the class of Laura, and Mia (6 years old, kids mode).
     /// Questions come from the real offline banks and every XP point from the real rules; badges are given by <see cref="GamificationStore"/>.
     /// </summary>
+    /// <summary>Sara has finished the vegetable garden (certificate) and started electricity at home.</summary>
+    private static async Task SeedTradesAsync(EduVerseDb db, string sara, DateTimeOffset now, CancellationToken ct)
+    {
+        var garden = Trades.Find("trade-garden")!;
+        foreach (var (concept, i) in garden.Concepts.Select((c, i) => (c, i)))
+        {
+            var state = MasteryState.New(concept.Key) with { PKnown = 0.96, Attempts = 5 + i, Correct = 5 + i - (i % 2), Streak = 4, Status = MasteryStatus.Mastered, NeedsExplanation = false, LastAttemptAt = now.AddDays(-9 + i) };
+            var record = new MasteryRecord { UserId = sara, SubjectId = garden.Key, ConceptKey = concept.Key };
+            LearningStore.Copy(state, record);
+            db.Mastery.Add(record);
+        }
+
+        db.Certificates.Add(new Certificate { UserId = sara, SubjectKey = garden.Key, Code = "EV-GARDEN26", IssuedAt = now.AddDays(-4) });
+        var electricity = Trades.Find("trade-electricity")!;
+        var first = new MasteryRecord { UserId = sara, SubjectId = electricity.Key, ConceptKey = electricity.Concepts[0].Key };
+        LearningStore.Copy(MasteryState.New(electricity.Concepts[0].Key) with { PKnown = 0.95, Attempts = 4, Correct = 4, Streak = 4, Status = MasteryStatus.Mastered, NeedsExplanation = false, LastAttemptAt = now.AddDays(-1) }, first);
+        db.Mastery.Add(first);
+
+        // A hobby in progress: two concepts of astronomy
+        var astronomy = Trades.Find("trade-astronomy")!;
+        foreach (var (concept, i) in astronomy.Concepts.Take(2).Select((c, i) => (c, i)))
+        {
+            var record = new MasteryRecord { UserId = sara, SubjectId = astronomy.Key, ConceptKey = concept.Key };
+            LearningStore.Copy(MasteryState.New(concept.Key) with { PKnown = 0.94, Attempts = 4, Correct = 4, Streak = 3, Status = MasteryStatus.Mastered, NeedsExplanation = false, LastAttemptAt = now.AddHours(-20 + i) }, record);
+            db.Mastery.Add(record);
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
     private static async Task SeedGamificationAsync(EduVerseDb db, UserManager<AppUser> users, Dictionary<string, string> ids, TimeProvider clock, CancellationToken ct)
     {
         var now = clock.GetUtcNow();

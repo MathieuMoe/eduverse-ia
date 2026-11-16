@@ -1,0 +1,51 @@
+@model IReadOnlyList<EduVerse.Infrastructure.Learning.TradeProgress>
+@{
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<div class="grid md:grid-cols-2 2xl:grid-cols-4 gap-4" data-testid="trades">
+    @foreach (var p in Model)
+    {
+        var t = p.Trade;
+        <article class="@Ui.Card p-5 flex flex-col gap-4" data-testid="trade-@t.Key">
+            <div class="flex items-start gap-3">
+                <span class="size-14 shrink-0 rounded-2xl tone-@t.Tone grid place-items-center text-3xl" aria-hidden="true">@t.Icon</span>
+                <div class="min-w-0">
+                    <h2 class="text-lg font-semibold text-foreground">@t.Name.In(language)</h2>
+                    <p class="text-sm text-muted-foreground-1">@t.Summary.In(language)</p>
+                </div>
+            </div>
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground-1">@L["Trades_Science"]</p>
+                <ul class="mt-2 space-y-1.5">
+                    @foreach (var c in t.Concepts)
+                    {
+                        var info = EduVerse.Core.Catalog.Catalog.Info(c.Science);
+                        <li class="flex items-start gap-2 text-sm">
+                            <span class="size-6 shrink-0 rounded-lg tone-@info.Tone grid place-items-center text-xs" aria-hidden="true">@info.Icon</span>
+                            <span class="min-w-0"><span class="text-foreground">@c.Name.In(language)</span> <span class="text-muted-foreground-1">· @c.ScienceLink.In(language)</span></span>
+                        </li>
+                    }
+                </ul>
+            </div>
+            @if (t.Safety is { } safety)
+            {
+                <p class="p-3 rounded-2xl bg-amber-50 text-amber-900 dark:bg-amber-500/15 dark:text-amber-200 text-xs">⚠️ @safety.In(language)</p>
+            }
+            <div class="mt-auto space-y-3">
+                <div>
+                    <div class="flex justify-between text-xs text-muted-foreground-1"><span>@L["Trades_Progress"]</span><span>@string.Format(culture, L["Trades_Mastered"], p.Mastered, p.Total)</span></div>
+                    <div class="mt-1 h-2 rounded-full bg-surface overflow-hidden"><div class="h-full rounded-full @(p.Certificate is null ? "bg-primary" : "bg-emerald-500")" style="width:@(100 * p.Mastered / Math.Max(1, p.Total))%"></div></div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <a href="/Student/Learn?subject=@t.Key" class="@Ui.BtnPrimary" data-testid="learn-@t.Key">@(p.Mastered == 0 ? L["Trades_Start"] : L["Trades_Continue"])</a>
+                    @if (p.Certificate is not null)
+                    {
+                        <a href="/Student/Certificate?subject=@t.Key" class="@Ui.BtnLight">🎓 @L["Trades_Certificate"]</a>
+                    }
+                </div>
+            </div>
+        </article>
+    }
+</div>
+<p class="text-xs text-muted-foreground-1 max-w-3xl">🎓 @L["Trades_CertificateNote"]</p>

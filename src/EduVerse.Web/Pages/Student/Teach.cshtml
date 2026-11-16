@@ -8,11 +8,11 @@
 }
 @if (Model.Concept is { } c)
 {
-    <div id="teach-root" class="max-w-3xl w-full mx-auto space-y-4" data-concept="@c.Key">
+    EduVerse.Web.Breadcrumb.Set(ViewData, c.Title.In(language), ("/Student/Teach", L["Nav_Teach"]));
+    <div id="teach-root" class="w-full space-y-4" data-concept="@c.Key">
         <div class="flex items-center gap-3">
             <span class="size-12 shrink-0 rounded-2xl tone-lavender grid place-items-center text-2xl" aria-hidden="true">@c.Icon</span>
             <div class="min-w-0">
-                <a href="/Student/Teach" class="text-sm text-muted-foreground-1 hover:text-foreground">← @L["Nav_Teach"]</a>
                 <h1 class="text-xl font-semibold text-foreground">@c.Title.In(language)</h1>
             </div>
         </div>

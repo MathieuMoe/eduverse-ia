@@ -13,11 +13,22 @@ public sealed record WeakTopic(Area Area, Level Level, string Topic, string Name
 /// <summary>A finished test, with names already in the language of the student.</summary>
 public sealed record RecentTest(string AreaName, string ModeName, int Correct, int Length, DateOnly Day);
 
-/// <summary>Everything Evo knows about the student when answering: computed from the database, never written by the AI.</summary>
+/// <summary>How the student is evolving: the last 7 days compared with the 7 days before (answers, accuracy, tests, XP).</summary>
+public sealed record Evolution(int Answers, int Accuracy, int PreviousAnswers, int PreviousAccuracy, int Tests, int PreviousTests, int Xp, int PreviousXp, IReadOnlyList<string> Improving)
+{
+    public static readonly Evolution None = new(0, 0, 0, 0, 0, 0, 0, 0, []);
+
+    /// <summary>Accuracy difference in points, when both weeks have enough answers to compare.</summary>
+    public int? Change => Answers >= 5 && PreviousAnswers >= 5 ? Accuracy - PreviousAccuracy : null;
+}
+
+/// <summary>Everything the Tutor knows about the student when answering: computed from the database, never written by the AI.</summary>
 public sealed record StudentSnapshot(
     string Name, Level Level, int XpLevel, string Rank, int Streak, bool PlayedToday, int DueReviews, int Misconceptions, int Tests,
-    IReadOnlyList<WeakTopic> Weak, IReadOnlyList<RecentTest> Recent, IReadOnlyList<string> Taught, int Interviews, string Page, string PageTitle)
+    IReadOnlyList<WeakTopic> Weak, IReadOnlyList<RecentTest> Recent, IReadOnlyList<string> Taught, int Interviews, string Page, string PageTitle, Evolution? Trend = null)
 {
+    public Evolution Evolution => Trend ?? Evolution.None;
+
     public bool Kids => Levels.IsKids(Level);
 
     /// <summary>The student is answering a test or an exercise: Evo helps with the method, never with the answer.</summary>
@@ -44,7 +55,7 @@ public sealed record CompanionTurn(bool FromStudent, string Text);
 public sealed record CompanionReply(string Text, IReadOnlyList<string> Actions);
 
 /// <summary>
-/// Evo, the companion of every page of the student: knows the progress, the conversation and the page, proposes
+/// The Tutor, the companion of every page of the student: knows the progress, the conversation and the page, proposes
 /// actions computed in code. Offline it answers the usual questions (what now, how am I doing, help) from the snapshot.
 /// </summary>
 public static class Companion
@@ -82,7 +93,7 @@ public static class Companion
         if (s.DueReviews > 0)
         {
             list.Add(new("review", CompanionActionKind.Review, "/Student/Quiz?mode=Review",
-                F("Review {0} topics (5 min)|Repasar {0} temas (5 min)|Réviser {0} notions (5 min)|Repassar {0} temes (5 min)", s.DueReviews), "🔁"));
+                s.DueReviews == 1 ? T("Review 1 topic (5 min)|Repasar 1 tema (5 min)|Réviser 1 notion (5 min)|Repassar 1 tema (5 min)") : F("Review {0} topics (5 min)|Repasar {0} temas (5 min)|Réviser {0} notions (5 min)|Repassar {0} temes (5 min)", s.DueReviews), "🔁"));
         }
 
         if (s.Weak.Count > 0)
@@ -96,14 +107,14 @@ public static class Companion
             if (concept is not null)
             {
                 list.Add(new("teach", CompanionActionKind.Teach, "/Student/Teach?concept=" + concept,
-                    F("Explain \"{0}\" to Evo|Explicarle «{0}» a Evo|Expliquer « {0} » à Evo|Explicar «{0}» a l'Evo", TeachConcepts.Find(concept)!.Title.In(language)), "🧑‍🏫"));
+                    F("Explain \"{0}\" to the Tutor|Explicarle «{0}» al Tutor|Expliquer « {0} » au Tuteur|Explicar «{0}» al Tutor", TeachConcepts.Find(concept)!.Title.In(language)), "🧑‍🏫"));
             }
         }
 
         if (s.Misconceptions > 0)
         {
             list.Add(new("notebook", CompanionActionKind.Notebook, "/Student/Quiz?mode=Notebook",
-                T("Catch your own mistakes in Evo's notebook|Caza tus propios errores en el cuaderno de Evo|Repère tes propres erreurs dans le carnet d'Evo|Caça els teus propis errors al quadern de l'Evo"), "📓"));
+                T("Catch your own mistakes in the Tutor's notebook|Caza tus propios errores en el cuaderno del Tutor|Repère tes propres erreurs dans le cahier du Tuteur|Caça els teus propis errors al quadern del Tutor"), "📓"));
         }
 
         if (!s.PlayedToday || s.Tests == 0)
@@ -128,7 +139,7 @@ public static class Companion
     public static string Greeting(StudentSnapshot s, TeachLanguage language)
     {
         ArgumentNullException.ThrowIfNull(s);
-        var hello = Txt.Of("Hi {0}! I'm Evo.|¡Hola, {0}! Soy Evo.|Salut {0} ! Je suis Evo.|Hola, {0}! Soc l'Evo.").Format(language, s.Name);
+        var hello = Txt.Of("Hi {0}! I'm your Tutor.|¡Hola, {0}! Soy tu Tutor.|Salut {0} ! Je suis ton Tuteur.|Hola, {0}! Soc el teu Tutor.").Format(language, s.Name);
         if (s.InTest)
         {
             return hello + " " + Txt.Of("I'm here if you get stuck: I'll help you think, not give you the answer.|Estoy aquí si te atascas: te ayudo a pensar, no te doy la respuesta.|Je suis là si tu bloques : je t'aide à réfléchir, je ne te donne pas la réponse.|Soc aquí si t'encalles: t'ajudo a pensar, no et dono la resposta.").In(language);
@@ -136,7 +147,7 @@ public static class Companion
 
         if (s.DueReviews > 0)
         {
-            return hello + " " + Txt.Of("You have {0} topics to review today. Ask me anything or choose an idea below.|Hoy tienes {0} temas para repasar. Pregúntame lo que quieras o elige una idea de abajo.|Tu as {0} notions à réviser aujourd'hui. Pose-moi une question ou choisis une idée ci-dessous.|Avui tens {0} temes per repassar. Pregunta'm el que vulguis o tria una idea de sota.").Format(language, s.DueReviews);
+            return hello + " " + (s.DueReviews == 1 ? Txt.Of("You have 1 topic to review today. Ask me anything or choose an idea below.|Hoy tienes 1 tema para repasar. Pregúntame lo que quieras o elige una idea de abajo.|Tu as 1 notion à réviser aujourd'hui. Pose-moi une question ou choisis une idée ci-dessous.|Avui tens 1 tema per repassar. Pregunta'm el que vulguis o tria una idea de sota.").In(language) : "") + (s.DueReviews == 1 ? "" : Txt.Of("You have {0} topics to review today. Ask me anything or choose an idea below.|Hoy tienes {0} temas para repasar. Pregúntame lo que quieras o elige una idea de abajo.|Tu as {0} notions à réviser aujourd'hui. Pose-moi une question ou choisis une idée ci-dessous.|Avui tens {0} temes per repassar. Pregunta'm el que vulguis o tria una idea de sota.").Format(language, s.DueReviews));
         }
 
         return hello + " " + Txt.Of("I know your tests and your progress. Ask me anything or choose an idea below.|Conozco tus tests y tu progreso. Pregúntame lo que quieras o elige una idea de abajo.|Je connais tes tests et tes progrès. Pose-moi une question ou choisis une idée ci-dessous.|Conec els teus tests i el teu progrés. Pregunta'm el que vulguis o tria una idea de sota.").In(language);
@@ -175,9 +186,38 @@ public static class Companion
             text += " " + Txt.Of("Your last test: {0}, {1} of {2} right.|Tu último test: {0}, {1} de {2} bien.|Ton dernier test : {0}, {1} sur {2} justes.|El teu últim test: {0}, {1} de {2} bé.").Format(language, r.AreaName, r.Correct, r.Length);
         }
 
+        text += Trend(s, language);
         text += " " + (s.Weak.Count > 0
             ? Txt.Of("The topic to work on most: {0} ({1} % mastered).|El tema que más te conviene trabajar: {0} (dominado al {1} %).|La notion à travailler en priorité : {0} (maîtrisée à {1} %).|El tema que més et convé treballar: {0} (dominat al {1} %).").Format(language, s.Weak[0].Name, s.Weak[0].Mastery)
             : Txt.Of("No weak topic for now: well done!|De momento no tienes ningún tema flojo: ¡bien hecho!|Pour l'instant, aucune notion faible : bravo !|De moment no tens cap tema fluix: ben fet!").In(language));
+        return text;
+    }
+
+    /// <summary>One sentence on the evolution of the week (empty when there is nothing to compare).</summary>
+    public static string Trend(StudentSnapshot s, TeachLanguage language)
+    {
+        ArgumentNullException.ThrowIfNull(s);
+        var e = s.Evolution;
+        var text = "";
+        if (e.Change is { } change)
+        {
+            var key = change >= 5
+                ? "This week you got {0} % right, {2} points more than the week before ({1} %): you are improving!|Esta semana has acertado el {0} %, {2} puntos más que la anterior ({1} %): ¡estás mejorando!|Cette semaine, tu as eu {0} % de bonnes réponses, {2} points de plus que la semaine d'avant ({1} %) : tu progresses !|Aquesta setmana has encertat el {0} %, {2} punts més que l'anterior ({1} %): estàs millorant!"
+                : change <= -5
+                    ? "This week you got {0} % right, a bit less than the week before ({1} %). Reviewing will help you get back up.|Esta semana has acertado el {0} %, algo menos que la anterior ({1} %). Repasar te ayudará a remontar.|Cette semaine, tu as eu {0} % de bonnes réponses, un peu moins que la semaine d'avant ({1} %). Réviser t'aidera à remonter.|Aquesta setmana has encertat el {0} %, una mica menys que l'anterior ({1} %). Repassar t'ajudarà a remuntar."
+                    : "This week you got {0} % right, like the week before ({1} %): steady!|Esta semana has acertado el {0} %, como la anterior ({1} %): ¡constante!|Cette semaine, tu as eu {0} % de bonnes réponses, comme la semaine d'avant ({1} %) : régulier !|Aquesta setmana has encertat el {0} %, com l'anterior ({1} %): constant!";
+            text += " " + Txt.Of(key).Format(language, e.Accuracy, e.PreviousAccuracy, Math.Abs(change));
+        }
+        else if (e.Answers > 0)
+        {
+            text += " " + Txt.Of("This week: {0} answers and {1} tests.|Esta semana: {0} respuestas y {1} tests.|Cette semaine : {0} réponses et {1} tests.|Aquesta setmana: {0} respostes i {1} tests.").Format(language, e.Answers, e.Tests);
+        }
+
+        if (e.Improving.Count > 0)
+        {
+            text += " " + Txt.Of("You are getting better in {0}.|Estás mejorando en {0}.|Tu progresses en {0}.|Estàs millorant en {0}.").Format(language, string.Join(", ", e.Improving));
+        }
+
         return text;
     }
 
@@ -244,7 +284,7 @@ public static class CompanionPrompt
         var weak = string.Join("; ", s.Weak.Select(w => $"{w.Name} ({w.AreaName}, {w.Mastery} %)"));
         var recent = string.Join("; ", s.Recent.Select(r => $"{r.Day:yyyy-MM-dd} {r.AreaName} {r.ModeName} {r.Correct}/{r.Length}"));
         var system = $"""
-            You are Evo, the friendly owl tutor of EduVerse, talking with a student of {Levels.PromptName(s.Level)} on any page of the platform.
+            You are the Tutor of EduVerse (a friendly owl), talking with a student of {Levels.PromptName(s.Level)} on any page of the platform.
             You know the student's progress (below, computed by the platform: do not invent other data). Be warm, specific and brief: 2 to 5 short sentences
             {(s.Kids ? "with very simple words for a young child" : "")}. Use the data when it helps (weak topics, reviews due, recent tests) and suggest a next step.
             {(s.InTest ? "The student is in the middle of a test or an exercise: NEVER give or confirm the answer, the correct option or the result. Help with the method, a question back, or point to the 💡 Hint button." : "You may explain concepts and answer study questions; for exercises, guide step by step instead of only giving the result.")}
@@ -258,13 +298,14 @@ public static class CompanionPrompt
             tests finished: {s.Tests}; reviews due today: {s.DueReviews}; recurring fraction mistakes: {s.Misconceptions}; interviews done: {s.Interviews}
             weak topics: {(weak.Length == 0 ? "none" : weak)}
             recent tests: {(recent.Length == 0 ? "none" : recent)}
-            concepts explained to Evo: {(s.Taught.Count == 0 ? "none" : string.Join(", ", s.Taught))}
+            evolution (last 7 days vs the 7 before): answers {s.Evolution.Answers} vs {s.Evolution.PreviousAnswers}; accuracy {s.Evolution.Accuracy} % vs {s.Evolution.PreviousAccuracy} %; tests {s.Evolution.Tests} vs {s.Evolution.PreviousTests}; xp {s.Evolution.Xp} vs {s.Evolution.PreviousXp}; improving in: {(s.Evolution.Improving.Count == 0 ? "-" : string.Join(", ", s.Evolution.Improving))}
+            concepts explained to the Tutor: {(s.Taught.Count == 0 ? "none" : string.Join(", ", s.Taught))}
             current page: {Cut(s.Page, 80)} ({Cut(s.PageTitle, 80)})
             </student>
             available actions: {string.Join("; ", actions.Select(a => $"{a.Id} = {a.Label}"))}
             """;
-        var past = string.Join("\n", history.TakeLast(Companion.HistoryForAi).Select(t => t.FromStudent ? $"<message>{Cut(t.Text, Companion.MaxMessage)}</message>" : "Evo: " + Cut(t.Text, 800)));
-        return new StructuredPrompt(system, data + "\n" + (past.Length > 0 ? past + "\n" : "") + $"<message>{Cut(message, Companion.MaxMessage)}</message>", ToolName, "Returns Evo's reply.", Schema, 700);
+        var past = string.Join("\n", history.TakeLast(Companion.HistoryForAi).Select(t => t.FromStudent ? $"<message>{Cut(t.Text, Companion.MaxMessage)}</message>" : "Tutor: " + Cut(t.Text, 800)));
+        return new StructuredPrompt(system, data + "\n" + (past.Length > 0 ? past + "\n" : "") + $"<message>{Cut(message, Companion.MaxMessage)}</message>", ToolName, "Returns the Tutor's reply.", Schema, 700);
     }
 
     public static CompanionReply Parse(JsonElement json, IReadOnlyList<CompanionAction> actions)

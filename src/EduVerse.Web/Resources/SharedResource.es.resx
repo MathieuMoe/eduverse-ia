@@ -647,7 +647,7 @@
   <data name="Field_Level" xml:space="preserve"><value>Nivel de estudios</value></data>
   <data name="Mascot_Streak" xml:space="preserve"><value>¡Vas que vuelas! Mantén tu racha de {0} días 🔥</value></data>
   <data name="Mascot_Today" xml:space="preserve"><value>¡Buen trabajo hoy! ¿Otro test?</value></data>
-  <data name="Mascot_Start" xml:space="preserve"><value>¡Hola! Soy Evo. ¿Empezamos con un test rápido?</value></data>
+  <data name="Mascot_Start" xml:space="preserve"><value>¡Hola! Soy tu Tutor. ¿Empezamos con un test rápido?</value></data>
   <data name="Game_Xp" xml:space="preserve"><value>XP actuales</value></data>
   <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP para el siguiente nivel</value></data>
   <data name="Game_YourLevel" xml:space="preserve"><value>Tu nivel</value></data>
@@ -980,16 +980,16 @@
   <data name="Explore_ApplyAll" xml:space="preserve"><value>Usar {0} en todas mis materias</value></data>
   <data name="Notice_Level_Applied" xml:space="preserve"><value>Nivel aplicado a todas tus materias.</value></data>
   <data name="History_QuestionN" xml:space="preserve"><value>Pregunta {0}</value></data>
-  <data name="QuizMode_Evo" xml:space="preserve"><value>Corrige a Evo</value></data>
-  <data name="QuizMode_Notebook" xml:space="preserve"><value>Cuaderno de Evo</value></data>
+  <data name="QuizMode_Evo" xml:space="preserve"><value>Corrige al Tutor</value></data>
+  <data name="QuizMode_Notebook" xml:space="preserve"><value>Cuaderno del Tutor</value></data>
   <data name="QuizMode_Review" xml:space="preserve"><value>Repaso relámpago</value></data>
-  <data name="Evo_Hint" xml:space="preserve"><value>Evo responde y tú le corriges: ¿tiene razón?</value></data>
+  <data name="Evo_Hint" xml:space="preserve"><value>El Tutor responde y tú le corriges: ¿tiene razón?</value></data>
   <data name="Review_Title" xml:space="preserve"><value>Repaso relámpago</value></data>
   <data name="Review_Due" xml:space="preserve"><value>{0} temas para repasar hoy · 2 minutos</value></data>
   <data name="Review_None" xml:space="preserve"><value>Nada que repasar hoy: haz un test para empezar</value></data>
-  <data name="Notebook_Title" xml:space="preserve"><value>Cuaderno de Evo</value></data>
-  <data name="Notebook_Yours" xml:space="preserve"><value>Evo comete tus errores («{0}»): ¡encuéntralos!</value></data>
-  <data name="Notebook_Hint" xml:space="preserve"><value>Evo resuelve fracciones con errores típicos: descubre qué hizo mal</value></data>
+  <data name="Notebook_Title" xml:space="preserve"><value>Cuaderno del Tutor</value></data>
+  <data name="Notebook_Yours" xml:space="preserve"><value>El Tutor comete tus errores («{0}»): ¡encuéntralos!</value></data>
+  <data name="Notebook_Hint" xml:space="preserve"><value>El Tutor resuelve fracciones con errores típicos: descubre qué hizo mal</value></data>
   <data name="Calibration_Title" xml:space="preserve"><value>Medidor de confianza</value></data>
   <data name="Calibration_Sure" xml:space="preserve"><value>de aciertos cuando dices «seguro» ({0} de {1})</value></data>
   <data name="Calibration_Unsure" xml:space="preserve"><value>Cuando dudas: {0} de {1} correctas</value></data>
@@ -1000,14 +1000,14 @@
   <data name="Achievements_XpHint" xml:space="preserve"><value>Cada pista usada</value></data>
   <data name="Achievements_XpSure" xml:space="preserve"><value>Acierto marcado como «seguro»</value></data>
   <data name="QuestText_Review" xml:space="preserve"><value>Haz tu repaso relámpago ({0})</value></data>
-  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Corrige a Evo o abre su cuaderno ({0})</value></data>
+  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Corrige al Tutor o abre su cuaderno ({0})</value></data>
   <data name="Quest_Review" xml:space="preserve"><value>Repaso relámpago</value></data>
-  <data name="Quest_CheckEvo" xml:space="preserve"><value>Corrige a Evo</value></data>
+  <data name="Quest_CheckEvo" xml:space="preserve"><value>Corrige al Tutor</value></data>
   <data name="Badge_Reviewer" xml:space="preserve"><value>Guardián de la memoria</value></data>
   <data name="BadgeHint_Reviewer" xml:space="preserve"><value>Haz {0} repasos relámpago</value></data>
   <data name="Badge_Detective" xml:space="preserve"><value>Detective</value></data>
-  <data name="BadgeHint_Detective" xml:space="preserve"><value>Pilla a Evo {0} veces</value></data>
-  <data name="Js_EvoAnswered" xml:space="preserve"><value>Evo respondió:</value></data>
+  <data name="BadgeHint_Detective" xml:space="preserve"><value>Pilla al Tutor {0} veces</value></data>
+  <data name="Js_EvoAnswered" xml:space="preserve"><value>El Tutor respondió:</value></data>
   <data name="Js_HowSure" xml:space="preserve"><value>¿Lo tienes claro?</value></data>
   <data name="Js_Unsure" xml:space="preserve"><value>Dudo</value></data>
   <data name="Js_ThinkSo" xml:space="preserve"><value>Creo que sí</value></data>
@@ -1021,7 +1021,7 @@
   <data name="Js_UnsureRight" xml:space="preserve"><value>Dudabas, pero acertaste: ¡confía un poco más en ti!</value></data>
   <data name="Js_HintsUsed" xml:space="preserve"><value>{0} pista(s) usada(s).</value></data>
   <data name="Js_ReviewDone" xml:space="preserve"><value>¡Repaso hecho! Estos temas volverán más adelante, justo antes de que los olvides.</value></data>
-  <data name="Js_EvoDone" xml:space="preserve"><value>Evo corregido: {0} respuestas correctas</value></data>
+  <data name="Js_EvoDone" xml:space="preserve"><value>Tutor corregido: {0} respuestas correctas</value></data>
   <data name="Js_NothingToReview" xml:space="preserve"><value>Nada que repasar ahora. Haz un test y tus temas volverán aquí en el momento justo.</value></data>
   <data name="Review_Sub" xml:space="preserve"><value>Lo que estás a punto de olvidar</value></data>
   <data name="Notebook_Sub" xml:space="preserve"><value>Fracciones · tus errores típicos</value></data>
@@ -1056,17 +1056,17 @@
   <data name="Js_AdventureWon" xml:space="preserve"><value>¡Aventura superada!</value></data>
   <data name="Js_AdventureLost" xml:space="preserve"><value>Esta vez no…</value></data>
   <data name="Js_NewAdventure" xml:space="preserve"><value>Nueva aventura</value></data>
-  <data name="Nav_Teach" xml:space="preserve"><value>Explícaselo a Evo</value></data>
+  <data name="Nav_Teach" xml:space="preserve"><value>Explícaselo al Tutor</value></data>
   <data name="Nav_Interview" xml:space="preserve"><value>Entrevistas</value></data>
-  <data name="Teach_Title" xml:space="preserve"><value>Explícaselo a Evo</value></data>
-  <data name="Teach_Subtitle" xml:space="preserve"><value>Evo quiere aprender: tú eres el profe. Explica un concepto con tus palabras (o hablando); Evo pregunta por lo que falta. Explicar es la mejor forma de entender de verdad.</value></data>
+  <data name="Teach_Title" xml:space="preserve"><value>Explícaselo al Tutor</value></data>
+  <data name="Teach_Subtitle" xml:space="preserve"><value>El Tutor hace de alumno: tú eres el profe. Explica un concepto con tus palabras (o hablando); el Tutor pregunta por lo que falta. Explicar es la mejor forma de entender de verdad.</value></data>
   <data name="Teach_Card" xml:space="preserve"><value>Tú eres el profe: explica un concepto</value></data>
   <data name="Teach_NotYet" xml:space="preserve"><value>Aún no explicado</value></data>
   <data name="Teach_Best" xml:space="preserve"><value>Mejor: {0} de {1} ideas clave</value></data>
   <data name="Teach_Ideas" xml:space="preserve"><value>Ideas clave</value></data>
   <data name="Teach_SecretIdea" xml:space="preserve"><value>Idea secreta {0}</value></data>
   <data name="Teach_YourExplanation" xml:space="preserve"><value>Tu explicación</value></data>
-  <data name="Teach_Placeholder" xml:space="preserve"><value>Explícalo como si Evo fuera un compañero más pequeño…</value></data>
+  <data name="Teach_Placeholder" xml:space="preserve"><value>Explícalo como si el Tutor fuera un compañero más pequeño…</value></data>
   <data name="Teach_Round" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
   <data name="Teach_Send" xml:space="preserve"><value>Explicar</value></data>
   <data name="Teach_HowItWorks" xml:space="preserve"><value>El código comprueba tu explicación con una lista de ideas clave (cuentan las palabras que usas, no la ortografía). Tu texto se queda en tu cuenta y no se comparte.</value></data>
@@ -1082,16 +1082,16 @@
   <data name="Interview_Check" xml:space="preserve"><value>Comprobar lo aprendido</value></data>
   <data name="Interview_DemoOnly" xml:space="preserve"><value>Sin conexión, {0} responde a las preguntas sugeridas. Elige un motor de IA en la cabecera para preguntar lo que quieras.</value></data>
   <data name="QuizMode_Interview" xml:space="preserve"><value>Comprobación de la entrevista</value></data>
-  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explícale un concepto a Evo ({0})</value></data>
-  <data name="Quest_TeachEvo" xml:space="preserve"><value>Enseña a Evo</value></data>
+  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explícale un concepto al Tutor ({0})</value></data>
+  <data name="Quest_TeachEvo" xml:space="preserve"><value>Enseña al Tutor</value></data>
   <data name="Badge_Teacher" xml:space="preserve"><value>Pequeño profe</value></data>
-  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explica por completo {0} conceptos a Evo</value></data>
+  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explica por completo {0} conceptos al Tutor</value></data>
   <data name="Badge_TimeTraveler" xml:space="preserve"><value>Viajero del tiempo</value></data>
   <data name="BadgeHint_TimeTraveler" xml:space="preserve"><value>Termina {0} entrevistas con su comprobación</value></data>
   <data name="Js_SecretIdea" xml:space="preserve"><value>Idea secreta {0}</value></data>
   <data name="Js_Round" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
-  <data name="Js_TaughtAll" xml:space="preserve"><value>Evo lo ha entendido todo: ¡eres un gran profe!</value></data>
-  <data name="Js_TaughtSome" xml:space="preserve"><value>Evo ha aprendido {0} de las {1} ideas clave.</value></data>
+  <data name="Js_TaughtAll" xml:space="preserve"><value>El Tutor lo ha entendido todo: ¡eres un gran profe!</value></data>
+  <data name="Js_TaughtSome" xml:space="preserve"><value>El Tutor ha aprendido {0} de las {1} ideas clave.</value></data>
   <data name="Js_ModelExplanation" xml:space="preserve"><value>Así lo explicaría un profe</value></data>
   <data name="Js_TeachAgain" xml:space="preserve"><value>Volver a explicar</value></data>
   <data name="Js_OtherConcepts" xml:space="preserve"><value>Otros conceptos</value></data>
@@ -1109,16 +1109,72 @@
   <data name="Js_InterviewProgress" xml:space="preserve"><value>Preguntas hechas: {0} de {1} para desbloquear la comprobación</value></data>
   <data name="Js_InterviewReady" xml:space="preserve"><value>¡Comprobación desbloqueada! Puedes seguir preguntando o comprobar lo aprendido.</value></data>
   <data name="Topic_math_clock" xml:space="preserve"><value>Leer la hora</value></data>
-  <data name="Companion_Button" xml:space="preserve"><value>Pregunta a Evo</value></data>
-  <data name="Companion_Open" xml:space="preserve"><value>Evo, tu tutor: pregúntale lo que quieras desde cualquier página</value></data>
-  <data name="Companion_Title" xml:space="preserve"><value>Evo, tu tutor</value></data>
-  <data name="Companion_Subtitle" xml:space="preserve"><value>Conoce tus tests, tu progreso y esta página</value></data>
+  <data name="Companion_Button" xml:space="preserve"><value>Tutor</value></data>
+  <data name="Companion_Open" xml:space="preserve"><value>Tu Tutor: pregúntale lo que quieras desde cualquier página</value></data>
+  <data name="Companion_Title" xml:space="preserve"><value>Tu Tutor</value></data>
+  <data name="Companion_Subtitle" xml:space="preserve"><value>Conoce todo lo que haces, tu evolución y esta página</value></data>
   <data name="Companion_Clear" xml:space="preserve"><value>Borrar la conversación</value></data>
   <data name="Companion_QuickNext" xml:space="preserve"><value>¿Qué hago ahora?</value></data>
   <data name="Companion_QuickProgress" xml:space="preserve"><value>¿Cómo voy?</value></data>
   <data name="Companion_QuickHelp" xml:space="preserve"><value>Ayúdame con esta página</value></data>
-  <data name="Companion_Placeholder" xml:space="preserve"><value>Pregúntale algo a Evo…</value></data>
+  <data name="Companion_Placeholder" xml:space="preserve"><value>Pregúntale algo al Tutor…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
-  <data name="Companion_Privacy" xml:space="preserve"><value>Evo guarda esta conversación en tu cuenta para recordarla; puedes borrarla con la papelera. Durante un test, Evo te ayuda a pensar pero nunca te da la respuesta.</value></data>
+  <data name="Companion_Privacy" xml:space="preserve"><value>El Tutor guarda esta conversación en tu cuenta para recordarla; puedes borrarla con la papelera. Durante un test, el Tutor te ayuda a pensar pero nunca te da la respuesta.</value></data>
   <data name="Js_ClearConfirm" xml:space="preserve"><value>Pulsa otra vez la papelera para borrar toda la conversación.</value></data>
+  <data name="Dossier_Title" xml:space="preserve"><value>Dossier</value></data>
+  <data name="Dossier_Discovery" xml:space="preserve"><value>Lo que descubrió o hizo</value></data>
+  <data name="Dossier_Read" xml:space="preserve"><value>Escuchar</value></data>
+  <data name="Dossier_Illustration" xml:space="preserve"><value>Ilustración original hecha para EduVerse, no es una imagen histórica.</value></data>
+  <data name="Dossier_Timeline" xml:space="preserve"><value>Su vida en fechas</value></data>
+  <data name="Dossier_Evidence" xml:space="preserve"><value>La prueba histórica</value></data>
+  <data name="Dossier_External" xml:space="preserve"><value>se abre en una web externa</value></data>
+  <data name="Dossier_Fact" xml:space="preserve"><value>¿Sabías que…?</value></data>
+  <data name="Dossier_Interview" xml:space="preserve"><value>Entrevistar</value></data>
+  <data name="Interview_TabChat" xml:space="preserve"><value>Entrevista</value></data>
+  <data name="Interview_NextVoice" xml:space="preserve"><value>Otra voz</value></data>
+  <data name="Js_VoiceName" xml:space="preserve"><value>Voz: {0}</value></data>
+  <data name="Crumb_Home" xml:space="preserve"><value>Inicio</value></data>
+  <data name="Crumb_Back" xml:space="preserve"><value>Volver</value></data>
+  <data name="Crumb_Label" xml:space="preserve"><value>Estás aquí</value></data>
+  <data name="Nav_Trades" xml:space="preserve"><value>Oficios</value></data>
+  <data name="Trades_Title" xml:space="preserve"><value>Oficios y aprendizaje práctico</value></data>
+  <data name="Trades_Subtitle" xml:space="preserve"><value>Aprende oficios útiles —electricidad, energía solar, huerto, fontanería, carpintería, primeros auxilios, cocina, bicicletas, pintura, apicultura— y descubre la física, la biología, la química y las matemáticas que hay detrás de cada tarea. Domina todos los conceptos para conseguir un certificado interno.</value></data>
+  <data name="Trades_Science" xml:space="preserve"><value>Conceptos y la ciencia que hay detrás</value></data>
+  <data name="Trades_Progress" xml:space="preserve"><value>Progreso</value></data>
+  <data name="Trades_Mastered" xml:space="preserve"><value>{0} de {1} dominados</value></data>
+  <data name="Trades_Start" xml:space="preserve"><value>Empezar</value></data>
+  <data name="Trades_Continue" xml:space="preserve"><value>Continuar</value></data>
+  <data name="Trades_Certificate" xml:space="preserve"><value>Certificado</value></data>
+  <data name="Trades_CertificateNote" xml:space="preserve"><value>El certificado se emite automáticamente cuando el tutor considera dominados todos los conceptos. Es un certificado interno de EduVerse: acredita la teoría aprendida, no una cualificación profesional.</value></data>
+  <data name="Learn_Academic" xml:space="preserve"><value>Materias</value></data>
+  <data name="Certificate_Title" xml:space="preserve"><value>Certificado de logro</value></data>
+  <data name="Certificate_Awarded" xml:space="preserve"><value>Se certifica que</value></data>
+  <data name="Certificate_For" xml:space="preserve"><value>ha dominado todos los conceptos del itinerario</value></data>
+  <data name="Certificate_Date" xml:space="preserve"><value>Fecha</value></data>
+  <data name="Certificate_Code" xml:space="preserve"><value>Código del certificado</value></data>
+  <data name="Certificate_Print" xml:space="preserve"><value>Imprimir o guardar en PDF</value></data>
+  <data name="Certificate_Disclaimer" xml:space="preserve"><value>Certificado interno de EduVerse AI. Acredita los conocimientos demostrados en la plataforma (ejercicios adaptativos y seguimiento del conocimiento). No es una titulación oficial ni habilita para trabajar profesionalmente en instalaciones eléctricas, de gas o de agua.</value></data>
+  <data name="Badge_Apprentice" xml:space="preserve"><value>Aprendiz</value></data>
+  <data name="BadgeHint_Apprentice" xml:space="preserve"><value>Consigue {0} certificado de oficio</value></data>
+  <data name="Badge_MasterCraftsman" xml:space="preserve"><value>Maestro de oficios</value></data>
+  <data name="BadgeHint_MasterCraftsman" xml:space="preserve"><value>Consigue {0} certificados de oficio</value></data>
+  <data name="Js_CertificateEarned" xml:space="preserve"><value>¡Certificado conseguido!</value></data>
+  <data name="Js_SeeCertificate" xml:space="preserve"><value>Ver mi certificado</value></data>
+  <data name="Js_CertificateGoal" xml:space="preserve"><value>Domina todos los conceptos para conseguir el certificado</value></data>
+  <data name="Learn_Title" xml:space="preserve"><value>¿Qué quieres aprender?</value></data>
+  <data name="Learn_Subtitle" xml:space="preserve"><value>Elige una materia: el tutor explica cada tema, te da ejercicios a tu nivel, cambia su forma de explicar cuando una no funciona y sigue lo que dominas. Todo funciona sin IA; con un motor de IA, las explicaciones se escriben para ti.</value></data>
+  <data name="Learn_Continue" xml:space="preserve"><value>Sigue donde lo dejaste</value></data>
+  <data name="Learn_AcademicHint" xml:space="preserve"><value>A tu nivel en cada materia (el de los tests o tu prueba de nivel). Cámbialo en Explorar.</value></data>
+  <data name="Learn_Own" xml:space="preserve"><value>Mis materias</value></data>
+  <data name="Learn_TradesHint" xml:space="preserve"><value>Electricidad, huerto, fontanería, carpintería… con la ciencia que hay detrás y un certificado.</value></data>
+  <data name="Learn_SeeTrades" xml:space="preserve"><value>Ver los oficios</value></data>
+  <data name="Learn_CreateWithAi" xml:space="preserve"><value>Cualquier otro tema (IA)</value></data>
+  <data name="Learn_Topics" xml:space="preserve"><value>{0} temas</value></data>
+  <data name="Learn_NotStarted" xml:space="preserve"><value>Sin empezar</value></data>
+  <data name="Learn_InProgress" xml:space="preserve"><value>En curso</value></data>
+  <data name="Learn_Choose" xml:space="preserve"><value>Otra materia</value></data>
+  <data name="Nav_Hobbies" xml:space="preserve"><value>Aficiones</value></data>
+  <data name="Hobbies_Subtitle" xml:space="preserve"><value>Cosas divertidas para aprender por gusto —astronomía, música, magia, supervivencia, ajedrez, dinosaurios— con la ciencia que hay detrás de cada una. Domina todos los conceptos para conseguir tu certificado e insignia.</value></data>
+  <data name="Badge_Hobbyist" xml:space="preserve"><value>Mente curiosa</value></data>
+  <data name="BadgeHint_Hobbyist" xml:space="preserve"><value>Consigue {0} certificado de afición</value></data>
 </root>

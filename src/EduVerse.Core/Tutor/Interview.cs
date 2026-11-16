@@ -127,18 +127,27 @@ public static partial class Interviews
     public static FigureVoice Voice(Figure figure) => figure?.Key switch
     {
         "curie" => new(true, 1.0, 0.95),
-        "lovelace" => new(true, 1.12, 1.02),
-        "leonardo" => new(false, 0.8, 0.9),
-        "franklin" => new(true, 1.05, 1.02),
-        "noether" => new(true, 0.98, 0.97),
-        "darwin" => new(false, 0.82, 0.9),
-        "galileo" => new(false, 0.86, 0.93),
-        "cervantes" => new(false, 0.95, 0.97),
-        "ibnbattuta" => new(false, 0.9, 0.95),
-        "smith" => new(false, 0.9, 0.93),
-        "champollion" => new(false, 1.02, 1.05),
+        "lovelace" => new(true, 1.22, 1.06),
+        "franklin" => new(true, 1.1, 1.12),
+        "noether" => new(true, 0.88, 0.92),
+        "leonardo" => new(false, 0.72, 0.86),
+        "darwin" => new(false, 0.68, 0.84),
+        "smith" => new(false, 0.8, 0.92),
+        "newton" => new(false, 0.86, 0.96),
+        "ibnbattuta" => new(false, 0.9, 1.06),
+        "galileo" => new(false, 0.96, 1.0),
+        "cervantes" => new(false, 1.04, 0.97),
+        "champollion" => new(false, 1.14, 1.14),
         _ => new(false, 0.92, 0.95),
     };
+
+    /// <summary>Position of the figure among the figures of the same voice kind, so each one can take a different browser voice.</summary>
+    public static int VoiceIndex(Figure figure)
+    {
+        ArgumentNullException.ThrowIfNull(figure);
+        var female = Voice(figure).Female;
+        return All.Where(f => Voice(f).Female == female).Select((f, i) => (f, i)).First(x => x.f.Key == figure.Key).i;
+    }
 
     /// <summary>Offline answer: the prepared answer whose keywords match the question best; null when none matches.</summary>
     public static InterviewAnswer? Match(Figure figure, string question, TeachLanguage language)

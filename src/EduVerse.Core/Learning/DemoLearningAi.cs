@@ -18,8 +18,13 @@ public sealed class DemoLearningAi : ILearningAi
         var l = student.Language;
         string T(string en, string es, string fr, string ca) => Lang.T(l, en, es, fr, ca);
         var random = new Random(HashCode.Combine(concept.Key, method));
-        Exercise? sample = subject.Key == BuiltInSubjects.FractionsKey ? FractionExercises.Create(concept.Key, 1, random, l) : null;
-        Exercise? check = subject.Key == BuiltInSubjects.FractionsKey ? FractionExercises.Create(concept.Key, 1, random, l) : null;
+        var trade = Trades.Find(subject.Key);
+        var isArea = AreaSubjects.TryParse(subject.Key, out var area, out var level);
+        Exercise? Make(int difficulty) => subject.Key == BuiltInSubjects.FractionsKey ? FractionExercises.Create(concept.Key, difficulty, random, l)
+            : trade is not null ? Trades.Exercise(trade, concept.Key, difficulty, random, l)
+            : isArea ? AreaSubjects.Exercise(area, level, concept.Key, difficulty, random, l) : null;
+        var sample = Make(1);
+        var check = Make(2);
 
         var intro = method switch
         {
@@ -46,12 +51,24 @@ public sealed class DemoLearningAi : ILearningAi
         ArgumentNullException.ThrowIfNull(subject);
         ArgumentNullException.ThrowIfNull(concept);
         ArgumentNullException.ThrowIfNull(student);
+        var random = new Random(HashCode.Combine(concept.Key, difficulty, DateTime.UtcNow.Ticks));
+        if (AreaSubjects.TryParse(subject.Key, out var area, out var level))
+        {
+            IReadOnlyList<Exercise> generated = Enumerable.Range(0, count).Select(_ => AreaSubjects.Exercise(area, level, concept.Key, difficulty, random, student.Language)).ToList();
+            return Task.FromResult(generated);
+        }
+
+        if (Trades.Find(subject.Key) is { } trade)
+        {
+            IReadOnlyList<Exercise> fromBank = Enumerable.Range(0, count).Select(_ => Trades.Exercise(trade, concept.Key, difficulty, random, student.Language)).ToList();
+            return Task.FromResult(fromBank);
+        }
+
         if (subject.Key != BuiltInSubjects.FractionsKey)
         {
             throw new NeedsAiException();
         }
 
-        var random = new Random(HashCode.Combine(concept.Key, difficulty, DateTime.UtcNow.Ticks));
         IReadOnlyList<Exercise> list = Enumerable.Range(0, count).Select(_ => FractionExercises.Create(concept.Key, difficulty, random, student.Language)).ToList();
         return Task.FromResult(list);
     }

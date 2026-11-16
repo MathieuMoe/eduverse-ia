@@ -1,4 +1,5 @@
 using System.Text.Json;
+using EduVerse.Core.Catalog;
 using EduVerse.Core.Common;
 using EduVerse.Core.Curriculum;
 using EduVerse.Core.Learning;
@@ -22,7 +23,7 @@ public sealed record TutorHint(int Level, string? Text, IReadOnlyList<int> Remov
 /// Persistence of the learning loop. The rules stay in Core (<see cref="MasteryEngine"/>, <see cref="Diagnostic"/>, <see cref="NextStepPlanner"/>);
 /// this class only loads and saves their state, and turns their events into alerts for the teacher.
 /// </summary>
-public sealed class LearningStore(EduVerseDb db, TimeProvider clock)
+public sealed class LearningStore(EduVerseDb db, TimeProvider clock, ICatalogNames names)
 {
     public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -42,6 +43,16 @@ public sealed class LearningStore(EduVerseDb db, TimeProvider clock)
         if (id == BuiltInSubjects.FractionsKey)
         {
             return BuiltInSubjects.Fractions(language);
+        }
+
+        if (Trades.Find(id) is { } trade)
+        {
+            return Trades.Subject(trade, language);
+        }
+
+        if (AreaSubjects.TryParse(id, out var area, out var level))
+        {
+            return AreaSubjects.Subject(area, level, names, language);
         }
 
         var record = await db.Subjects.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, ct).ConfigureAwait(false);
@@ -82,18 +93,31 @@ public sealed class LearningStore(EduVerseDb db, TimeProvider clock)
             .OrderBy(s => s.CreatedAt).ToListAsync(ct).ConfigureAwait(false);
         var list = new List<Subject> { BuiltInSubjects.Fractions(language) };
         list.AddRange(records.Select(ToSubject));
+        list.AddRange((await AreaLevelsAsync(userId, ct).ConfigureAwait(false)).Select(x => AreaSubjects.Subject(x.Area, x.Level, names, language)));
+        list.AddRange(Trades.All.Select(t => Trades.Subject(t, language)));
         return list;
+    }
+
+    /// <summary>Every subject of the catalog at the level of the student in it (placement or chosen level, else the profile level).</summary>
+    public async Task<IReadOnlyList<(Area Area, Level Level)>> AreaLevelsAsync(string userId, CancellationToken ct = default)
+    {
+        var levels = await db.SubjectLevels.AsNoTracking().Where(s => s.UserId == userId).ToDictionaryAsync(s => s.Area, s => s.Level, ct).ConfigureAwait(false);
+        var profile = await db.StudentProfiles.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false);
+        var level = profile?.Level ?? Level.Secondary1;
+        return Catalog.Areas.Select(info => (info.Area, levels.TryGetValue(info.Area, out var l) ? l : Catalog.Available(info.Area, level) ? level : info.MinLevel)).ToList();
     }
 
     /// <summary>Subjects a teacher can assign to a class: fractions and the subjects the teacher created.</summary>
     public async Task<IReadOnlyList<Subject>> SubjectsForTeacherAsync(string userId, TeachLanguage language, CancellationToken ct = default)
     {
         var records = await db.Subjects.AsNoTracking().Where(s => s.OwnerId == userId).OrderBy(s => s.CreatedAt).ToListAsync(ct).ConfigureAwait(false);
-        return [BuiltInSubjects.Fractions(language), .. records.Select(ToSubject)];
+        return [BuiltInSubjects.Fractions(language), .. records.Select(ToSubject), .. Trades.All.Select(t => Trades.Subject(t, language))];
     }
 
     public async Task<bool> CanStudyAsync(string userId, string subjectId, CancellationToken ct = default) =>
         subjectId == BuiltInSubjects.FractionsKey
+        || Trades.IsTrade(subjectId)
+        || AreaSubjects.TryParse(subjectId, out _, out _)
         || await db.Subjects.AnyAsync(s => s.Id == subjectId && s.OwnerId == userId, ct).ConfigureAwait(false)
         || await db.ClassMembers.Where(m => m.UserId == userId).Join(db.Classrooms, m => m.ClassroomId, c => c.Id, (m, c) => c.SubjectId)
             .AnyAsync(s => s == subjectId, ct).ConfigureAwait(false);

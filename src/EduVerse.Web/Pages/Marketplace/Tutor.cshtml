@@ -4,9 +4,9 @@
     var t = Model.Tutor;
     var culture = System.Globalization.CultureInfo.CurrentCulture;
     ViewData["Title"] = t.Name;
+    EduVerse.Web.Breadcrumb.Set(ViewData, t.Name, ("/Marketplace", L["Nav_Marketplace"]));
     var isStudent = User.IsStudent();
 }
-<a href="/Marketplace" class="text-sm text-primary hover:underline">← @L["Nav_Marketplace"]</a>
 
 @if (Model.Notice is { } notice)
 {

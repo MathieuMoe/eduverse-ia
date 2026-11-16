@@ -8,13 +8,13 @@
     var language = Localization.LanguageForCurrentCulture();
     var culture = System.Globalization.CultureInfo.CurrentCulture;
     ViewData["Title"] = d.Classroom.Name;
+    EduVerse.Web.Breadcrumb.Set(ViewData, d.Classroom.Name, ("/Teacher", L["Nav_Classes"]));
     string ConceptName(string key) => d.Subject.Find(key)?.Name ?? key;
     string Methods(string? detail) => string.Join(" → ", (detail ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(m => L[$"Method_{m}"].Value));
 }
 <div class="flex flex-wrap justify-between items-end gap-3">
     <div class="min-w-0">
-        <a href="/Teacher" class="text-sm text-primary hover:underline">← @L["Nav_Classes"]</a>
-        <h1 class="mt-1 text-2xl font-semibold text-foreground">@d.Classroom.Name</h1>
+        <h1 class="text-2xl font-semibold text-foreground">@d.Classroom.Name</h1>
         <p class="mt-1 text-sm text-muted-foreground-1">@d.Subject.Name</p>
     </div>
     <div class="flex items-center gap-2 p-1.5 ps-4 rounded-full border border-layer-line bg-layer">

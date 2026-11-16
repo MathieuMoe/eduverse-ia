@@ -26,6 +26,7 @@ builder.Services.AddRazorPages(o =>
 });
 // Write accented characters (é, ñ, ç, à…) as-is in the HTML instead of &#xE9; entities.
 builder.Services.Configure<WebEncoderOptions>(o => o.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
+builder.Services.AddSingleton<EduVerse.Core.Curriculum.ICatalogNames, EduVerse.Web.LocalizedCatalogNames>();
 builder.Services.AddEduVerse(builder.Configuration);
 builder.Services.AddEduVerseData(builder.Configuration);
 builder.Services.ConfigureApplicationCookie(o =>

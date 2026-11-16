@@ -6,7 +6,28 @@
     var info = Catalog.Info(Model.Area);
     var culture = System.Globalization.CultureInfo.CurrentCulture;
 }
-<div id="qz-root" class="max-w-3xl w-full mx-auto space-y-4 sm:space-y-5 @(Model.Kids ? "kids" : "")"
+@{
+    var areaName = L[$"Area_{Model.Area}"].Value;
+    switch (Model.Mode)
+    {
+        case QuizMode.Interview:
+            EduVerse.Web.Breadcrumb.Set(ViewData, L["QuizMode_Interview"], ("/Student/Interview", L["Nav_Interview"]), ("/Student/Interview?figure=" + Model.Figure!.Key, Model.Figure.Name));
+            break;
+        case QuizMode.Adventure:
+            EduVerse.Web.Breadcrumb.Set(ViewData, areaName, ("/Student/Adventures", L["Nav_Adventures"]));
+            break;
+        case QuizMode.Duel:
+            EduVerse.Web.Breadcrumb.Set(ViewData, areaName, ("/Student/Arena", L["Nav_Arena"]));
+            break;
+        case QuizMode.Review or QuizMode.Notebook:
+            EduVerse.Web.Breadcrumb.Set(ViewData, ViewData["Title"]?.ToString() ?? "");
+            break;
+        default:
+            EduVerse.Web.Breadcrumb.Set(ViewData, areaName + (Model.Topic is { } tp ? " · " + tp : ""), ("/Student/Explore", L["Nav_Explore"]));
+            break;
+    }
+}
+<div id="qz-root" class="w-full space-y-4 sm:space-y-5 @(Model.Kids ? "kids" : "")"
      data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-kids="@(Model.Kids ? "1" : "0")">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">

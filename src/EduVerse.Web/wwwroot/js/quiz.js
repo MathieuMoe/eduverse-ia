@@ -108,7 +108,7 @@
                 <span class="text-muted-foreground-1 me-1">${esc(t("HowSure"))}</span>
                 ${[[0, "🤔", t("Unsure")], [1, "🙂", t("ThinkSo")], [2, "😎", t("Sure")]].map(([v, e, label]) => `<button type="button" role="radio" aria-checked="${v === 1}" data-confidence="${v}" class="py-1 px-3 rounded-full border ${v === 1 ? "border-primary bg-primary/10" : "border-layer-line"} text-foreground">${e} ${esc(label)}</button>`).join("")}
             </div>`}
-            <div class="mt-6 grid sm:grid-cols-2 gap-3" role="group" aria-labelledby="qz-prompt" data-testid="quiz-options">
+            <div class="mt-6 grid sm:grid-cols-2 ${q.options.every((o) => String(o).length < 40) && !q.code ? "2xl:grid-cols-4" : ""} gap-3" role="group" aria-labelledby="qz-prompt" data-testid="quiz-options">
                 ${q.options.map((o, i) => `<button type="button" class="quiz-option flex items-center gap-3 w-full text-left p-4 rounded-2xl border border-layer-line bg-layer text-foreground text-base font-medium hover:bg-layer-hover disabled:cursor-default" data-index="${i}">
                     <span class="size-7 shrink-0 rounded-full bg-surface grid place-items-center text-xs font-bold" aria-hidden="true">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}
             </div>

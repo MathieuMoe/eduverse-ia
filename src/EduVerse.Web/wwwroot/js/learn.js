@@ -29,6 +29,13 @@
     function renderMap() {
         const mastered = data.mastered;
         $("ln-progress").textContent = fmt(t("MasteredOf"), mastered, data.total);
+        const cert = $("ln-certificate");
+        if (cert && data.trade) {
+            cert.hidden = false;
+            cert.innerHTML = data.certificate
+                ? `<a href="${esc(data.certificate.url)}" class="flex items-center gap-3 p-4 rounded-3xl tone-mint hover:-translate-y-0.5 transition-transform"><span class="text-3xl" aria-hidden="true">🎓</span><span class="min-w-0"><span class="block font-semibold text-foreground">${esc(t("CertificateEarned"))}</span><span class="block text-sm text-foreground/70">${esc(t("SeeCertificate"))} · ${esc(data.certificate.code)}</span></span></a>`
+                : `<div class="p-4 rounded-3xl tone-sun"><p class="font-semibold text-foreground">🎓 ${esc(t("CertificateGoal"))}</p><div class="mt-2 h-2 rounded-full bg-white/60 dark:bg-white/10 overflow-hidden"><div class="h-full bg-primary rounded-full" style="width:${Math.round(100 * mastered / Math.max(1, data.total))}%"></div></div><p class="mt-1 text-xs text-foreground/70">${esc(fmt(t("MasteredOf"), mastered, data.total))}</p></div>`;
+        }
         $("ln-map").innerHTML = data.concepts.map((c) => {
             const s = data.states[c.key];
             const p = s ? Math.round(s.pKnown * 100) : 0;
@@ -168,7 +175,9 @@
                 <span class="text-xs text-muted-foreground-1">${esc(conceptName(x.conceptKey))} · <span title="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyOf"), x.difficulty))}">${stars}</span></span>
                 <span class="ms-auto">${small(engineLabel(o.engine))}</span></div>
             ${o.reason ? `<p class="mt-3 text-sm text-muted-foreground-1">${esc(o.reason)}</p>` : ""}
+            ${x.visual?.startsWith("dg:") && window.Edu.diagram ? `<div class="mt-4 flex justify-center quiz-diagram">${window.Edu.diagram(x.visual)}</div>` : x.visual ? `<p class="mt-4 text-4xl text-center leading-snug" aria-hidden="true">${esc(x.visual)}</p>` : ""}
             <h2 class="mt-3 text-lg font-semibold text-foreground whitespace-pre-line" id="ln-question">${esc(x.question)}</h2>
+            ${x.code ? `<pre class="mt-3 p-3 rounded-xl bg-[#2b2230] text-[#f3eefe] text-sm overflow-x-auto"><code>${esc(x.code)}</code></pre>` : ""}
             <div class="mt-4 grid sm:grid-cols-2 gap-3" role="group" aria-labelledby="ln-question" id="ln-options">
                 ${x.options.map((opt, i) => `<button type="button" data-i="${i}" class="ln-option text-start p-4 rounded-2xl border border-layer-line bg-layer text-foreground hover:border-primary hover:bg-layer-hover focus:outline-hidden focus:ring-2 focus:ring-primary/30">
                     <span class="font-semibold me-2 text-muted-foreground-1">${"ABCD"[i]}</span>${esc(opt)}</button>`).join("")}
@@ -211,6 +220,7 @@
             $("ln-feedback").innerHTML = `<div class="p-5 rounded-2xl border ${d.correct ? "border-teal-200 dark:border-teal-500/30" : "border-red-200 dark:border-red-500/30"}" role="status">
                 ${head}${mistake}${o.diagnostic ? "" : `<p class="mt-2 text-sm text-muted-foreground-1 whitespace-pre-line">${esc(d.explanation)}</p>`}${mastery}
                 ${events ? `<ul class="mt-3 space-y-2">${events}</ul>` : ""}
+                ${d.certificate ? `<div class="mt-4 p-4 rounded-2xl tone-mint" data-testid="ln-certificate-earned"><p class="text-lg font-semibold text-foreground">🎓 ${esc(t("CertificateEarned"))}</p><p class="text-sm text-foreground/70">+${d.reward?.xp ?? 0} XP · ${esc(d.certificate.code)}</p><a class="${primary} mt-3" href="${esc(d.certificate.url)}">${esc(t("SeeCertificate"))}</a></div>` : ""}
                 <button type="button" id="ln-continue" class="${primary} mt-4">${esc(t("Continue"))}</button></div>`;
             $("ln-continue").focus();
             $("ln-continue").addEventListener("click", () => (o.diagnostic ? diagnosticQuestion() : load()));

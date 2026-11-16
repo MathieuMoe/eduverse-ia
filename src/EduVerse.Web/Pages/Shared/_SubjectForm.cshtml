@@ -1,6 +1,6 @@
 @model (Stage Stage, bool ForStudent)
 @* Subject from a topic: the AI proposes the concept map, the code validates it. Used by students and teachers. *@
-<section class="@Ui.Card max-w-3xl" aria-labelledby="sb-title">
+<section class="@Ui.Card" aria-labelledby="sb-title">
     <div class="@Ui.CardHeader"><h2 id="sb-title" class="text-base font-semibold text-foreground">@L["NewSubject_Form"]</h2></div>
     <form id="sb-form" class="p-4 md:p-5 space-y-4" data-student="@(Model.ForStudent ? "1" : "0")">
         <div class="grid sm:grid-cols-[1fr_14rem] gap-4">

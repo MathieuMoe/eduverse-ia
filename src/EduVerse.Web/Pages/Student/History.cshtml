@@ -14,11 +14,11 @@
 @if (Model.Review is { } r)
 {
     var info = Catalog.Info(r.Area);
+    EduVerse.Web.Breadcrumb.Set(ViewData, L[$"Area_{r.Area}"].Value + (r.Topic is { } tc ? " · " + tc : ""), ("/Student/History", L["Nav_History"]));
     <div class="flex flex-wrap justify-between items-end gap-3">
         <div class="flex items-center gap-3 min-w-0">
             <span class="size-12 shrink-0 rounded-2xl tone-@info.Tone grid place-items-center text-2xl" aria-hidden="true">@info.Icon</span>
             <div class="min-w-0">
-                <a href="/Student/History" class="text-sm text-muted-foreground-1 hover:text-foreground">← @L["Nav_History"]</a>
                 <h1 class="text-2xl font-semibold text-foreground">@L[$"Area_{r.Area}"]@(r.Topic is { } tp ? $" · {tp}" : "")</h1>
                 <p class="text-sm text-muted-foreground-1">@L[$"Level_{r.Level}"] · @L[$"QuizMode_{r.Mode}"] · @r.FinishedAt!.Value.ToString("f", culture)</p>
             </div>

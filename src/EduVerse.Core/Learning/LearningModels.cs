@@ -60,7 +60,9 @@ public sealed record Exercise(
     int CorrectIndex,
     IReadOnlyList<string?> Misconceptions,
     string Hint,
-    string Explanation)
+    string Explanation,
+    string? Visual = null,
+    string? Code = null)
 {
     public const int MinDifficulty = 1;
     public const int MaxDifficulty = 3;

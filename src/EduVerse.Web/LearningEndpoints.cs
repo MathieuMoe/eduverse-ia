@@ -132,7 +132,7 @@ public static class LearningEndpoints
         })
         .RequireRateLimiting("learn");
 
-        api.MapPost("/answer", async (AnswerRequest request, HttpContext context, LearningStore store, Infrastructure.Gamification.GamificationStore game, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) =>
+        api.MapPost("/answer", async (AnswerRequest request, HttpContext context, LearningStore store, CertificateStore certificates, Infrastructure.Gamification.GamificationStore game, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) =>
         {
             var userId = context.User.Id();
             var outcome = request is null ? null : await store.AnswerAsync(userId, request.ExerciseId, request.Choice, context.RequestAborted);
@@ -153,6 +153,13 @@ public static class LearningEndpoints
             }
 
             var reward = await game.AnswerAsync(userId, outcome.Correct, outcome.Exercise.Difficulty, outcome.State.Streak, "tutor", outcome.Hints, false, context.RequestAborted);
+            object? certificate = null;
+            if (!outcome.Diagnostic && await certificates.IssueIfEarnedAsync(userId, subjectKey, context.RequestAborted) is { } issued)
+            {
+                reward = reward.Plus(issued.Reward);
+                certificate = new { code = issued.Certificate.Code, url = "/Student/Certificate?subject=" + Uri.EscapeDataString(subjectKey) };
+            }
+
             var events = outcome.Events.Select(e => new
             {
                 kind = e.Kind.ToString(),
@@ -169,6 +176,7 @@ public static class LearningEndpoints
                 state = outcome.Diagnostic ? null : StateView(outcome.State),
                 diagnostic,
                 reward = QuizEndpoints.RewardView(reward, l),
+                certificate,
             });
         })
         .RequireRateLimiting("learn");
@@ -266,7 +274,7 @@ public static class LearningEndpoints
     }
 
     // The exercise sent to the browser: no correct index, no misconception tags, no explanation (they come with the answer)
-    private static object Public(Exercise e) => new { e.Id, e.ConceptKey, e.Difficulty, e.Question, e.Options, e.Hint };
+    private static object Public(Exercise e) => new { e.Id, e.ConceptKey, e.Difficulty, e.Question, e.Options, e.Hint, e.Visual, e.Code };
 
     private static object StateView(MasteryState s) => new
     {
@@ -297,6 +305,11 @@ public static class LearningEndpoints
             states = ordered.Where(c => states.ContainsKey(c.Key)).ToDictionary(c => c.Key, c => StateView(states[c.Key])),
             next = new { kind = next.Kind.ToString(), next.ConceptKey, next.Reason, method = next.Method.ToString(), next.Difficulty },
             mastered = states.Values.Count(s => s.Status == MasteryStatus.Mastered),
+            trade = Trades.IsTrade(subject.Key),
+            certificate = Trades.IsTrade(subject.Key) && await context.RequestServices.GetRequiredService<CertificateStore>().FindAsync(userId, subject.Key, context.RequestAborted) is { } cert
+                ? new { code = cert.Code, url = "/Student/Certificate?subject=" + Uri.EscapeDataString(subject.Key) }
+                : null,
+            
             total = ordered.Count,
         };
     }

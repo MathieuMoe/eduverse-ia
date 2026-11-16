@@ -1,0 +1,42 @@
+@page
+@model EduVerse.Web.Pages.Student.CertificateModel
+@{
+    var t = Model.Trade;
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    ViewData["Title"] = L["Certificate_Title"];
+    EduVerse.Web.Breadcrumb.Set(ViewData, L["Certificate_Title"], ("/Student/Learn", L["Nav_Learn"]), ("/Student/Learn?tab=" + EduVerse.Core.Curriculum.Trades.TabOf(t), t.Kind == EduVerse.Core.Curriculum.TradeKind.Hobby ? L["Nav_Hobbies"] : L["Nav_Trades"]), ("/Student/Learn?subject=" + t.Key, t.Name.In(language)));
+}
+<style>
+    @@media print {
+        body * { visibility: hidden !important; }
+        #certificate, #certificate * { visibility: visible !important; }
+        #certificate { position: absolute; inset: 0; margin: 0; box-shadow: none; }
+    }
+</style>
+<div class="flex flex-wrap justify-end gap-2 print:hidden">
+    <button type="button" class="@Ui.BtnPrimary" onclick="window.print()" data-testid="certificate-print">🖨️ @L["Certificate_Print"]</button>
+</div>
+<article id="certificate" class="relative overflow-hidden rounded-3xl border-4 border-double border-[#c9a646] bg-white text-[#2b2230] p-8 sm:p-14 text-center shadow-xl" data-testid="certificate">
+    <div class="absolute -top-16 -end-16 size-56 rounded-full tone-@t.Tone opacity-60" aria-hidden="true"></div>
+    <div class="absolute -bottom-20 -start-20 size-64 rounded-full tone-lavender opacity-60" aria-hidden="true"></div>
+    <div class="relative">
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-[#8a7340]">EduVerse AI</p>
+        <h1 class="mt-3 text-3xl sm:text-5xl font-semibold">@L["Certificate_Title"]</h1>
+        <p class="mt-6 text-base">@L["Certificate_Awarded"]</p>
+        <p class="mt-2 text-3xl sm:text-4xl font-semibold">@User.DisplayName()</p>
+        <p class="mt-6 text-base">@L["Certificate_For"]</p>
+        <p class="mt-2 text-2xl font-semibold"><span aria-hidden="true">@t.Icon</span> @t.Name.In(language)</p>
+        <ul class="mt-8 mx-auto max-w-2xl grid sm:grid-cols-2 gap-x-8 gap-y-2 text-start text-sm">
+            @foreach (var c in t.Concepts)
+            {
+                <li class="flex gap-2"><span class="text-emerald-600" aria-hidden="true">✔</span><span><span class="font-medium">@c.Name.In(language)</span><span class="block text-xs text-[#6b6270]">@c.ScienceLink.In(language)</span></span></li>
+            }
+        </ul>
+        <div class="mt-10 flex flex-wrap justify-center gap-x-12 gap-y-3 text-sm">
+            <p><span class="block text-xs uppercase tracking-wide text-[#6b6270]">@L["Certificate_Date"]</span>@Model.Certificate.IssuedAt.ToLocalTime().ToString("D", culture)</p>
+            <p><span class="block text-xs uppercase tracking-wide text-[#6b6270]">@L["Certificate_Code"]</span><span class="font-mono" data-testid="certificate-code">@Model.Certificate.Code</span></p>
+        </div>
+        <p class="mt-8 mx-auto max-w-2xl text-xs text-[#6b6270]">@L["Certificate_Disclaimer"]</p>
+    </div>
+</article>

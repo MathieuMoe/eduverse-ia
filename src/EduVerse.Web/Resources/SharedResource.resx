@@ -647,7 +647,7 @@
   <data name="Field_Level" xml:space="preserve"><value>Level of study</value></data>
   <data name="Mascot_Streak" xml:space="preserve"><value>You're on fire! Keep your {0}-day streak going 🔥</value></data>
   <data name="Mascot_Today" xml:space="preserve"><value>Great job today! One more test?</value></data>
-  <data name="Mascot_Start" xml:space="preserve"><value>Hi! I'm Evo. Shall we start with a quick test?</value></data>
+  <data name="Mascot_Start" xml:space="preserve"><value>Hi! I'm your Tutor. Shall we start with a quick test?</value></data>
   <data name="Game_Xp" xml:space="preserve"><value>Current XP</value></data>
   <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP to the next level</value></data>
   <data name="Game_YourLevel" xml:space="preserve"><value>Your level</value></data>
@@ -980,16 +980,16 @@
   <data name="Explore_ApplyAll" xml:space="preserve"><value>Use {0} in all my subjects</value></data>
   <data name="Notice_Level_Applied" xml:space="preserve"><value>Level applied to all your subjects.</value></data>
   <data name="History_QuestionN" xml:space="preserve"><value>Question {0}</value></data>
-  <data name="QuizMode_Evo" xml:space="preserve"><value>Check Evo</value></data>
-  <data name="QuizMode_Notebook" xml:space="preserve"><value>Evo's notebook</value></data>
+  <data name="QuizMode_Evo" xml:space="preserve"><value>Check the Tutor</value></data>
+  <data name="QuizMode_Notebook" xml:space="preserve"><value>The Tutor's notebook</value></data>
   <data name="QuizMode_Review" xml:space="preserve"><value>Daily review</value></data>
-  <data name="Evo_Hint" xml:space="preserve"><value>Evo answers, you check him: is he right?</value></data>
+  <data name="Evo_Hint" xml:space="preserve"><value>The Tutor answers, you check: is it right?</value></data>
   <data name="Review_Title" xml:space="preserve"><value>Daily review</value></data>
   <data name="Review_Due" xml:space="preserve"><value>{0} topics to review today · 2 minutes</value></data>
   <data name="Review_None" xml:space="preserve"><value>Nothing to review today: do a test to start</value></data>
-  <data name="Notebook_Title" xml:space="preserve"><value>Evo's notebook</value></data>
-  <data name="Notebook_Yours" xml:space="preserve"><value>Evo makes your mistakes ("{0}"): find them!</value></data>
-  <data name="Notebook_Hint" xml:space="preserve"><value>Evo solves fractions with typical mistakes: find what he did wrong</value></data>
+  <data name="Notebook_Title" xml:space="preserve"><value>The Tutor's notebook</value></data>
+  <data name="Notebook_Yours" xml:space="preserve"><value>The Tutor makes your mistakes ("{0}"): find them!</value></data>
+  <data name="Notebook_Hint" xml:space="preserve"><value>The Tutor solves fractions with typical mistakes: find what went wrong</value></data>
   <data name="Calibration_Title" xml:space="preserve"><value>Confidence meter</value></data>
   <data name="Calibration_Sure" xml:space="preserve"><value>right when you said "sure" ({0} of {1})</value></data>
   <data name="Calibration_Unsure" xml:space="preserve"><value>When you have doubts: {0} of {1} right</value></data>
@@ -1000,14 +1000,14 @@
   <data name="Achievements_XpHint" xml:space="preserve"><value>Each hint used</value></data>
   <data name="Achievements_XpSure" xml:space="preserve"><value>Right answer said as "sure"</value></data>
   <data name="QuestText_Review" xml:space="preserve"><value>Do your daily review ({0})</value></data>
-  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Check Evo or open his notebook ({0})</value></data>
+  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Check the Tutor or open its notebook ({0})</value></data>
   <data name="Quest_Review" xml:space="preserve"><value>Daily review</value></data>
-  <data name="Quest_CheckEvo" xml:space="preserve"><value>Check Evo</value></data>
+  <data name="Quest_CheckEvo" xml:space="preserve"><value>Check the Tutor</value></data>
   <data name="Badge_Reviewer" xml:space="preserve"><value>Memory keeper</value></data>
   <data name="BadgeHint_Reviewer" xml:space="preserve"><value>Do {0} daily reviews</value></data>
   <data name="Badge_Detective" xml:space="preserve"><value>Detective</value></data>
-  <data name="BadgeHint_Detective" xml:space="preserve"><value>Catch Evo {0} times</value></data>
-  <data name="Js_EvoAnswered" xml:space="preserve"><value>Evo answered:</value></data>
+  <data name="BadgeHint_Detective" xml:space="preserve"><value>Catch the Tutor {0} times</value></data>
+  <data name="Js_EvoAnswered" xml:space="preserve"><value>The Tutor answered:</value></data>
   <data name="Js_HowSure" xml:space="preserve"><value>How sure are you?</value></data>
   <data name="Js_Unsure" xml:space="preserve"><value>Not sure</value></data>
   <data name="Js_ThinkSo" xml:space="preserve"><value>I think so</value></data>
@@ -1021,7 +1021,7 @@
   <data name="Js_UnsureRight" xml:space="preserve"><value>You had doubts, but you were right: trust yourself a bit more!</value></data>
   <data name="Js_HintsUsed" xml:space="preserve"><value>{0} hint(s) used.</value></data>
   <data name="Js_ReviewDone" xml:space="preserve"><value>Review done! These topics come back later, when you are about to forget them.</value></data>
-  <data name="Js_EvoDone" xml:space="preserve"><value>Evo checked: {0} right answers</value></data>
+  <data name="Js_EvoDone" xml:space="preserve"><value>Tutor checked: {0} right answers</value></data>
   <data name="Js_NothingToReview" xml:space="preserve"><value>Nothing to review right now. Do a test and your topics will come back here at the right time.</value></data>
   <data name="Review_Sub" xml:space="preserve"><value>What you are about to forget</value></data>
   <data name="Notebook_Sub" xml:space="preserve"><value>Fractions · your typical mistakes</value></data>
@@ -1056,17 +1056,17 @@
   <data name="Js_AdventureWon" xml:space="preserve"><value>Adventure won!</value></data>
   <data name="Js_AdventureLost" xml:space="preserve"><value>Not this time…</value></data>
   <data name="Js_NewAdventure" xml:space="preserve"><value>New adventure</value></data>
-  <data name="Nav_Teach" xml:space="preserve"><value>Teach Evo</value></data>
+  <data name="Nav_Teach" xml:space="preserve"><value>Teach the Tutor</value></data>
   <data name="Nav_Interview" xml:space="preserve"><value>Interviews</value></data>
-  <data name="Teach_Title" xml:space="preserve"><value>Explain it to Evo</value></data>
-  <data name="Teach_Subtitle" xml:space="preserve"><value>Evo wants to learn: you are the teacher. Explain a concept in your own words (or by voice); Evo asks about what is missing. Explaining is the best way to really understand.</value></data>
+  <data name="Teach_Title" xml:space="preserve"><value>Explain it to the Tutor</value></data>
+  <data name="Teach_Subtitle" xml:space="preserve"><value>The Tutor plays the student: you are the teacher. Explain a concept in your own words (or by voice); the Tutor asks about what is missing. Explaining is the best way to really understand.</value></data>
   <data name="Teach_Card" xml:space="preserve"><value>You are the teacher: explain a concept</value></data>
   <data name="Teach_NotYet" xml:space="preserve"><value>Not taught yet</value></data>
   <data name="Teach_Best" xml:space="preserve"><value>Best: {0} of {1} key ideas</value></data>
   <data name="Teach_Ideas" xml:space="preserve"><value>Key ideas</value></data>
   <data name="Teach_SecretIdea" xml:space="preserve"><value>Secret idea {0}</value></data>
   <data name="Teach_YourExplanation" xml:space="preserve"><value>Your explanation</value></data>
-  <data name="Teach_Placeholder" xml:space="preserve"><value>Explain it as if Evo were a younger classmate…</value></data>
+  <data name="Teach_Placeholder" xml:space="preserve"><value>Explain it as if the Tutor were a younger classmate…</value></data>
   <data name="Teach_Round" xml:space="preserve"><value>Round {0} of {1}</value></data>
   <data name="Teach_Send" xml:space="preserve"><value>Explain</value></data>
   <data name="Teach_HowItWorks" xml:space="preserve"><value>The code checks your explanation with a list of key ideas (the words you use count, not the spelling). Your text stays in your account and is not shared.</value></data>
@@ -1082,16 +1082,16 @@
   <data name="Interview_Check" xml:space="preserve"><value>Check what I learned</value></data>
   <data name="Interview_DemoOnly" xml:space="preserve"><value>In offline mode, {0} can answer the suggested questions. Choose an AI engine in the header to ask anything.</value></data>
   <data name="QuizMode_Interview" xml:space="preserve"><value>Interview check</value></data>
-  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explain a concept to Evo ({0})</value></data>
-  <data name="Quest_TeachEvo" xml:space="preserve"><value>Teach Evo</value></data>
+  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explain a concept to the Tutor ({0})</value></data>
+  <data name="Quest_TeachEvo" xml:space="preserve"><value>Teach the Tutor</value></data>
   <data name="Badge_Teacher" xml:space="preserve"><value>Little teacher</value></data>
-  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explain {0} concepts completely to Evo</value></data>
+  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explain {0} concepts completely to the Tutor</value></data>
   <data name="Badge_TimeTraveler" xml:space="preserve"><value>Time traveller</value></data>
   <data name="BadgeHint_TimeTraveler" xml:space="preserve"><value>Finish {0} interviews with their check</value></data>
   <data name="Js_SecretIdea" xml:space="preserve"><value>Secret idea {0}</value></data>
   <data name="Js_Round" xml:space="preserve"><value>Round {0} of {1}</value></data>
-  <data name="Js_TaughtAll" xml:space="preserve"><value>Evo understood everything: you are a great teacher!</value></data>
-  <data name="Js_TaughtSome" xml:space="preserve"><value>Evo learned {0} of the {1} key ideas.</value></data>
+  <data name="Js_TaughtAll" xml:space="preserve"><value>The Tutor understood everything: you are a great teacher!</value></data>
+  <data name="Js_TaughtSome" xml:space="preserve"><value>The Tutor learned {0} of the {1} key ideas.</value></data>
   <data name="Js_ModelExplanation" xml:space="preserve"><value>How a teacher would explain it</value></data>
   <data name="Js_TeachAgain" xml:space="preserve"><value>Explain it again</value></data>
   <data name="Js_OtherConcepts" xml:space="preserve"><value>Other concepts</value></data>
@@ -1109,16 +1109,72 @@
   <data name="Js_InterviewProgress" xml:space="preserve"><value>Questions asked: {0} of {1} to unlock the check</value></data>
   <data name="Js_InterviewReady" xml:space="preserve"><value>Check unlocked! You can keep asking or test what you learned.</value></data>
   <data name="Topic_math_clock" xml:space="preserve"><value>Telling the time</value></data>
-  <data name="Companion_Button" xml:space="preserve"><value>Ask Evo</value></data>
-  <data name="Companion_Open" xml:space="preserve"><value>Evo, your tutor: ask anything on any page</value></data>
-  <data name="Companion_Title" xml:space="preserve"><value>Evo, your tutor</value></data>
-  <data name="Companion_Subtitle" xml:space="preserve"><value>Knows your tests, your progress and this page</value></data>
+  <data name="Companion_Button" xml:space="preserve"><value>Tutor</value></data>
+  <data name="Companion_Open" xml:space="preserve"><value>Your Tutor: ask anything on any page</value></data>
+  <data name="Companion_Title" xml:space="preserve"><value>Your Tutor</value></data>
+  <data name="Companion_Subtitle" xml:space="preserve"><value>Knows everything you do, how you are progressing and this page</value></data>
   <data name="Companion_Clear" xml:space="preserve"><value>Delete the conversation</value></data>
   <data name="Companion_QuickNext" xml:space="preserve"><value>What should I do now?</value></data>
   <data name="Companion_QuickProgress" xml:space="preserve"><value>How am I doing?</value></data>
   <data name="Companion_QuickHelp" xml:space="preserve"><value>Help me with this page</value></data>
-  <data name="Companion_Placeholder" xml:space="preserve"><value>Ask Evo anything…</value></data>
+  <data name="Companion_Placeholder" xml:space="preserve"><value>Ask the Tutor anything…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Send</value></data>
-  <data name="Companion_Privacy" xml:space="preserve"><value>Evo keeps this conversation in your account to remember it; you can delete it with the bin. During a test Evo helps you think but never gives the answer.</value></data>
+  <data name="Companion_Privacy" xml:space="preserve"><value>The Tutor keeps this conversation in your account to remember it; you can delete it with the bin. During a test the Tutor helps you think but never gives the answer.</value></data>
   <data name="Js_ClearConfirm" xml:space="preserve"><value>Press the bin again to delete the whole conversation.</value></data>
+  <data name="Dossier_Title" xml:space="preserve"><value>Dossier</value></data>
+  <data name="Dossier_Discovery" xml:space="preserve"><value>What they discovered or did</value></data>
+  <data name="Dossier_Read" xml:space="preserve"><value>Listen</value></data>
+  <data name="Dossier_Illustration" xml:space="preserve"><value>Original illustration made for EduVerse, not a historical image.</value></data>
+  <data name="Dossier_Timeline" xml:space="preserve"><value>Life in dates</value></data>
+  <data name="Dossier_Evidence" xml:space="preserve"><value>The historical evidence</value></data>
+  <data name="Dossier_External" xml:space="preserve"><value>opens an external website</value></data>
+  <data name="Dossier_Fact" xml:space="preserve"><value>Did you know?</value></data>
+  <data name="Dossier_Interview" xml:space="preserve"><value>Interview</value></data>
+  <data name="Interview_TabChat" xml:space="preserve"><value>Interview</value></data>
+  <data name="Interview_NextVoice" xml:space="preserve"><value>Another voice</value></data>
+  <data name="Js_VoiceName" xml:space="preserve"><value>Voice: {0}</value></data>
+  <data name="Crumb_Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Crumb_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Crumb_Label" xml:space="preserve"><value>You are here</value></data>
+  <data name="Nav_Trades" xml:space="preserve"><value>Trades</value></data>
+  <data name="Trades_Title" xml:space="preserve"><value>Trades and practical skills</value></data>
+  <data name="Trades_Subtitle" xml:space="preserve"><value>Learn useful trades — electricity, solar energy, gardening, plumbing, carpentry, first aid, cooking, bike repair, painting, beekeeping — and discover the physics, biology, chemistry and maths behind each skill. Master every concept to earn an internal certificate.</value></data>
+  <data name="Trades_Science" xml:space="preserve"><value>Concepts and the science behind them</value></data>
+  <data name="Trades_Progress" xml:space="preserve"><value>Progress</value></data>
+  <data name="Trades_Mastered" xml:space="preserve"><value>{0} of {1} mastered</value></data>
+  <data name="Trades_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Trades_Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="Trades_Certificate" xml:space="preserve"><value>Certificate</value></data>
+  <data name="Trades_CertificateNote" xml:space="preserve"><value>The certificate is issued automatically when the tutor considers every concept mastered. It is an internal EduVerse certificate: it proves the theory learned, not a professional qualification.</value></data>
+  <data name="Learn_Academic" xml:space="preserve"><value>Subjects</value></data>
+  <data name="Certificate_Title" xml:space="preserve"><value>Certificate of achievement</value></data>
+  <data name="Certificate_Awarded" xml:space="preserve"><value>This certifies that</value></data>
+  <data name="Certificate_For" xml:space="preserve"><value>has mastered every concept of the learning path</value></data>
+  <data name="Certificate_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Certificate_Code" xml:space="preserve"><value>Certificate code</value></data>
+  <data name="Certificate_Print" xml:space="preserve"><value>Print or save as PDF</value></data>
+  <data name="Certificate_Disclaimer" xml:space="preserve"><value>Internal EduVerse AI certificate. It proves the knowledge shown on the platform (adaptive exercises and knowledge tracing). It is not an official qualification and does not authorise professional work on electrical, gas or water installations.</value></data>
+  <data name="Badge_Apprentice" xml:space="preserve"><value>Apprentice</value></data>
+  <data name="BadgeHint_Apprentice" xml:space="preserve"><value>Earn {0} trade certificate</value></data>
+  <data name="Badge_MasterCraftsman" xml:space="preserve"><value>Master of trades</value></data>
+  <data name="BadgeHint_MasterCraftsman" xml:space="preserve"><value>Earn {0} trade certificates</value></data>
+  <data name="Js_CertificateEarned" xml:space="preserve"><value>Certificate earned!</value></data>
+  <data name="Js_SeeCertificate" xml:space="preserve"><value>See my certificate</value></data>
+  <data name="Js_CertificateGoal" xml:space="preserve"><value>Master every concept to earn the certificate</value></data>
+  <data name="Learn_Title" xml:space="preserve"><value>What do you want to learn?</value></data>
+  <data name="Learn_Subtitle" xml:space="preserve"><value>Choose a subject: the tutor explains each topic, gives you exercises at your level, changes its way of explaining when one does not work and follows what you master. Everything works without AI; with an AI engine the explanations are written for you.</value></data>
+  <data name="Learn_Continue" xml:space="preserve"><value>Continue where you left off</value></data>
+  <data name="Learn_AcademicHint" xml:space="preserve"><value>At your level in each subject (the level of the tests or your placement). Change it in Explore.</value></data>
+  <data name="Learn_Own" xml:space="preserve"><value>My subjects</value></data>
+  <data name="Learn_TradesHint" xml:space="preserve"><value>Electricity, garden, plumbing, carpentry… with the science behind and a certificate.</value></data>
+  <data name="Learn_SeeTrades" xml:space="preserve"><value>See the trades</value></data>
+  <data name="Learn_CreateWithAi" xml:space="preserve"><value>Any other topic (AI)</value></data>
+  <data name="Learn_Topics" xml:space="preserve"><value>{0} topics</value></data>
+  <data name="Learn_NotStarted" xml:space="preserve"><value>Not started</value></data>
+  <data name="Learn_InProgress" xml:space="preserve"><value>In progress</value></data>
+  <data name="Learn_Choose" xml:space="preserve"><value>Other subject</value></data>
+  <data name="Nav_Hobbies" xml:space="preserve"><value>Hobbies</value></data>
+  <data name="Hobbies_Subtitle" xml:space="preserve"><value>Fun things to learn for the pleasure of it — astronomy, music, magic, survival, chess, dinosaurs — with the science behind each one. Master every concept to earn your certificate and badge.</value></data>
+  <data name="Badge_Hobbyist" xml:space="preserve"><value>Curious mind</value></data>
+  <data name="BadgeHint_Hobbyist" xml:space="preserve"><value>Earn {0} hobby certificate</value></data>
 </root>

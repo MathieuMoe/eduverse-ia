@@ -48,7 +48,7 @@ public sealed class ClassroomStore(EduVerseDb db, LearningStore learning, TimePr
             return null;
         }
 
-        if (subjectId != BuiltInSubjects.FractionsKey && !await db.Subjects.AnyAsync(s => s.Id == subjectId && s.OwnerId == teacherId, ct).ConfigureAwait(false))
+        if (subjectId != BuiltInSubjects.FractionsKey && !Trades.IsTrade(subjectId) && !await db.Subjects.AnyAsync(s => s.Id == subjectId && s.OwnerId == teacherId, ct).ConfigureAwait(false))
         {
             return null;
         }

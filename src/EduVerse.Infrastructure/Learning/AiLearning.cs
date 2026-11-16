@@ -18,7 +18,7 @@ public sealed class AiLearning(IStructuredAi ai) : ILearningAi
     public async Task<IReadOnlyList<Exercise>> ExercisesAsync(Subject subject, Concept concept, int difficulty, int count, StudentContext student, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(subject);
-        if (subject.Key == BuiltInSubjects.FractionsKey)
+        if (subject.BuiltIn)
         {
             // Built-in subject: exercises computed in code are always mathematically right, the AI is not needed
             return await new DemoLearningAi().ExercisesAsync(subject, concept, difficulty, count, student, cancellationToken).ConfigureAwait(false);

@@ -10,7 +10,7 @@ namespace EduVerse.Core.Catalog;
 /// </summary>
 public static class EvoQuestions
 {
-    public static readonly Text EvoIsRight = Text.Of("✅ Evo is right|✅ Evo tiene razón|✅ Evo a raison|✅ L'Evo té raó");
+    public static readonly Text EvoIsRight = Text.Of("✅ The Tutor is right|✅ El Tutor tiene razón|✅ Le Tuteur a raison|✅ El Tutor té raó");
 
     public static QuizQuestion Check(QuizQuestion question, Random rng, TeachLanguage language)
     {
@@ -24,8 +24,8 @@ public static class EvoQuestions
         options = options.Take(QuizQuestion.Choices).ToList();
         var correct = right ? options[0] : question.Answer;
         var note = right
-            ? Text.Of("Evo had it right.|Evo acertó.|Evo avait raison.|L'Evo l'havia encertat.").In(language)
-            : Text.Of("Evo answered {0}: a typical mistake.|Evo respondió {0}: un error típico.|Evo a répondu {0} : une erreur classique.|L'Evo va respondre {0}: un error típic.").Format(language, evo);
+            ? Text.Of("The Tutor had it right.|El Tutor acertó.|Le Tuteur avait raison.|El Tutor l'havia encertat.").In(language)
+            : Text.Of("The Tutor answered {0}: a typical mistake.|El Tutor respondió {0}: un error típico.|Le Tuteur a répondu {0} : une erreur classique.|El Tutor va respondre {0}: un error típic.").Format(language, evo);
         return question with
         {
             Options = options,
@@ -62,7 +62,7 @@ public static class EvoNotebook
         [FractionExercises.NotConverted] = Text.Of("He changed the denominators but not the numerators.|Cambió los denominadores pero no los numeradores.|Il a changé les dénominateurs mais pas les numérateurs.|Va canviar els denominadors però no els numeradors."),
     };
 
-    public static readonly Text EvoGotItRight = Text.Of("Nothing: Evo got it right!|Nada: ¡Evo acertó!|Rien : Evo a juste !|Res: l'Evo ho ha encertat!");
+    public static readonly Text EvoGotItRight = Text.Of("Nothing: the Tutor got it right!|Nada: ¡el Tutor acertó!|Rien : le Tuteur a juste !|Res: el Tutor ho ha encertat!");
 
     public static IReadOnlyCollection<string> Codes => Mistakes.Keys;
 

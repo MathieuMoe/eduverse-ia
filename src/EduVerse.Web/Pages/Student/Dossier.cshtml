@@ -1,0 +1,34 @@
+@page
+@model EduVerse.Web.Pages.Student.DossierModel
+@using EduVerse.Core.Tutor
+@{
+    var f = Model.Figure;
+    ViewData["Title"] = f.Name;
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var voice = Interviews.Voice(f);
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    EduVerse.Web.Breadcrumb.Set(ViewData, L["Dossier_Title"], ("/Student/Interview", L["Nav_Interview"]), ("/Student/Interview?figure=" + f.Key, f.Name));
+}
+<div id="dossier-root" class="w-full space-y-4" data-figure="@f.Key" data-female="@(voice.Female ? "true" : "false")"
+     data-pitch="@voice.Pitch.ToString(inv)" data-rate="@voice.Rate.ToString(inv)" data-voice-index="@Interviews.VoiceIndex(f)">
+    <header class="@Ui.Card p-5 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-start">
+        <div class="w-20 sm:w-24 shrink-0" data-avatar="@f.Key" data-mouth="closed" id="dossier-avatar"></div>
+        <div class="min-w-0 grow">
+            <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground-1">@L["Dossier_Title"]</p>
+            <h1 class="text-2xl font-semibold text-foreground">@f.Name</h1>
+            <p class="text-sm text-muted-foreground-1">@f.Years · @f.Field.In(language)</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="/Student/Interview?figure=@f.Key" class="@Ui.BtnPrimary" data-testid="dossier-interview">🎙️ @L["Dossier_Interview"]</a>
+            <a href="/Student/Quiz?mode=Interview&figure=@f.Key&level=@Model.Level" class="@Ui.BtnLight">✅ @L["Interview_Check"]</a>
+        </div>
+    </header>
+    <partial name="_Dossier" model="f" />
+</div>
+
+@section Scripts {
+    <script src="~/js/avatars.js" asp-append-version="true"></script>
+    <script src="~/js/discoveries.js" asp-append-version="true"></script>
+    <script src="~/js/figurevoice.js" asp-append-version="true"></script>
+    <script src="~/js/dossier.js" asp-append-version="true"></script>
+}

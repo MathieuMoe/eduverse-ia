@@ -187,3 +187,40 @@ public class DiagramTests
         }
     }
 }
+
+public class DossierTests
+{
+    [Fact]
+    public void Every_figure_has_a_complete_dossier_with_dates_in_its_life_and_https_sources()
+    {
+        Assert.Equal(Interviews.All.Count, Dossiers.All.Count);
+        foreach (var figure in Interviews.All)
+        {
+            var d = Dossiers.For(figure.Key);
+            Assert.NotNull(d);
+            var born = int.Parse(figure.Years[..4], System.Globalization.CultureInfo.InvariantCulture);
+            var died = int.Parse(figure.Years[^4..], System.Globalization.CultureInfo.InvariantCulture);
+            Assert.InRange(d.Timeline.Count, 5, 6);
+            Assert.Equal(d.Timeline.Select(e => e.Year).Order(), d.Timeline.Select(e => e.Year));
+            Assert.Equal(born, d.Timeline[0].Year);
+            Assert.All(d.Timeline, e => Assert.InRange(e.Year, born, died));
+            Assert.NotEmpty(d.Sources);
+            Assert.All(d.Sources, s => Assert.StartsWith("https://", s.Url, StringComparison.Ordinal));
+            foreach (var language in Enum.GetValues<TeachLanguage>())
+            {
+                Assert.All(new[] { d.Discovery, d.Evidence, d.Fact }.Concat(d.Timeline.Select(e => e.Text)).Concat(d.Sources.Select(s => s.Title)),
+                    t => Assert.False(string.IsNullOrWhiteSpace(t.In(language))));
+            }
+        }
+    }
+
+    [Fact]
+    public void Figures_of_the_same_voice_kind_get_different_voices_and_pitches()
+    {
+        foreach (var group in Interviews.All.GroupBy(f => Interviews.Voice(f).Female))
+        {
+            Assert.Equal(Enumerable.Range(0, group.Count()), group.Select(Interviews.VoiceIndex).Order());
+            Assert.Equal(group.Count(), group.Select(f => (Interviews.Voice(f).Pitch, Interviews.Voice(f).Rate)).Distinct().Count());
+        }
+    }
+}

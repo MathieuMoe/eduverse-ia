@@ -31,12 +31,30 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
         var interviews = await db.QuizAttempts.CountAsync(a => a.UserId == userId && a.Mode == QuizMode.Interview && a.FinishedAt != null, ct).ConfigureAwait(false);
         var taught = await db.TeachSessions.AsNoTracking().Where(t => t.UserId == userId && t.FinishedAt != null).Select(t => t.Concept).Distinct().ToListAsync(ct).ConfigureAwait(false);
         // The first name (the nickname is for the public rankings)
+        var now = clock.GetUtcNow();
+        var (weekStart, before) = (now.AddDays(-7), now.AddDays(-14));
+        var answers = await db.QuizAnswers.AsNoTracking().Where(a => a.UserId == userId && a.At >= before)
+            .Select(a => new { a.Area, a.Correct, Recent = a.At >= weekStart }).ToListAsync(ct).ConfigureAwait(false);
+        var testsWeek = await db.QuizAttempts.Where(a => a.UserId == userId && a.FinishedAt >= before)
+            .Select(a => a.FinishedAt >= weekStart).ToListAsync(ct).ConfigureAwait(false);
+        var xpWeek = await db.XpEvents.Where(x => x.UserId == userId && x.At >= before)
+            .Select(x => new { x.Amount, Recent = x.At >= weekStart }).ToListAsync(ct).ConfigureAwait(false);
+        static int Rate(int right, int total) => total == 0 ? 0 : (int)Math.Round(100.0 * right / total);
+        var improving = answers.GroupBy(a => a.Area).Where(g =>
+        {
+            var (now7, prev7) = (g.Where(a => a.Recent).ToList(), g.Where(a => !a.Recent).ToList());
+            return now7.Count >= 5 && prev7.Count >= 5 && Rate(now7.Count(a => a.Correct), now7.Count) - Rate(prev7.Count(a => a.Correct), prev7.Count) >= 10;
+        }).Select(g => names.Area(g.Key)).ToList();
+        var (thisWeek, lastWeek) = (answers.Where(a => a.Recent).ToList(), answers.Where(a => !a.Recent).ToList());
+        var evolution = new Evolution(
+            thisWeek.Count, Rate(thisWeek.Count(a => a.Correct), thisWeek.Count), lastWeek.Count, Rate(lastWeek.Count(a => a.Correct), lastWeek.Count),
+            testsWeek.Count(r => r), testsWeek.Count(r => !r), xpWeek.Where(x => x.Recent).Sum(x => x.Amount), xpWeek.Where(x => !x.Recent).Sum(x => x.Amount), improving);
         var displayName = name.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? profile.Nickname;
         return new StudentSnapshot(
             displayName, profile.Level, summary.Level, names.Rank(summary.Rank), summary.Streak, summary.PlayedToday, due, misconceptions, tests,
             weak.Select(w => new WeakTopic(w.Area, w.Level, w.Topic, names.Topic(w.Topic), names.Area(w.Area), (int)Math.Round(100 * w.PKnown))).ToList(),
             recent.Select(r => new RecentTest(names.Area(r.Area), names.Mode(r.Mode), r.Correct, r.Length, DateOnly.FromDateTime(r.FinishedAt!.Value.UtcDateTime))).ToList(),
-            taught, interviews, page ?? "", title ?? "");
+            taught, interviews, page ?? "", title ?? "", evolution);
     }
 
     public async Task<IReadOnlyList<CompanionMessage>> HistoryAsync(string userId, int take = 30, CancellationToken ct = default)

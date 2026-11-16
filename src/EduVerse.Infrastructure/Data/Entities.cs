@@ -612,3 +612,18 @@ public sealed class CompanionMessage
 
     public DateTimeOffset At { get; set; }
 }
+
+/// <summary>Internal certificate of a trade, issued when every concept of it is mastered (not a professional licence).</summary>
+public sealed class Certificate
+{
+    public int Id { get; set; }
+
+    public string UserId { get; set; } = "";
+
+    public string SubjectKey { get; set; } = "";
+
+    /// <summary>Short code printed on the certificate, to check it inside the platform.</summary>
+    public string Code { get; set; } = "";
+
+    public DateTimeOffset IssuedAt { get; set; }
+}

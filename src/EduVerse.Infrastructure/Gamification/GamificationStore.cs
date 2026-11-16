@@ -1,5 +1,6 @@
 using EduVerse.Core.Catalog;
 using EduVerse.Core.Common;
+using EduVerse.Core.Curriculum;
 using EduVerse.Core.Gamification;
 using EduVerse.Core.Learning;
 using EduVerse.Infrastructure.Data;
@@ -223,6 +224,7 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
                                join t in db.QuizAttempts on a.AttemptId equals t.Id
                                where a.UserId == userId && a.Correct && (t.Mode == QuizMode.Evo || t.Mode == QuizMode.Notebook)
                                select a.Id).CountAsync(ct).ConfigureAwait(false);
+        var certificates = await db.Certificates.Where(c => c.UserId == userId).Select(c => c.SubjectKey).ToListAsync(ct).ConfigureAwait(false);
         return new BadgeStats(
             quizCorrect + tutorCorrect,
             Streaks.Best(await ActiveDaysAsync(userId, null, ct).ConfigureAwait(false)),
@@ -238,7 +240,9 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
             evoCaught,
             tests.Count(t => t.Mode == QuizMode.Adventure && t.Won),
             await db.TeachSessions.Where(t => t.UserId == userId && t.FinishedAt != null && t.Xp >= 50).Select(t => t.Concept).Distinct().CountAsync(ct).ConfigureAwait(false),
-            tests.Count(t => t.Mode == QuizMode.Interview));
+            tests.Count(t => t.Mode == QuizMode.Interview),
+            certificates.Count,
+            certificates.Count(k => Trades.Find(k)?.Kind == TradeKind.Hobby));
     }
 
     public async Task<int> TotalXpAsync(string userId, CancellationToken ct = default) =>

@@ -647,7 +647,7 @@
   <data name="Field_Level" xml:space="preserve"><value>Nivell d'estudis</value></data>
   <data name="Mascot_Streak" xml:space="preserve"><value>Vas llançat! Mantén la ratxa de {0} dies 🔥</value></data>
   <data name="Mascot_Today" xml:space="preserve"><value>Bona feina avui! Un altre test?</value></data>
-  <data name="Mascot_Start" xml:space="preserve"><value>Hola! Soc l'Evo. Comencem amb un test ràpid?</value></data>
+  <data name="Mascot_Start" xml:space="preserve"><value>Hola! Soc el teu Tutor. Comencem amb un test ràpid?</value></data>
   <data name="Game_Xp" xml:space="preserve"><value>XP actuals</value></data>
   <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP per al nivell següent</value></data>
   <data name="Game_YourLevel" xml:space="preserve"><value>El teu nivell</value></data>
@@ -980,16 +980,16 @@
   <data name="Explore_ApplyAll" xml:space="preserve"><value>Fer servir {0} a totes les matèries</value></data>
   <data name="Notice_Level_Applied" xml:space="preserve"><value>Nivell aplicat a totes les matèries.</value></data>
   <data name="History_QuestionN" xml:space="preserve"><value>Pregunta {0}</value></data>
-  <data name="QuizMode_Evo" xml:space="preserve"><value>Corregeix l'Evo</value></data>
-  <data name="QuizMode_Notebook" xml:space="preserve"><value>Quadern de l'Evo</value></data>
+  <data name="QuizMode_Evo" xml:space="preserve"><value>Corregeix el Tutor</value></data>
+  <data name="QuizMode_Notebook" xml:space="preserve"><value>Quadern del Tutor</value></data>
   <data name="QuizMode_Review" xml:space="preserve"><value>Repàs llampec</value></data>
-  <data name="Evo_Hint" xml:space="preserve"><value>L'Evo respon i tu el corregeixes: té raó?</value></data>
+  <data name="Evo_Hint" xml:space="preserve"><value>El Tutor respon i tu el corregeixes: té raó?</value></data>
   <data name="Review_Title" xml:space="preserve"><value>Repàs llampec</value></data>
   <data name="Review_Due" xml:space="preserve"><value>{0} temes per repassar avui · 2 minuts</value></data>
   <data name="Review_None" xml:space="preserve"><value>Res per repassar avui: fes un test per començar</value></data>
-  <data name="Notebook_Title" xml:space="preserve"><value>Quadern de l'Evo</value></data>
-  <data name="Notebook_Yours" xml:space="preserve"><value>L'Evo fa els teus errors («{0}»): troba'ls!</value></data>
-  <data name="Notebook_Hint" xml:space="preserve"><value>L'Evo resol fraccions amb errors típics: descobreix què ha fet malament</value></data>
+  <data name="Notebook_Title" xml:space="preserve"><value>Quadern del Tutor</value></data>
+  <data name="Notebook_Yours" xml:space="preserve"><value>El Tutor fa els teus errors («{0}»): troba'ls!</value></data>
+  <data name="Notebook_Hint" xml:space="preserve"><value>El Tutor resol fraccions amb errors típics: descobreix què ha fet malament</value></data>
   <data name="Calibration_Title" xml:space="preserve"><value>Mesurador de confiança</value></data>
   <data name="Calibration_Sure" xml:space="preserve"><value>d'encerts quan dius «segur» ({0} de {1})</value></data>
   <data name="Calibration_Unsure" xml:space="preserve"><value>Quan dubtes: {0} de {1} correctes</value></data>
@@ -1000,14 +1000,14 @@
   <data name="Achievements_XpHint" xml:space="preserve"><value>Cada pista feta servir</value></data>
   <data name="Achievements_XpSure" xml:space="preserve"><value>Encert marcat com a «segur»</value></data>
   <data name="QuestText_Review" xml:space="preserve"><value>Fes el repàs llampec ({0})</value></data>
-  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Corregeix l'Evo o obre el seu quadern ({0})</value></data>
+  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Corregeix el Tutor o obre el seu quadern ({0})</value></data>
   <data name="Quest_Review" xml:space="preserve"><value>Repàs llampec</value></data>
-  <data name="Quest_CheckEvo" xml:space="preserve"><value>Corregeix l'Evo</value></data>
+  <data name="Quest_CheckEvo" xml:space="preserve"><value>Corregeix el Tutor</value></data>
   <data name="Badge_Reviewer" xml:space="preserve"><value>Guardià de la memòria</value></data>
   <data name="BadgeHint_Reviewer" xml:space="preserve"><value>Fes {0} repassos llampec</value></data>
   <data name="Badge_Detective" xml:space="preserve"><value>Detectiu</value></data>
-  <data name="BadgeHint_Detective" xml:space="preserve"><value>Enxampa l'Evo {0} vegades</value></data>
-  <data name="Js_EvoAnswered" xml:space="preserve"><value>L'Evo ha respost:</value></data>
+  <data name="BadgeHint_Detective" xml:space="preserve"><value>Enxampa el Tutor {0} vegades</value></data>
+  <data name="Js_EvoAnswered" xml:space="preserve"><value>El Tutor ha respost:</value></data>
   <data name="Js_HowSure" xml:space="preserve"><value>Ho tens clar?</value></data>
   <data name="Js_Unsure" xml:space="preserve"><value>Dubto</value></data>
   <data name="Js_ThinkSo" xml:space="preserve"><value>Crec que sí</value></data>
@@ -1021,7 +1021,7 @@
   <data name="Js_UnsureRight" xml:space="preserve"><value>Dubtaves, però ho has encertat: confia una mica més en tu!</value></data>
   <data name="Js_HintsUsed" xml:space="preserve"><value>{0} pista/pistes fetes servir.</value></data>
   <data name="Js_ReviewDone" xml:space="preserve"><value>Repàs fet! Aquests temes tornaran més endavant, just abans que els oblidis.</value></data>
-  <data name="Js_EvoDone" xml:space="preserve"><value>Evo corregit: {0} respostes correctes</value></data>
+  <data name="Js_EvoDone" xml:space="preserve"><value>Tutor corregit: {0} respostes correctes</value></data>
   <data name="Js_NothingToReview" xml:space="preserve"><value>Res per repassar ara. Fes un test i els teus temes tornaran aquí en el moment just.</value></data>
   <data name="Review_Sub" xml:space="preserve"><value>El que estàs a punt d'oblidar</value></data>
   <data name="Notebook_Sub" xml:space="preserve"><value>Fraccions · els teus errors típics</value></data>
@@ -1056,17 +1056,17 @@
   <data name="Js_AdventureWon" xml:space="preserve"><value>Aventura superada!</value></data>
   <data name="Js_AdventureLost" xml:space="preserve"><value>Aquesta vegada no…</value></data>
   <data name="Js_NewAdventure" xml:space="preserve"><value>Nova aventura</value></data>
-  <data name="Nav_Teach" xml:space="preserve"><value>Explica-ho a l'Evo</value></data>
+  <data name="Nav_Teach" xml:space="preserve"><value>Explica-ho al Tutor</value></data>
   <data name="Nav_Interview" xml:space="preserve"><value>Entrevistes</value></data>
-  <data name="Teach_Title" xml:space="preserve"><value>Explica-ho a l'Evo</value></data>
-  <data name="Teach_Subtitle" xml:space="preserve"><value>L'Evo vol aprendre: tu ets el profe. Explica un concepte amb les teves paraules (o parlant); l'Evo pregunta pel que falta. Explicar és la millor manera d'entendre-ho de debò.</value></data>
+  <data name="Teach_Title" xml:space="preserve"><value>Explica-ho al Tutor</value></data>
+  <data name="Teach_Subtitle" xml:space="preserve"><value>El Tutor fa d'alumne: tu ets el profe. Explica un concepte amb les teves paraules (o parlant); el Tutor pregunta pel que falta. Explicar és la millor manera d'entendre-ho de debò.</value></data>
   <data name="Teach_Card" xml:space="preserve"><value>Tu ets el profe: explica un concepte</value></data>
   <data name="Teach_NotYet" xml:space="preserve"><value>Encara no explicat</value></data>
   <data name="Teach_Best" xml:space="preserve"><value>Millor: {0} de {1} idees clau</value></data>
   <data name="Teach_Ideas" xml:space="preserve"><value>Idees clau</value></data>
   <data name="Teach_SecretIdea" xml:space="preserve"><value>Idea secreta {0}</value></data>
   <data name="Teach_YourExplanation" xml:space="preserve"><value>La teva explicació</value></data>
-  <data name="Teach_Placeholder" xml:space="preserve"><value>Explica-ho com si l'Evo fos un company més petit…</value></data>
+  <data name="Teach_Placeholder" xml:space="preserve"><value>Explica-ho com si el Tutor fos un company més petit…</value></data>
   <data name="Teach_Round" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
   <data name="Teach_Send" xml:space="preserve"><value>Explicar</value></data>
   <data name="Teach_HowItWorks" xml:space="preserve"><value>El codi comprova la teva explicació amb una llista d'idees clau (compten les paraules que fas servir, no l'ortografia). El teu text es queda al teu compte i no es comparteix.</value></data>
@@ -1082,16 +1082,16 @@
   <data name="Interview_Check" xml:space="preserve"><value>Comprovar el que he après</value></data>
   <data name="Interview_DemoOnly" xml:space="preserve"><value>Sense connexió, {0} respon les preguntes suggerides. Tria un motor d'IA a la capçalera per preguntar el que vulguis.</value></data>
   <data name="QuizMode_Interview" xml:space="preserve"><value>Comprovació de l'entrevista</value></data>
-  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explica un concepte a l'Evo ({0})</value></data>
-  <data name="Quest_TeachEvo" xml:space="preserve"><value>Ensenya a l'Evo</value></data>
+  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explica un concepte al Tutor ({0})</value></data>
+  <data name="Quest_TeachEvo" xml:space="preserve"><value>Ensenya al Tutor</value></data>
   <data name="Badge_Teacher" xml:space="preserve"><value>Petit profe</value></data>
-  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explica completament {0} conceptes a l'Evo</value></data>
+  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explica completament {0} conceptes al Tutor</value></data>
   <data name="Badge_TimeTraveler" xml:space="preserve"><value>Viatger del temps</value></data>
   <data name="BadgeHint_TimeTraveler" xml:space="preserve"><value>Acaba {0} entrevistes amb la comprovació</value></data>
   <data name="Js_SecretIdea" xml:space="preserve"><value>Idea secreta {0}</value></data>
   <data name="Js_Round" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
-  <data name="Js_TaughtAll" xml:space="preserve"><value>L'Evo ho ha entès tot: ets un gran profe!</value></data>
-  <data name="Js_TaughtSome" xml:space="preserve"><value>L'Evo ha après {0} de les {1} idees clau.</value></data>
+  <data name="Js_TaughtAll" xml:space="preserve"><value>El Tutor ho ha entès tot: ets un gran profe!</value></data>
+  <data name="Js_TaughtSome" xml:space="preserve"><value>El Tutor ha après {0} de les {1} idees clau.</value></data>
   <data name="Js_ModelExplanation" xml:space="preserve"><value>Així ho explicaria un profe</value></data>
   <data name="Js_TeachAgain" xml:space="preserve"><value>Tornar a explicar</value></data>
   <data name="Js_OtherConcepts" xml:space="preserve"><value>Altres conceptes</value></data>
@@ -1109,16 +1109,72 @@
   <data name="Js_InterviewProgress" xml:space="preserve"><value>Preguntes fetes: {0} de {1} per desbloquejar la comprovació</value></data>
   <data name="Js_InterviewReady" xml:space="preserve"><value>Comprovació desbloquejada! Pots continuar preguntant o comprovar el que has après.</value></data>
   <data name="Topic_math_clock" xml:space="preserve"><value>Llegir l'hora</value></data>
-  <data name="Companion_Button" xml:space="preserve"><value>Pregunta a l'Evo</value></data>
-  <data name="Companion_Open" xml:space="preserve"><value>L'Evo, el teu tutor: pregunta-li el que vulguis des de qualsevol pàgina</value></data>
-  <data name="Companion_Title" xml:space="preserve"><value>L'Evo, el teu tutor</value></data>
-  <data name="Companion_Subtitle" xml:space="preserve"><value>Coneix els teus tests, el teu progrés i aquesta pàgina</value></data>
+  <data name="Companion_Button" xml:space="preserve"><value>Tutor</value></data>
+  <data name="Companion_Open" xml:space="preserve"><value>El teu Tutor: pregunta-li el que vulguis des de qualsevol pàgina</value></data>
+  <data name="Companion_Title" xml:space="preserve"><value>El teu Tutor</value></data>
+  <data name="Companion_Subtitle" xml:space="preserve"><value>Coneix tot el que fas, la teva evolució i aquesta pàgina</value></data>
   <data name="Companion_Clear" xml:space="preserve"><value>Esborrar la conversa</value></data>
   <data name="Companion_QuickNext" xml:space="preserve"><value>Què faig ara?</value></data>
   <data name="Companion_QuickProgress" xml:space="preserve"><value>Com vaig?</value></data>
   <data name="Companion_QuickHelp" xml:space="preserve"><value>Ajuda'm amb aquesta pàgina</value></data>
-  <data name="Companion_Placeholder" xml:space="preserve"><value>Pregunta alguna cosa a l'Evo…</value></data>
+  <data name="Companion_Placeholder" xml:space="preserve"><value>Pregunta alguna cosa al Tutor…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
-  <data name="Companion_Privacy" xml:space="preserve"><value>L'Evo guarda aquesta conversa al teu compte per recordar-la; pots esborrar-la amb la paperera. Durant un test, l'Evo t'ajuda a pensar però mai no et dona la resposta.</value></data>
+  <data name="Companion_Privacy" xml:space="preserve"><value>El Tutor guarda aquesta conversa al teu compte per recordar-la; pots esborrar-la amb la paperera. Durant un test, el Tutor t'ajuda a pensar però mai no et dona la resposta.</value></data>
   <data name="Js_ClearConfirm" xml:space="preserve"><value>Prem un altre cop la paperera per esborrar tota la conversa.</value></data>
+  <data name="Dossier_Title" xml:space="preserve"><value>Dossier</value></data>
+  <data name="Dossier_Discovery" xml:space="preserve"><value>El que va descobrir o fer</value></data>
+  <data name="Dossier_Read" xml:space="preserve"><value>Escoltar</value></data>
+  <data name="Dossier_Illustration" xml:space="preserve"><value>Il·lustració original feta per a EduVerse, no és una imatge històrica.</value></data>
+  <data name="Dossier_Timeline" xml:space="preserve"><value>La seva vida en dates</value></data>
+  <data name="Dossier_Evidence" xml:space="preserve"><value>La prova històrica</value></data>
+  <data name="Dossier_External" xml:space="preserve"><value>s'obre en una web externa</value></data>
+  <data name="Dossier_Fact" xml:space="preserve"><value>Sabies que…?</value></data>
+  <data name="Dossier_Interview" xml:space="preserve"><value>Entrevistar</value></data>
+  <data name="Interview_TabChat" xml:space="preserve"><value>Entrevista</value></data>
+  <data name="Interview_NextVoice" xml:space="preserve"><value>Una altra veu</value></data>
+  <data name="Js_VoiceName" xml:space="preserve"><value>Veu: {0}</value></data>
+  <data name="Crumb_Home" xml:space="preserve"><value>Inici</value></data>
+  <data name="Crumb_Back" xml:space="preserve"><value>Tornar</value></data>
+  <data name="Crumb_Label" xml:space="preserve"><value>Ets aquí</value></data>
+  <data name="Nav_Trades" xml:space="preserve"><value>Oficis</value></data>
+  <data name="Trades_Title" xml:space="preserve"><value>Oficis i aprenentatge pràctic</value></data>
+  <data name="Trades_Subtitle" xml:space="preserve"><value>Aprèn oficis útils —electricitat, energia solar, hort, lampisteria, fusteria, primers auxilis, cuina, bicicletes, pintura, apicultura— i descobreix la física, la biologia, la química i les matemàtiques que hi ha darrere de cada tasca. Domina tots els conceptes per aconseguir un certificat intern.</value></data>
+  <data name="Trades_Science" xml:space="preserve"><value>Conceptes i la ciència que hi ha darrere</value></data>
+  <data name="Trades_Progress" xml:space="preserve"><value>Progrés</value></data>
+  <data name="Trades_Mastered" xml:space="preserve"><value>{0} de {1} dominats</value></data>
+  <data name="Trades_Start" xml:space="preserve"><value>Començar</value></data>
+  <data name="Trades_Continue" xml:space="preserve"><value>Continuar</value></data>
+  <data name="Trades_Certificate" xml:space="preserve"><value>Certificat</value></data>
+  <data name="Trades_CertificateNote" xml:space="preserve"><value>El certificat s'emet automàticament quan el tutor considera dominats tots els conceptes. És un certificat intern d'EduVerse: acredita la teoria apresa, no una qualificació professional.</value></data>
+  <data name="Learn_Academic" xml:space="preserve"><value>Matèries</value></data>
+  <data name="Certificate_Title" xml:space="preserve"><value>Certificat d'assoliment</value></data>
+  <data name="Certificate_Awarded" xml:space="preserve"><value>Es certifica que</value></data>
+  <data name="Certificate_For" xml:space="preserve"><value>ha dominat tots els conceptes de l'itinerari</value></data>
+  <data name="Certificate_Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Certificate_Code" xml:space="preserve"><value>Codi del certificat</value></data>
+  <data name="Certificate_Print" xml:space="preserve"><value>Imprimir o desar en PDF</value></data>
+  <data name="Certificate_Disclaimer" xml:space="preserve"><value>Certificat intern d'EduVerse AI. Acredita els coneixements demostrats a la plataforma (exercicis adaptatius i seguiment del coneixement). No és una titulació oficial ni habilita per treballar professionalment en instal·lacions elèctriques, de gas o d'aigua.</value></data>
+  <data name="Badge_Apprentice" xml:space="preserve"><value>Aprenent</value></data>
+  <data name="BadgeHint_Apprentice" xml:space="preserve"><value>Aconsegueix {0} certificat d'ofici</value></data>
+  <data name="Badge_MasterCraftsman" xml:space="preserve"><value>Mestre d'oficis</value></data>
+  <data name="BadgeHint_MasterCraftsman" xml:space="preserve"><value>Aconsegueix {0} certificats d'ofici</value></data>
+  <data name="Js_CertificateEarned" xml:space="preserve"><value>Certificat aconseguit!</value></data>
+  <data name="Js_SeeCertificate" xml:space="preserve"><value>Veure el meu certificat</value></data>
+  <data name="Js_CertificateGoal" xml:space="preserve"><value>Domina tots els conceptes per aconseguir el certificat</value></data>
+  <data name="Learn_Title" xml:space="preserve"><value>Què vols aprendre?</value></data>
+  <data name="Learn_Subtitle" xml:space="preserve"><value>Tria una matèria: el tutor explica cada tema, et dona exercicis al teu nivell, canvia la manera d'explicar quan una no funciona i segueix el que domines. Tot funciona sense IA; amb un motor d'IA, les explicacions s'escriuen per a tu.</value></data>
+  <data name="Learn_Continue" xml:space="preserve"><value>Continua on ho vas deixar</value></data>
+  <data name="Learn_AcademicHint" xml:space="preserve"><value>Al teu nivell a cada matèria (el dels tests o la prova de nivell). Canvia'l a Explorar.</value></data>
+  <data name="Learn_Own" xml:space="preserve"><value>Les meves matèries</value></data>
+  <data name="Learn_TradesHint" xml:space="preserve"><value>Electricitat, hort, lampisteria, fusteria… amb la ciència que hi ha darrere i un certificat.</value></data>
+  <data name="Learn_SeeTrades" xml:space="preserve"><value>Veure els oficis</value></data>
+  <data name="Learn_CreateWithAi" xml:space="preserve"><value>Qualsevol altre tema (IA)</value></data>
+  <data name="Learn_Topics" xml:space="preserve"><value>{0} temes</value></data>
+  <data name="Learn_NotStarted" xml:space="preserve"><value>Sense començar</value></data>
+  <data name="Learn_InProgress" xml:space="preserve"><value>En curs</value></data>
+  <data name="Learn_Choose" xml:space="preserve"><value>Una altra matèria</value></data>
+  <data name="Nav_Hobbies" xml:space="preserve"><value>Aficions</value></data>
+  <data name="Hobbies_Subtitle" xml:space="preserve"><value>Coses divertides per aprendre per gust —astronomia, música, màgia, supervivència, escacs, dinosaures— amb la ciència que hi ha darrere de cadascuna. Domina tots els conceptes per aconseguir el teu certificat i insígnia.</value></data>
+  <data name="Badge_Hobbyist" xml:space="preserve"><value>Ment curiosa</value></data>
+  <data name="BadgeHint_Hobbyist" xml:space="preserve"><value>Aconsegueix {0} certificat d'afició</value></data>
 </root>

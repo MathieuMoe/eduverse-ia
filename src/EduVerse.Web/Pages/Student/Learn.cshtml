@@ -2,20 +2,133 @@
 @model EduVerse.Web.Pages.Student.LearnModel
 @{
     ViewData["Title"] = L["Nav_Learn"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    if (Model.Current is { } cur)
+    {
+        if (EduVerse.Core.Curriculum.Trades.Find(cur.Key) is { } trade)
+        {
+            var hobby = trade.Kind == EduVerse.Core.Curriculum.TradeKind.Hobby;
+            EduVerse.Web.Breadcrumb.Set(ViewData, cur.Name, ("/Student/Learn", L["Nav_Learn"]), ("/Student/Learn?tab=" + EduVerse.Core.Curriculum.Trades.TabOf(trade), hobby ? L["Nav_Hobbies"] : L["Nav_Trades"]));
+        }
+        else
+        {
+            EduVerse.Web.Breadcrumb.Set(ViewData, cur.Name, ("/Student/Learn", L["Nav_Learn"]));
+        }
+    }
+    else if (Model.Tab != "subjects")
+    {
+        EduVerse.Web.Breadcrumb.Set(ViewData, Model.Tab == "hobbies" ? L["Nav_Hobbies"] : L["Nav_Trades"], ("/Student/Learn", L["Nav_Learn"]));
+    }
 }
+@if (Model.Current is null)
+{
+    Microsoft.AspNetCore.Html.IHtmlContent Card(EduVerse.Web.Pages.Student.LearnChoice c, string? subtitle = null)
+    {
+        var pct = c.Total == 0 ? 0 : 100 * c.Mastered / c.Total;
+        var html = $"<a href=\"/Student/Learn?subject={Uri.EscapeDataString(c.Subject.Key)}\" class=\"{Ui.Card} p-4 flex flex-col gap-3 hover:-translate-y-0.5 transition-transform\" data-testid=\"learn-{System.Net.WebUtility.HtmlEncode(c.Subject.Key)}\">"
+            + $"<span class=\"flex items-center gap-3\"><span class=\"size-11 shrink-0 rounded-2xl tone-{c.Tone} grid place-items-center text-2xl\" aria-hidden=\"true\">{c.Icon}</span>"
+            + $"<span class=\"min-w-0\"><span class=\"block font-semibold text-foreground truncate\">{System.Net.WebUtility.HtmlEncode(subtitle is null ? c.Subject.Name : c.Subject.Area)}</span>"
+            + $"<span class=\"block text-xs text-muted-foreground-1 truncate\">{System.Net.WebUtility.HtmlEncode(subtitle ?? string.Format(culture, L["Learn_Topics"], c.Total))}</span></span></span>"
+            + $"<span class=\"block\"><span class=\"flex justify-between text-[11px] text-muted-foreground-1\"><span>{System.Net.WebUtility.HtmlEncode(c.LastAt is null ? L["Learn_NotStarted"].Value : L["Learn_InProgress"].Value)}</span><span>{System.Net.WebUtility.HtmlEncode(string.Format(culture, L["Trades_Mastered"], c.Mastered, c.Total))}</span></span>"
+            + $"<span class=\"mt-1 block h-1.5 rounded-full bg-surface overflow-hidden\"><span class=\"block h-full rounded-full bg-primary\" style=\"width:{pct}%\"></span></span></span></a>";
+        return new Microsoft.AspNetCore.Html.HtmlString(html);
+    }
+
+    <div class="flex flex-wrap justify-between items-end gap-3">
+        <div class="min-w-0">
+            <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Learn_Title"]</h1>
+            <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Learn_Subtitle"]</p>
+        </div>
+        <a href="/Student/NewSubject" class="@Ui.BtnPrimary">✨ @L["Learn_CreateWithAi"]</a>
+    </div>
+
+    <nav class="flex flex-wrap gap-2 p-1.5 rounded-full bg-layer border border-layer-line w-fit" aria-label="@L["Nav_Learn"]" data-testid="learn-tabs">
+        @foreach (var (tab, icon, label) in new[] { ("subjects", "📚", L["Learn_Academic"].Value), ("trades", "🛠️", L["Nav_Trades"].Value), ("hobbies", "🎨", L["Nav_Hobbies"].Value) })
+        {
+            var active = Model.Tab == tab;
+            <a href="/Student/Learn@(tab == "subjects" ? "" : "?tab=" + tab)" aria-current="@(active ? "page" : null)" data-testid="learn-tab-@tab"
+               class="py-2 px-5 rounded-full text-sm font-semibold @(active ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-layer-hover")"><span aria-hidden="true">@icon</span> @label</a>
+        }
+    </nav>
+
+    @if (Model.Tab != "subjects")
+    {
+        <p class="text-sm text-muted-foreground-1 max-w-3xl">@(Model.Tab == "hobbies" ? L["Hobbies_Subtitle"] : L["Trades_Subtitle"])</p>
+        <partial name="_TradeCards" model="Model.TradeProgress" />
+    }
+    else
+    {
+
+    @if (Model.Started.Count > 0)
+    {
+        <section aria-labelledby="ln-continue-title" class="space-y-3">
+            <h2 id="ln-continue-title" class="text-lg font-semibold text-foreground">▶️ @L["Learn_Continue"]</h2>
+            <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                @foreach (var c in Model.Started) { @Card(c) }
+            </div>
+        </section>
+    }
+
+    <section aria-labelledby="ln-subjects-title" class="space-y-3" data-testid="learn-subjects">
+        <div>
+            <h2 id="ln-subjects-title" class="text-lg font-semibold text-foreground">📚 @L["Learn_Academic"]</h2>
+            <p class="text-sm text-muted-foreground-1">@L["Learn_AcademicHint"]</p>
+        </div>
+        <div class="grid sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
+            @foreach (var c in Model.Areas) { @Card(c, L[$"Level_{c.Level}"].Value + " · " + string.Format(culture, L["Learn_Topics"], c.Total)) }
+            @Card(Model.Fractions!)
+        </div>
+    </section>
+
+    @if (Model.Own.Count > 0)
+    {
+        <section aria-labelledby="ln-own-title" class="space-y-3">
+            <h2 id="ln-own-title" class="text-lg font-semibold text-foreground">✨ @L["Learn_Own"]</h2>
+            <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                @foreach (var c in Model.Own) { @Card(c) }
+            </div>
+        </section>
+    }
+
+    }
+}
+else
+{
+    var current = Model.Current;
 <div class="flex flex-wrap justify-between items-end gap-3">
     <div class="min-w-0">
-        <h1 class="text-2xl font-semibold text-foreground">@Model.Current.Name</h1>
-        <p class="mt-1 text-sm text-muted-foreground-1">@Model.Current.Area · <span id="ln-progress"></span></p>
+        <h1 class="text-2xl font-semibold text-foreground">@current.Name</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1">@current.Area · <span id="ln-progress"></span></p>
     </div>
     <div class="flex flex-wrap items-center gap-2">
+        <a href="/Student/Learn" class="@Ui.BtnLight focus-mode:hidden" data-testid="learn-choose">📚 @L["Learn_Choose"]</a>
         @if (Model.Subjects.Count > 1)
         {
             <label for="ln-subject" class="sr-only">@L["Learn_Subject"]</label>
-            <select id="ln-subject" class="@Ui.Input w-auto" onchange="location.href='/Student/Learn?subject='+encodeURIComponent(this.value)">
-                @foreach (var s in Model.Subjects)
+            <select id="ln-subject" class="@Ui.Input w-auto! max-w-72" onchange="location.href='/Student/Learn?subject='+encodeURIComponent(this.value)">
+                <optgroup label="@L["Learn_Academic"]">
+                    @foreach (var s in Model.Subjects.Where(s => s.BuiltIn && !EduVerse.Core.Curriculum.Trades.IsTrade(s.Key)))
+                    {
+                        <option value="@s.Key" selected="@(s.Key == current.Key)">@s.Name</option>
+                    }
+                </optgroup>
+                @if (Model.Subjects.Any(s => !s.BuiltIn))
                 {
-                    <option value="@s.Key" selected="@(s.Key == Model.Current.Key)">@s.Name</option>
+                    <optgroup label="@L["Learn_Own"]">
+                        @foreach (var s in Model.Subjects.Where(s => !s.BuiltIn))
+                        {
+                            <option value="@s.Key" selected="@(s.Key == current.Key)">✨ @s.Name</option>
+                        }
+                    </optgroup>
+                }
+                @foreach (var (kind, groupLabel) in new[] { (EduVerse.Core.Curriculum.TradeKind.Trade, L["Nav_Trades"].Value), (EduVerse.Core.Curriculum.TradeKind.Hobby, L["Nav_Hobbies"].Value) })
+                {
+                    <optgroup label="@groupLabel">
+                        @foreach (var s in Model.Subjects.Where(s => EduVerse.Core.Curriculum.Trades.Find(s.Key)?.Kind == kind))
+                        {
+                            <option value="@s.Key" selected="@(s.Key == current.Key)">@EduVerse.Core.Curriculum.Trades.Find(s.Key)!.Icon @s.Name</option>
+                        }
+                    </optgroup>
                 }
             </select>
         }
@@ -27,7 +140,7 @@
     </div>
 </div>
 
-<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start" id="ln-root" data-subject="@Model.Current.Key">
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start" id="ln-root" data-subject="@current.Key">
     <section class="@Ui.Card min-w-0 xl:col-span-8 focus-mode:xl:col-span-12" aria-live="polite">
         <div id="ln-notice" class="hidden m-4 mb-0 p-3 rounded-lg text-sm bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300" role="status"></div>
         <div id="ln-stage" class="p-5 md:p-7">
@@ -36,6 +149,7 @@
     </section>
 
     <aside class="xl:col-span-4 space-y-4 sm:space-y-6 min-w-0 focus-mode:hidden">
+        <div id="ln-certificate" hidden data-testid="ln-certificate"></div>
         <section class="@Ui.Card min-w-0">
             <div class="@Ui.CardHeader"><h2 class="text-base font-semibold text-foreground">@L["Student_Map"]</h2></div>
             <ol id="ln-map" class="p-4 md:p-5 space-y-1.5"></ol>
@@ -59,8 +173,13 @@
         </section>
     </aside>
 </div>
+}
 
 @section Scripts {
-    <script src="~/js/common.js" asp-append-version="true"></script>
-    <script src="~/js/learn.js" asp-append-version="true"></script>
+    @if (Model.Current is not null)
+    {
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/diagrams.js" asp-append-version="true"></script>
+        <script src="~/js/learn.js" asp-append-version="true"></script>
+    }
 }

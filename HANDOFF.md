@@ -113,6 +113,47 @@ Core/Tutor/InterviewFigures.cs adds 8 figures (nested class More, read through I
 initialisation order across the partial files does not matter). Each one: 4 prepared answers with keywords, 3 checks, a voice in
 Interviews.Voice and an SVG in avatars.js. Companion.FigureFor picks the figure of each subject.
 
+## "Evo" renamed "Tutor" (Nov 2026)
+All the texts say "the Tutor" (fr "le Tuteur"): the companion, check the Tutor, the Tutor's notebook, explain it to the Tutor.
+Code names keep "Evo" (QuizMode.Evo, EvoQuestions, EvoNotebook, TeachEvo.cs, quest keys) so data and URLs do not change.
+The snapshot now has an Evolution (last 7 days vs the 7 before: answers, accuracy, tests, XP, areas improving by 10 points).
+
+## Dossiers and voices (Nov 2026)
+Core/Tutor/Dossiers.cs: one Dossier per figure (timeline, discovery, evidence, fact, checked https sources). Pages/Student/_Dossier
+partial, /Student/Dossier and a tab in /Student/Interview. wwwroot/js/discoveries.js (12 original SVG illustrations),
+figurevoice.js (voice per figure: Interviews.VoiceIndex among the same kind, natural voices first, "another voice" saved in
+localStorage), dossier.js (listen with the figure's voice). If a source URL moves, change it in Dossiers.cs.
+
+## Full width and breadcrumb (Nov 2026)
+The content uses the whole width (no max-w on the main container or the page roots; only long paragraphs keep max-w-3xl).
+Breadcrumb.cs + Pages/Shared/_Breadcrumb.cshtml, rendered by the layout on every page except the homes: back button + Home ›
+trail › current. Pages deeper than the menu call Breadcrumb.Set(ViewData, current, (href, label)…) (Quiz by mode, Teach, Interview,
+Dossier, History review, Learn, Teacher/Class, Marketplace/Tutor); the others take the label of their menu item.
+
+## Trades and certificates (Nov 2026)
+Core/Curriculum/Trades.cs + TradesContent.cs: 4 trades (keys "trade-…"), 5 concepts each with a science link (Area), 15 checked
+questions each; Trades.Subject gives a built-in Subject, Trades.Exercise a question. DemoLearningAi and AiLearning serve them from
+the bank (subject.BuiltIn). LearningStore lists them for students and teachers (ClassroomStore accepts them). Certificate entity
+(unique per user and trade, code EV-XXXXXXXX), CertificateStore.IssueIfEarnedAsync called after each answer in /api/learn/answer
+(XP 100, badges Apprentice/MasterCraftsman). The trades are the tab "trades" of /Student/Learn (partial _TradeCards; /Student/Trades redirects there) and /Student/Certificate (print CSS). Demo: Sara has the garden
+certificate EV-GARDEN26 and has started electricity. DatabaseVersion = 9.
+
+## More trades and hobbies (Nov 2026)
+10 trades + 6 hobbies (16 entries). Trade has `TradeKind Kind` (Trade | Hobby); Trades.All = Registry.List joins the nested lists
+Core (TradesContent.cs: electricity, garden, plumbing, carpentry), MoreTrades (TradesMore.cs: solar, firstaid, cooking),
+MoreTrades2 (TradesMore2.cs: bike, painting, beekeeping), HobbyList (Hobbies.cs: astronomy, music, magic) and HobbyList2
+(Hobbies2.cs: survival, chess, dinosaurs). Hobbies keep the "trade-" prefix so the learning, certificate and classroom code is shared;
+Trades.OfKind / Trades.TabOf choose the Learn tab ("trades" or "hobbies"), the breadcrumb and the optgroup of the subject selector.
+Badge Hobbyist (26 badges), BadgeStats.Hobbies. Demo: Sara has 2 astronomy concepts mastered. To add a trade or hobby: append it to
+one of those lists (5 concepts, 3 questions per concept with difficulties 1-3, 3 wrong answers; TradeRuleTests checks it).
+
+## Learn: catalog of every subject (Nov 2026)
+Core/Curriculum/AreaSubjects.cs: "area-{Area}-{Level}" subjects; concepts = topics of the bank (sampled, cached), description =
+explanation of a solved question, exercises from QuestionBanks.ForTopic (Exercise now has Visual and Code, shown by learn.js).
+ICatalogNames (Core) gives localised names: LocalizedCatalogNames in Web, KeyCatalogNames by default. LearningStore.AreaLevelsAsync
+= level of the student per area. /Student/Learn without a subject = catalog (continue, subjects, own, trades). Fixed: the DNA
+complement question could lack distinct options.
+
 ## Next
 1. Ideas left from the tutor list: 6 student-made tests for the class; then phase 2 virtual labs and phase 3 knowledge generator.
 2. Real payments (Stripe Connect), video lessons, courses in the marketplace, CSV import of students.
