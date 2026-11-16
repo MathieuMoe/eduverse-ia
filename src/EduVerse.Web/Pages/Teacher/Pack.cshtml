@@ -1,0 +1,57 @@
+@page
+@model EduVerse.Web.Pages.Teacher.PackModel
+@{
+    ViewData["Title"] = L["Nav_Pack"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-2xl font-semibold text-foreground">@L["Pack_Heading"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Pack_Subtitle"]</p>
+    </div>
+    <button type="button" id="pk-sample" class="@Ui.BtnLight">@L["Sample_Button"]</button>
+</div>
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
+    <section class="@Ui.Card min-w-0 xl:col-span-5" aria-labelledby="pk-form-title">
+        <div class="@Ui.CardHeader"><h2 id="pk-form-title" class="text-base font-semibold text-foreground">@L["Lesson_Source"]</h2>
+            <label class="text-sm font-medium text-primary hover:underline cursor-pointer">@L["Lesson_Upload"]<input id="pk-file" type="file" accept=".pdf,.txt,.md,application/pdf,text/plain" class="sr-only" /></label></div>
+        <form id="pk-form" class="p-4 md:p-5 space-y-4">
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div><label class="@Ui.Label" for="pk-title">@L["Lesson_Title"]</label><input id="pk-title" class="@Ui.Input" maxlength="150" /></div>
+                <div><label class="@Ui.Label" for="pk-subject">@L["Lesson_SubjectField"]</label><input id="pk-subject" class="@Ui.Input" maxlength="100" /></div>
+                <div><label class="@Ui.Label" for="pk-stage">@L["Field_Stage"]</label>
+                    <select id="pk-stage" class="@Ui.Input">@foreach (var s in Enum.GetValues<Stage>()) { <option value="@s" selected="@(s == Stage.Secondary)">@L[$"Stage_{s}"]</option> }</select></div>
+                <div><label class="@Ui.Label" for="pk-language">@L["Field_Language"]</label>
+                    <select id="pk-language" class="@Ui.Input">@foreach (var l in Enum.GetValues<TeachLanguage>()) { <option value="@l" selected="@(l == Model.DefaultLanguage)">@L[$"Language_{l}"]</option> }</select></div>
+            </div>
+            <div>
+                <label class="@Ui.Label" for="pk-text">@L["Lesson_Text"]</label>
+                <textarea id="pk-text" rows="12" maxlength="20000" class="@Ui.Input" placeholder="@L["Pack_TextPlaceholder"]"></textarea>
+                <p class="mt-1 text-xs text-muted-foreground-1" id="pk-count"></p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" id="pk-submit" class="@Ui.BtnPrimary">@Html.Raw(Ui.Sparkle) @L["Pack_Submit"]</button>
+                <p id="pk-error" class="hidden text-sm text-red-600" role="alert"></p>
+            </div>
+        </form>
+        <div class="px-4 md:px-5 pb-4">
+            <h3 class="text-xs font-semibold uppercase text-muted-foreground-1">@L["Pack_Saved"]</h3>
+            <ul id="pk-history" class="mt-2 space-y-1 text-sm"></ul>
+        </div>
+    </section>
+
+    <section id="pk-result" class="@Ui.Card min-w-0 xl:col-span-7" aria-live="polite" tabindex="-1">
+        <div id="pk-notice" class="hidden m-4 mb-0 p-3 rounded-lg text-sm bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300" role="status"></div>
+        <div class="p-8 text-center" id="pk-empty">
+            <svg class="mx-auto size-10 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8l9 5 9-5z" /><path d="m3 13 9 5 9-5M3 18l9 5 9-5" /></svg>
+            <h2 class="mt-3 font-semibold text-foreground">@L["Pack_EmptyTitle"]</h2>
+            <p class="mt-1 text-sm text-muted-foreground-1">@L["Pack_EmptyText"]</p>
+        </div>
+        <div id="pk-body" class="hidden"></div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/pack.js" asp-append-version="true"></script>
+}

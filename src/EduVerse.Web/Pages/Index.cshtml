@@ -1,0 +1,65 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = L["Home_Title"];
+    string[] loop = ["Test", "Detect", "Explain", "Practice", "Mistakes", "Switch", "Teacher"];
+}
+<section class="@Ui.Card overflow-hidden">
+    <div class="grid lg:grid-cols-12">
+        <div class="lg:col-span-7 p-6 sm:p-10">
+            <span class="inline-flex items-center gap-x-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-primary/10 text-primary">@Html.Raw(Ui.Sparkle) @L["Home_Badge"]</span>
+            <h1 class="mt-4 text-3xl sm:text-5xl font-semibold tracking-tight text-foreground text-balance">@L["Home_Heading"]</h1>
+            <p class="mt-3 text-base text-muted-foreground-1 max-w-2xl">@L["Home_Subtitle"]</p>
+            <form method="post" asp-page="/Account/Login" asp-page-handler="Demo" class="mt-6 flex flex-wrap gap-3">
+                <button type="submit" name="role" value="Student" class="@Ui.BtnPrimary py-2.5 px-4" data-testid="demo-student">@L["Demo_Student"]</button>
+                <button type="submit" name="role" value="Teacher" class="@Ui.BtnLight py-2.5 px-4" data-testid="demo-teacher">@L["Demo_Teacher"]</button>
+                <button type="submit" name="role" value="Director" class="@Ui.BtnLight py-2.5 px-4" data-testid="demo-director">@L["Demo_Director"]</button>
+                <button type="submit" name="role" value="Tutor" class="@Ui.BtnLight py-2.5 px-4" data-testid="demo-tutor">@L["Demo_Tutor"]</button>
+                <button type="submit" name="role" value="Kid" class="@Ui.BtnLight py-2.5 px-4" data-testid="demo-kid">🧸 @L["Demo_Kid"]</button>
+            </form>
+            <p class="mt-3 text-xs text-muted-foreground-1">@L["Home_DemoHint"] <a class="text-primary hover:underline" href="/Account/Login">@L["Nav_Login"]</a> · <a class="text-primary hover:underline" href="/Account/Register">@L["Nav_Register"]</a> · <a class="text-primary hover:underline" href="/Marketplace">@L["Nav_Marketplace"]</a></p>
+        </div>
+        <div class="lg:col-span-5 p-6 sm:p-10 m-2 rounded-[1.25rem] tone-lavender">
+            <h2 class="text-sm font-semibold text-foreground">@L["Home_LoopTitle"]</h2>
+            <ol class="mt-4 space-y-3">
+                @for (var i = 0; i < loop.Length; i++)
+                {
+                    <li class="flex gap-x-3">
+                        <span class="size-6 shrink-0 grid place-items-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">@(i + 1)</span>
+                        <span class="text-sm text-foreground">@L[$"Home_Loop_{loop[i]}"]</span>
+                    </li>
+                }
+            </ol>
+        </div>
+    </div>
+</section>
+
+<div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+    @foreach (var (key, ready) in new[] { ("Student", true), ("Teacher", true), ("Institution", true), ("Marketplace", true) })
+    {
+        <div class="@Ui.Card p-4 md:p-5">
+            <div class="flex items-center justify-between gap-2">
+                <h2 class="text-base font-semibold text-foreground">@L[$"Profile_{key}"]</h2>
+                @if (ready)
+                {
+                    <span class="py-0.5 px-2 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-500/15 dark:text-teal-300">@L["Profile_Ready"]</span>
+                }
+                else
+                {
+                    <span class="py-0.5 px-2 rounded-full text-xs font-medium bg-surface text-muted-foreground-1">@L["Profile_Soon"]</span>
+                }
+            </div>
+            <p class="mt-2 text-sm text-muted-foreground-1">@L[$"Profile_{key}_Text"]</p>
+        </div>
+    }
+</div>
+
+<div class="@Ui.Card p-4 md:p-5 grid md:grid-cols-3 gap-4 text-sm">
+    @foreach (var k in new[] { "Code", "Validated", "Privacy" })
+    {
+        <div>
+            <h3 class="font-semibold text-foreground">@L[$"Home_Principle_{k}"]</h3>
+            <p class="mt-1 text-muted-foreground-1">@L[$"Home_Principle_{k}_Text"]</p>
+        </div>
+    }
+</div>

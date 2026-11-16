@@ -1,0 +1,61 @@
+@page
+@model EduVerse.Web.Pages.Teacher.SummaryModel
+@{
+    ViewData["Title"] = L["Nav_Summary"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-2xl font-semibold text-foreground">@L["Summary_Heading"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Summary_Subtitle"]</p>
+    </div>
+    <button type="button" id="sm-sample" class="@Ui.BtnLight">@L["Sample_Button"]</button>
+</div>
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
+    <section class="@Ui.Card min-w-0 xl:col-span-5">
+        <div class="@Ui.CardHeader"><h2 class="text-base font-semibold text-foreground">@L["Summary_Class"]</h2></div>
+        <form id="sm-form" class="p-4 md:p-5 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="@Ui.Label" for="sm-subject">@L["Lesson_SubjectField"]</label><input id="sm-subject" class="@Ui.Input" maxlength="100" /></div>
+                <div><label class="@Ui.Label" for="sm-group">@L["Summary_Group"]</label><input id="sm-group" class="@Ui.Input" maxlength="60" /></div>
+                <div><label class="@Ui.Label" for="sm-date">@L["Summary_Date"]</label><input id="sm-date" type="date" class="@Ui.Input" /></div>
+                <div><label class="@Ui.Label" for="sm-stage">@L["Field_Stage"]</label>
+                    <select id="sm-stage" class="@Ui.Input">@foreach (var s in Enum.GetValues<Stage>()) { <option value="@s" selected="@(s == Stage.Secondary)">@L[$"Stage_{s}"]</option> }</select></div>
+                <div class="col-span-2"><label class="@Ui.Label" for="sm-language">@L["Field_Language"]</label>
+                    <select id="sm-language" class="@Ui.Input">@foreach (var l in Enum.GetValues<TeachLanguage>()) { <option value="@l" selected="@(l == Model.DefaultLanguage)">@L[$"Language_{l}"]</option> }</select></div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <label class="text-sm font-medium text-foreground" for="sm-notes">@L["Summary_Notes"]</label>
+                    <button type="button" id="sm-dictate" class="py-1 px-2 inline-flex items-center gap-x-1.5 text-xs font-medium rounded-md border border-layer-line bg-layer text-foreground hover:bg-layer-hover" aria-pressed="false">
+                        <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" /></svg>
+                        <span>@L["Summary_Dictate"]</span>
+                    </button>
+                </div>
+                <textarea id="sm-notes" rows="12" maxlength="20000" class="@Ui.Input" placeholder="@L["Summary_NotesPlaceholder"]"></textarea>
+                <p class="mt-1 text-xs text-muted-foreground-1" id="sm-count"></p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" id="sm-submit" class="@Ui.BtnPrimary">@Html.Raw(Ui.Sparkle) @L["Summary_Submit"]</button>
+                <p id="sm-error" class="hidden text-sm text-red-600" role="alert"></p>
+            </div>
+        </form>
+        <div class="px-4 md:px-5 pb-4">
+            <h3 class="text-xs font-semibold uppercase text-muted-foreground-1">@L["History_Title"]</h3>
+            <ul id="sm-history" class="mt-2 space-y-1 text-sm"></ul>
+        </div>
+    </section>
+    <section id="sm-result" class="@Ui.Card min-w-0 xl:col-span-7" aria-live="polite" tabindex="-1">
+        <div class="p-8 text-center" id="sm-empty">
+            <h2 class="font-semibold text-foreground">@L["Summary_EmptyTitle"]</h2>
+            <p class="mt-1 text-sm text-muted-foreground-1">@L["Summary_EmptyText"]</p>
+        </div>
+        <div id="sm-notice" class="hidden m-4 mb-0 p-3 rounded-lg text-sm bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300" role="status"></div>
+        <div id="sm-body" class="hidden"></div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/summary.js" asp-append-version="true"></script>
+}

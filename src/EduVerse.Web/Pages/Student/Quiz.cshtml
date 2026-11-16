@@ -1,0 +1,39 @@
+@page
+@model EduVerse.Web.Pages.Student.QuizModel
+@using EduVerse.Core.Catalog
+@{
+    ViewData["Title"] = Model.Mode switch { QuizMode.Review => L["Review_Title"], QuizMode.Notebook => L["Notebook_Title"], _ => L[$"Area_{Model.Area}"] };
+    var info = Catalog.Info(Model.Area);
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<div id="qz-root" class="max-w-3xl w-full mx-auto space-y-4 sm:space-y-5 @(Model.Kids ? "kids" : "")"
+     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-kids="@(Model.Kids ? "1" : "0")">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+            <span class="size-12 shrink-0 rounded-2xl @(Model.Mode switch { QuizMode.Review => "tone-sun", QuizMode.Notebook => "tone-lavender", _ => "tone-" + info.Tone }) grid place-items-center text-2xl" aria-hidden="true">@(Model.Mode switch { QuizMode.Review => "⚡", QuizMode.Notebook => "📓", QuizMode.Adventure => Adventure.Emoji(Model.Theme), QuizMode.Interview => Model.Figure!.Emoji, _ => info.Icon })</span>
+            <div class="min-w-0">
+                <h1 class="text-xl font-semibold text-foreground truncate" id="qz-title">@(Model.Mode switch { QuizMode.Review => L["Review_Title"].Value, QuizMode.Notebook => L["Notebook_Title"].Value, QuizMode.Interview => Model.Figure!.Name, _ => L[$"Area_{Model.Area}"].Value })@(Model.Topic is { } t ? $" · {t}" : "")</h1>
+                <p class="text-sm text-muted-foreground-1">@if (Model.Mode is not (QuizMode.Review or QuizMode.Notebook)) { <span id="qz-level">@L[$"Level_{Model.Level}"]</span> <text>·</text> } else { <span id="qz-level" class="hidden"></span> }@(Model.Mode switch { QuizMode.Review => L["Review_Sub"], QuizMode.Notebook => L["Notebook_Sub"], _ => L[$"QuizMode_{Model.Mode}"] })@(Model.Rival is { } r ? " · " + string.Format(culture, L["Duel_Against"], r) : "")</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="@Ui.Pill tone-sun text-foreground py-1 px-3 text-sm" title="@L["Game_Xp"]"><span aria-hidden="true">⭐</span> <span id="qz-xp" data-testid="quiz-xp">0</span> XP</span>
+            <span class="@Ui.Pill tone-peach text-foreground py-1 px-3 text-sm" title="@L["Quiz_Run"]"><span aria-hidden="true">🔥</span> <span id="qz-run">0</span></span>
+            <button type="button" id="qz-speak" class="@Ui.IconBtn" aria-pressed="@(Model.Kids ? "true" : "false")" title="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔊</button>
+        </div>
+    </div>
+
+    <div class="h-2.5 rounded-full bg-surface overflow-hidden" role="progressbar" aria-label="@L["Student_Progress"]" aria-valuemin="0" aria-valuemax="100" id="qz-bar"><div class="h-full rounded-full bg-primary transition-all" style="width:0%" id="qz-bar-fill"></div></div>
+
+    <section class="@Ui.Card p-5 sm:p-7 relative overflow-hidden" id="qz-stage" aria-live="polite" data-testid="quiz-stage">
+        <div class="py-10 text-center text-sm text-muted-foreground-1"><span class="animate-spin inline-block size-5 border-2 border-current border-t-transparent rounded-full" aria-hidden="true"></span> @L["Quiz_Loading"]</div>
+    </section>
+
+    <div id="qz-toast" class="hidden p-3 rounded-2xl tone-sun text-sm text-foreground" role="status"></div>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/voice.js" asp-append-version="true"></script>
+    <script src="~/js/quiz.js" asp-append-version="true"></script>
+}

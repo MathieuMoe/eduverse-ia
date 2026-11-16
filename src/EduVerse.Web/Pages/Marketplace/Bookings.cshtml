@@ -1,0 +1,97 @@
+@page
+@model EduVerse.Web.Pages.Marketplace.BookingsModel
+@using EduVerse.Core.Marketplace
+@{
+    ViewData["Title"] = L["Nav_MyLessons"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var upcoming = Model.Bookings.Where(b => b.Status is BookingStatus.Pending or BookingStatus.Confirmed).ToList();
+    var past = Model.Bookings.Where(b => b.Status is BookingStatus.Completed or BookingStatus.Cancelled).ToList();
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Nav_MyLessons"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1">@L["Bookings_Subtitle"]</p>
+    </div>
+    <a href="/Marketplace" class="@Ui.BtnLight">@L["Bookings_Find"]</a>
+</div>
+
+@if (Model.Notice is { } notice)
+{
+    <div class="p-3 rounded-2xl text-sm @(notice == "Action_Failed" ? "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300" : "bg-emerald-50 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300")" role="status">@L[$"Notice_{notice}"]</div>
+}
+
+<section class="@Ui.Card min-w-0" aria-labelledby="upcoming-title">
+    <div class="@Ui.CardHeader"><h2 id="upcoming-title" class="text-base font-semibold text-foreground">@L["Bookings_Upcoming"]</h2></div>
+    @if (upcoming.Count == 0)
+    {
+        <p class="p-6 text-sm text-muted-foreground-1">@L["Bookings_None"]</p>
+    }
+    <ul class="divide-y divide-card-divider" data-testid="upcoming">
+        @foreach (var b in upcoming)
+        {
+            var highlight = Model.Booked == b.Booking.Id;
+            <li class="p-5 flex flex-col md:flex-row md:items-center gap-4 @(highlight ? "tone-lavender" : "")">
+                <div class="flex items-center gap-3 grow min-w-0">
+                    <span class="size-11 shrink-0 grid place-items-center rounded-2xl text-sm font-bold text-foreground @Ui.AvatarTone(b.TutorName)">@Ui.Initials(b.TutorName)</span>
+                    <div class="min-w-0">
+                        <p class="font-semibold text-foreground truncate">@b.Booking.Subject <span class="font-normal text-muted-foreground-1">· @b.TutorName</span></p>
+                        <p class="text-sm text-foreground">@Ui.When(b.Booking.Start, Model.Zone) · @Ui.Money(b.Booking.Price)</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <partial name="_BookingStatus" model="b.Status" />
+                    @if (b.CanPay)
+                    {
+                        <form method="post" asp-page-handler="Pay" asp-route-id="@b.Booking.Id">
+                            <button type="submit" class="@Ui.BtnPrimary" data-testid="pay">@string.Format(culture, L["Bookings_Pay"], Ui.Money(b.Booking.Price))</button>
+                        </form>
+                    }
+                    @if (b.CanCancel)
+                    {
+                        <form method="post" asp-page-handler="Cancel" asp-route-id="@b.Booking.Id">
+                            <button type="submit" class="@Ui.BtnLight" title="@(b.Status == BookingStatus.Pending ? "" : b.RefundIfCancelled ? L["Bookings_RefundYes"] : L["Bookings_RefundNo"])">@L["Bookings_Cancel"]</button>
+                        </form>
+                    }
+                </div>
+            </li>
+            @if (b.CanPay)
+            {
+                <li class="px-5 pb-4 -mt-2 text-xs text-muted-foreground-1 @(highlight ? "tone-lavender" : "")">@L["Bookings_Simulated"]</li>
+            }
+        }
+    </ul>
+</section>
+
+<section class="@Ui.Card min-w-0" aria-labelledby="past-title">
+    <div class="@Ui.CardHeader"><h2 id="past-title" class="text-base font-semibold text-foreground">@L["Bookings_Past"]</h2></div>
+    @if (past.Count == 0)
+    {
+        <p class="p-6 text-sm text-muted-foreground-1">@L["Bookings_NonePast"]</p>
+    }
+    <ul class="divide-y divide-card-divider">
+        @foreach (var b in past)
+        {
+            <li class="p-5 flex flex-col md:flex-row md:items-center gap-4">
+                <div class="grow min-w-0">
+                    <p class="font-semibold text-foreground truncate">@b.Booking.Subject <span class="font-normal text-muted-foreground-1">· @b.TutorName</span></p>
+                    <p class="text-sm text-muted-foreground-1">@Ui.When(b.Booking.Start, Model.Zone) · @Ui.Money(b.Booking.Price)@(b.Booking.Refunded ? " · " + L["Bookings_Refunded"] : "")</p>
+                </div>
+                <partial name="_BookingStatus" model="b.Status" />
+                @if (b.CanRate)
+                {
+                    <form method="post" asp-page-handler="Rate" asp-route-id="@b.Booking.Id" class="flex flex-wrap items-center gap-2">
+                        <label class="sr-only" for="rating-@b.Booking.Id">@L["Bookings_Rating"]</label>
+                        <select id="rating-@b.Booking.Id" name="rating" class="@Ui.Input w-auto">@for (var i = 5; i >= 1; i--) { <option value="@i">@(new string('★', i))</option> }</select>
+                        <label class="sr-only" for="review-@b.Booking.Id">@L["Bookings_Review"]</label>
+                        <input id="review-@b.Booking.Id" name="review" class="@Ui.Input w-56" maxlength="400" placeholder="@L["Bookings_Review"]" />
+                        <button type="submit" class="@Ui.BtnLight">@L["Bookings_Rate"]</button>
+                    </form>
+                }
+                else if (b.Booking.Rating is { } r)
+                {
+                    <span class="text-sm text-amber-600 dark:text-amber-400">@(new string('★', r))@(new string('☆', 5 - r))</span>
+                }
+            </li>
+        }
+    </ul>
+</section>

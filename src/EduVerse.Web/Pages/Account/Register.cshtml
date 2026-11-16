@@ -1,0 +1,55 @@
+@page
+@model EduVerse.Web.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = L["Nav_Register"];
+}
+<div class="max-w-lg mx-auto w-full">
+    <div class="@Ui.Card p-5 sm:p-7">
+        <h1 class="text-2xl font-semibold text-foreground">@L["Register_Heading"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1">@L["Register_Subtitle"] <a class="text-primary hover:underline" href="/Account/Login">@L["Nav_Login"]</a></p>
+        <form method="post" class="mt-5 space-y-4">
+            <fieldset>
+                <legend class="@Ui.Label">@L["Register_Role"]</legend>
+                <div class="grid grid-cols-2 gap-3">
+                    @foreach (var role in new[] { "Student", "Teacher", "Director", "Tutor" })
+                    {
+                        <label class="flex items-center gap-x-2 p-3 rounded-lg border border-layer-line bg-layer cursor-pointer has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20">
+                            <input type="radio" name="Role" value="@role" checked="@(Model.Role == role)" class="accent-primary peer" data-role-radio />
+                            <span class="text-sm font-medium text-foreground">@L[$"Role_{role}"]</span>
+                        </label>
+                    }
+                </div>
+            </fieldset>
+            <div id="institution-field" class="@(Model.Role == "Director" ? "" : "hidden")"><label class="@Ui.Label" asp-for="InstitutionName">@L["Field_InstitutionName"]</label><input asp-for="InstitutionName" class="@Ui.Input" maxlength="100" placeholder="@L["Field_InstitutionPlaceholder"]" /></div>
+            <div><label class="@Ui.Label" asp-for="FirstName">@L["Field_FirstName"]</label><input asp-for="FirstName" class="@Ui.Input" autocomplete="given-name" maxlength="40" />
+                <p class="mt-1 text-xs text-muted-foreground-1">@L["Register_FirstNameHint"]</p></div>
+            <div><label class="@Ui.Label" asp-for="Email">@L["Field_Email"]</label><input asp-for="Email" class="@Ui.Input" autocomplete="email" /></div>
+            <div><label class="@Ui.Label" asp-for="Password">@L["Field_Password"]</label><input asp-for="Password" class="@Ui.Input" autocomplete="new-password" />
+                <p class="mt-1 text-xs text-muted-foreground-1">@L["Register_PasswordHint"]</p></div>
+            <div><label class="@Ui.Label" asp-for="Stage">@L["Field_Stage"]</label>
+                <select asp-for="Stage" class="@Ui.Input">@foreach (var s in Enum.GetValues<Stage>()) { <option value="@s">@L[$"Stage_{s}"]</option> }</select>
+                <p class="mt-1 text-xs text-muted-foreground-1">@L["Register_StageHint"]</p></div>
+            @if (Model.Errors.Count > 0)
+            {
+                <ul class="text-sm text-red-600 list-disc ps-5" role="alert">
+                    @foreach (var e in Model.Errors.Distinct())
+                    {
+                        var text = L[$"Register_Error_{e}"];
+                        <li>@(text.ResourceNotFound ? L["Register_Error_Generic"] : text)</li>
+                    }
+                </ul>
+            }
+            <p class="text-xs text-muted-foreground-1">@L["Register_Privacy"]</p>
+            <button type="submit" class="@Ui.BtnPrimary w-full">@L["Register_Submit"]</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // The institution name is asked only to directors
+        document.querySelectorAll("[data-role-radio]").forEach((r) => r.addEventListener("change", () => {
+            document.getElementById("institution-field").classList.toggle("hidden", document.querySelector("[data-role-radio]:checked")?.value !== "Director");
+        }));
+    </script>
+}

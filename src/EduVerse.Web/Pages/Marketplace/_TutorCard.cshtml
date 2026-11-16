@@ -1,0 +1,33 @@
+@model (EduVerse.Core.Marketplace.TutorCard Tutor, IReadOnlyList<string>? Reasons)
+@* Card of a private teacher in the marketplace (with the reasons of the recommendation when there are some). *@
+@{
+    var t = Model.Tutor;
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<a href="/Marketplace/Tutor?id=@t.TutorId" class="@Ui.Card p-5 hover:-translate-y-0.5 transition-transform focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30" data-testid="tutor-card">
+    <div class="flex items-start gap-3">
+        <span class="size-12 shrink-0 grid place-items-center rounded-2xl text-sm font-bold text-foreground @Ui.AvatarTone(t.Name)">@Ui.Initials(t.Name)</span>
+        <div class="min-w-0 grow">
+            <div class="flex items-start justify-between gap-2">
+                <p class="font-semibold text-foreground truncate">@t.Name</p>
+                <p class="shrink-0 text-lg font-semibold text-foreground">@Ui.Money(t.PricePerHour)<span class="text-xs font-normal text-muted-foreground-1">/@L["Market_Hour"]</span></p>
+            </div>
+            <p class="text-xs text-amber-600 dark:text-amber-400">@(t.Rating is null ? L["Market_New"] : Ui.Stars(t.Rating)) <span class="text-muted-foreground-1">· @string.Format(culture, L["Market_Lessons"], t.Lessons)</span></p>
+        </div>
+    </div>
+    <p class="mt-3 text-sm text-foreground line-clamp-2">@t.Headline</p>
+    <div class="mt-3 flex flex-wrap gap-1.5">
+        @foreach (var s in t.Subjects.Take(3))
+        {
+            <span class="@Ui.Pill tone-lavender text-foreground">@s</span>
+        }
+    </div>
+    <p class="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground-1" title="@L["Market_Languages"]">
+        <svg class="size-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
+        <span class="sr-only">@L["Market_Languages"]:</span>@string.Join(" · ", t.Languages.Select(l => L[$"Language_{l}"].Value))
+    </p>
+    @if (Model.Reasons is { Count: > 0 } reasons)
+    {
+        <p class="mt-3 pt-3 border-t border-card-divider text-xs text-muted-foreground-1">@L["Market_Why"] @string.Join(" · ", reasons.Select(r => L[$"Match_{r}"].Value))</p>
+    }
+</a>

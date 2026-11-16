@@ -1,0 +1,90 @@
+@page
+@model EduVerse.Web.Pages.Institution.RiskModel
+@using EduVerse.Core.Institutions
+@{
+    ViewData["Title"] = L["Nav_Risk"];
+    var d = Model.Dashboard;
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var level = Enum.TryParse<RiskLevel>(Model.Level, out var lv) ? lv : (RiskLevel?)null;
+    var list = d.Risks.Where(r => level is null || r.Level == level).ToList();
+    string RiskClass(RiskLevel l) => l switch { RiskLevel.High => "heat-1", RiskLevel.Medium => "heat-2", _ => "heat-5" };
+    string BarClass(RiskLevel l) => l switch { RiskLevel.High => "bg-rose-400", RiskLevel.Medium => "bg-amber-400", _ => "bg-emerald-400" };
+}
+<div>
+    <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Nav_Risk"]</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Risk_Subtitle"]</p>
+</div>
+
+<div class="flex flex-wrap gap-2" role="tablist">
+    @foreach (var (value, label, count) in new (string?, string, int)[] { (null, L["Risk_All"], d.Risks.Count), ("High", L["RiskLevel_High"], d.Risks.Count(r => r.Level == RiskLevel.High)), ("Medium", L["RiskLevel_Medium"], d.Risks.Count(r => r.Level == RiskLevel.Medium)), ("Low", L["RiskLevel_Low"], d.Risks.Count(r => r.Level == RiskLevel.Low)) })
+    {
+        var active = Model.Level == value;
+        <a href="/Institution/Risk@(value is null ? "" : "?level=" + value)" role="tab" aria-selected="@(active ? "true" : "false")" class="@Ui.Btn @(active ? "bg-primary text-primary-foreground" : "border border-layer-line bg-layer text-foreground hover:bg-layer-hover")">@label <span class="opacity-70">@count</span></a>
+    }
+</div>
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-5 items-start">
+    <section class="@Ui.Card xl:col-span-7 min-w-0" aria-label="@L["Nav_Risk"]">
+        @if (list.Count == 0)
+        {
+            <p class="p-6 text-sm text-muted-foreground-1">@L["Risk_None"]</p>
+        }
+        <ul class="divide-y divide-card-divider" data-testid="risk-list">
+            @foreach (var r in list)
+            {
+                <li class="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div class="flex items-center gap-3 min-w-0 sm:w-48 shrink-0">
+                        <span class="size-11 shrink-0 grid place-items-center rounded-full text-sm font-bold text-foreground @Ui.AvatarTone(r.Student.Name)">@Ui.Initials(r.Student.Name)</span>
+                        <div class="min-w-0">
+                            <p class="font-semibold text-foreground truncate">@r.Student.Name</p>
+                            <span class="@Ui.Pill @RiskClass(r.Level)">@L[$"RiskLevel_{r.Level}"] · @r.Score</span>
+                        </div>
+                    </div>
+                    <div class="grow min-w-0">
+                        <div class="h-2 rounded-full bg-surface overflow-hidden" role="img" aria-label="@r.Score / 100"><div class="h-full rounded-full @BarClass(r.Level)" style="width:@(Math.Max(3, r.Score))%"></div></div>
+                        <div class="mt-2 flex flex-wrap gap-1.5">
+                            @foreach (var f in r.Factors)
+                            {
+                                <span class="py-1 px-2 rounded-lg text-xs bg-surface text-foreground" title="+@f.Points">@string.Format(culture, L[$"Risk_{f.Code}"], f.Value)</span>
+                            }
+                            @if (r.Factors.Count == 0)
+                            {
+                                <span class="text-xs text-muted-foreground-1">@L["Risk_NoFactor"]</span>
+                            }
+                        </div>
+                    </div>
+                    <button type="button" class="@Ui.BtnLight shrink-0" data-family="@r.Student.StudentId" data-name="@r.Student.Name">@L["Family_Button"]</button>
+                </li>
+            }
+        </ul>
+        <p class="px-5 py-3 border-t border-card-divider text-xs text-muted-foreground-1">@L["Risk_Hint"]</p>
+    </section>
+
+    <section id="family-panel" class="@Ui.Card xl:col-span-5 min-w-0 xl:sticky xl:top-24" aria-labelledby="family-title" tabindex="-1">
+        <div class="@Ui.CardHeader"><h2 id="family-title" class="text-base font-semibold text-foreground">@L["Family_Title"]</h2></div>
+        <div id="family-empty" class="p-6 text-sm text-muted-foreground-1">@L["Family_Empty"]</div>
+        <form id="family-form" class="hidden p-5 space-y-4">
+            <p class="text-sm text-foreground" id="family-student"></p>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div><label class="@Ui.Label" for="family-tone">@L["Family_Tone"]</label>
+                    <select id="family-tone" class="@Ui.Input"><option value="Warm">@L["Family_Warm"]</option><option value="Formal">@L["Family_Formal"]</option></select></div>
+                <div><label class="@Ui.Label" for="family-language">@L["Field_Language"]</label>
+                    <select id="family-language" class="@Ui.Input">@foreach (var l in Enum.GetValues<EduVerse.Core.Common.TeachLanguage>()) { <option value="@l" selected="@(l == Localization.LanguageForCurrentCulture())">@L[$"Language_{l}"]</option> }</select></div>
+            </div>
+            <div><label class="@Ui.Label" for="family-note">@L["Family_Note"]</label>
+                <textarea id="family-note" rows="2" maxlength="600" class="@Ui.Input" placeholder="@L["Family_NotePlaceholder"]"></textarea></div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" id="family-submit" class="@Ui.BtnPrimary">@Html.Raw(Ui.Sparkle) @L["Family_Generate"]</button>
+                <p id="family-error" class="hidden text-sm text-red-600" role="alert"></p>
+            </div>
+            <p class="text-xs text-muted-foreground-1">@L["Family_Privacy"]</p>
+        </form>
+        <div id="family-notice" class="hidden mx-5 mb-4 p-3 rounded-2xl text-sm bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300" role="status"></div>
+        <div id="family-result" class="hidden px-5 pb-5" aria-live="polite"></div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/family.js" asp-append-version="true"></script>
+}

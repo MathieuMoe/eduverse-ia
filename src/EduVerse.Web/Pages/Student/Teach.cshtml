@@ -1,0 +1,78 @@
+@page
+@model EduVerse.Web.Pages.Student.TeachModel
+@using EduVerse.Core.Tutor
+@{
+    ViewData["Title"] = L["Nav_Teach"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+}
+@if (Model.Concept is { } c)
+{
+    <div id="teach-root" class="max-w-3xl w-full mx-auto space-y-4" data-concept="@c.Key">
+        <div class="flex items-center gap-3">
+            <span class="size-12 shrink-0 rounded-2xl tone-lavender grid place-items-center text-2xl" aria-hidden="true">@c.Icon</span>
+            <div class="min-w-0">
+                <a href="/Student/Teach" class="text-sm text-muted-foreground-1 hover:text-foreground">← @L["Nav_Teach"]</a>
+                <h1 class="text-xl font-semibold text-foreground">@c.Title.In(language)</h1>
+            </div>
+        </div>
+        <section class="@Ui.Card p-5 sm:p-6 space-y-4" aria-live="polite">
+            <ol class="flex flex-wrap gap-2" id="teach-ideas" aria-label="@L["Teach_Ideas"]" data-testid="teach-ideas">
+                @for (var i = 0; i < c.Ideas.Count; i++)
+                {
+                    <li class="py-1 px-2.5 rounded-full text-xs bg-surface text-muted-foreground-1" data-idea="@c.Ideas[i].Key">❓ @string.Format(culture, L["Teach_SecretIdea"], i + 1)</li>
+                }
+            </ol>
+            <div id="teach-chat" class="space-y-3">
+                <div class="flex items-start gap-3">
+                    <partial name="_Mascot" model="@("size-12 shrink-0")" />
+                    <p class="py-2.5 px-4 rounded-2xl rounded-tl-sm tone-sun text-foreground">@c.Ask.In(language)</p>
+                </div>
+            </div>
+            <form id="teach-form" class="space-y-2">
+                <label for="teach-text" class="@Ui.Label">@L["Teach_YourExplanation"]</label>
+                <textarea id="teach-text" class="@Ui.Input min-h-28" maxlength="@TeachConcepts.MaxLength" required placeholder="@L["Teach_Placeholder"]"></textarea>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <p class="text-xs text-muted-foreground-1" id="teach-round">@string.Format(culture, L["Teach_Round"], 1, TeachConcepts.MaxRounds)</p>
+                    <div class="flex gap-2">
+                        <button type="button" id="teach-mic" class="@Ui.BtnLight" aria-pressed="false" title="@L["Voice_Dictate"]">🎤 <span class="max-sm:sr-only">@L["Voice_Dictate"]</span></button>
+                        <button type="submit" id="teach-send" class="@Ui.BtnPrimary" data-testid="teach-send">@L["Teach_Send"]</button>
+                    </div>
+                </div>
+            </form>
+            <div id="teach-end" class="hidden"></div>
+        </section>
+        <p class="text-xs text-muted-foreground-1">@L["Teach_HowItWorks"]</p>
+    </div>
+}
+else
+{
+    <div class="flex flex-wrap justify-between items-end gap-3">
+        <div class="min-w-0">
+            <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Teach_Title"]</h1>
+            <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Teach_Subtitle"]</p>
+        </div>
+        <partial name="_Mascot" model="@("size-16")" />
+    </div>
+    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4" data-testid="teach-concepts">
+        @foreach (var concept in TeachConcepts.All)
+        {
+            var best = Model.Best.TryGetValue(concept.Key, out var b) ? b : -1;
+            <a href="/Student/Teach?concept=@concept.Key" class="@Ui.Card p-5 hover:-translate-y-0.5 transition-transform" data-testid="teach-@concept.Key">
+                <span class="text-3xl" aria-hidden="true">@concept.Icon</span>
+                <span class="mt-2 block font-semibold text-foreground">@concept.Title.In(language)</span>
+                <span class="mt-1 block text-xs text-muted-foreground-1">@L[$"Area_{concept.Area}"] · @L[$"LevelShort_{concept.Level}"]</span>
+                <span class="mt-3 block text-sm @(best == concept.Ideas.Count ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground-1")">@(best < 0 ? L["Teach_NotYet"].Value : string.Format(culture, L["Teach_Best"], best, concept.Ideas.Count))</span>
+            </a>
+        }
+    </div>
+}
+
+@section Scripts {
+    @if (Model.Concept is not null)
+    {
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/voice.js" asp-append-version="true"></script>
+        <script src="~/js/teach.js" asp-append-version="true"></script>
+    }
+}

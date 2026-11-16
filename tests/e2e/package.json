@@ -1,0 +1,12 @@
+{
+  "name": "eduverse-e2e",
+  "private": true,
+  "description": "End-to-end test of EduVerse AI (desktop + 390 px mobile, light + dark) that also takes the README screenshots.",
+  "type": "module",
+  "scripts": {
+    "test": "node e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

@@ -1,0 +1,15 @@
+@page
+@model EduVerse.Web.Pages.Student.NewSubjectModel
+@{
+    ViewData["Title"] = L["Nav_NewSubject"];
+}
+<div>
+    <h1 class="text-2xl font-semibold text-foreground">@L["NewSubject_Heading"]</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["NewSubject_Subtitle"]</p>
+</div>
+<partial name="_SubjectForm" model="(Model.Stage, true)" />
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/subject.js" asp-append-version="true"></script>
+}

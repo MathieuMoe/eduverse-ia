@@ -1,0 +1,105 @@
+@page
+@model EduVerse.Web.Pages.Teacher.IndexModel
+@{
+    ViewData["Title"] = L["Nav_Classes"];
+}
+@{
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var alerts = Model.Classes.Sum(c => c.OpenAlerts);
+}
+<div>
+    <h1 class="text-3xl font-semibold tracking-tight text-foreground" data-greeting="@User.DisplayName()">@string.Format(culture, L["Teacher_Hello"], User.DisplayName())</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Teacher_Subtitle"]</p>
+</div>
+
+@if (Model.Notice is { } notice)
+{
+    <div class="p-3 rounded-2xl text-sm @(notice == "Institution_Joined" ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300" : "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300")" role="status">@L[$"Notice_{notice}"]</div>
+}
+
+<div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+    <div class="@Ui.Kpi tone-lavender">
+        <p class="@Ui.KpiLabel">@L["Nav_Classes"]</p>
+        <p class="@Ui.KpiValue">@Model.Classes.Count</p>
+        <p class="mt-auto pt-4 text-xs text-foreground/60">@string.Format(culture, L["Teacher_StudentsCount"], Model.Students)</p>
+    </div>
+    <div class="@Ui.Kpi tone-sky">
+        <div class="flex items-start justify-between gap-2"><p class="@Ui.KpiLabel">@L["Kpi_ClassAnswers"]</p>@Html.Raw(Ui.Trend(Model.Activity.AnswersTrend))</div>
+        <p class="@Ui.KpiValue">@Model.Activity.Answers</p>
+        <partial name="_MiniBars" model="Model.Activity.Days" />
+    </div>
+    <div class="@Ui.Kpi tone-pink">
+        <div class="flex items-start justify-between gap-2"><p class="@Ui.KpiLabel">@L["Kpi_Accuracy"]</p>@Html.Raw(Ui.Trend(Model.Activity.AccuracyTrend, L["Kpi_Points"]))</div>
+        <p class="@Ui.KpiValue">@(Model.Activity.Accuracy is { } a ? $"{a} %" : "–")</p>
+        <p class="mt-auto pt-4 text-xs text-foreground/60">@string.Format(culture, L["Kpi_RightOf"], Model.Activity.Correct, Model.Activity.Answers)</p>
+    </div>
+    <div class="@Ui.Kpi tone-plum">
+        <p class="text-sm font-semibold text-white/80">@L["Kpi_Alerts"]</p>
+        <p class="mt-2 text-4xl font-semibold tracking-tight">@alerts</p>
+        <p class="mt-auto pt-4 text-sm text-white/70">@(alerts == 0 ? L["Alerts_None"] : L["Teacher_AlertsHint"])</p>
+    </div>
+</div>
+
+<div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+    @foreach (var c in Model.Classes)
+    {
+        <a href="/Teacher/Class?id=@c.Id" class="@Ui.Card p-5 hover:-translate-y-0.5 transition-transform focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30" data-testid="class-card">
+            <div class="flex items-start justify-between gap-3">
+                <span class="size-11 shrink-0 grid place-items-center rounded-2xl tone-lavender text-foreground">
+                    <svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                </span>
+                @if (c.OpenAlerts > 0)
+                {
+                    <span class="@Ui.Pill bg-primary text-primary-foreground">@string.Format(culture, L["Teacher_AlertsCount"], c.OpenAlerts)</span>
+                }
+            </div>
+            <h2 class="mt-4 text-lg font-semibold text-foreground truncate">@c.Name</h2>
+            <p class="text-sm text-muted-foreground-1 truncate">@c.SubjectName</p>
+            <div class="mt-4 pt-4 border-t border-card-divider flex items-center justify-between text-sm">
+                <span class="text-muted-foreground-1">@string.Format(culture, L["Teacher_StudentsCount"], c.Students)</span>
+                <span class="py-1 px-2.5 rounded-full bg-surface font-mono font-semibold tracking-wider text-foreground" title="@L["Teacher_Code"]">@c.Code</span>
+            </div>
+        </a>
+    }
+    @if (Model.Classes.Count == 0)
+    {
+        <div class="@Ui.Card p-6 text-sm text-muted-foreground-1">@L["Teacher_NoClasses"]</div>
+    }
+</div>
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
+    <section class="@Ui.Card xl:col-span-5 min-w-0" aria-labelledby="new-class-title">
+        <div class="@Ui.CardHeader"><h2 id="new-class-title" class="text-base font-semibold text-foreground">@L["Teacher_NewClass"]</h2></div>
+        <form method="post" asp-page-handler="Create" class="p-4 md:p-5 space-y-4">
+            <div><label class="@Ui.Label" for="class-name">@L["Teacher_ClassName"]</label><input id="class-name" name="name" class="@Ui.Input" maxlength="80" required placeholder="@L["Teacher_ClassNamePlaceholder"]" /></div>
+            <div><label class="@Ui.Label" for="class-subject">@L["Teacher_ClassSubject"]</label>
+                <select id="class-subject" name="subject" class="@Ui.Input">@foreach (var s in Model.Subjects) { <option value="@s.Key">@s.Name</option> }</select></div>
+            <button type="submit" class="@Ui.BtnPrimary">@L["Teacher_Create"]</button>
+            <p class="text-xs text-muted-foreground-1">@L["Teacher_CodeHint"]</p>
+        </form>
+        <div class="p-4 md:p-5 border-t border-card-divider">
+            <h3 class="text-sm font-semibold text-foreground">@L["Teacher_Institution"]</h3>
+            @if (Model.InstitutionName is { } inst)
+            {
+                <p class="mt-1 text-sm text-muted-foreground-1">@string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Teacher_InstitutionMember"], inst)</p>
+            }
+            else
+            {
+                <form method="post" asp-page-handler="JoinInstitution" class="mt-2 flex gap-2">
+                    <label for="institution-code" class="sr-only">@L["Institution_TeacherCode"]</label>
+                    <input id="institution-code" name="code" class="@Ui.Input uppercase" placeholder="@L["Institution_TeacherCode"]" maxlength="10" required autocomplete="off" />
+                    <button type="submit" class="@Ui.BtnLight shrink-0">@L["Student_Join"]</button>
+                </form>
+                <p class="mt-1 text-xs text-muted-foreground-1">@L["Teacher_InstitutionHint"]</p>
+            }
+        </div>
+    </section>
+    <div class="xl:col-span-7 min-w-0">
+        <partial name="_SubjectForm" model="(Stage.Secondary, false)" />
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/subject.js" asp-append-version="true"></script>
+}

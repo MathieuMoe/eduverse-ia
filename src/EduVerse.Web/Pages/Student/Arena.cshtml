@@ -1,0 +1,174 @@
+@page
+@model EduVerse.Web.Pages.Student.ArenaModel
+@using EduVerse.Core.Catalog
+@using EduVerse.Core.Gamification
+@{
+    ViewData["Title"] = L["Nav_Arena"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Arena_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Arena_Subtitle"]</p>
+    </div>
+</div>
+
+@if (Model.Notice is { } notice)
+{
+    <div class="p-3 rounded-lg text-sm @(notice.StartsWith("Duel_", StringComparison.Ordinal) ? "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300" : "bg-teal-50 text-teal-800 dark:bg-teal-500/15 dark:text-teal-300")" role="status">@L[$"Notice_{notice}"]</div>
+}
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
+    <div class="xl:col-span-8 space-y-4 sm:space-y-6 min-w-0">
+        @if (Model.Boards.Count == 0)
+        {
+            <section class="@Ui.Card p-6 text-center">
+                <p class="text-4xl" aria-hidden="true">🏟️</p>
+                <p class="mt-2 text-sm text-muted-foreground-1">@L["Arena_NoClass"]</p>
+                <a href="/Student" class="@Ui.BtnLight mt-4">@L["Student_Join"]</a>
+            </section>
+        }
+        @foreach (var board in Model.Boards)
+        {
+            var goal = Math.Max(1, board.ChallengeTarget);
+            var goalPct = Math.Min(100, 100 * board.ChallengeDone / goal);
+            <section class="@Ui.Card min-w-0" data-testid="leaderboard">
+                <div class="@Ui.CardHeader">
+                    <div>
+                        <h2 class="text-base font-semibold text-foreground">@board.Name</h2>
+                        <p class="text-xs text-muted-foreground-1">@L["Game_Leaderboard"] · @L["Game_ThisWeek"]</p>
+                    </div>
+                    <span class="@Ui.Pill tone-lavender text-foreground">@string.Format(culture, L["Arena_Students"], board.Students.Count)</span>
+                </div>
+                <div class="p-4 md:p-5 grid md:grid-cols-2 gap-5">
+                    <ol class="space-y-1.5">
+                        @foreach (var s in board.Students)
+                        {
+                            <li class="flex items-center gap-3 p-2 rounded-xl @(s.Me ? "tone-plum" : s.Position <= 3 ? "bg-surface" : "")">
+                                <span class="w-6 text-center text-sm font-bold @(s.Me ? "text-white" : "text-foreground")">@(s.Position switch { 1 => "🥇", 2 => "🥈", 3 => "🥉", _ => s.Position.ToString(culture) })</span>
+                                <span class="text-xl" aria-hidden="true">@s.Avatar</span>
+                                <span class="grow min-w-0 truncate text-sm font-medium @(s.Me ? "text-white" : "text-foreground")">@s.Nickname@(s.Me ? " · " + L["Arena_You"] : "")</span>
+                                <span class="text-xs @(s.Me ? "text-white/80" : "text-muted-foreground-1")" title="@L[$"Team_{s.Team}"]">@Teams.Emoji(s.Team)</span>
+                                <span class="text-sm font-semibold @(s.Me ? "text-white" : "text-foreground") tabular-nums">@s.Xp XP</span>
+                            </li>
+                        }
+                    </ol>
+                    <div class="space-y-5">
+                        <div>
+                            <h3 class="text-sm font-semibold text-foreground">@L["Arena_Teams"]</h3>
+                            @{ var maxScore = Math.Max(1, board.Teams.Select(t => t.Score).DefaultIfEmpty(1).Max()); }
+                            <ul class="mt-2 space-y-2.5" data-testid="teams">
+                                @foreach (var t in board.Teams)
+                                {
+                                    <li>
+                                        <div class="flex justify-between text-sm"><span class="text-foreground">@Teams.Emoji(t.Team) @L[$"Team_{t.Team}"] <span class="text-xs text-muted-foreground-1">· @t.Members</span></span><span class="font-semibold text-foreground">@t.Score</span></div>
+                                        <div class="mt-1 h-3 rounded-full bar-hatch overflow-hidden"><div class="h-full rounded-full bar-solid" style="width:@(100 * t.Score / maxScore)%"></div></div>
+                                    </li>
+                                }
+                            </ul>
+                            <p class="mt-2 text-[11px] text-muted-foreground-1">@L["Arena_TeamsHint"]</p>
+                        </div>
+                        <div class="p-4 rounded-2xl tone-sun">
+                            <h3 class="text-sm font-semibold text-foreground">🏁 @L["Arena_Challenge"]</h3>
+                            <p class="text-xs text-foreground/70">@string.Format(culture, L["Arena_ChallengeText"], board.ChallengeTarget)</p>
+                            <div class="mt-2 h-2.5 rounded-full bg-white/70 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-primary" style="width:@(goalPct)%"></div></div>
+                            <p class="mt-1 text-xs text-foreground/70">@board.ChallengeDone / @board.ChallengeTarget</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        <section class="@Ui.Card min-w-0" data-testid="duels">
+            <div class="@Ui.CardHeader">
+                <div>
+                    <h2 class="text-base font-semibold text-foreground">⚔️ @L["Arena_Duels"]</h2>
+                    <p class="text-xs text-muted-foreground-1">@L["Arena_DuelsHint"]</p>
+                </div>
+            </div>
+            <div class="p-4 md:p-5 space-y-5">
+                @if (Model.Rivals.Count > 0)
+                {
+                    <form method="post" asp-page-handler="Challenge" class="grid sm:grid-cols-12 gap-3 items-end">
+                        <div class="sm:col-span-4"><label class="@Ui.Label" for="opponent">@L["Arena_Rival"]</label>
+                            <select id="opponent" name="opponent" class="@Ui.Input">@foreach (var r in Model.Rivals) { <option value="@r.UserId">@r.Avatar @r.Nickname</option> }</select></div>
+                        <div class="sm:col-span-3"><label class="@Ui.Label" for="duel-area">@L["Explore_Subject"]</label>
+                            <select id="duel-area" name="area" class="@Ui.Input">@foreach (var a in Catalog.Areas.Where(a => Catalog.Available(a.Area, Model.Profile.Level))) { <option value="@a.Area">@a.Icon @L[$"Area_{a.Area}"]</option> }</select></div>
+                        <div class="sm:col-span-3"><label class="@Ui.Label" for="duel-level">@L["Field_Level"]</label>
+                            <select id="duel-level" name="level" class="@Ui.Input">@foreach (var lv in Enum.GetValues<Level>()) { <option value="@lv" selected="@(lv == Model.Profile.Level)">@L[$"LevelShort_{lv}"]</option> }</select></div>
+                        <button type="submit" class="@Ui.BtnPrimary sm:col-span-2" data-testid="challenge">@L["Arena_Challenge_Button"]</button>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-sm text-muted-foreground-1">@L[Model.Profile.Compete ? "Arena_NoRivals" : "Arena_CompeteOff"]</p>
+                }
+                @if (Model.Duels.Count > 0)
+                {
+                    <ul class="divide-y divide-card-divider">
+                        @foreach (var d in Model.Duels)
+                        {
+                            <li class="py-3 flex flex-wrap items-center gap-3">
+                                <span class="text-xl" aria-hidden="true">@d.RivalAvatar</span>
+                                <div class="grow min-w-0">
+                                    <p class="text-sm font-medium text-foreground truncate">@(d.IChallenged ? string.Format(culture, L["Duel_You_vs"], d.Rival) : string.Format(culture, L["Duel_Vs_You"], d.Rival))</p>
+                                    <p class="text-xs text-muted-foreground-1">@Catalog.Info(d.Duel.Area).Icon @L[$"Area_{d.Duel.Area}"] · @L[$"LevelShort_{d.Duel.Level}"]</p>
+                                </div>
+                                @if (d.CanPlay)
+                                {
+                                    <a href="/Student/Quiz?mode=Duel&duel=@d.Duel.Id" class="@Ui.BtnPrimary" data-testid="play-duel">@L["Duel_Play"]</a>
+                                }
+                                else if (d.Duel.Status == DuelStatus.Finished)
+                                {
+                                    var outcome = Duels.Outcome(d.MyScore ?? 0, d.RivalScore ?? 0);
+                                    <span class="@Ui.Pill @(outcome > 0 ? "tone-mint" : outcome < 0 ? "tone-pink" : "tone-sky") text-foreground">@L[outcome > 0 ? "Duel_Won" : outcome < 0 ? "Duel_Lost" : "Duel_Draw"] · @d.MyScore–@d.RivalScore</span>
+                                }
+                                else
+                                {
+                                    <span class="@Ui.Pill bg-surface text-muted-foreground-1">@L[d.Duel.Status == DuelStatus.Expired ? "Duel_Expired" : "Duel_Waiting"]@(d.MyScore is { } m ? $" · {m}/{AdaptiveQuiz.DuelLength}" : "")</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </section>
+    </div>
+
+    <aside class="xl:col-span-4 space-y-4 sm:space-y-6 min-w-0">
+        <section class="@Ui.Card p-5" data-testid="arena-settings">
+            <div class="flex items-center gap-3">
+                <span class="size-14 rounded-2xl tone-lavender grid place-items-center text-3xl" aria-hidden="true">@Model.Profile.Avatar</span>
+                <div class="min-w-0">
+                    <p class="text-xs text-muted-foreground-1">@L["Arena_Nickname"]</p>
+                    <p class="text-lg font-semibold text-foreground truncate" data-testid="nickname">@Model.Profile.Nickname</p>
+                </div>
+            </div>
+            <p class="mt-3 text-xs text-muted-foreground-1">@L["Arena_NicknameHint"]</p>
+            <form method="post" asp-page-handler="Settings" class="mt-4 space-y-4">
+                <fieldset>
+                    <legend class="@Ui.Label">@L["Arena_MyTeam"]</legend>
+                    <div class="grid grid-cols-2 gap-2">
+                        @foreach (var t in Enum.GetValues<Team>())
+                        {
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-layer-line cursor-pointer has-checked:bg-primary/10 has-checked:border-primary">
+                                <input type="radio" name="team" value="@t" checked="@(t == Model.Profile.Team)" class="sr-only" />
+                                <span class="text-xl" aria-hidden="true">@Teams.Emoji(t)</span><span class="text-sm font-medium text-foreground">@L[$"Team_{t}"]</span>
+                            </label>
+                        }
+                    </div>
+                </fieldset>
+                <label class="flex items-start gap-3">
+                    <input type="checkbox" name="compete" value="true" checked="@Model.Profile.Compete" class="mt-0.5 shrink-0 size-4 rounded border-layer-line text-primary" data-testid="compete" />
+                    <span><span class="block text-sm font-medium text-foreground">@L["Arena_Compete"]</span><span class="block text-xs text-muted-foreground-1">@L["Arena_CompeteHint"]</span></span>
+                </label>
+                <input type="hidden" name="compete" value="false" />
+                <label class="flex items-center gap-3">
+                    <input type="checkbox" name="newNickname" value="true" class="shrink-0 size-4 rounded border-layer-line text-primary" />
+                    <span class="text-sm text-foreground">@L["Arena_NewNickname"]</span>
+                </label>
+                <button type="submit" class="@Ui.BtnPrimary w-full">@L["Save"]</button>
+            </form>
+        </section>
+    </aside>
+</div>

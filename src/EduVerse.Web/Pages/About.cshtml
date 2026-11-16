@@ -1,0 +1,37 @@
+@page
+@model AboutModel
+@{
+    ViewData["Title"] = L["Nav_About"];
+    const string card = "bg-card border border-card-line shadow-2xs rounded-xl p-4 md:p-5";
+}
+<div>
+    <h1 class="text-2xl font-semibold text-foreground">@L["About_Title"]</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["About_Subtitle"]</p>
+</div>
+<div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+    @for (var i = 1; i <= 4; i++)
+    {
+        <div class="@card">
+            <span class="size-9 grid place-items-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">@i</span>
+            <h2 class="mt-3 text-base font-semibold text-foreground">@L[$"About_Step{i}_Title"]</h2>
+            <p class="mt-1 text-sm text-muted-foreground-1">@L[$"About_Step{i}_Text"]</p>
+        </div>
+    }
+</div>
+<div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
+    <div class="@card space-y-3 text-sm">
+        <h2 class="text-base font-semibold text-foreground">@L["About_Rules_Title"]</h2>
+        <ul class="list-disc ps-5 space-y-1.5 text-muted-foreground-1">
+            @for (var i = 1; i <= 5; i++)
+            {
+                <li>@L[$"About_Rule{i}"]</li>
+            }
+        </ul>
+    </div>
+    <div class="@card space-y-3 text-sm">
+        <h2 class="text-base font-semibold text-foreground">@L["About_Privacy_Title"]</h2>
+        <p class="text-muted-foreground-1">@L["About_Privacy_Text"]</p>
+        <h2 class="text-base font-semibold text-foreground pt-2">@L["About_Roadmap_Title"]</h2>
+        <p class="text-muted-foreground-1">@L["About_Roadmap_Text"]</p>
+    </div>
+</div>

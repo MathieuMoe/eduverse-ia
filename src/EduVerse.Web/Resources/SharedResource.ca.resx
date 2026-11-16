@@ -1,0 +1,1103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Lesson" xml:space="preserve"><value>Lliçó en 3 nivells</value></data>
+  <data name="Nav_Summary" xml:space="preserve"><value>Resum de classe</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Com funciona</value></data>
+  <data name="Nav_Resources" xml:space="preserve"><value>Recursos</value></data>
+  <data name="Nav_SourceCode" xml:space="preserve"><value>Codi font</value></data>
+  <data name="Nav_OpenMenu" xml:space="preserve"><value>Obrir el menú</value></data>
+  <data name="Nav_ToggleTheme" xml:space="preserve"><value>Canviar el mode fosc</value></data>
+  <data name="Nav_Language" xml:space="preserve"><value>Idioma de la interfície</value></data>
+  <data name="Nav_EngineTooltip" xml:space="preserve"><value>Motor utilitzat per redactar els materials</value></data>
+  <data name="Engine_Demo" xml:space="preserve"><value>Demo (sense connexió)</value></data>
+  <data name="Engine_Choose" xml:space="preserve"><value>Motor d'IA</value></data>
+  <data name="Engine_Hint" xml:space="preserve"><value>Apareixen més motors quan configureu la seva clau d'API (vegeu README).</value></data>
+  <data name="Error_Title" xml:space="preserve"><value>Alguna cosa ha anat malament</value></data>
+  <data name="Error_Text" xml:space="preserve"><value>S'ha produït un error inesperat. Torna-ho a provar.</value></data>
+  <data name="Error_Back" xml:space="preserve"><value>Torna a l'inici</value></data>
+  <data name="Sample_Button" xml:space="preserve"><value>Carregar un exemple</value></data>
+  <data name="Field_Stage" xml:space="preserve"><value>Etapa</value></data>
+  <data name="Field_Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Language_English" xml:space="preserve"><value>Anglès</value></data>
+  <data name="Language_Spanish" xml:space="preserve"><value>Castellà</value></data>
+  <data name="Language_French" xml:space="preserve"><value>Francès</value></data>
+  <data name="Language_Catalan" xml:space="preserve"><value>Català</value></data>
+  <data name="History_Title" xml:space="preserve"><value>Recents</value></data>
+  <data name="Lesson_Heading" xml:space="preserve"><value>La mateixa lliçó en 3 nivells</value></data>
+  <data name="Lesson_Subtitle" xml:space="preserve"><value>Per a classes amb nivells diferents: enganxa o puja una lliçó i obtén una versió bàsica, una d'estàndard i una d'avançada amb els mateixos objectius, cadascuna amb glossari, preguntes i una activitat. Es mesura la llegibilitat de cada versió.</value></data>
+  <data name="Lesson_Source" xml:space="preserve"><value>La lliçó</value></data>
+  <data name="Lesson_Upload" xml:space="preserve"><value>Pujar PDF o text</value></data>
+  <data name="Lesson_Title" xml:space="preserve"><value>Títol</value></data>
+  <data name="Lesson_SubjectField" xml:space="preserve"><value>Assignatura</value></data>
+  <data name="Lesson_Questions" xml:space="preserve"><value>Preguntes</value></data>
+  <data name="Lesson_Text" xml:space="preserve"><value>Text de la lliçó</value></data>
+  <data name="Lesson_TextPlaceholder" xml:space="preserve"><value>Enganxa la lliçó (com a mínim 150 caràcters)…</value></data>
+  <data name="Lesson_Submit" xml:space="preserve"><value>Adaptar en 3 nivells</value></data>
+  <data name="Lesson_EmptyTitle" xml:space="preserve"><value>Les teves tres versions apareixeran aquí</value></data>
+  <data name="Lesson_EmptyText" xml:space="preserve"><value>Bàsica, estàndard i avançada, amb la seva llegibilitat, a punt per imprimir per a cada grup.</value></data>
+  <data name="Summary_Heading" xml:space="preserve"><value>Resum de classe</value></data>
+  <data name="Summary_Subtitle" xml:space="preserve"><value>Escriu o dicta el que ha passat a classe: obtén el resum per als alumnes, què han de fer els que han faltat, una nota per a les famílies, els deures, preguntes de repàs i per on començar la propera vegada.</value></data>
+  <data name="Summary_Class" xml:space="preserve"><value>La classe</value></data>
+  <data name="Summary_Group" xml:space="preserve"><value>Grup</value></data>
+  <data name="Summary_Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Summary_Notes" xml:space="preserve"><value>Notes o transcripció</value></data>
+  <data name="Summary_Dictate" xml:space="preserve"><value>Dictar</value></data>
+  <data name="Summary_NotesPlaceholder" xml:space="preserve"><value>Què vas explicar, què va funcionar, què va costar, deures, propera classe…</value></data>
+  <data name="Summary_Submit" xml:space="preserve"><value>Resumir la classe</value></data>
+  <data name="Summary_EmptyTitle" xml:space="preserve"><value>El teu resum apareixerà aquí</value></data>
+  <data name="Summary_EmptyText" xml:space="preserve"><value>A punt per publicar a la teva plataforma o enviar per correu.</value></data>
+  <data name="About_Title" xml:space="preserve"><value>Com funciona EduVerse AI</value></data>
+  <data name="About_Subtitle" xml:space="preserve"><value>Un tutor que aprèn com aprèn cada alumne, i un professor que té l'última paraula.</value></data>
+  <data name="About_Step1_Title" xml:space="preserve"><value>Prova de nivell</value></data>
+  <data name="About_Step1_Text" xml:space="preserve"><value>Una cerca binària pels conceptes ordenats per requisits: unes log2(n)+1 preguntes en lloc d'avaluar-ho tot.</value></data>
+  <data name="About_Step2_Title" xml:space="preserve"><value>Explicació adaptada</value></data>
+  <data name="About_Step2_Text" xml:space="preserve"><value>Cinc mètodes (pas a pas, visual, vida real, exemple resolt, analogia). Després de dos errors seguits, el codi canvia a un mètode encara no provat.</value></data>
+  <data name="About_Step3_Title" xml:space="preserve"><value>Pràctica amb retorn per error</value></data>
+  <data name="About_Step3_Text" xml:space="preserve"><value>Cada opció incorrecta és un error típic amb el seu codi, així el tutor sap PER QUÈ ha fallat l'alumne. La dificultat puja amb una ratxa i baixa després d'un error.</value></data>
+  <data name="About_Privacy_Title" xml:space="preserve"><value>Privadesa i menors</value></data>
+  <data name="About_Privacy_Text" xml:space="preserve"><value>Minimització de dades des del principi (RGPD): només el nom, sense cognoms. La IA rep l'etapa, el domini i els codis d'error, mai un nom ni un correu. Els textos dels usuaris s'envien com a dades, no com a instruccions. La IA recomana; les decisions sobre un alumne les pren una persona.</value></data>
+  <data name="Stage_Primary" xml:space="preserve"><value>Primària</value></data>
+  <data name="Js_Stage_Primary" xml:space="preserve"><value>Primària</value></data>
+  <data name="Stage_Secondary" xml:space="preserve"><value>Secundària (ESO)</value></data>
+  <data name="Js_Stage_Secondary" xml:space="preserve"><value>Secundària (ESO)</value></data>
+  <data name="Stage_HighSchool" xml:space="preserve"><value>Batxillerat</value></data>
+  <data name="Js_Stage_HighSchool" xml:space="preserve"><value>Batxillerat</value></data>
+  <data name="Stage_University" xml:space="preserve"><value>Universitat</value></data>
+  <data name="Js_Stage_University" xml:space="preserve"><value>Universitat</value></data>
+  <data name="Stage_Adults" xml:space="preserve"><value>Adults</value></data>
+  <data name="Js_Stage_Adults" xml:space="preserve"><value>Adults</value></data>
+  <data name="Stage_ExamPrep" xml:space="preserve"><value>Oposicions</value></data>
+  <data name="Js_Stage_ExamPrep" xml:space="preserve"><value>Oposicions</value></data>
+  <data name="Js_RateLimited" xml:space="preserve"><value>Massa peticions. Espera un minut i torna-ho a provar.</value></data>
+  <data name="Js_AiError" xml:space="preserve"><value>La IA no ha pogut respondre. Torna-ho a provar o tria un altre motor.</value></data>
+  <data name="Js_GenericError" xml:space="preserve"><value>Alguna cosa ha anat malament.</value></data>
+  <data name="Js_Err_text_too_short" xml:space="preserve"><value>La lliçó és massa curta (mínim 150 caràcters).</value></data>
+  <data name="Js_Err_text_too_long" xml:space="preserve"><value>La lliçó és massa llarga (màxim 15.000 caràcters).</value></data>
+  <data name="Js_Err_notes_too_short" xml:space="preserve"><value>Les notes són massa curtes (mínim 80 caràcters).</value></data>
+  <data name="Js_Err_notes_too_long" xml:space="preserve"><value>Les notes són massa llargues.</value></data>
+  <data name="Js_Err_questions_out_of_range" xml:space="preserve"><value>Entre 2 i 8 preguntes.</value></data>
+  <data name="Js_Err_title_too_long" xml:space="preserve"><value>El títol és massa llarg.</value></data>
+  <data name="Js_Working" xml:space="preserve"><value>Treballant…</value></data>
+  <data name="Js_Copy" xml:space="preserve"><value>Copiar</value></data>
+  <data name="Js_Copied" xml:space="preserve"><value>Copiat</value></data>
+  <data name="Js_EngineDemo" xml:space="preserve"><value>Demo (regles, sense IA)</value></data>
+  <data name="Js_Untitled" xml:space="preserve"><value>Sense títol</value></data>
+  <data name="Js_NoHistory" xml:space="preserve"><value>Res encara.</value></data>
+  <data name="Js_CharsCount" xml:space="preserve"><value>{0} caràcters</value></data>
+  <data name="Js_DownloadMd" xml:space="preserve"><value>Descarregar (Markdown)</value></data>
+  <data name="Js_Objectives" xml:space="preserve"><value>Objectius</value></data>
+  <data name="Js_ReadabilityTitle" xml:space="preserve"><value>Llegibilitat (0-100, més alt = més fàcil)</value></data>
+  <data name="Js_ReadabilityHint" xml:space="preserve"><value>Mesurada per l'aplicació a cada text, no estimada per la IA.</value></data>
+  <data name="Js_Original" xml:space="preserve"><value>Original</value></data>
+  <data name="Js_Read_VeryEasy" xml:space="preserve"><value>Molt fàcil</value></data>
+  <data name="Js_Read_Easy" xml:space="preserve"><value>Fàcil</value></data>
+  <data name="Js_Read_Normal" xml:space="preserve"><value>Normal</value></data>
+  <data name="Js_Read_Difficult" xml:space="preserve"><value>Difícil</value></data>
+  <data name="Js_Read_VeryDifficult" xml:space="preserve"><value>Molt difícil</value></data>
+  <data name="Js_StatsLine" xml:space="preserve"><value>{0} paraules · {1} per frase · {2} min</value></data>
+  <data name="Js_Warn_basic_not_easier" xml:space="preserve"><value>La versió bàsica no es llegeix més fàcil que l'estàndard: torna a generar-la o simplifica-la a mà.</value></data>
+  <data name="Js_Warn_advanced_shorter" xml:space="preserve"><value>La versió avançada és més curta que l'estàndard.</value></data>
+  <data name="Js_Warn_homework_from_notes" xml:space="preserve"><value>Els deures s'han pres de les teves notes.</value></data>
+  <data name="Js_Levels" xml:space="preserve"><value>Nivells</value></data>
+  <data name="Js_Level_Basic" xml:space="preserve"><value>Bàsic</value></data>
+  <data name="Js_Level_Standard" xml:space="preserve"><value>Estàndard</value></data>
+  <data name="Js_Level_Advanced" xml:space="preserve"><value>Avançat</value></data>
+  <data name="Js_LevelHint_Basic" xml:space="preserve"><value>Per a alumnes que necessiten suport o estan aprenent l'idioma.</value></data>
+  <data name="Js_LevelHint_Standard" xml:space="preserve"><value>Per al grup en general.</value></data>
+  <data name="Js_LevelHint_Advanced" xml:space="preserve"><value>Per a alumnes que necessiten un repte.</value></data>
+  <data name="Js_PrintStudents" xml:space="preserve"><value>Fitxa alumne</value></data>
+  <data name="Js_PrintTeacher" xml:space="preserve"><value>Amb respostes</value></data>
+  <data name="Js_Glossary" xml:space="preserve"><value>Glossari</value></data>
+  <data name="Js_QuestionsTitle" xml:space="preserve"><value>Preguntes</value></data>
+  <data name="Js_ShowAnswer" xml:space="preserve"><value>Veure la resposta</value></data>
+  <data name="Js_Answer" xml:space="preserve"><value>Resposta</value></data>
+  <data name="Js_Activity" xml:space="preserve"><value>Activitat</value></data>
+  <data name="Js_TeacherTips" xml:space="preserve"><value>Consells per a la classe</value></data>
+  <data name="Js_NameLine" xml:space="preserve"><value>Nom:</value></data>
+  <data name="Js_FileError" xml:space="preserve"><value>No s'ha pogut llegir el fitxer.</value></data>
+  <data name="Js_CopyStudents" xml:space="preserve"><value>Copiar per als alumnes</value></data>
+  <data name="Js_KeyIdeas" xml:space="preserve"><value>Idees clau</value></data>
+  <data name="Js_Homework" xml:space="preserve"><value>Deures</value></data>
+  <data name="Js_NoHomework" xml:space="preserve"><value>Sense deures.</value></data>
+  <data name="Js_ForAbsent" xml:space="preserve"><value>Per a qui va faltar</value></data>
+  <data name="Js_FamilyNote" xml:space="preserve"><value>Per a les famílies</value></data>
+  <data name="Js_Review" xml:space="preserve"><value>Revisar respostes</value></data>
+  <data name="Js_Difficulties" xml:space="preserve"><value>El que va costar</value></data>
+  <data name="Js_NoDifficulties" xml:space="preserve"><value>Res anotat.</value></data>
+  <data name="Js_NextClass" xml:space="preserve"><value>Propera classe</value></data>
+  <data name="Js_NoSpeech" xml:space="preserve"><value>El dictat necessita Chrome o Edge.</value></data>
+  <data name="Js_Dictate" xml:space="preserve"><value>Dictar</value></data>
+  <data name="Js_StopDictation" xml:space="preserve"><value>Aturar</value></data>
+  <data name="Js_SampleSubject" xml:space="preserve"><value>Ciències naturals</value></data>
+  <data name="Nav_Home" xml:space="preserve"><value>Inici</value></data>
+  <data name="Nav_Login" xml:space="preserve"><value>Inicia la sessió</value></data>
+  <data name="Nav_Register" xml:space="preserve"><value>Crea un compte</value></data>
+  <data name="Nav_Logout" xml:space="preserve"><value>Tanca la sessió</value></data>
+  <data name="Nav_StudentSpace" xml:space="preserve"><value>Espai de l'alumne</value></data>
+  <data name="Nav_TeacherSpace" xml:space="preserve"><value>Espai del professor</value></data>
+  <data name="Nav_StudentHome" xml:space="preserve"><value>Les meves assignatures</value></data>
+  <data name="Nav_Learn" xml:space="preserve"><value>Aprendre</value></data>
+  <data name="Nav_NewSubject" xml:space="preserve"><value>Nova assignatura</value></data>
+  <data name="Nav_Classes" xml:space="preserve"><value>Les meves classes</value></data>
+  <data name="Nav_Pack" xml:space="preserve"><value>Pack de classe</value></data>
+  <data name="Role_Student" xml:space="preserve"><value>Alumne</value></data>
+  <data name="Role_Teacher" xml:space="preserve"><value>Professor</value></data>
+  <data name="Loading" xml:space="preserve"><value>Carregant…</value></data>
+  <data name="Save" xml:space="preserve"><value>Desa</value></data>
+  <data name="Copy" xml:space="preserve"><value>Copia</value></data>
+  <data name="Close" xml:space="preserve"><value>Tanca</value></data>
+  <data name="Field_Email" xml:space="preserve"><value>Correu electrònic</value></data>
+  <data name="Field_Password" xml:space="preserve"><value>Contrasenya</value></data>
+  <data name="Field_FirstName" xml:space="preserve"><value>Nom</value></data>
+  <data name="Home_Title" xml:space="preserve"><value>El professor IA que coneix cada alumne</value></data>
+  <data name="Home_Badge" xml:space="preserve"><value>Plataforma educativa amb IA · MVP</value></data>
+  <data name="Home_Heading" xml:space="preserve"><value>Un professor IA que sap què no entén encara cada alumne</value></data>
+  <data name="Home_Subtitle" xml:space="preserve"><value>EduVerse AI avalua, explica, canvia de mètode quan una explicació no funciona, detecta els errors recurrents i avisa el professor quan l'alumne s'encalla. El professor veu la seva classe d'un cop d'ull i obté una classe completa a partir de qualsevol document.</value></data>
+  <data name="Home_DemoHint" xml:space="preserve"><value>Comptes de demostració amb dades fictícies, sense clau d'IA.</value></data>
+  <data name="Home_LoopTitle" xml:space="preserve"><value>Com treballa el professor IA</value></data>
+  <data name="Home_Loop_Test" xml:space="preserve"><value>Una prova de nivell curta i adaptativa</value></data>
+  <data name="Home_Loop_Detect" xml:space="preserve"><value>Detecta quin concepte no s'entén</value></data>
+  <data name="Home_Loop_Explain" xml:space="preserve"><value>L'explica amb exemples, per a aquest alumne</value></data>
+  <data name="Home_Loop_Practice" xml:space="preserve"><value>Exercicis progressius, corregits al servidor</value></data>
+  <data name="Home_Loop_Mistakes" xml:space="preserve"><value>Detecta els errors recurrents i explica per què</value></data>
+  <data name="Home_Loop_Switch" xml:space="preserve"><value>Canvia de mètode quan un no funciona</value></data>
+  <data name="Home_Loop_Teacher" xml:space="preserve"><value>Avisa el professor humà si l'alumne no avança</value></data>
+  <data name="Demo_Student" xml:space="preserve"><value>Prova-ho com a alumne</value></data>
+  <data name="Demo_Teacher" xml:space="preserve"><value>Prova-ho com a professor</value></data>
+  <data name="Profile_Student" xml:space="preserve"><value>Alumnes</value></data>
+  <data name="Profile_Student_Text" xml:space="preserve"><value>Prova de nivell, mapa de domini, explicacions adaptades, exercicis amb retorn de cada error, tutor socràtic, qualsevol assignatura a partir d'un tema.</value></data>
+  <data name="Profile_Teacher" xml:space="preserve"><value>Professors</value></data>
+  <data name="Profile_Teacher_Text" xml:space="preserve"><value>Classes amb codi, mapa de calor alumnes × conceptes, avisos, errors freqüents, pack de classe des d'un document, lliçó en 3 nivells, resum de classe.</value></data>
+  <data name="Profile_Institution" xml:space="preserve"><value>Institucions</value></data>
+  <data name="Profile_Institution_Text" xml:space="preserve"><value>Tauler de l'acadèmia, alerta primerenca d'abandonament amb regles explicables, missatges a les famílies, qualitat de l'ensenyament, pla i cost per alumne.</value></data>
+  <data name="Profile_Marketplace" xml:space="preserve"><value>Marketplace</value></data>
+  <data name="Profile_Marketplace_Text" xml:space="preserve"><value>Professors particulars recomanats segons el que necessita l'alumne, forats lliures, reserva, pagament (simulat) i valoracions; ingressos del professor després de la comissió.</value></data>
+  <data name="Profile_Ready" xml:space="preserve"><value>Disponible</value></data>
+  <data name="Profile_Soon" xml:space="preserve"><value>Propera fase</value></data>
+  <data name="Home_Principle_Code" xml:space="preserve"><value>El codi decideix, la IA redacta</value></data>
+  <data name="Home_Principle_Code_Text" xml:space="preserve"><value>El domini (Bayesian Knowledge Tracing), el pas següent, els canvis de mètode i els avisos es calculen en codi, explicables i amb proves.</value></data>
+  <data name="Home_Principle_Validated" xml:space="preserve"><value>Cada resposta de la IA es valida</value></data>
+  <data name="Home_Principle_Validated_Text" xml:space="preserve"><value>Els exercicis no vàlids es descarten i els mapes de conceptes amb cicles es reparen o es rebutgen. Si la IA falla, respon la versió sense IA i diu per què.</value></data>
+  <data name="Home_Principle_Privacy" xml:space="preserve"><value>Privadesa des del disseny</value></data>
+  <data name="Home_Principle_Privacy_Text" xml:space="preserve"><value>Només es demana el nom. La IA no rep mai noms ni correus: només l'etapa, el domini i els errors. La IA recomana, una persona decideix.</value></data>
+  <data name="Login_Heading" xml:space="preserve"><value>Hola de nou</value></data>
+  <data name="Login_Subtitle" xml:space="preserve"><value>Encara no tens compte?</value></data>
+  <data name="Login_Failed" xml:space="preserve"><value>Correu o contrasenya incorrectes.</value></data>
+  <data name="Login_DemoTitle" xml:space="preserve"><value>Només vols fer un cop d'ull?</value></data>
+  <data name="Login_DemoText" xml:space="preserve"><value>Entra amb un compte de demostració: una professora amb una classe de 4 alumnes o una alumna amb un historial real.</value></data>
+  <data name="Login_DemoAccounts" xml:space="preserve"><value>Comptes de demostració: teacher@eduverse.demo, alex@, sara@, leo@, nora@eduverse.demo · contrasenya {0}</value></data>
+  <data name="Register_Heading" xml:space="preserve"><value>Crea el teu compte</value></data>
+  <data name="Register_Subtitle" xml:space="preserve"><value>Ja tens compte?</value></data>
+  <data name="Register_Role" xml:space="preserve"><value>Sóc…</value></data>
+  <data name="Register_FirstNameHint" xml:space="preserve"><value>Només el teu nom: no necessitem els cognoms.</value></data>
+  <data name="Register_PasswordHint" xml:space="preserve"><value>Almenys 8 caràcters, amb un número i una minúscula.</value></data>
+  <data name="Register_StageHint" xml:space="preserve"><value>Per als alumnes: adapta el vocabulari de les explicacions.</value></data>
+  <data name="Register_Privacy" xml:space="preserve"><value>Les teves dades es queden en aquesta plataforma. La IA només rep la teva etapa, el teu domini i els teus errors, mai el teu nom ni el teu correu.</value></data>
+  <data name="Register_Submit" xml:space="preserve"><value>Crea el meu compte</value></data>
+  <data name="Register_Error_Generic" xml:space="preserve"><value>No s'ha pogut crear el compte. Revisa els camps.</value></data>
+  <data name="Register_Error_DuplicateUserName" xml:space="preserve"><value>Ja existeix un compte amb aquest correu.</value></data>
+  <data name="Register_Error_DuplicateEmail" xml:space="preserve"><value>Ja existeix un compte amb aquest correu.</value></data>
+  <data name="Register_Error_PasswordTooShort" xml:space="preserve"><value>La contrasenya ha de tenir almenys 8 caràcters.</value></data>
+  <data name="Register_Error_PasswordRequiresDigit" xml:space="preserve"><value>La contrasenya necessita un número.</value></data>
+  <data name="Register_Error_PasswordRequiresLower" xml:space="preserve"><value>La contrasenya necessita una minúscula.</value></data>
+  <data name="Register_Error_InvalidEmail" xml:space="preserve"><value>Aquest correu no és vàlid.</value></data>
+  <data name="Register_Error_Invalid_Email" xml:space="preserve"><value>Aquest correu no és vàlid.</value></data>
+  <data name="Register_Error_Invalid_FirstName" xml:space="preserve"><value>Escriu el teu nom (de 2 a 40 caràcters).</value></data>
+  <data name="Register_Error_Invalid_Password" xml:space="preserve"><value>La contrasenya ha de tenir almenys 8 caràcters.</value></data>
+  <data name="Student_Hello" xml:space="preserve"><value>Hola, {0}</value></data>
+  <data name="Student_Subtitle" xml:space="preserve"><value>Les teves assignatures, el que ja domines i el següent. El tutor s'adapta a la teva manera d'aprendre.</value></data>
+  <data name="Student_MasteredOf" xml:space="preserve"><value>{0} de {1} conceptes dominats</value></data>
+  <data name="Student_Progress" xml:space="preserve"><value>Progrés</value></data>
+  <data name="Student_NextStep" xml:space="preserve"><value>Pas següent:</value></data>
+  <data name="Student_Map" xml:space="preserve"><value>Mapa de domini</value></data>
+  <data name="Student_Classes" xml:space="preserve"><value>Les meves classes</value></data>
+  <data name="Student_NoClasses" xml:space="preserve"><value>Demana al teu professor el codi de la classe per unir-t'hi.</value></data>
+  <data name="Student_JoinCode" xml:space="preserve"><value>Codi de la classe</value></data>
+  <data name="Student_Join" xml:space="preserve"><value>Uneix-me</value></data>
+  <data name="Student_Legend" xml:space="preserve"><value>Nivells de domini</value></data>
+  <data name="Student_LegendHint" xml:space="preserve"><value>El percentatge és la probabilitat que sàpigues el concepte, actualitzada després de cada resposta (Bayesian Knowledge Tracing). Dominat a partir del 95 %.</value></data>
+  <data name="Student_Settings" xml:space="preserve"><value>Els meus ajustos</value></data>
+  <data name="Student_LanguageHint" xml:space="preserve"><value>Les explicacions s'escriuen en l'idioma de la interfície (icona del globus a dalt).</value></data>
+  <data name="Notice_Join_Done" xml:space="preserve"><value>T'has unit a la classe. La seva assignatura ja és a la teva llista.</value></data>
+  <data name="Notice_Join_Unknown" xml:space="preserve"><value>Cap classe té aquest codi. Comprova'l amb el teu professor.</value></data>
+  <data name="Notice_Settings_Saved" xml:space="preserve"><value>Ajustos desats.</value></data>
+  <data name="Notice_Class_Invalid" xml:space="preserve"><value>No s'ha pogut crear la classe: revisa el nom.</value></data>
+  <data name="Step_Diagnostic" xml:space="preserve"><value>Fes la prova de nivell</value></data>
+  <data name="Step_Learn" xml:space="preserve"><value>Continua aprenent</value></data>
+  <data name="Step_Practice" xml:space="preserve"><value>Practica</value></data>
+  <data name="Step_Review" xml:space="preserve"><value>Repassa</value></data>
+  <data name="Step_Done" xml:space="preserve"><value>Obre</value></data>
+  <data name="Learn_Subject" xml:space="preserve"><value>Assignatura</value></data>
+  <data name="Learn_Retake" xml:space="preserve"><value>Repeteix la prova de nivell</value></data>
+  <data name="Chat_Title" xml:space="preserve"><value>Pregunta al tutor</value></data>
+  <data name="Chat_Placeholder" xml:space="preserve"><value>Explica el que has intentat…</value></data>
+  <data name="Chat_Send" xml:space="preserve"><value>Envia</value></data>
+  <data name="Chat_Hint" xml:space="preserve"><value>El tutor et guia amb preguntes: no et dona la solució.</value></data>
+  <data name="Js_ChatAbout" xml:space="preserve"><value>Sobre: {0}</value></data>
+  <data name="Js_ChatEmpty" xml:space="preserve"><value>Encallat? Explica al tutor el que penses i et guiarà pas a pas.</value></data>
+  <data name="Js_Loading" xml:space="preserve"><value>Carregant…</value></data>
+  <data name="Js_Explaining" xml:space="preserve"><value>Preparant una explicació per a tu…</value></data>
+  <data name="Js_Retry" xml:space="preserve"><value>Torna-ho a provar</value></data>
+  <data name="Js_MasteredOf" xml:space="preserve"><value>{0} de {1} conceptes dominats</value></data>
+  <data name="Js_Step_Diagnostic" xml:space="preserve"><value>Prova de nivell</value></data>
+  <data name="Js_Step_Learn" xml:space="preserve"><value>Explicació</value></data>
+  <data name="Js_Step_Practice" xml:space="preserve"><value>Pràctica</value></data>
+  <data name="Js_Step_Review" xml:space="preserve"><value>Repàs espaiat</value></data>
+  <data name="Js_DiagTitle" xml:space="preserve"><value>Vegem en quin punt ets</value></data>
+  <data name="Js_DiagIntro" xml:space="preserve"><value>Unes poques preguntes, triades una darrere l'altra segons les teves respostes (un encert salta els conceptes anteriors, un error els següents). No és un examen: respon sense estrès.</value></data>
+  <data name="Js_DiagStart" xml:space="preserve"><value>Comença</value></data>
+  <data name="Js_DiagProgress" xml:space="preserve"><value>Prova de nivell · pregunta {0} de {1} màx.</value></data>
+  <data name="Js_DiagDone" xml:space="preserve"><value>Prova de nivell acabada</value></data>
+  <data name="Js_DiagResultTitle" xml:space="preserve"><value>El teu punt de partida és a punt</value></data>
+  <data name="Js_DiagResultStart" xml:space="preserve"><value>Comencem per «{0}». El que ja saps només tindrà una comprovació ràpida.</value></data>
+  <data name="Js_DiagResultAll" xml:space="preserve"><value>Sembla que domines tota l'assignatura: una pràctica ràpida ho confirmarà.</value></data>
+  <data name="Js_MethodLabel" xml:space="preserve"><value>Mètode: {0}</value></data>
+  <data name="Js_SwitchedHint" xml:space="preserve"><value>La manera anterior d'explicar-ho no et va funcionar, així que aquesta és diferent.</value></data>
+  <data name="Js_Example" xml:space="preserve"><value>Exemple</value></data>
+  <data name="Js_CheckYourself" xml:space="preserve"><value>Comprova-ho</value></data>
+  <data name="Js_Understood" xml:space="preserve"><value>Entès, a practicar</value></data>
+  <data name="Js_AskTutor" xml:space="preserve"><value>Tinc un dubte</value></data>
+  <data name="Js_Hint" xml:space="preserve"><value>Pista</value></data>
+  <data name="Js_Difficulty" xml:space="preserve"><value>Dificultat</value></data>
+  <data name="Js_DifficultyOf" xml:space="preserve"><value>Dificultat {0} de 3</value></data>
+  <data name="Js_Correct" xml:space="preserve"><value>Correcte!</value></data>
+  <data name="Js_NotQuite" xml:space="preserve"><value>No del tot</value></data>
+  <data name="Js_WhyWrong" xml:space="preserve"><value>Per què aquesta resposta enganya:</value></data>
+  <data name="Js_MasteryNow" xml:space="preserve"><value>Probabilitat que sàpigues aquest concepte: {0} %</value></data>
+  <data name="Js_Continue" xml:space="preserve"><value>Continua</value></data>
+  <data name="Js_Event_Mastered" xml:space="preserve"><value>🎉 Concepte dominat! Anem al següent.</value></data>
+  <data name="Js_Event_SwitchMethod" xml:space="preserve"><value>Provem una altra manera d'explicar-ho: {0}.</value></data>
+  <data name="Js_Event_Recurring" xml:space="preserve"><value>Una altra vegada el mateix error: {0}</value></data>
+  <data name="Js_Event_NeedsTeacher" xml:space="preserve"><value>S'ha avisat el teu professor perquè t'ajudi en persona amb aquest concepte.</value></data>
+  <data name="Js_DoneTitle" xml:space="preserve"><value>Assignatura dominada!</value></data>
+  <data name="Js_DoneText" xml:space="preserve"><value>Tots els conceptes estan dominats. D'aquí a uns dies tornaran repassos espaiats perquè no s'oblidin.</value></data>
+  <data name="Js_DoneNewSubject" xml:space="preserve"><value>Aprèn una altra cosa</value></data>
+  <data name="Js_RetakeConfirm" xml:space="preserve"><value>Tornar a començar aquesta assignatura amb una nova prova de nivell? Es reiniciarà el teu progrés.</value></data>
+  <data name="Js_Fallback" xml:space="preserve"><value>La IA no ha pogut respondre ({0}). Es mostra la versió sense IA.</value></data>
+  <data name="Js_EngineCode" xml:space="preserve"><value>calculat en codi</value></data>
+  <data name="Js_SessionExpired" xml:space="preserve"><value>La teva sessió ha caducat: torna a iniciar la sessió.</value></data>
+  <data name="Js_AiErrorDetail" xml:space="preserve"><value>La IA no ho ha pogut fer: {0}</value></data>
+  <data name="Js_Err_needs_ai" xml:space="preserve"><value>Això necessita un motor d'IA: tria Claude, ChatGPT, Gemini o Ollama a la capçalera (la demo només cobreix l'assignatura integrada de fraccions).</value></data>
+  <data name="Js_Err_topic_length" xml:space="preserve"><value>Escriu un tema de 3 a 200 caràcters.</value></data>
+  <data name="Js_Err_too_many_subjects" xml:space="preserve"><value>Has arribat al màxim d'assignatures.</value></data>
+  <data name="Js_Err_message_length" xml:space="preserve"><value>Escriu un missatge de fins a 800 caràcters.</value></data>
+  <data name="Js_Err_unknown_exercise" xml:space="preserve"><value>Aquest exercici ja s'ha respost. Continua amb el següent.</value></data>
+  <data name="NewSubject_Heading" xml:space="preserve"><value>Aprèn qualsevol assignatura</value></data>
+  <data name="NewSubject_Subtitle" xml:space="preserve"><value>Escriu un tema: la IA el divideix en conceptes en un ordre lògic, cadascun amb els seus requisits previs, i el tutor t'hi guia.</value></data>
+  <data name="NewSubject_Form" xml:space="preserve"><value>Nova assignatura a partir d'un tema</value></data>
+  <data name="NewSubject_Topic" xml:space="preserve"><value>Tema</value></data>
+  <data name="NewSubject_TopicPlaceholder" xml:space="preserve"><value>p. ex. El cicle de l'aigua, El passat simple en anglès, La fotosíntesi</value></data>
+  <data name="NewSubject_Submit" xml:space="preserve"><value>Crea el mapa de conceptes</value></data>
+  <data name="NewSubject_Hint" xml:space="preserve"><value>Necessita un motor d'IA (selector de la capçalera). El mapa es comprova en codi: conceptes únics, requisits coneguts, sense dependències circulars.</value></data>
+  <data name="Js_SubjectCreated" xml:space="preserve"><value>{0} conceptes, en l'ordre per aprendre'ls:</value></data>
+  <data name="Js_StartLearning" xml:space="preserve"><value>Comença a aprendre</value></data>
+  <data name="Js_UseInClass" xml:space="preserve"><value>Assigna-la a una classe</value></data>
+  <data name="Teacher_Hello" xml:space="preserve"><value>Hola, {0}</value></data>
+  <data name="Teacher_Subtitle" xml:space="preserve"><value>Les teves classes, els alumnes que et necessiten i les eines per preparar les classes.</value></data>
+  <data name="Teacher_AlertsCount" xml:space="preserve"><value>{0} avisos</value></data>
+  <data name="Teacher_StudentsCount" xml:space="preserve"><value>{0} alumnes</value></data>
+  <data name="Teacher_Code" xml:space="preserve"><value>Codi d'accés</value></data>
+  <data name="Teacher_NoClasses" xml:space="preserve"><value>Encara no hi ha classes: crea'n una i dona el codi als alumnes.</value></data>
+  <data name="Teacher_NewClass" xml:space="preserve"><value>Nova classe</value></data>
+  <data name="Teacher_ClassName" xml:space="preserve"><value>Nom</value></data>
+  <data name="Teacher_ClassNamePlaceholder" xml:space="preserve"><value>p. ex. Matemàtiques 2n B</value></data>
+  <data name="Teacher_ClassSubject" xml:space="preserve"><value>Assignatura</value></data>
+  <data name="Teacher_Create" xml:space="preserve"><value>Crea la classe</value></data>
+  <data name="Teacher_CodeHint" xml:space="preserve"><value>Es genera un codi de 6 caràcters: els alumnes l'escriuen al seu espai per unir-s'hi.</value></data>
+  <data name="Kpi_Students" xml:space="preserve"><value>Alumnes</value></data>
+  <data name="Kpi_Progress" xml:space="preserve"><value>Progrés mitjà</value></data>
+  <data name="Kpi_Alerts" xml:space="preserve"><value>Avisos oberts</value></data>
+  <data name="Kpi_Hardest" xml:space="preserve"><value>Concepte més difícil</value></data>
+  <data name="Heat_Title" xml:space="preserve"><value>Mapa de calor del domini</value></data>
+  <data name="Heat_Hint" xml:space="preserve"><value>% = probabilitat de saber el concepte. Fes clic en un alumne per veure'n les respostes.</value></data>
+  <data name="Heat_Empty" xml:space="preserve"><value>Encara no hi ha alumnes. Dona'ls el codi {0}.</value></data>
+  <data name="Heat_Student" xml:space="preserve"><value>Alumne</value></data>
+  <data name="Heat_Progress" xml:space="preserve"><value>Dominat</value></data>
+  <data name="Heat_AtRisk" xml:space="preserve"><value>NECESSITA AJUDA</value></data>
+  <data name="Heat_Attempts" xml:space="preserve"><value>{0} respostes</value></data>
+  <data name="Alerts_Title" xml:space="preserve"><value>Avisos del tutor</value></data>
+  <data name="Alerts_None" xml:space="preserve"><value>No hi ha avisos oberts. El tutor se'n surt sol.</value></data>
+  <data name="Alerts_Hint" xml:space="preserve"><value>La IA recomana; tu decideixes. Marca un avís com a atès quan hagis parlat amb l'alumne.</value></data>
+  <data name="AlertKind_NeedsTeacher" xml:space="preserve"><value>Et necessita</value></data>
+  <data name="AlertKind_RecurringMisconception" xml:space="preserve"><value>Error recurrent</value></data>
+  <data name="Alert_NeedsTeacher" xml:space="preserve"><value>Continua encallat després de provar aquests mètodes: {0}.</value></data>
+  <data name="Alert_Recurring" xml:space="preserve"><value>Repeteix aquest error: {0}</value></data>
+  <data name="Alert_Resolve" xml:space="preserve"><value>Atès</value></data>
+  <data name="Mistakes_Title" xml:space="preserve"><value>Errors més freqüents de la classe</value></data>
+  <data name="Mistakes_None" xml:space="preserve"><value>Encara no hi ha errors típics registrats.</value></data>
+  <data name="Mistakes_Count" xml:space="preserve"><value>{0}× · {1} alumnes</value></data>
+  <data name="Mistakes_Hint" xml:space="preserve"><value>Cada opció incorrecta d'un exercici està etiquetada amb l'error que hi porta: un bon punt de partida per a la propera classe.</value></data>
+  <data name="History_Student" xml:space="preserve"><value>Respostes recents de {0}</value></data>
+  <data name="History_None" xml:space="preserve"><value>Encara no hi ha respostes.</value></data>
+  <data name="History_When" xml:space="preserve"><value>Quan</value></data>
+  <data name="History_Concept" xml:space="preserve"><value>Concepte</value></data>
+  <data name="History_Question" xml:space="preserve"><value>Pregunta</value></data>
+  <data name="History_Answer" xml:space="preserve"><value>Resposta</value></data>
+  <data name="History_Method" xml:space="preserve"><value>Mètode</value></data>
+  <data name="History_Diagnostic" xml:space="preserve"><value>Prova de nivell</value></data>
+  <data name="Pack_Heading" xml:space="preserve"><value>Pack de classe a partir d'un document</value></data>
+  <data name="Pack_Subtitle" xml:space="preserve"><value>Puja un PDF o enganxa un text: obtén un pla de classe de 50 minuts, diapositives, una fitxa, 10 exercicis, un examen amb solucions i una rúbrica.</value></data>
+  <data name="Pack_TextPlaceholder" xml:space="preserve"><value>Enganxa la lliçó (mínim 200 caràcters)…</value></data>
+  <data name="Pack_Submit" xml:space="preserve"><value>Genera el pack</value></data>
+  <data name="Pack_Saved" xml:space="preserve"><value>Packs desats</value></data>
+  <data name="Pack_EmptyTitle" xml:space="preserve"><value>El teu pack de classe apareixerà aquí</value></data>
+  <data name="Pack_EmptyText" xml:space="preserve"><value>Sense motor d'IA, la demo el construeix amb regles a partir del text (termes clau, frases principals, buits).</value></data>
+  <data name="Js_Pack_Plan" xml:space="preserve"><value>Pla de classe</value></data>
+  <data name="Js_Pack_Slides" xml:space="preserve"><value>Diapositives</value></data>
+  <data name="Js_Pack_Worksheet" xml:space="preserve"><value>Fitxa</value></data>
+  <data name="Js_Pack_Exercises" xml:space="preserve"><value>Exercicis</value></data>
+  <data name="Js_Pack_Exam" xml:space="preserve"><value>Examen</value></data>
+  <data name="Js_Pack_Rubric" xml:space="preserve"><value>Rúbrica</value></data>
+  <data name="Js_PlanMinutes" xml:space="preserve"><value>Pla de classe · {0} min</value></data>
+  <data name="Js_Tasks" xml:space="preserve"><value>Tasques</value></data>
+  <data name="Js_ExamPoints" xml:space="preserve"><value>Total: {0} punts</value></data>
+  <data name="Js_Points" xml:space="preserve"><value>punts</value></data>
+  <data name="Js_ShowSolution" xml:space="preserve"><value>Mostra la solució</value></data>
+  <data name="Js_Criterion" xml:space="preserve"><value>Criteri</value></data>
+  <data name="Js_Rubric_Excellent" xml:space="preserve"><value>Excel·lent</value></data>
+  <data name="Js_Rubric_Good" xml:space="preserve"><value>Bé</value></data>
+  <data name="Js_Rubric_Sufficient" xml:space="preserve"><value>Suficient</value></data>
+  <data name="Js_Rubric_Insufficient" xml:space="preserve"><value>Insuficient</value></data>
+  <data name="Js_Print" xml:space="preserve"><value>Imprimeix</value></data>
+  <data name="Js_Delete" xml:space="preserve"><value>Elimina</value></data>
+  <data name="About_Step4_Title" xml:space="preserve"><value>Intervé el professor</value></data>
+  <data name="About_Step4_Text" xml:space="preserve"><value>Quan han fallat tres mètodes (6 respostes o més, domini per sota del 60 %), arriba un avís al professor, una vegada per concepte.</value></data>
+  <data name="About_Rules_Title" xml:space="preserve"><value>El codi decideix, la IA redacta</value></data>
+  <data name="About_Rule1" xml:space="preserve"><value>Domini = Bayesian Knowledge Tracing (Corbett i Anderson, 1994), amb paràmetres segons la dificultat. Dominat al 95 %.</value></data>
+  <data name="About_Rule2" xml:space="preserve"><value>Pas següent decidit en codi: prova de nivell, aprendre, practicar, tornar a un requisit fluix o repàs espaiat als 7 dies.</value></data>
+  <data name="About_Rule3" xml:space="preserve"><value>Les respostes es comproven al servidor: el navegador no rep mai l'opció correcta abans de respondre.</value></data>
+  <data name="About_Rule4" xml:space="preserve"><value>Els exercicis de fraccions es generen en codi (sempre correctes); en les altres assignatures els escriu la IA i el parser descarta els no vàlids.</value></data>
+  <data name="About_Rule5" xml:space="preserve"><value>Claude, ChatGPT, Gemini o Ollama, o la demo sense IA. Si la IA falla, respon la versió sense IA i es mostra el motiu.</value></data>
+  <data name="About_Roadmap_Title" xml:space="preserve"><value>Properes fases</value></data>
+  <data name="About_Roadmap_Text" xml:space="preserve"><value>Pagaments reals amb Stripe Connect i factures, classes en línia per vídeo, coach d'idiomes, escàner d'exercicis per foto, mapes de competències i itineraris adaptatius, migracions de base de dades.</value></data>
+  <data name="Method_StepByStep" xml:space="preserve"><value>Pas a pas</value></data>
+  <data name="Js_Method_StepByStep" xml:space="preserve"><value>Pas a pas</value></data>
+  <data name="Method_Visual" xml:space="preserve"><value>Visual</value></data>
+  <data name="Js_Method_Visual" xml:space="preserve"><value>Visual</value></data>
+  <data name="Method_RealLife" xml:space="preserve"><value>Vida real</value></data>
+  <data name="Js_Method_RealLife" xml:space="preserve"><value>Vida real</value></data>
+  <data name="Method_WorkedExample" xml:space="preserve"><value>Exemple resolt</value></data>
+  <data name="Js_Method_WorkedExample" xml:space="preserve"><value>Exemple resolt</value></data>
+  <data name="Method_Analogy" xml:space="preserve"><value>Analogia</value></data>
+  <data name="Js_Method_Analogy" xml:space="preserve"><value>Analogia</value></data>
+  <data name="Reason_FirstTime" xml:space="preserve"><value>Primer, una prova de nivell curta per saber per on començar.</value></data>
+  <data name="Js_Reason_FirstTime" xml:space="preserve"><value>Primer, una prova de nivell curta per saber per on començar.</value></data>
+  <data name="Reason_Resume" xml:space="preserve"><value>Acabem la prova de nivell.</value></data>
+  <data name="Js_Reason_Resume" xml:space="preserve"><value>Acabem la prova de nivell.</value></data>
+  <data name="Reason_SpacedReview" xml:space="preserve"><value>Ho vas dominar fa un temps: un repàs ràpid per no oblidar-ho.</value></data>
+  <data name="Js_Reason_SpacedReview" xml:space="preserve"><value>Ho vas dominar fa un temps: un repàs ràpid per no oblidar-ho.</value></data>
+  <data name="Reason_ReviewPrerequisite" xml:space="preserve"><value>Això es basa en un concepte anterior que encara no és sòlid: tornem-hi primer.</value></data>
+  <data name="Js_Reason_ReviewPrerequisite" xml:space="preserve"><value>Això es basa en un concepte anterior que encara no és sòlid: tornem-hi primer.</value></data>
+  <data name="Reason_NewConcept" xml:space="preserve"><value>Un concepte nou. Llegeix l'explicació i després practica.</value></data>
+  <data name="Js_Reason_NewConcept" xml:space="preserve"><value>Un concepte nou. Llegeix l'explicació i després practica.</value></data>
+  <data name="Reason_NewMethod" xml:space="preserve"><value>Mirem-ho d'una altra manera.</value></data>
+  <data name="Js_Reason_NewMethod" xml:space="preserve"><value>Mirem-ho d'una altra manera.</value></data>
+  <data name="Reason_AlmostThere" xml:space="preserve"><value>Gairebé: unes quantes respostes correctes més per dominar-ho.</value></data>
+  <data name="Js_Reason_AlmostThere" xml:space="preserve"><value>Gairebé: unes quantes respostes correctes més per dominar-ho.</value></data>
+  <data name="Reason_KeepPractising" xml:space="preserve"><value>Practica per consolidar-ho.</value></data>
+  <data name="Js_Reason_KeepPractising" xml:space="preserve"><value>Practica per consolidar-ho.</value></data>
+  <data name="Reason_AllMastered" xml:space="preserve"><value>Domines tots els conceptes d'aquesta assignatura.</value></data>
+  <data name="Js_Reason_AllMastered" xml:space="preserve"><value>Domines tots els conceptes d'aquesta assignatura.</value></data>
+  <data name="Status_NotStarted" xml:space="preserve"><value>No començat</value></data>
+  <data name="Status_Learning" xml:space="preserve"><value>Aprenent</value></data>
+  <data name="Status_Practising" xml:space="preserve"><value>Practicant</value></data>
+  <data name="Status_Mastered" xml:space="preserve"><value>Dominat</value></data>
+  <data name="Mistakes_Count_One" xml:space="preserve"><value>{0}× · 1 alumne</value></data>
+  <data name="Nav_Main" xml:space="preserve"><value>Menú principal</value></data>
+  <data name="Nav_ToggleSidebar" xml:space="preserve"><value>Redueix o amplia el menú</value></data>
+  <data name="Palette_Open" xml:space="preserve"><value>Navegació ràpida</value></data>
+  <data name="Palette_Placeholder" xml:space="preserve"><value>Ves a una pàgina o executa una acció…</value></data>
+  <data name="Display_Title" xml:space="preserve"><value>Pantalla</value></data>
+  <data name="Display_Sidebar" xml:space="preserve"><value>Menú principal</value></data>
+  <data name="Display_Expanded" xml:space="preserve"><value>Ampliat</value></data>
+  <data name="Display_Collapsed" xml:space="preserve"><value>Només icones</value></data>
+  <data name="Display_TextSize" xml:space="preserve"><value>Mida del text</value></data>
+  <data name="Display_TextSmall" xml:space="preserve"><value>Text petit</value></data>
+  <data name="Display_TextMedium" xml:space="preserve"><value>Text normal</value></data>
+  <data name="Display_TextLarge" xml:space="preserve"><value>Text gran</value></data>
+  <data name="Display_Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>Clar</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>Fosc</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>Sistema</value></data>
+  <data name="Display_Accent" xml:space="preserve"><value>Color d'accent</value></data>
+  <data name="Accent_plum" xml:space="preserve"><value>Pruna</value></data>
+  <data name="Accent_indigo" xml:space="preserve"><value>Indi</value></data>
+  <data name="Accent_teal" xml:space="preserve"><value>Verd blavós</value></data>
+  <data name="Accent_rose" xml:space="preserve"><value>Rosa</value></data>
+  <data name="Accent_blue" xml:space="preserve"><value>Blau</value></data>
+  <data name="Display_ReduceMotion" xml:space="preserve"><value>Redueix les animacions</value></data>
+  <data name="Display_Shortcuts" xml:space="preserve"><value>Dreceres: Ctrl K · [ · /</value></data>
+  <data name="Display_Reset" xml:space="preserve"><value>Restableix</value></data>
+  <data name="Js_Greet_Morning" xml:space="preserve"><value>Bon dia, {0}</value></data>
+  <data name="Js_Greet_Afternoon" xml:space="preserve"><value>Bona tarda, {0}</value></data>
+  <data name="Js_Greet_Evening" xml:space="preserve"><value>Bona nit, {0}</value></data>
+  <data name="Js_Palette_Go" xml:space="preserve"><value>Ves a</value></data>
+  <data name="Js_Palette_Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Js_Palette_Action" xml:space="preserve"><value>Acció</value></data>
+  <data name="Js_Palette_NoResults" xml:space="preserve"><value>Cap resultat.</value></data>
+  <data name="Js_Cmd_ToggleTheme" xml:space="preserve"><value>Canvia el tema clar / fosc</value></data>
+  <data name="Js_Cmd_ToggleSidebar" xml:space="preserve"><value>Redueix o amplia el menú</value></data>
+  <data name="Js_Cmd_TextLarger" xml:space="preserve"><value>Text més gran</value></data>
+  <data name="Js_Cmd_TextSmaller" xml:space="preserve"><value>Text més petit</value></data>
+  <data name="Js_Cmd_Focus" xml:space="preserve"><value>Mode concentració sí / no</value></data>
+  <data name="Js_Cmd_Logout" xml:space="preserve"><value>Tanca la sessió</value></data>
+  <data name="Learn_Focus" xml:space="preserve"><value>Concentració</value></data>
+  <data name="Learn_FocusHint" xml:space="preserve"><value>Amaga el menú i els panells (F o Esc)</value></data>
+  <data name="Chart_AnswersPerDay" xml:space="preserve"><value>Respostes per dia aquesta setmana: ratllat = totes, sòlid = correctes</value></data>
+  <data name="Chart_DayTooltip" xml:space="preserve"><value>{0} respostes, {1} correctes</value></data>
+  <data name="Kpi_Mastered" xml:space="preserve"><value>Conceptes dominats</value></data>
+  <data name="Kpi_AnswersWeek" xml:space="preserve"><value>Respostes aquesta setmana</value></data>
+  <data name="Kpi_ClassAnswers" xml:space="preserve"><value>Respostes de la classe aquesta setmana</value></data>
+  <data name="Kpi_VsLastWeek" xml:space="preserve"><value>vs setmana passada</value></data>
+  <data name="Kpi_Accuracy" xml:space="preserve"><value>Encert aquesta setmana</value></data>
+  <data name="Kpi_Points" xml:space="preserve"><value>pts</value></data>
+  <data name="Kpi_RightOf" xml:space="preserve"><value>{0} correctes de {1} respostes</value></data>
+  <data name="Kpi_OpenAlerts" xml:space="preserve"><value>{0} avisos oberts en aquesta classe</value></data>
+  <data name="Teacher_AlertsHint" xml:space="preserve"><value>Alumnes que el tutor no ha pogut ajudar sol: obre la classe.</value></data>
+  <data name="Panel_Concepts" xml:space="preserve"><value>Conceptes de l'assignatura</value></data>
+  <data name="Panel_ConceptsHint" xml:space="preserve"><value>Probabilitat mitjana de saber cada concepte; el número indica quants alumnes el dominen.</value></data>
+  <data name="Panel_Students" xml:space="preserve"><value>Alumnes</value></data>
+  <data name="Panel_Mastered" xml:space="preserve"><value>{0}/{1} dominats</value></data>
+  <data name="Js_Step_Prerequisite" xml:space="preserve"><value>Repàs d'un requisit previ</value></data>
+  <data name="Role_Director" xml:space="preserve"><value>Direcció</value></data>
+  <data name="Role_Tutor" xml:space="preserve"><value>Professor particular</value></data>
+  <data name="Demo_Director" xml:space="preserve"><value>Prova-ho com a direcció</value></data>
+  <data name="Demo_Tutor" xml:space="preserve"><value>Prova-ho com a professor particular</value></data>
+  <data name="Nav_DirectorSpace" xml:space="preserve"><value>Institució</value></data>
+  <data name="Nav_TutorSpace" xml:space="preserve"><value>Professor particular</value></data>
+  <data name="Nav_Institution" xml:space="preserve"><value>Tauler</value></data>
+  <data name="Nav_Risk" xml:space="preserve"><value>Radar d'abandonament</value></data>
+  <data name="Nav_Quality" xml:space="preserve"><value>Qualitat i pla</value></data>
+  <data name="Nav_Marketplace" xml:space="preserve"><value>Professors particulars</value></data>
+  <data name="Nav_MyLessons" xml:space="preserve"><value>Les meves classes</value></data>
+  <data name="Nav_TutorHome" xml:space="preserve"><value>La meva activitat</value></data>
+  <data name="Nav_TutorProfile" xml:space="preserve"><value>Perfil i disponibilitat</value></data>
+  <data name="SeeAll" xml:space="preserve"><value>Veure-ho tot</value></data>
+  <data name="Field_InstitutionName" xml:space="preserve"><value>Nom de l'acadèmia, escola o centre</value></data>
+  <data name="Field_InstitutionPlaceholder" xml:space="preserve"><value>p. ex. Acadèmia Horitzó</value></data>
+  <data name="Register_Error_Invalid_InstitutionName" xml:space="preserve"><value>Escriu el nom de la institució.</value></data>
+  <data name="Institution_Subtitle" xml:space="preserve"><value>classes, professors i alumnes que necessiten atenció.</value></data>
+  <data name="Institution_TeacherCode" xml:space="preserve"><value>Codi per a professors</value></data>
+  <data name="Institution_CodeHint" xml:space="preserve"><value>Els professors escriuen aquest codi al seu espai per unir-se a la institució; les seves classes apareixen aquí.</value></data>
+  <data name="Institution_Active" xml:space="preserve"><value>{0} actius aquesta setmana</value></data>
+  <data name="Institution_Classes" xml:space="preserve"><value>Classes</value></data>
+  <data name="Institution_Class" xml:space="preserve"><value>Classe</value></data>
+  <data name="Institution_NoClasses" xml:space="preserve"><value>Encara no hi ha classes: dona el codi {0} als professors.</value></data>
+  <data name="Institution_Teachers" xml:space="preserve"><value>Professors</value></data>
+  <data name="Institution_TeacherLine" xml:space="preserve"><value>{0} classes · {1} alumnes</value></data>
+  <data name="Kpi_AtRisk" xml:space="preserve"><value>Alumnes en risc alt</value></data>
+  <data name="Kpi_AtRiskHint" xml:space="preserve"><value>Obre el radar d'abandonament</value></data>
+  <data name="Risk_Subtitle" xml:space="preserve"><value>Una puntuació amb regles simples i documentades: inactivitat, caiguda d'activitat, encert, avisos i progrés. Una puntuació alta és un motiu per trucar i escoltar, no una etiqueta.</value></data>
+  <data name="Risk_All" xml:space="preserve"><value>Tots</value></data>
+  <data name="RiskLevel_High" xml:space="preserve"><value>Alt</value></data>
+  <data name="RiskLevel_Medium" xml:space="preserve"><value>Mitjà</value></data>
+  <data name="RiskLevel_Low" xml:space="preserve"><value>Baix</value></data>
+  <data name="Risk_None" xml:space="preserve"><value>Cap alumne en aquest nivell.</value></data>
+  <data name="Risk_NoFactor" xml:space="preserve"><value>Cap senyal d'alerta.</value></data>
+  <data name="Risk_Hint" xml:space="preserve"><value>Punts per regla: inactiu 4/7/14 dies +10/+20/+35, sense començar després d'una setmana +30, activitat reduïda a la meitat +20, encert &lt; 50 % +15, avisos oberts +10 cadascun (màx. 20), progrés &lt; 20 % després de 3 setmanes +10. Alt des de 50, mitjà des de 25.</value></data>
+  <data name="Risk_NeverStarted" xml:space="preserve"><value>Sense començar ({0} dies des que s'hi va unir)</value></data>
+  <data name="Risk_Inactive" xml:space="preserve"><value>Inactiu fa {0} dies</value></data>
+  <data name="Risk_ActivityDrop" xml:space="preserve"><value>Activitat −{0} % vs setmana passada</value></data>
+  <data name="Risk_LowAccuracy" xml:space="preserve"><value>Encert {0} %</value></data>
+  <data name="Risk_TeacherAlerts" xml:space="preserve"><value>{0} avisos oberts</value></data>
+  <data name="Risk_LowProgress" xml:space="preserve"><value>Progrés {0} %</value></data>
+  <data name="Family_Button" xml:space="preserve"><value>Missatge a la família</value></data>
+  <data name="Family_Title" xml:space="preserve"><value>Missatge a la família</value></data>
+  <data name="Family_Empty" xml:space="preserve"><value>Tria un alumne: el missatge es redacta a partir del que ha mesurat la plataforma (progrés, activitat, errors).</value></data>
+  <data name="Family_Tone" xml:space="preserve"><value>To</value></data>
+  <data name="Family_Warm" xml:space="preserve"><value>Proper</value></data>
+  <data name="Family_Formal" xml:space="preserve"><value>Formal</value></data>
+  <data name="Family_Note" xml:space="preserve"><value>Nota de l'equip (opcional)</value></data>
+  <data name="Family_NotePlaceholder" xml:space="preserve"><value>p. ex. Molt participatiu a classe.</value></data>
+  <data name="Family_Generate" xml:space="preserve"><value>Redacta el missatge</value></data>
+  <data name="Family_Privacy" xml:space="preserve"><value>La IA només rep el nom i les dades mesurades; les dades de contacte que escrigui el model s'eliminen. Una persona revisa i envia el missatge.</value></data>
+  <data name="Js_FamilyFor" xml:space="preserve"><value>Per a la família de {0}</value></data>
+  <data name="Js_FamilyEmail" xml:space="preserve"><value>Correu</value></data>
+  <data name="Js_FamilyKeyPoints" xml:space="preserve"><value>Punts clau per a una trucada</value></data>
+  <data name="Js_FamilyReview" xml:space="preserve"><value>Revisa'l abans d'enviar-lo: tu coneixes la família.</value></data>
+  <data name="Js_Err_note_too_long" xml:space="preserve"><value>La nota és massa llarga (màx. 600 caràcters).</value></data>
+  <data name="Quality_Subtitle" xml:space="preserve"><value>Quins mètodes d'explicació funcionen millor amb els teus alumnes, quant es triga a atendre els avisos del tutor i quant costa la plataforma.</value></data>
+  <data name="Quality_Best" xml:space="preserve"><value>Mètode més eficaç</value></data>
+  <data name="Quality_BestHint" xml:space="preserve"><value>Proporció més alta de respostes correctes (mínim 5 respostes).</value></data>
+  <data name="Quality_BestTag" xml:space="preserve"><value>millor</value></data>
+  <data name="Quality_Mastered" xml:space="preserve"><value>Conceptes dominats</value></data>
+  <data name="Quality_AfterSwitch" xml:space="preserve"><value>{0} després d'un canvi de mètode</value></data>
+  <data name="Quality_Alerts" xml:space="preserve"><value>Avisos atesos</value></data>
+  <data name="Quality_Hours" xml:space="preserve"><value>{0} h de mitjana per atendre un avís</value></data>
+  <data name="Quality_NoResolved" xml:space="preserve"><value>Encara no s'ha atès cap avís.</value></data>
+  <data name="Quality_Methods" xml:space="preserve"><value>Respostes correctes per mètode d'explicació</value></data>
+  <data name="Quality_MethodsHint" xml:space="preserve"><value>Respostes de pràctica donades mentre el tutor feia servir cada mètode.</value></data>
+  <data name="Plan_Title" xml:space="preserve"><value>Pla i cost mensual</value></data>
+  <data name="Plan_Name" xml:space="preserve"><value>Pla</value></data>
+  <data name="Plan_Academy" xml:space="preserve"><value>Acadèmia</value></data>
+  <data name="Plan_Base" xml:space="preserve"><value>Base</value></data>
+  <data name="Plan_Included" xml:space="preserve"><value>{0} alumnes inclosos</value></data>
+  <data name="Plan_Extra" xml:space="preserve"><value>Cada alumne addicional</value></data>
+  <data name="Plan_FreeSeats" xml:space="preserve"><value>Places lliures del pla</value></data>
+  <data name="Plan_Monthly" xml:space="preserve"><value>Cost mensual</value></data>
+  <data name="Plan_PerActive" xml:space="preserve"><value>{0} per alumne actiu</value></data>
+  <data name="Plan_Hint" xml:space="preserve"><value>Preus orientatius del pla de negoci, calculats en codi. Sense facturació en aquesta versió.</value></data>
+  <data name="Teacher_Institution" xml:space="preserve"><value>La meva institució</value></data>
+  <data name="Teacher_InstitutionMember" xml:space="preserve"><value>Formes part de {0}: la direcció veu les teves classes.</value></data>
+  <data name="Teacher_InstitutionHint" xml:space="preserve"><value>Demana el codi a la direcció.</value></data>
+  <data name="Notice_Institution_Joined" xml:space="preserve"><value>T'has unit a la institució.</value></data>
+  <data name="Notice_Institution_Unknown" xml:space="preserve"><value>Cap institució té aquest codi, o ja en formes part d'una.</value></data>
+  <data name="Market_Heading" xml:space="preserve"><value>Professors particulars</value></data>
+  <data name="Market_Subtitle" xml:space="preserve"><value>Reserva una classe d'una hora amb un professor, en línia o presencial. Les recomanacions surten dels conceptes que més et costen.</value></data>
+  <data name="Market_Subject" xml:space="preserve"><value>Assignatura</value></data>
+  <data name="Market_SubjectPlaceholder" xml:space="preserve"><value>p. ex. Matemàtiques, Anglès…</value></data>
+  <data name="Market_Any" xml:space="preserve"><value>Qualsevol</value></data>
+  <data name="Market_MaxPrice" xml:space="preserve"><value>Preu màx. (€/h)</value></data>
+  <data name="Market_Search" xml:space="preserve"><value>Cerca</value></data>
+  <data name="Market_Clear" xml:space="preserve"><value>Neteja</value></data>
+  <data name="Market_Recommended" xml:space="preserve"><value>Recomanats per a tu</value></data>
+  <data name="Market_All" xml:space="preserve"><value>Tots els professors</value></data>
+  <data name="Market_Results" xml:space="preserve"><value>{0} professors trobats</value></data>
+  <data name="Market_NoResults" xml:space="preserve"><value>Cap professor coincideix: prova amb menys filtres.</value></data>
+  <data name="Market_Commission" xml:space="preserve"><value>Els pagaments són simulats en aquesta versió. La plataforma es queda una comissió del 15 % (12 % des de 500 € al mes, 8 % des de 1.500 €).</value></data>
+  <data name="Market_Hour" xml:space="preserve"><value>h</value></data>
+  <data name="Market_New" xml:space="preserve"><value>Nou</value></data>
+  <data name="Market_Lessons" xml:space="preserve"><value>{0} classes</value></data>
+  <data name="Market_Reviews" xml:space="preserve"><value>{0} valoracions</value></data>
+  <data name="Market_Why" xml:space="preserve"><value>Per què:</value></data>
+  <data name="Match_Subject" xml:space="preserve"><value>ensenya el que necessites</value></data>
+  <data name="Match_Stage" xml:space="preserve"><value>el teu nivell</value></data>
+  <data name="Match_Language" xml:space="preserve"><value>el teu idioma</value></data>
+  <data name="Match_TopRated" xml:space="preserve"><value>molt ben valorat</value></data>
+  <data name="Match_GoodPrice" xml:space="preserve"><value>bon preu</value></data>
+  <data name="Market_PerLesson" xml:space="preserve"><value>per classe d'una hora</value></data>
+  <data name="Market_Subjects" xml:space="preserve"><value>Assignatures</value></data>
+  <data name="Market_Languages" xml:space="preserve"><value>Idiomes</value></data>
+  <data name="Market_Stages" xml:space="preserve"><value>Nivells</value></data>
+  <data name="Market_ReviewsTitle" xml:space="preserve"><value>Valoracions</value></data>
+  <data name="Market_NoReviews" xml:space="preserve"><value>Encara no hi ha valoracions.</value></data>
+  <data name="Market_Book" xml:space="preserve"><value>Reserva una classe</value></data>
+  <data name="Market_TimeZone" xml:space="preserve"><value>Hores:</value></data>
+  <data name="Market_NoSlots" xml:space="preserve"><value>Cap forat lliure les properes dues setmanes.</value></data>
+  <data name="Market_ChooseSlot" xml:space="preserve"><value>Tria una hora</value></data>
+  <data name="Market_LessonSubject" xml:space="preserve"><value>Què vols treballar?</value></data>
+  <data name="Market_Note" xml:space="preserve"><value>Missatge al professor (opcional)</value></data>
+  <data name="Market_NotePlaceholder" xml:space="preserve"><value>p. ex. Tinc examen divendres.</value></data>
+  <data name="Market_BookFor" xml:space="preserve"><value>Reserva · {0}</value></data>
+  <data name="Market_StudentsOnly" xml:space="preserve"><value>La reserva és per a alumnes.</value></data>
+  <data name="Market_Policy" xml:space="preserve"><value>Paga en els 30 minuts següents per confirmar. Cancel·lació gratuïta fins a 24 h abans de la classe.</value></data>
+  <data name="Notice_Book_Taken" xml:space="preserve"><value>Aquesta hora s'acaba d'ocupar: tria'n una altra.</value></data>
+  <data name="Notice_Book_Invalid" xml:space="preserve"><value>Tria una hora i escriu què vols treballar.</value></data>
+  <data name="Bookings_Subtitle" xml:space="preserve"><value>Paga per confirmar, cancel·la fins a 24 h abans amb reemborsament complet i valora la classe després.</value></data>
+  <data name="Bookings_Find" xml:space="preserve"><value>Cerca un professor</value></data>
+  <data name="Bookings_Upcoming" xml:space="preserve"><value>Properes classes</value></data>
+  <data name="Bookings_None" xml:space="preserve"><value>Cap classe reservada.</value></data>
+  <data name="Bookings_Past" xml:space="preserve"><value>Historial</value></data>
+  <data name="Bookings_NonePast" xml:space="preserve"><value>Encara no hi ha classes passades.</value></data>
+  <data name="Bookings_Pay" xml:space="preserve"><value>Paga {0} (simulat)</value></data>
+  <data name="Bookings_Simulated" xml:space="preserve"><value>Pagament simulat: no es cobra res ni es demanen dades de targeta.</value></data>
+  <data name="Bookings_Cancel" xml:space="preserve"><value>Cancel·la</value></data>
+  <data name="Bookings_RefundYes" xml:space="preserve"><value>Reemborsament complet (més de 24 h abans).</value></data>
+  <data name="Bookings_RefundNo" xml:space="preserve"><value>Menys de 24 h abans: sense reemborsament.</value></data>
+  <data name="Bookings_Refunded" xml:space="preserve"><value>reemborsat</value></data>
+  <data name="Bookings_Rating" xml:space="preserve"><value>Valoració</value></data>
+  <data name="Bookings_Review" xml:space="preserve"><value>Un comentari breu (opcional)</value></data>
+  <data name="Bookings_Rate" xml:space="preserve"><value>Valora</value></data>
+  <data name="BookingStatus_Pending" xml:space="preserve"><value>Pendent de pagament</value></data>
+  <data name="BookingStatus_Confirmed" xml:space="preserve"><value>Confirmada</value></data>
+  <data name="BookingStatus_Completed" xml:space="preserve"><value>Feta</value></data>
+  <data name="BookingStatus_Cancelled" xml:space="preserve"><value>Cancel·lada</value></data>
+  <data name="Notice_Pay_Done" xml:space="preserve"><value>Pagament simulat: la classe està confirmada.</value></data>
+  <data name="Notice_Cancel_Done" xml:space="preserve"><value>Classe cancel·lada.</value></data>
+  <data name="Notice_Cancel_DoneTutor" xml:space="preserve"><value>Classe cancel·lada: l'alumne rep el reemborsament complet.</value></data>
+  <data name="Notice_Rate_Done" xml:space="preserve"><value>Gràcies per la teva valoració.</value></data>
+  <data name="Notice_Action_Failed" xml:space="preserve"><value>Aquesta acció ja no és possible.</value></data>
+  <data name="Tutor_Subtitle" xml:space="preserve"><value>Les teves classes, els teus ingressos després de la comissió de la plataforma i les teves valoracions.</value></data>
+  <data name="Tutor_SeePublic" xml:space="preserve"><value>Veure el meu perfil públic</value></data>
+  <data name="Tutor_NotPublished" xml:space="preserve"><value>El teu perfil encara no és visible: completa'l i publica'l.</value></data>
+  <data name="Tutor_NetMonth" xml:space="preserve"><value>Ingressos nets aquest mes</value></data>
+  <data name="Tutor_Months" xml:space="preserve"><value>Ingressos nets dels darrers 6 mesos</value></data>
+  <data name="Tutor_Commission" xml:space="preserve"><value>Comissió actual</value></data>
+  <data name="Tutor_CommissionLine" xml:space="preserve"><value>Brut {0} · comissió {1} · {2} classes aquest mes</value></data>
+  <data name="Tutor_Rating" xml:space="preserve"><value>Valoració mitjana</value></data>
+  <data name="Tutor_Next" xml:space="preserve"><value>Propera classe</value></data>
+  <data name="Tutor_NoNext" xml:space="preserve"><value>Encara no hi ha classes confirmades.</value></data>
+  <data name="Tutor_Upcoming" xml:space="preserve"><value>Properes classes</value></data>
+  <data name="Tutor_NoBookings" xml:space="preserve"><value>Encara no hi ha reserves.</value></data>
+  <data name="Tutor_AfterCommission" xml:space="preserve"><value>net, després de {0} de comissió</value></data>
+  <data name="Tutor_CancelHint" xml:space="preserve"><value>Si cancel·les, l'alumne sempre rep el reemborsament complet.</value></data>
+  <data name="Profile_Subtitle" xml:space="preserve"><value>El que veuen les famílies al marketplace i les hores en què pots fer classe cada setmana.</value></data>
+  <data name="Profile_Presentation" xml:space="preserve"><value>Presentació</value></data>
+  <data name="Profile_Headline" xml:space="preserve"><value>Titular</value></data>
+  <data name="Profile_HeadlinePlaceholder" xml:space="preserve"><value>p. ex. Matemàtiques d'ESO, pas a pas</value></data>
+  <data name="Profile_Bio" xml:space="preserve"><value>Sobre tu i com ensenyes</value></data>
+  <data name="Profile_SubjectsPlaceholder" xml:space="preserve"><value>Matemàtiques, Física</value></data>
+  <data name="Profile_SubjectsHint" xml:space="preserve"><value>Separades per comes, màx. 8.</value></data>
+  <data name="Profile_Price" xml:space="preserve"><value>Preu per hora (€)</value></data>
+  <data name="Profile_Availability" xml:space="preserve"><value>Disponibilitat setmanal</value></data>
+  <data name="Profile_AvailabilityHint" xml:space="preserve"><value>Una franja per dia ({0}). Els alumnes veuen forats d'una hora, amb 12 h d'antelació, durant les properes dues setmanes.</value></data>
+  <data name="Profile_From" xml:space="preserve"><value>Des de</value></data>
+  <data name="Profile_To" xml:space="preserve"><value>Fins a</value></data>
+  <data name="Profile_Publish" xml:space="preserve"><value>Visible al marketplace</value></data>
+  <data name="Profile_PublishHint" xml:space="preserve"><value>Necessita titular, una assignatura, un idioma i almenys una franja.</value></data>
+  <data name="Notice_Profile_Saved" xml:space="preserve"><value>Perfil desat.</value></data>
+  <data name="Notice_Profile_Incomplete" xml:space="preserve"><value>Desat, però no publicat: afegeix titular, una assignatura, un idioma i una franja.</value></data>
+  <data name="Nav_Explore" xml:space="preserve"><value>Explorar</value></data>
+  <data name="Nav_Arena" xml:space="preserve"><value>Arena</value></data>
+  <data name="Nav_Achievements" xml:space="preserve"><value>Assoliments</value></data>
+  <data name="Field_Level" xml:space="preserve"><value>Nivell d'estudis</value></data>
+  <data name="Mascot_Streak" xml:space="preserve"><value>Vas llançat! Mantén la ratxa de {0} dies 🔥</value></data>
+  <data name="Mascot_Today" xml:space="preserve"><value>Bona feina avui! Un altre test?</value></data>
+  <data name="Mascot_Start" xml:space="preserve"><value>Hola! Soc l'Evo. Comencem amb un test ràpid?</value></data>
+  <data name="Game_Xp" xml:space="preserve"><value>XP actuals</value></data>
+  <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP per al nivell següent</value></data>
+  <data name="Game_YourLevel" xml:space="preserve"><value>El teu nivell</value></data>
+  <data name="Game_LevelN" xml:space="preserve"><value>Nivell {0}</value></data>
+  <data name="Game_WeekXp" xml:space="preserve"><value>{0} XP aquesta setmana</value></data>
+  <data name="Game_Streak" xml:space="preserve"><value>Ratxa</value></data>
+  <data name="Game_Days" xml:space="preserve"><value>{0} dies</value></data>
+  <data name="Game_BestStreak" xml:space="preserve"><value>Rècord: {0} dies</value></data>
+  <data name="Game_PlayToKeep" xml:space="preserve"><value>respon avui per mantenir-la</value></data>
+  <data name="Game_Rank" xml:space="preserve"><value>Posició a la classe</value></data>
+  <data name="Game_ThisWeek" xml:space="preserve"><value>aquesta setmana</value></data>
+  <data name="Game_NoClassRank" xml:space="preserve"><value>Uneix-te a una classe amb el codi per competir amb els companys.</value></data>
+  <data name="Game_Continue" xml:space="preserve"><value>Continuar aprenent</value></data>
+  <data name="Game_ContinueHint" xml:space="preserve"><value>On ho vas deixar</value></data>
+  <data name="Game_QuickTest" xml:space="preserve"><value>Test ràpid</value></data>
+  <data name="Game_Quests" xml:space="preserve"><value>Missions d'avui</value></data>
+  <data name="Game_QuestsHint" xml:space="preserve"><value>Noves cada dia · XP en completar-les</value></data>
+  <data name="Game_MySubjects" xml:space="preserve"><value>Les meves matèries</value></data>
+  <data name="Game_MySubjectsHint" xml:space="preserve"><value>El teu nivell i encert a cada matèria del catàleg</value></data>
+  <data name="Game_NotStarted" xml:space="preserve"><value>Sense començar</value></data>
+  <data name="Game_Activity" xml:space="preserve"><value>Activitat del mes</value></data>
+  <data name="Game_ActivityHint" xml:space="preserve"><value>Com més fosc el dia, més preguntes vas respondre.</value></data>
+  <data name="Game_Leaderboard" xml:space="preserve"><value>Classificació</value></data>
+  <data name="Game_SeeAll" xml:space="preserve"><value>Veure-ho tot</value></data>
+  <data name="Game_Badges" xml:space="preserve"><value>Insígnies</value></data>
+  <data name="Rank_Explorer" xml:space="preserve"><value>Explorador</value></data>
+  <data name="Rank_Apprentice" xml:space="preserve"><value>Aprenent</value></data>
+  <data name="Rank_Scholar" xml:space="preserve"><value>Erudit</value></data>
+  <data name="Rank_Expert" xml:space="preserve"><value>Expert</value></data>
+  <data name="Rank_Master" xml:space="preserve"><value>Mestre</value></data>
+  <data name="Rank_Sage" xml:space="preserve"><value>Savi</value></data>
+  <data name="QuestText_Answer" xml:space="preserve"><value>Respon {0} preguntes</value></data>
+  <data name="QuestText_CorrectInARow" xml:space="preserve"><value>Encadena {0} respostes correctes</value></data>
+  <data name="QuestText_FinishTest" xml:space="preserve"><value>Acaba {0} test</value></data>
+  <data name="QuestText_PerfectTest" xml:space="preserve"><value>Fes un ple en {0} test</value></data>
+  <data name="QuestText_ThreeSubjects" xml:space="preserve"><value>Practica {0} matèries diferents</value></data>
+  <data name="QuestText_PlayDuel" xml:space="preserve"><value>Juga {0} duel</value></data>
+  <data name="QuestText_Placement" xml:space="preserve"><value>Fes {0} prova de nivell</value></data>
+  <data name="QuestText_Tutor" xml:space="preserve"><value>Respon {0} exercicis amb el tutor</value></data>
+  <data name="Quest_Answer" xml:space="preserve"><value>Respondre preguntes</value></data>
+  <data name="Quest_CorrectInARow" xml:space="preserve"><value>Encerts seguits</value></data>
+  <data name="Quest_FinishTest" xml:space="preserve"><value>Acabar un test</value></data>
+  <data name="Quest_PerfectTest" xml:space="preserve"><value>Test perfecte</value></data>
+  <data name="Quest_ThreeSubjects" xml:space="preserve"><value>Tres matèries</value></data>
+  <data name="Quest_PlayDuel" xml:space="preserve"><value>Jugar un duel</value></data>
+  <data name="Quest_Placement" xml:space="preserve"><value>Prova de nivell</value></data>
+  <data name="Quest_Tutor" xml:space="preserve"><value>Practicar amb el tutor</value></data>
+  <data name="Badge_FirstSteps" xml:space="preserve"><value>Primers passos</value></data>
+  <data name="BadgeHint_FirstSteps" xml:space="preserve"><value>Aconsegueix {0} resposta correcta</value></data>
+  <data name="Badge_Hundred" xml:space="preserve"><value>Centenar</value></data>
+  <data name="BadgeHint_Hundred" xml:space="preserve"><value>{0} respostes correctes</value></data>
+  <data name="Badge_Thousand" xml:space="preserve"><value>Cim</value></data>
+  <data name="BadgeHint_Thousand" xml:space="preserve"><value>{0} respostes correctes</value></data>
+  <data name="Badge_Streak3" xml:space="preserve"><value>Escalfant</value></data>
+  <data name="BadgeHint_Streak3" xml:space="preserve"><value>Una ratxa de {0} dies</value></data>
+  <data name="Badge_Streak7" xml:space="preserve"><value>Imparable</value></data>
+  <data name="BadgeHint_Streak7" xml:space="preserve"><value>Una ratxa de {0} dies</value></data>
+  <data name="Badge_Streak30" xml:space="preserve"><value>Cometa</value></data>
+  <data name="BadgeHint_Streak30" xml:space="preserve"><value>Una ratxa de {0} dies</value></data>
+  <data name="Badge_Perfect" xml:space="preserve"><value>Al blanc</value></data>
+  <data name="BadgeHint_Perfect" xml:space="preserve"><value>{0} test perfecte</value></data>
+  <data name="Badge_Sharpshooter" xml:space="preserve"><value>Tirador d'elit</value></data>
+  <data name="BadgeHint_Sharpshooter" xml:space="preserve"><value>{0} tests perfectes</value></data>
+  <data name="Badge_Curious" xml:space="preserve"><value>Curiós</value></data>
+  <data name="BadgeHint_Curious" xml:space="preserve"><value>Practica {0} matèries</value></data>
+  <data name="Badge_Polymath" xml:space="preserve"><value>Polímata</value></data>
+  <data name="BadgeHint_Polymath" xml:space="preserve"><value>Practica {0} matèries</value></data>
+  <data name="Badge_Explorer" xml:space="preserve"><value>Explorador</value></data>
+  <data name="BadgeHint_Explorer" xml:space="preserve"><value>Fes {0} prova de nivell</value></data>
+  <data name="Badge_Cartographer" xml:space="preserve"><value>Cartògraf</value></data>
+  <data name="BadgeHint_Cartographer" xml:space="preserve"><value>Fes {0} proves de nivell</value></data>
+  <data name="Badge_Duelist" xml:space="preserve"><value>Duelista</value></data>
+  <data name="BadgeHint_Duelist" xml:space="preserve"><value>Guanya {0} duel</value></data>
+  <data name="Badge_Champion" xml:space="preserve"><value>Campió</value></data>
+  <data name="BadgeHint_Champion" xml:space="preserve"><value>Guanya {0} duels</value></data>
+  <data name="Badge_Mastery" xml:space="preserve"><value>Domini</value></data>
+  <data name="BadgeHint_Mastery" xml:space="preserve"><value>Domina {0} concepte amb el tutor</value></data>
+  <data name="Badge_Scholar" xml:space="preserve"><value>Erudit</value></data>
+  <data name="BadgeHint_Scholar" xml:space="preserve"><value>Arriba al nivell 5 ({0} XP)</value></data>
+  <data name="Badge_Researcher" xml:space="preserve"><value>Investigador</value></data>
+  <data name="BadgeHint_Researcher" xml:space="preserve"><value>Respon {0} pregunta de nivell màster o doctorat</value></data>
+  <data name="Team_Owls" xml:space="preserve"><value>Mussols</value></data>
+  <data name="Team_Foxes" xml:space="preserve"><value>Guineus</value></data>
+  <data name="Team_Dolphins" xml:space="preserve"><value>Dofins</value></data>
+  <data name="Team_Bears" xml:space="preserve"><value>Óssos</value></data>
+  <data name="Explore_Title" xml:space="preserve"><value>Explora i posa't a prova</value></data>
+  <data name="Explore_Subtitle" xml:space="preserve"><value>Tests de cada matèria, dels 5 anys al doctorat. Troba el teu nivell, practica amb tests adaptatius i guanya XP.</value></data>
+  <data name="Explore_Ages" xml:space="preserve"><value>{0} anys</value></data>
+  <data name="Explore_KidsHello" xml:space="preserve"><value>Hola! Tria una matèria i a jugar! 🎈</value></data>
+  <data name="Explore_MyLevel" xml:space="preserve"><value>El meu nivell</value></data>
+  <data name="Explore_Review" xml:space="preserve"><value>Per repassar</value></data>
+  <data name="Explore_Start" xml:space="preserve"><value>Començar test</value></data>
+  <data name="Explore_Play" xml:space="preserve"><value>Jugar</value></data>
+  <data name="Explore_From" xml:space="preserve"><value>Des de {0}</value></data>
+  <data name="Explore_FindLevel" xml:space="preserve"><value>Trobar el meu nivell</value></data>
+  <data name="Explore_All" xml:space="preserve"><value>Totes les matèries</value></data>
+  <data name="Explore_TopicTitle" xml:space="preserve"><value>Qualsevol tema, amb la IA</value></data>
+  <data name="Explore_TopicHint" xml:space="preserve"><value>Escriu un tema (l'Imperi romà, la fotosíntesi, els bucles en Python…) i la IA redacta un test del teu nivell. Les respostes es comproven en el codi.</value></data>
+  <data name="Explore_Subject" xml:space="preserve"><value>Matèria</value></data>
+  <data name="Explore_Topic" xml:space="preserve"><value>Tema</value></data>
+  <data name="Explore_TopicPlaceholder" xml:space="preserve"><value>p. ex. Els volcans</value></data>
+  <data name="Explore_Generate" xml:space="preserve"><value>Crear test</value></data>
+  <data name="Area_Mathematics" xml:space="preserve"><value>Matemàtiques</value></data>
+  <data name="Area_Physics" xml:space="preserve"><value>Física</value></data>
+  <data name="Area_Chemistry" xml:space="preserve"><value>Química</value></data>
+  <data name="Area_Biology" xml:space="preserve"><value>Biologia</value></data>
+  <data name="Area_Language" xml:space="preserve"><value>Llengua</value></data>
+  <data name="Area_ForeignLanguage" xml:space="preserve"><value>Anglès (llengua estrangera)</value></data>
+  <data name="Area_History" xml:space="preserve"><value>Història</value></data>
+  <data name="Area_Geography" xml:space="preserve"><value>Geografia</value></data>
+  <data name="Area_Economics" xml:space="preserve"><value>Economia</value></data>
+  <data name="Area_Programming" xml:space="preserve"><value>Programació</value></data>
+  <data name="AreaHint_Mathematics" xml:space="preserve"><value>Comptar, operacions, àlgebra, càlcul, estadística</value></data>
+  <data name="AreaHint_Physics" xml:space="preserve"><value>Moviment, forces, energia, electricitat, relativitat</value></data>
+  <data name="AreaHint_Chemistry" xml:space="preserve"><value>Elements, àtoms, reaccions, àcids, termodinàmica</value></data>
+  <data name="AreaHint_Biology" xml:space="preserve"><value>Animals, cos humà, cèl·lules, genètica, biologia molecular</value></data>
+  <data name="AreaHint_Language" xml:space="preserve"><value>Lletres, paraules, gramàtica, literatura, lingüística</value></data>
+  <data name="AreaHint_ForeignLanguage" xml:space="preserve"><value>Paraules, frases, verbs i expressions</value></data>
+  <data name="AreaHint_History" xml:space="preserve"><value>Dates, cronologia, personatges, historiografia</value></data>
+  <data name="AreaHint_Geography" xml:space="preserve"><value>Països, capitals, relleu, climes, teories</value></data>
+  <data name="AreaHint_Economics" xml:space="preserve"><value>Percentatges, finances, mercats, economistes</value></data>
+  <data name="AreaHint_Programming" xml:space="preserve"><value>Bucles, variables, funcions, algorismes, teoria</value></data>
+  <data name="Level_EarlyYears" xml:space="preserve"><value>Infantil (5–6 anys)</value></data>
+  <data name="Level_Primary1" xml:space="preserve"><value>Primària 1r–2n (6–8 anys)</value></data>
+  <data name="Level_Primary2" xml:space="preserve"><value>Primària 3r–4t (8–10 anys)</value></data>
+  <data name="Level_Primary3" xml:space="preserve"><value>Primària 5è–6è (10–12 anys)</value></data>
+  <data name="Level_Secondary1" xml:space="preserve"><value>ESO 1r–2n (12–14 anys)</value></data>
+  <data name="Level_Secondary2" xml:space="preserve"><value>ESO 3r–4t (14–16 anys)</value></data>
+  <data name="Level_HighSchool" xml:space="preserve"><value>Batxillerat (16–18 anys)</value></data>
+  <data name="Level_Bachelor" xml:space="preserve"><value>Grau universitari</value></data>
+  <data name="Level_Master" xml:space="preserve"><value>Màster</value></data>
+  <data name="Level_Doctorate" xml:space="preserve"><value>Doctorat</value></data>
+  <data name="LevelShort_EarlyYears" xml:space="preserve"><value>Infantil</value></data>
+  <data name="LevelShort_Primary1" xml:space="preserve"><value>Primària 1–2</value></data>
+  <data name="LevelShort_Primary2" xml:space="preserve"><value>Primària 3–4</value></data>
+  <data name="LevelShort_Primary3" xml:space="preserve"><value>Primària 5–6</value></data>
+  <data name="LevelShort_Secondary1" xml:space="preserve"><value>ESO 1–2</value></data>
+  <data name="LevelShort_Secondary2" xml:space="preserve"><value>ESO 3–4</value></data>
+  <data name="LevelShort_HighSchool" xml:space="preserve"><value>Batxillerat</value></data>
+  <data name="LevelShort_Bachelor" xml:space="preserve"><value>Grau</value></data>
+  <data name="LevelShort_Master" xml:space="preserve"><value>Màster</value></data>
+  <data name="LevelShort_Doctorate" xml:space="preserve"><value>Doctorat</value></data>
+  <data name="QuizMode_Practice" xml:space="preserve"><value>Test adaptatiu</value></data>
+  <data name="QuizMode_Placement" xml:space="preserve"><value>Prova de nivell</value></data>
+  <data name="QuizMode_Duel" xml:space="preserve"><value>Duel</value></data>
+  <data name="QuizMode_Topic" xml:space="preserve"><value>Tema amb IA</value></data>
+  <data name="Quiz_Loading" xml:space="preserve"><value>Preparant el teu test…</value></data>
+  <data name="Quiz_ReadAloud" xml:space="preserve"><value>Llegir les preguntes en veu alta</value></data>
+  <data name="Quiz_Run" xml:space="preserve"><value>Encerts seguits</value></data>
+  <data name="Duel_Against" xml:space="preserve"><value>contra {0}</value></data>
+  <data name="Arena_Title" xml:space="preserve"><value>Arena</value></data>
+  <data name="Arena_Subtitle" xml:space="preserve"><value>Classificació setmanal de la classe, equips i duels entre companys. Només es mostren sobrenoms, mai noms reals.</value></data>
+  <data name="Arena_NoClass" xml:space="preserve"><value>Uneix-te a una classe amb el codi per veure la classificació i reptar els companys.</value></data>
+  <data name="Arena_Students" xml:space="preserve"><value>{0} alumnes</value></data>
+  <data name="Arena_You" xml:space="preserve"><value>tu</value></data>
+  <data name="Arena_Teams" xml:space="preserve"><value>Equips</value></data>
+  <data name="Arena_TeamsHint" xml:space="preserve"><value>Puntuació de l'equip = mitjana d'XP dels membres aquesta setmana: els equips petits també poden guanyar.</value></data>
+  <data name="Arena_Challenge" xml:space="preserve"><value>Repte de la classe</value></data>
+  <data name="Arena_ChallengeText" xml:space="preserve"><value>Junts, arribeu a {0} respostes correctes aquesta setmana.</value></data>
+  <data name="Arena_Duels" xml:space="preserve"><value>Duels</value></data>
+  <data name="Arena_DuelsHint" xml:space="preserve"><value>Repta un company: tots dos responeu les mateixes 5 preguntes. Guanya la millor puntuació.</value></data>
+  <data name="Arena_Rival" xml:space="preserve"><value>Company</value></data>
+  <data name="Arena_Challenge_Button" xml:space="preserve"><value>Reptar</value></data>
+  <data name="Arena_NoRivals" xml:space="preserve"><value>Encara no pots reptar cap company.</value></data>
+  <data name="Arena_CompeteOff" xml:space="preserve"><value>La competició està desactivada: activa-la per sortir a la classificació i jugar duels.</value></data>
+  <data name="Arena_Nickname" xml:space="preserve"><value>El teu sobrenom</value></data>
+  <data name="Arena_NicknameHint" xml:space="preserve"><value>Els companys només veuen aquest sobrenom i avatar.</value></data>
+  <data name="Arena_MyTeam" xml:space="preserve"><value>El meu equip</value></data>
+  <data name="Arena_Compete" xml:space="preserve"><value>Participar en classificacions i duels</value></data>
+  <data name="Arena_CompeteHint" xml:space="preserve"><value>Desactivat: conserves els XP i les insígnies, però els companys no et veuen.</value></data>
+  <data name="Arena_NewNickname" xml:space="preserve"><value>Dona'm un sobrenom nou</value></data>
+  <data name="Notice_Arena_Saved" xml:space="preserve"><value>Desat.</value></data>
+  <data name="Notice_Duel_NotAllowed" xml:space="preserve"><value>Aquest duel no és possible.</value></data>
+  <data name="Notice_Duel_TooMany" xml:space="preserve"><value>Ja tens 3 duels oberts: espera que acabin.</value></data>
+  <data name="Duel_You_vs" xml:space="preserve"><value>Has reptat {0}</value></data>
+  <data name="Duel_Vs_You" xml:space="preserve"><value>{0} t'ha reptat</value></data>
+  <data name="Duel_Play" xml:space="preserve"><value>Jugar</value></data>
+  <data name="Duel_Won" xml:space="preserve"><value>Guanyat</value></data>
+  <data name="Duel_Lost" xml:space="preserve"><value>Perdut</value></data>
+  <data name="Duel_Draw" xml:space="preserve"><value>Empat</value></data>
+  <data name="Duel_Waiting" xml:space="preserve"><value>Esperant</value></data>
+  <data name="Duel_Expired" xml:space="preserve"><value>Caducat</value></data>
+  <data name="Achievements_Subtitle" xml:space="preserve"><value>Els teus títols, insígnies i missions d'avui. Els XP premien l'esforç i el progrés, mai la velocitat.</value></data>
+  <data name="Achievements_Path" xml:space="preserve"><value>Camí de títols</value></data>
+  <data name="Achievements_FromLevel" xml:space="preserve"><value>nivell {0}</value></data>
+  <data name="Achievements_HowXp" xml:space="preserve"><value>Com guanyar XP</value></data>
+  <data name="Achievements_XpRight" xml:space="preserve"><value>Resposta correcta (més si és difícil, extra si seguides)</value></data>
+  <data name="Achievements_XpTry" xml:space="preserve"><value>Intentar-ho també compta</value></data>
+  <data name="Achievements_XpTest" xml:space="preserve"><value>Test acabat (perfecte)</value></data>
+  <data name="Achievements_XpDuel" xml:space="preserve"><value>Duel guanyat</value></data>
+  <data name="Achievements_XpBadge" xml:space="preserve"><value>Insígnia nova</value></data>
+  <data name="Achievements_Fair" xml:space="preserve"><value>Sense avantatges de pagament ni cronòmetre: tothom guanya XP de la mateixa manera.</value></data>
+  <data name="Js_QuestionOf" xml:space="preserve"><value>Pregunta {0} de {1}</value></data>
+  <data name="Js_DifficultyN" xml:space="preserve"><value>Dificultat {0} de 3</value></data>
+  <data name="Js_Right" xml:space="preserve"><value>Correcte!</value></data>
+  <data name="Js_KidsRight" xml:space="preserve"><value>Molt bé! 🎉</value></data>
+  <data name="Js_Next" xml:space="preserve"><value>Següent</value></data>
+  <data name="Js_SeeResults" xml:space="preserve"><value>Veure el resultat</value></data>
+  <data name="Js_ScoreOf" xml:space="preserve"><value>{0} de {1} correctes</value></data>
+  <data name="Js_StarsN" xml:space="preserve"><value>{0} estrelles de 3</value></data>
+  <data name="Js_XpWon" xml:space="preserve"><value>{0} XP guanyats en aquest test</value></data>
+  <data name="Js_YourLevelIs" xml:space="preserve"><value>El teu nivell en aquesta matèria</value></data>
+  <data name="Js_PractiseThisLevel" xml:space="preserve"><value>Practicar en aquest nivell</value></data>
+  <data name="Js_Again" xml:space="preserve"><value>Un altre test</value></data>
+  <data name="Js_OtherSubjects" xml:space="preserve"><value>Altres matèries</value></data>
+  <data name="Js_Dashboard" xml:space="preserve"><value>El meu tauler</value></data>
+  <data name="Js_BackToArena" xml:space="preserve"><value>Tornar a l'arena</value></data>
+  <data name="Js_DuelWon" xml:space="preserve"><value>Has guanyat el duel! 🏆</value></data>
+  <data name="Js_DuelLost" xml:space="preserve"><value>Aquesta vegada ha guanyat el company. Revenja?</value></data>
+  <data name="Js_DuelDraw" xml:space="preserve"><value>Empat!</value></data>
+  <data name="Js_DuelWaiting" xml:space="preserve"><value>Esperant que jugui el company.</value></data>
+  <data name="Js_NewBadge" xml:space="preserve"><value>Insígnia nova: {0}</value></data>
+  <data name="Js_QuestDone" xml:space="preserve"><value>Missió complerta: {0}</value></data>
+  <data name="Js_QuizNeedsAi" xml:space="preserve"><value>Els tests sobre un tema lliure necessiten un motor d'IA. Tria'n un a la capçalera o escull una matèria del catàleg: aquests tests funcionen sense connexió.</value></data>
+  <data name="Js_Generating" xml:space="preserve"><value>Preparant el teu test…</value></data>
+  <data name="Topic_math_count" xml:space="preserve"><value>Comptar</value></data>
+  <data name="Topic_math_add" xml:space="preserve"><value>Suma</value></data>
+  <data name="Topic_math_compare" xml:space="preserve"><value>Comparar nombres</value></data>
+  <data name="Topic_math_shapes" xml:space="preserve"><value>Figures</value></data>
+  <data name="Topic_math_subtract" xml:space="preserve"><value>Resta</value></data>
+  <data name="Topic_math_multiply" xml:space="preserve"><value>Multiplicació</value></data>
+  <data name="Topic_math_divide" xml:space="preserve"><value>Divisió</value></data>
+  <data name="Topic_math_percent" xml:space="preserve"><value>Percentatges</value></data>
+  <data name="Topic_math_area" xml:space="preserve"><value>Àrea</value></data>
+  <data name="Topic_math_perimeter" xml:space="preserve"><value>Perímetre</value></data>
+  <data name="Topic_math_fraction" xml:space="preserve"><value>Fraccions</value></data>
+  <data name="Topic_math_integers" xml:space="preserve"><value>Nombres enters</value></data>
+  <data name="Topic_math_proportion" xml:space="preserve"><value>Proporcionalitat</value></data>
+  <data name="Topic_math_equations" xml:space="preserve"><value>Equacions de primer grau</value></data>
+  <data name="Topic_math_powers" xml:space="preserve"><value>Potències</value></data>
+  <data name="Topic_math_pythagoras" xml:space="preserve"><value>Pitàgores</value></data>
+  <data name="Topic_math_systems" xml:space="preserve"><value>Sistemes d'equacions</value></data>
+  <data name="Topic_math_slope" xml:space="preserve"><value>Pendent d'una recta</value></data>
+  <data name="Topic_math_quadratic" xml:space="preserve"><value>Equacions de segon grau</value></data>
+  <data name="Topic_math_sequences" xml:space="preserve"><value>Successions</value></data>
+  <data name="Topic_math_logarithms" xml:space="preserve"><value>Logaritmes</value></data>
+  <data name="Topic_math_derivatives" xml:space="preserve"><value>Derivades</value></data>
+  <data name="Topic_math_trigonometry" xml:space="preserve"><value>Trigonometria</value></data>
+  <data name="Topic_math_probability" xml:space="preserve"><value>Probabilitat</value></data>
+  <data name="Topic_math_determinants" xml:space="preserve"><value>Determinants</value></data>
+  <data name="Topic_math_limits" xml:space="preserve"><value>Límits</value></data>
+  <data name="Topic_math_integrals" xml:space="preserve"><value>Integrals</value></data>
+  <data name="Topic_math_expectation" xml:space="preserve"><value>Esperança matemàtica</value></data>
+  <data name="Topic_math_eigenvalues" xml:space="preserve"><value>Valors propis</value></data>
+  <data name="Topic_math_binomial" xml:space="preserve"><value>Distribució binomial</value></data>
+  <data name="Topic_math_statistics" xml:space="preserve"><value>Estadística</value></data>
+  <data name="Topic_math_series" xml:space="preserve"><value>Sèries de potències</value></data>
+  <data name="Topic_physics_states" xml:space="preserve"><value>Estats de la matèria</value></data>
+  <data name="Topic_physics_units" xml:space="preserve"><value>Unitats</value></data>
+  <data name="Topic_physics_motion" xml:space="preserve"><value>Moviment</value></data>
+  <data name="Topic_physics_density" xml:space="preserve"><value>Densitat</value></data>
+  <data name="Topic_physics_forces" xml:space="preserve"><value>Forces i pressió</value></data>
+  <data name="Topic_physics_electricity" xml:space="preserve"><value>Electricitat</value></data>
+  <data name="Topic_physics_energy" xml:space="preserve"><value>Energia</value></data>
+  <data name="Topic_physics_dynamics" xml:space="preserve"><value>Dinàmica</value></data>
+  <data name="Topic_physics_waves" xml:space="preserve"><value>Ones</value></data>
+  <data name="Topic_physics_relativity" xml:space="preserve"><value>Relativitat</value></data>
+  <data name="Topic_physics_modern" xml:space="preserve"><value>Física moderna</value></data>
+  <data name="Topic_chemistry_matter" xml:space="preserve"><value>Matèria i fórmules</value></data>
+  <data name="Topic_chemistry_elements" xml:space="preserve"><value>Elements</value></data>
+  <data name="Topic_chemistry_atoms" xml:space="preserve"><value>Àtoms</value></data>
+  <data name="Topic_chemistry_stoichiometry" xml:space="preserve"><value>Estequiometria</value></data>
+  <data name="Topic_chemistry_acids" xml:space="preserve"><value>Àcids i bases</value></data>
+  <data name="Topic_chemistry_solutions" xml:space="preserve"><value>Dissolucions</value></data>
+  <data name="Topic_chemistry_constants" xml:space="preserve"><value>Constants</value></data>
+  <data name="Topic_chemistry_kinetics" xml:space="preserve"><value>Cinètica</value></data>
+  <data name="Topic_chemistry_thermodynamics" xml:space="preserve"><value>Termodinàmica</value></data>
+  <data name="Topic_chemistry_bonding" xml:space="preserve"><value>Enllaç químic</value></data>
+  <data name="Topic_chemistry_theory" xml:space="preserve"><value>Química teòrica</value></data>
+  <data name="Topic_biology_animals" xml:space="preserve"><value>Animals</value></data>
+  <data name="Topic_biology_vertebrates" xml:space="preserve"><value>Vertebrats</value></data>
+  <data name="Topic_biology_body" xml:space="preserve"><value>El cos humà</value></data>
+  <data name="Topic_biology_plants" xml:space="preserve"><value>Plantes</value></data>
+  <data name="Topic_biology_cells" xml:space="preserve"><value>Cèl·lules</value></data>
+  <data name="Topic_biology_dna" xml:space="preserve"><value>ADN i ARN</value></data>
+  <data name="Topic_biology_heredity" xml:space="preserve"><value>Herència</value></data>
+  <data name="Topic_biology_genetics" xml:space="preserve"><value>Genètica</value></data>
+  <data name="Topic_biology_populations" xml:space="preserve"><value>Genètica de poblacions</value></data>
+  <data name="Topic_biology_molecular" xml:space="preserve"><value>Biologia molecular</value></data>
+  <data name="Topic_language_letters" xml:space="preserve"><value>Lletres</value></data>
+  <data name="Topic_language_vocabulary" xml:space="preserve"><value>Vocabulari</value></data>
+  <data name="Topic_language_grammar" xml:space="preserve"><value>Gramàtica</value></data>
+  <data name="Topic_language_literature" xml:space="preserve"><value>Literatura</value></data>
+  <data name="Topic_language_linguistics" xml:space="preserve"><value>Lingüística</value></data>
+  <data name="Topic_foreign_vocabulary" xml:space="preserve"><value>Vocabulari</value></data>
+  <data name="Topic_foreign_sentences" xml:space="preserve"><value>Frases</value></data>
+  <data name="Topic_foreign_grammar" xml:space="preserve"><value>Verbs</value></data>
+  <data name="Topic_foreign_idioms" xml:space="preserve"><value>Expressions</value></data>
+  <data name="Topic_history_dates" xml:space="preserve"><value>Dates</value></data>
+  <data name="Topic_history_chronology" xml:space="preserve"><value>Cronologia</value></data>
+  <data name="Topic_history_people" xml:space="preserve"><value>Personatges històrics</value></data>
+  <data name="Topic_history_historiography" xml:space="preserve"><value>Historiografia</value></data>
+  <data name="Topic_geography_countries" xml:space="preserve"><value>Països i banderes</value></data>
+  <data name="Topic_geography_continents" xml:space="preserve"><value>Continents</value></data>
+  <data name="Topic_geography_capitals" xml:space="preserve"><value>Capitals</value></data>
+  <data name="Topic_geography_physical" xml:space="preserve"><value>Geografia física</value></data>
+  <data name="Topic_geography_climate" xml:space="preserve"><value>Climes</value></data>
+  <data name="Topic_geography_theory" xml:space="preserve"><value>Teoria geogràfica</value></data>
+  <data name="Topic_economics_percentages" xml:space="preserve"><value>Percentatges</value></data>
+  <data name="Topic_economics_concepts" xml:space="preserve"><value>Conceptes bàsics</value></data>
+  <data name="Topic_economics_finance" xml:space="preserve"><value>Finances</value></data>
+  <data name="Topic_economics_markets" xml:space="preserve"><value>Mercats</value></data>
+  <data name="Topic_economics_thinkers" xml:space="preserve"><value>Economistes</value></data>
+  <data name="Topic_programming_loops" xml:space="preserve"><value>Bucles</value></data>
+  <data name="Topic_programming_variables" xml:space="preserve"><value>Variables</value></data>
+  <data name="Topic_programming_conditions" xml:space="preserve"><value>Condicions</value></data>
+  <data name="Topic_programming_lists" xml:space="preserve"><value>Llistes</value></data>
+  <data name="Topic_programming_strings" xml:space="preserve"><value>Cadenes</value></data>
+  <data name="Topic_programming_functions" xml:space="preserve"><value>Funcions</value></data>
+  <data name="Topic_programming_recursion" xml:space="preserve"><value>Recursivitat</value></data>
+  <data name="Topic_programming_algorithms" xml:space="preserve"><value>Algorismes</value></data>
+  <data name="Topic_programming_complexity" xml:space="preserve"><value>Complexitat</value></data>
+  <data name="Topic_programming_theory" xml:space="preserve"><value>Teoria de la computació</value></data>
+  <data name="Demo_Kid" xml:space="preserve"><value>Mode infantil (6 anys)</value></data>
+  <data name="Explore_Accuracy" xml:space="preserve"><value>Encert</value></data>
+  <data name="Nav_History" xml:space="preserve"><value>Els meus tests</value></data>
+  <data name="History_Subtitle" xml:space="preserve"><value>Tots els tests que has acabat, amb la nota. Obre'n un per repassar cada pregunta, la teva resposta i la correcta.</value></data>
+  <data name="History_Recent" xml:space="preserve"><value>Últims tests</value></data>
+  <data name="History_Empty" xml:space="preserve"><value>Encara no has acabat cap test.</value></data>
+  <data name="History_All" xml:space="preserve"><value>Totes les matèries</value></data>
+  <data name="History_Again" xml:space="preserve"><value>Nou test (preguntes noves)</value></data>
+  <data name="History_Placed" xml:space="preserve"><value>Nivell trobat en aquesta prova: {0}</value></data>
+  <data name="History_Right" xml:space="preserve"><value>Correcta</value></data>
+  <data name="History_Wrong" xml:space="preserve"><value>Incorrecta</value></data>
+  <data name="History_YourAnswer" xml:space="preserve"><value>la teva resposta</value></data>
+  <data name="Explore_TestLevel" xml:space="preserve"><value>Nivell del test</value></data>
+  <data name="Explore_TestsDone" xml:space="preserve"><value>{0} tests fets</value></data>
+  <data name="Explore_PlacedAt" xml:space="preserve"><value>prova de nivell: {0}</value></data>
+  <data name="Explore_Viewing" xml:space="preserve"><value>Estàs veient els tests de {0}. El teu nivell d'estudis és {1}.</value></data>
+  <data name="Explore_ApplyAll" xml:space="preserve"><value>Fer servir {0} a totes les matèries</value></data>
+  <data name="Notice_Level_Applied" xml:space="preserve"><value>Nivell aplicat a totes les matèries.</value></data>
+  <data name="History_QuestionN" xml:space="preserve"><value>Pregunta {0}</value></data>
+  <data name="QuizMode_Evo" xml:space="preserve"><value>Corregeix l'Evo</value></data>
+  <data name="QuizMode_Notebook" xml:space="preserve"><value>Quadern de l'Evo</value></data>
+  <data name="QuizMode_Review" xml:space="preserve"><value>Repàs llampec</value></data>
+  <data name="Evo_Hint" xml:space="preserve"><value>L'Evo respon i tu el corregeixes: té raó?</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Repàs llampec</value></data>
+  <data name="Review_Due" xml:space="preserve"><value>{0} temes per repassar avui · 2 minuts</value></data>
+  <data name="Review_None" xml:space="preserve"><value>Res per repassar avui: fes un test per començar</value></data>
+  <data name="Notebook_Title" xml:space="preserve"><value>Quadern de l'Evo</value></data>
+  <data name="Notebook_Yours" xml:space="preserve"><value>L'Evo fa els teus errors («{0}»): troba'ls!</value></data>
+  <data name="Notebook_Hint" xml:space="preserve"><value>L'Evo resol fraccions amb errors típics: descobreix què ha fet malament</value></data>
+  <data name="Calibration_Title" xml:space="preserve"><value>Mesurador de confiança</value></data>
+  <data name="Calibration_Sure" xml:space="preserve"><value>d'encerts quan dius «segur» ({0} de {1})</value></data>
+  <data name="Calibration_Unsure" xml:space="preserve"><value>Quan dubtes: {0} de {1} correctes</value></data>
+  <data name="Calibration_Good" xml:space="preserve"><value>Ben calibrat: quan dius segur, ho saps.</value></data>
+  <data name="Calibration_Ok" xml:space="preserve"><value>No està malament: revisa-ho un cop més abans de dir segur.</value></data>
+  <data name="Calibration_Low" xml:space="preserve"><value>Compte: sovint estàs segur i falles. Aquests temes tornen al repàs llampec.</value></data>
+  <data name="Calibration_Empty" xml:space="preserve"><value>Abans de respondre, digues com n'estàs de segur: aquí veuràs si la intuïció coincideix amb els resultats.</value></data>
+  <data name="Achievements_XpHint" xml:space="preserve"><value>Cada pista feta servir</value></data>
+  <data name="Achievements_XpSure" xml:space="preserve"><value>Encert marcat com a «segur»</value></data>
+  <data name="QuestText_Review" xml:space="preserve"><value>Fes el repàs llampec ({0})</value></data>
+  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Corregeix l'Evo o obre el seu quadern ({0})</value></data>
+  <data name="Quest_Review" xml:space="preserve"><value>Repàs llampec</value></data>
+  <data name="Quest_CheckEvo" xml:space="preserve"><value>Corregeix l'Evo</value></data>
+  <data name="Badge_Reviewer" xml:space="preserve"><value>Guardià de la memòria</value></data>
+  <data name="BadgeHint_Reviewer" xml:space="preserve"><value>Fes {0} repassos llampec</value></data>
+  <data name="Badge_Detective" xml:space="preserve"><value>Detectiu</value></data>
+  <data name="BadgeHint_Detective" xml:space="preserve"><value>Enxampa l'Evo {0} vegades</value></data>
+  <data name="Js_EvoAnswered" xml:space="preserve"><value>L'Evo ha respost:</value></data>
+  <data name="Js_HowSure" xml:space="preserve"><value>Ho tens clar?</value></data>
+  <data name="Js_Unsure" xml:space="preserve"><value>Dubto</value></data>
+  <data name="Js_ThinkSo" xml:space="preserve"><value>Crec que sí</value></data>
+  <data name="Js_Sure" xml:space="preserve"><value>Segur</value></data>
+  <data name="Js_HintN" xml:space="preserve"><value>Pista {0} de {1}</value></data>
+  <data name="Js_NoMoreHints" xml:space="preserve"><value>No queden pistes</value></data>
+  <data name="Js_HintCost" xml:space="preserve"><value>Cada pista: −25 % d'XP en aquesta pregunta</value></data>
+  <data name="Js_Removed" xml:space="preserve"><value>Opció descartada per una pista</value></data>
+  <data name="Js_SureRight" xml:space="preserve"><value>Segur i correcte: +3 XP.</value></data>
+  <data name="Js_SureWrong" xml:space="preserve"><value>N'estaves segur: aquest tema torna al repàs d'avui.</value></data>
+  <data name="Js_UnsureRight" xml:space="preserve"><value>Dubtaves, però ho has encertat: confia una mica més en tu!</value></data>
+  <data name="Js_HintsUsed" xml:space="preserve"><value>{0} pista/pistes fetes servir.</value></data>
+  <data name="Js_ReviewDone" xml:space="preserve"><value>Repàs fet! Aquests temes tornaran més endavant, just abans que els oblidis.</value></data>
+  <data name="Js_EvoDone" xml:space="preserve"><value>Evo corregit: {0} respostes correctes</value></data>
+  <data name="Js_NothingToReview" xml:space="preserve"><value>Res per repassar ara. Fes un test i els teus temes tornaran aquí en el moment just.</value></data>
+  <data name="Review_Sub" xml:space="preserve"><value>El que estàs a punt d'oblidar</value></data>
+  <data name="Notebook_Sub" xml:space="preserve"><value>Fraccions · els teus errors típics</value></data>
+  <data name="Nav_Adventures" xml:space="preserve"><value>Aventures</value></data>
+  <data name="QuizMode_Adventure" xml:space="preserve"><value>Aventura</value></data>
+  <data name="Adventures_Title" xml:space="preserve"><value>Aventures</value></data>
+  <data name="Adventures_Subtitle" xml:space="preserve"><value>Tria un món i una matèria: cada porta de la història s'obre amb una resposta correcta i al final t'espera un guardià simpàtic amb les teves preguntes més difícils.</value></data>
+  <data name="Adventures_Card" xml:space="preserve"><value>5 portes i un guardià final</value></data>
+  <data name="Adventures_Won" xml:space="preserve"><value>{0} guanyades</value></data>
+  <data name="Adventures_Theme" xml:space="preserve"><value>Tria el teu món</value></data>
+  <data name="Adventures_Start" xml:space="preserve"><value>Començar l'aventura</value></data>
+  <data name="Adventures_Rules" xml:space="preserve"><value>{0} portes i després un guardià que necessita {1} respostes correctes. Tens {2} cors: un error en costa un i la porta torna a preguntar. El guardià pregunta els teus temes més fluixos.</value></data>
+  <data name="Adventures_Played" xml:space="preserve"><value>Les teves aventures</value></data>
+  <data name="Adventures_Victory" xml:space="preserve"><value>Victòria</value></data>
+  <data name="Adventures_TryAgain" xml:space="preserve"><value>Per tornar-ho a provar</value></data>
+  <data name="Theme_Space" xml:space="preserve"><value>Espai</value></data>
+  <data name="Theme_Ocean" xml:space="preserve"><value>Oceà</value></data>
+  <data name="Theme_Jungle" xml:space="preserve"><value>Selva</value></data>
+  <data name="Theme_Castle" xml:space="preserve"><value>Castell</value></data>
+  <data name="ThemeHint_Space" xml:space="preserve"><value>Encén les balises i torna a casa</value></data>
+  <data name="ThemeHint_Ocean" xml:space="preserve"><value>Torna les perles màgiques a l'escull</value></data>
+  <data name="ThemeHint_Jungle" xml:space="preserve"><value>Troba el tresor del temple perdut</value></data>
+  <data name="ThemeHint_Castle" xml:space="preserve"><value>Trenca l'encanteri de la biblioteca</value></data>
+  <data name="Badge_BossSlayer" xml:space="preserve"><value>Domador de guardians</value></data>
+  <data name="BadgeHint_BossSlayer" xml:space="preserve"><value>Guanya {0} aventura</value></data>
+  <data name="Badge_Hero" xml:space="preserve"><value>Heroi</value></data>
+  <data name="BadgeHint_Hero" xml:space="preserve"><value>Guanya {0} aventures</value></data>
+  <data name="Js_DoorN" xml:space="preserve"><value>Porta {0}</value></data>
+  <data name="Js_Map" xml:space="preserve"><value>Mapa de l'aventura</value></data>
+  <data name="Js_HeartsN" xml:space="preserve"><value>Queden {0} cors</value></data>
+  <data name="Js_QuestionN" xml:space="preserve"><value>Pregunta {0}</value></data>
+  <data name="Js_AdventureWon" xml:space="preserve"><value>Aventura superada!</value></data>
+  <data name="Js_AdventureLost" xml:space="preserve"><value>Aquesta vegada no…</value></data>
+  <data name="Js_NewAdventure" xml:space="preserve"><value>Nova aventura</value></data>
+  <data name="Nav_Teach" xml:space="preserve"><value>Explica-ho a l'Evo</value></data>
+  <data name="Nav_Interview" xml:space="preserve"><value>Entrevistes</value></data>
+  <data name="Teach_Title" xml:space="preserve"><value>Explica-ho a l'Evo</value></data>
+  <data name="Teach_Subtitle" xml:space="preserve"><value>L'Evo vol aprendre: tu ets el profe. Explica un concepte amb les teves paraules (o parlant); l'Evo pregunta pel que falta. Explicar és la millor manera d'entendre-ho de debò.</value></data>
+  <data name="Teach_Card" xml:space="preserve"><value>Tu ets el profe: explica un concepte</value></data>
+  <data name="Teach_NotYet" xml:space="preserve"><value>Encara no explicat</value></data>
+  <data name="Teach_Best" xml:space="preserve"><value>Millor: {0} de {1} idees clau</value></data>
+  <data name="Teach_Ideas" xml:space="preserve"><value>Idees clau</value></data>
+  <data name="Teach_SecretIdea" xml:space="preserve"><value>Idea secreta {0}</value></data>
+  <data name="Teach_YourExplanation" xml:space="preserve"><value>La teva explicació</value></data>
+  <data name="Teach_Placeholder" xml:space="preserve"><value>Explica-ho com si l'Evo fos un company més petit…</value></data>
+  <data name="Teach_Round" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
+  <data name="Teach_Send" xml:space="preserve"><value>Explicar</value></data>
+  <data name="Teach_HowItWorks" xml:space="preserve"><value>El codi comprova la teva explicació amb una llista d'idees clau (compten les paraules que fas servir, no l'ortografia). El teu text es queda al teu compte i no es comparteix.</value></data>
+  <data name="Voice_Dictate" xml:space="preserve"><value>Dictar</value></data>
+  <data name="Interview_Title" xml:space="preserve"><value>Entrevista un personatge històric</value></data>
+  <data name="Interview_Subtitle" xml:space="preserve"><value>Pregunta a Marie Curie, Leonardo, Newton o Ada Lovelace per la seva vida i els seus descobriments, escrivint o parlant. Al final, comprova el que has après.</value></data>
+  <data name="Interview_Card" xml:space="preserve"><value>Pregunta a Marie Curie, Newton…</value></data>
+  <data name="Interview_Simulation" xml:space="preserve"><value>Simulació educativa: les respostes s'escriuen a partir de fets històrics documentats; no són cites reals de la persona.</value></data>
+  <data name="Interview_Suggestions" xml:space="preserve"><value>Preguntes suggerides</value></data>
+  <data name="Interview_YourQuestion" xml:space="preserve"><value>La teva pregunta…</value></data>
+  <data name="Interview_Ask" xml:space="preserve"><value>Preguntar</value></data>
+  <data name="Interview_CheckHint" xml:space="preserve"><value>A punt? Comprova el que has après amb 3 preguntes.</value></data>
+  <data name="Interview_Check" xml:space="preserve"><value>Comprovar el que he après</value></data>
+  <data name="Interview_DemoOnly" xml:space="preserve"><value>Sense connexió, {0} respon les preguntes suggerides. Tria un motor d'IA a la capçalera per preguntar el que vulguis.</value></data>
+  <data name="QuizMode_Interview" xml:space="preserve"><value>Comprovació de l'entrevista</value></data>
+  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explica un concepte a l'Evo ({0})</value></data>
+  <data name="Quest_TeachEvo" xml:space="preserve"><value>Ensenya a l'Evo</value></data>
+  <data name="Badge_Teacher" xml:space="preserve"><value>Petit profe</value></data>
+  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explica completament {0} conceptes a l'Evo</value></data>
+  <data name="Badge_TimeTraveler" xml:space="preserve"><value>Viatger del temps</value></data>
+  <data name="BadgeHint_TimeTraveler" xml:space="preserve"><value>Acaba {0} entrevistes amb la comprovació</value></data>
+  <data name="Js_SecretIdea" xml:space="preserve"><value>Idea secreta {0}</value></data>
+  <data name="Js_Round" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
+  <data name="Js_TaughtAll" xml:space="preserve"><value>L'Evo ho ha entès tot: ets un gran profe!</value></data>
+  <data name="Js_TaughtSome" xml:space="preserve"><value>L'Evo ha après {0} de les {1} idees clau.</value></data>
+  <data name="Js_ModelExplanation" xml:space="preserve"><value>Així ho explicaria un profe</value></data>
+  <data name="Js_TeachAgain" xml:space="preserve"><value>Tornar a explicar</value></data>
+  <data name="Js_OtherConcepts" xml:space="preserve"><value>Altres conceptes</value></data>
+  <data name="Js_SayAnswer" xml:space="preserve"><value>Digues la resposta</value></data>
+  <data name="Js_Heard" xml:space="preserve"><value>He sentit: «{0}»</value></data>
+  <data name="Js_NotUnderstood" xml:space="preserve"><value>He sentit «{0}», però no és cap opció. Torna-ho a provar o toca la resposta.</value></data>
+  <data name="Js_MicError" xml:space="preserve"><value>El micròfon no està disponible. Revisa el permís del navegador.</value></data>
+  <data name="Js_OtherInterviews" xml:space="preserve"><value>Altres entrevistes</value></data>
+</root>

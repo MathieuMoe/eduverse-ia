@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>EduVerse.Web</RootNamespace>
+    <UserSecretsId>eduverse-web-9c27e4</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EduVerse.Infrastructure\EduVerse.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

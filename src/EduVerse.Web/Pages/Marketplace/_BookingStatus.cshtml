@@ -1,0 +1,11 @@
+@model EduVerse.Core.Marketplace.BookingStatus
+@{
+    var cls = Model switch
+    {
+        EduVerse.Core.Marketplace.BookingStatus.Confirmed => "heat-4",
+        EduVerse.Core.Marketplace.BookingStatus.Completed => "heat-5",
+        EduVerse.Core.Marketplace.BookingStatus.Pending => "heat-2",
+        _ => "heat-none",
+    };
+}
+<span class="@Ui.Pill @cls">@L[$"BookingStatus_{Model}"]</span>

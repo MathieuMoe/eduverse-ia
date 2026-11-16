@@ -1,0 +1,10 @@
+@page
+@{
+    ViewData["Title"] = L["Error_Title"];
+}
+
+<div class="flex flex-col items-center justify-center min-h-80 p-8 text-center bg-card border border-card-line shadow-2xs rounded-xl">
+    <h1 class="text-xl font-semibold text-foreground">@L["Error_Title"]</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1">@L["Error_Text"]</p>
+    <a class="mt-4 py-2 px-3 inline-flex items-center text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover" href="/">@L["Error_Back"]</a>
+</div>

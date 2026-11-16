@@ -1,0 +1,56 @@
+@page
+@model EduVerse.Web.Pages.Marketplace.IndexModel
+@{
+    ViewData["Title"] = L["Nav_Marketplace"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Market_Heading"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Market_Subtitle"]</p>
+    </div>
+    @if (User.IsStudent())
+    {
+        <a href="/Marketplace/Bookings" class="@Ui.BtnLight">@L["Nav_MyLessons"]</a>
+    }
+</div>
+
+<form method="get" class="@Ui.Card p-4 md:p-5 grid sm:grid-cols-2 xl:grid-cols-[1fr_12rem_12rem_10rem_auto] gap-3 items-end" role="search">
+    <div><label class="@Ui.Label" for="f-subject">@L["Market_Subject"]</label><input id="f-subject" name="subject" value="@Model.Subject" class="@Ui.Input" placeholder="@L["Market_SubjectPlaceholder"]" maxlength="40" /></div>
+    <div><label class="@Ui.Label" for="f-language">@L["Field_Language"]</label>
+        <select id="f-language" name="language" class="@Ui.Input"><option value="">@L["Market_Any"]</option>@foreach (var l in Enum.GetValues<TeachLanguage>()) { <option value="@l" selected="@(Model.Language == l)">@L[$"Language_{l}"]</option> }</select></div>
+    <div><label class="@Ui.Label" for="f-stage">@L["Field_Stage"]</label>
+        <select id="f-stage" name="stage" class="@Ui.Input"><option value="">@L["Market_Any"]</option>@foreach (var s in Enum.GetValues<Stage>()) { <option value="@s" selected="@(Model.Stage == s)">@L[$"Stage_{s}"]</option> }</select></div>
+    <div><label class="@Ui.Label" for="f-price">@L["Market_MaxPrice"]</label><input id="f-price" name="maxPrice" type="number" min="5" max="200" step="1" value="@Model.MaxPrice" class="@Ui.Input" /></div>
+    <div class="flex gap-2">
+        <button type="submit" class="@Ui.BtnPrimary">@L["Market_Search"]</button>
+        @if (Model.Filtered) { <a href="/Marketplace" class="@Ui.BtnLight">@L["Market_Clear"]</a> }
+    </div>
+</form>
+
+@if (Model.Recommended.Count > 0)
+{
+    <section aria-labelledby="reco-title" class="space-y-3">
+        <h2 id="reco-title" class="text-lg font-semibold text-foreground">@L["Market_Recommended"]</h2>
+        <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+            @foreach (var r in Model.Recommended)
+            {
+                <partial name="_TutorCard" model="(r.Tutor, r.Reasons)" />
+            }
+        </div>
+    </section>
+}
+
+<section aria-labelledby="all-title" class="space-y-3">
+    <h2 id="all-title" class="text-lg font-semibold text-foreground">@(Model.Filtered ? string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Market_Results"], Model.Tutors.Count) : L["Market_All"])</h2>
+    @if (Model.Tutors.Count == 0)
+    {
+        <div class="@Ui.Card p-6 text-sm text-muted-foreground-1">@L["Market_NoResults"]</div>
+    }
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+        @foreach (var t in Model.Tutors)
+        {
+            <partial name="_TutorCard" model="(t, (IReadOnlyList<string>?)null)" />
+        }
+    </div>
+    <p class="text-xs text-muted-foreground-1">@L["Market_Commission"]</p>
+</section>

@@ -1,0 +1,19 @@
+@model IReadOnlyList<EduVerse.Core.Teaching.DayActivity>
+@* Mini bar chart of a KPI card: hatched = all answers of the day, solid = right answers. *@
+@{
+    var max = Math.Max(1, Model.Max(d => d.Answers));
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<div class="mt-4 flex items-end gap-1.5 h-20" role="img" aria-label="@L["Chart_AnswersPerDay"]">
+    @foreach (var d in Model)
+    {
+        var h = d.Answers == 0 ? 6 : Math.Max(14, 100 * d.Answers / max);
+        var solid = d.Answers == 0 ? 0 : 100 * d.Correct / d.Answers;
+        <div class="flex-1 min-w-0 flex flex-col items-center gap-1 h-full justify-end" title="@d.Day.ToString("dddd d MMM", culture): @string.Format(culture, L["Chart_DayTooltip"], d.Answers, d.Correct)">
+            <div class="w-full max-w-7 rounded-lg overflow-hidden flex flex-col justify-end bar-hatch" style="height:@(h)%">
+                <div class="bar-solid w-full rounded-lg" style="height:@(solid)%"></div>
+            </div>
+            <span class="text-[10px] leading-none text-foreground/60 uppercase">@d.Day.ToString("ddd", culture)[..1]</span>
+        </div>
+    }
+</div>

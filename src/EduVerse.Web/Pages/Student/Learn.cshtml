@@ -1,0 +1,66 @@
+@page
+@model EduVerse.Web.Pages.Student.LearnModel
+@{
+    ViewData["Title"] = L["Nav_Learn"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-2xl font-semibold text-foreground">@Model.Current.Name</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1">@Model.Current.Area · <span id="ln-progress"></span></p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+        @if (Model.Subjects.Count > 1)
+        {
+            <label for="ln-subject" class="sr-only">@L["Learn_Subject"]</label>
+            <select id="ln-subject" class="@Ui.Input w-auto" onchange="location.href='/Student/Learn?subject='+encodeURIComponent(this.value)">
+                @foreach (var s in Model.Subjects)
+                {
+                    <option value="@s.Key" selected="@(s.Key == Model.Current.Key)">@s.Name</option>
+                }
+            </select>
+        }
+        <button type="button" data-focus-toggle class="@Ui.BtnLight aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:border-primary" title="@L["Learn_FocusHint"]" data-testid="focus-toggle">
+            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" /><circle cx="12" cy="12" r="3" /></svg>
+            @L["Learn_Focus"]
+        </button>
+        <button type="button" id="ln-reset" class="@Ui.BtnLight focus-mode:hidden">@L["Learn_Retake"]</button>
+    </div>
+</div>
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start" id="ln-root" data-subject="@Model.Current.Key">
+    <section class="@Ui.Card min-w-0 xl:col-span-8 focus-mode:xl:col-span-12" aria-live="polite">
+        <div id="ln-notice" class="hidden m-4 mb-0 p-3 rounded-lg text-sm bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300" role="status"></div>
+        <div id="ln-stage" class="p-5 md:p-7">
+            <div class="py-10 text-center text-sm text-muted-foreground-1">@L["Loading"]</div>
+        </div>
+    </section>
+
+    <aside class="xl:col-span-4 space-y-4 sm:space-y-6 min-w-0 focus-mode:hidden">
+        <section class="@Ui.Card min-w-0">
+            <div class="@Ui.CardHeader"><h2 class="text-base font-semibold text-foreground">@L["Student_Map"]</h2></div>
+            <ol id="ln-map" class="p-4 md:p-5 space-y-1.5"></ol>
+        </section>
+        <section class="@Ui.Card min-w-0" aria-labelledby="ln-chat-title">
+            <div class="@Ui.CardHeader">
+                <div class="min-w-0">
+                    <h2 id="ln-chat-title" class="text-base font-semibold text-foreground">@L["Chat_Title"]</h2>
+                    <p class="text-xs text-muted-foreground-1 truncate" id="ln-chat-concept"></p>
+                </div>
+            </div>
+            <div id="ln-chat" class="p-4 space-y-3 max-h-80 overflow-y-auto text-sm" aria-live="polite"></div>
+            <form id="ln-chat-form" class="p-4 pt-0 flex gap-2">
+                <label for="ln-chat-input" class="sr-only">@L["Chat_Placeholder"]</label>
+                <input id="ln-chat-input" class="@Ui.Input" maxlength="800" placeholder="@L["Chat_Placeholder"]" autocomplete="off" />
+                <button type="submit" id="ln-chat-send" class="@Ui.BtnPrimary shrink-0" aria-label="@L["Chat_Send"]">
+                    <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
+                </button>
+            </form>
+            <p class="px-4 pb-4 -mt-2 text-xs text-muted-foreground-1">@L["Chat_Hint"]</p>
+        </section>
+    </aside>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/learn.js" asp-append-version="true"></script>
+}

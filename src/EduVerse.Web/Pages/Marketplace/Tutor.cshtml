@@ -1,0 +1,104 @@
+@page
+@model EduVerse.Web.Pages.Marketplace.TutorModel
+@{
+    var t = Model.Tutor;
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    ViewData["Title"] = t.Name;
+    var isStudent = User.IsStudent();
+}
+<a href="/Marketplace" class="text-sm text-primary hover:underline">← @L["Nav_Marketplace"]</a>
+
+@if (Model.Notice is { } notice)
+{
+    <div class="p-3 rounded-2xl text-sm bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300" role="alert">@L[$"Notice_{notice}"]</div>
+}
+
+<div class="grid xl:grid-cols-12 gap-4 sm:gap-5 items-start">
+    <div class="xl:col-span-7 space-y-4 sm:space-y-5 min-w-0">
+        <section class="@Ui.Card p-6">
+            <div class="flex flex-wrap items-start gap-4">
+                <span class="size-16 shrink-0 grid place-items-center rounded-3xl text-xl font-bold text-foreground @Ui.AvatarTone(t.Name)">@Ui.Initials(t.Name)</span>
+                <div class="min-w-0 grow">
+                    <h1 class="text-2xl font-semibold text-foreground">@t.Name</h1>
+                    <p class="text-sm text-amber-600 dark:text-amber-400">@(t.Rating is null ? L["Market_New"] : Ui.Stars(t.Rating)) <span class="text-muted-foreground-1">· @string.Format(culture, L["Market_Reviews"], t.Reviews) · @string.Format(culture, L["Market_Lessons"], t.Lessons)</span></p>
+                </div>
+                <div class="text-end">
+                    <p class="text-3xl font-semibold text-foreground">@Ui.Money(t.PricePerHour)</p>
+                    <p class="text-xs text-muted-foreground-1">@L["Market_PerLesson"]</p>
+                </div>
+            </div>
+            <p class="mt-5 text-lg text-foreground">@t.Headline</p>
+            <p class="mt-2 text-sm text-muted-foreground-1 whitespace-pre-line">@Model.Profile.Bio</p>
+            <dl class="mt-5 grid sm:grid-cols-3 gap-4 text-sm">
+                <div><dt class="text-xs text-muted-foreground-1">@L["Market_Subjects"]</dt><dd class="mt-1 flex flex-wrap gap-1">@foreach (var s in t.Subjects) { <span class="@Ui.Pill tone-lavender text-foreground">@s</span> }</dd></div>
+                <div><dt class="text-xs text-muted-foreground-1">@L["Market_Languages"]</dt><dd class="mt-1 flex flex-wrap gap-1">@foreach (var l in t.Languages) { <span class="@Ui.Pill bg-surface text-foreground">@L[$"Language_{l}"]</span> }</dd></div>
+                <div><dt class="text-xs text-muted-foreground-1">@L["Market_Stages"]</dt><dd class="mt-1 flex flex-wrap gap-1">@foreach (var s in t.Stages) { <span class="@Ui.Pill bg-surface text-foreground">@L[$"Stage_{s}"]</span> }</dd></div>
+            </dl>
+        </section>
+        <section class="@Ui.Card p-6" aria-labelledby="reviews-title">
+            <h2 id="reviews-title" class="text-base font-semibold text-foreground">@L["Market_ReviewsTitle"]</h2>
+            @if (Model.Reviews.Count == 0)
+            {
+                <p class="mt-2 text-sm text-muted-foreground-1">@L["Market_NoReviews"]</p>
+            }
+            <ul class="mt-3 divide-y divide-card-divider">
+                @foreach (var r in Model.Reviews)
+                {
+                    <li class="py-3">
+                        <p class="text-sm"><span class="text-amber-600 dark:text-amber-400">@(new string('★', r.Rating))@(new string('☆', 5 - r.Rating))</span> <span class="font-semibold text-foreground">@r.Student</span> <span class="text-xs text-muted-foreground-1">· @r.Start.ToString("d MMM", culture)</span></p>
+                        @if (r.Review is { } text) { <p class="mt-1 text-sm text-foreground">@text</p> }
+                    </li>
+                }
+            </ul>
+        </section>
+    </div>
+
+    <section class="@Ui.Card xl:col-span-5 min-w-0 xl:sticky xl:top-24" aria-labelledby="slots-title">
+        <div class="@Ui.CardHeader">
+            <h2 id="slots-title" class="text-base font-semibold text-foreground">@L["Market_Book"]</h2>
+            <span class="text-xs text-muted-foreground-1">@L["Market_TimeZone"] @Model.Zone.Id</span>
+        </div>
+        @if (Model.Days.Count == 0)
+        {
+            <p class="p-6 text-sm text-muted-foreground-1">@L["Market_NoSlots"]</p>
+        }
+        else
+        {
+            <form method="post" asp-page-handler="Book" asp-route-id="@t.TutorId" class="p-5 space-y-4">
+                <fieldset>
+                    <legend class="@Ui.Label">@L["Market_ChooseSlot"]</legend>
+                    <div class="space-y-3 max-h-80 overflow-y-auto pe-1" data-testid="slots">
+                        @foreach (var day in Model.Days)
+                        {
+                            <div>
+                                <p class="text-xs font-semibold text-muted-foreground-1 capitalize">@day.Key.ToString("dddd d MMMM", culture)</p>
+                                <div class="mt-1.5 flex flex-wrap gap-1.5">
+                                    @foreach (var slot in day)
+                                    {
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="start" value="@slot.ToString("O", System.Globalization.CultureInfo.InvariantCulture)" class="peer sr-only" required />
+                                            <span class="block py-1.5 px-3 rounded-full border border-layer-line bg-layer text-sm text-foreground peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 hover:bg-layer-hover">@TimeZoneInfo.ConvertTime(slot, Model.Zone).ToString("HH:mm", culture)</span>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </fieldset>
+                <div><label class="@Ui.Label" for="book-subject">@L["Market_LessonSubject"]</label>
+                    <input id="book-subject" name="subject" class="@Ui.Input" required maxlength="80" value="@(t.Subjects.Count > 0 ? t.Subjects[0] : "")" /></div>
+                <div><label class="@Ui.Label" for="book-note">@L["Market_Note"]</label>
+                    <textarea id="book-note" name="note" rows="2" maxlength="400" class="@Ui.Input" placeholder="@L["Market_NotePlaceholder"]"></textarea></div>
+                @if (isStudent)
+                {
+                    <button type="submit" class="@Ui.BtnPrimary w-full" data-testid="book">@string.Format(culture, L["Market_BookFor"], Ui.Money(t.PricePerHour))</button>
+                }
+                else
+                {
+                    <p class="p-3 rounded-2xl tone-lavender text-sm text-foreground">@L["Market_StudentsOnly"] <a class="font-semibold underline" href="/Account/Login?returnUrl=@Uri.EscapeDataString("/Marketplace/Tutor?id=" + t.TutorId)">@L["Nav_Login"]</a></p>
+                }
+                <p class="text-xs text-muted-foreground-1">@L["Market_Policy"]</p>
+            </form>
+        }
+    </section>
+</div>

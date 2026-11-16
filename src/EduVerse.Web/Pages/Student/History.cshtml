@@ -1,0 +1,121 @@
+@page
+@model EduVerse.Web.Pages.Student.HistoryModel
+@using EduVerse.Core.Catalog
+@using EduVerse.Infrastructure.Quizzes
+@{
+    ViewData["Title"] = L["Nav_History"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    Microsoft.AspNetCore.Html.IHtmlContent Stars(int correct, int total)
+    {
+        var n = AdaptiveQuiz.Stars(correct, total);
+        return new Microsoft.AspNetCore.Html.HtmlString($"<span class=\"text-amber-500\" aria-label=\"{n}/3\">{new string('★', n)}</span><span class=\"text-foreground/20\" aria-hidden=\"true\">{new string('★', 3 - n)}</span>");
+    }
+}
+@if (Model.Review is { } r)
+{
+    var info = Catalog.Info(r.Area);
+    <div class="flex flex-wrap justify-between items-end gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+            <span class="size-12 shrink-0 rounded-2xl tone-@info.Tone grid place-items-center text-2xl" aria-hidden="true">@info.Icon</span>
+            <div class="min-w-0">
+                <a href="/Student/History" class="text-sm text-muted-foreground-1 hover:text-foreground">← @L["Nav_History"]</a>
+                <h1 class="text-2xl font-semibold text-foreground">@L[$"Area_{r.Area}"]@(r.Topic is { } tp ? $" · {tp}" : "")</h1>
+                <p class="text-sm text-muted-foreground-1">@L[$"Level_{r.Level}"] · @L[$"QuizMode_{r.Mode}"] · @r.FinishedAt!.Value.ToString("f", culture)</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="@Ui.Pill tone-sun text-foreground py-1.5 px-3 text-sm" data-testid="review-score">@r.Correct / @r.Length · @Stars(r.Correct, r.Length)</span>
+            @if (r.Mode != QuizMode.Duel)
+            {
+                <a href="/Student/Quiz?area=@r.Area&level=@(r.Result ?? r.Level)@(r.Topic is { } t2 ? "&topic=" + Uri.EscapeDataString(t2) : "")" class="@Ui.BtnPrimary">@L["History_Again"]</a>
+            }
+        </div>
+    </div>
+    @if (r.Result is { } placed)
+    {
+        <p class="p-3 rounded-2xl tone-lavender text-sm text-foreground">@string.Format(culture, L["History_Placed"], L[$"Level_{placed}"])</p>
+    }
+    <ol class="space-y-3" data-testid="review">
+        @foreach (var a in Model.Answers)
+        {
+            var options = QuizStore.Options(a);
+            <li class="@Ui.Card p-5">
+                <div class="flex items-start justify-between gap-3">
+                    <p class="text-xs text-muted-foreground-1">@string.Format(culture, L["History_QuestionN"], a.Number) · @EduVerse.Web.QuizEndpoints.TopicName(a.Topic, L)</p>
+                    <span class="@Ui.Pill @(a.Correct ? "tone-mint" : "tone-pink") text-foreground">@(a.Correct ? "✓ " + L["History_Right"] : "✗ " + L["History_Wrong"])</span>
+                </div>
+                @if (a.Visual is { } v)
+                {
+                    <p class="mt-2 text-2xl" aria-hidden="true">@v</p>
+                }
+                <p class="mt-2 font-medium text-foreground">@a.Prompt</p>
+                @if (a.Code is { } code)
+                {
+                    <pre class="mt-2 p-3 rounded-xl bg-[#2b2230] text-[#f3eefe] text-sm overflow-x-auto"><code>@code</code></pre>
+                }
+                <ul class="mt-3 grid sm:grid-cols-2 gap-2 text-sm">
+                    @for (var i = 0; i < options.Count; i++)
+                    {
+                        var state = i == a.CorrectIndex ? "right" : i == a.Choice ? "wrong" : "";
+                        <li class="quiz-option p-2.5 rounded-xl border border-layer-line text-foreground" data-state="@state">
+                            @("ABCD"[i]). @options[i]@(i == a.Choice ? " · " + L["History_YourAnswer"] : "")
+                        </li>
+                    }
+                </ul>
+                @if (a.Explanation.Length > 0)
+                {
+                    <p class="mt-3 text-sm text-muted-foreground-1">💡 @a.Explanation</p>
+                }
+            </li>
+        }
+    </ol>
+}
+else
+{
+    <div class="flex flex-wrap justify-between items-end gap-3">
+        <div class="min-w-0">
+            <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Nav_History"]</h1>
+            <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["History_Subtitle"]</p>
+        </div>
+        <form method="get" class="flex items-end gap-2">
+            <div><label class="@Ui.Label" for="area">@L["Explore_Subject"]</label>
+                <select id="area" name="area" class="@Ui.Input w-auto" onchange="this.form.submit()">
+                    <option value="">@L["History_All"]</option>
+                    @foreach (var a in Catalog.Areas) { <option value="@a.Area" selected="@(a.Area == Model.Area)">@a.Icon @L[$"Area_{a.Area}"]</option> }
+                </select></div>
+        </form>
+    </div>
+    @if (Model.Tests.Count == 0)
+    {
+        <section class="@Ui.Card p-8 text-center">
+            <p class="text-4xl" aria-hidden="true">📝</p>
+            <p class="mt-2 text-sm text-muted-foreground-1">@L["History_Empty"]</p>
+            <a href="/Student/Explore" class="@Ui.BtnPrimary mt-4">@L["Nav_Explore"]</a>
+        </section>
+    }
+    else
+    {
+        <section class="@Ui.Card min-w-0">
+            <ul class="divide-y divide-card-divider" data-testid="history">
+                @foreach (var t in Model.Tests)
+                {
+                    var info = Catalog.Info(t.Area);
+                    var pct = t.Length == 0 ? 0 : 100 * t.Correct / t.Length;
+                    <li>
+                        <a href="/Student/History?id=@t.Id" class="flex flex-wrap items-center gap-3 p-4 hover:bg-layer-hover">
+                            <span class="size-10 shrink-0 rounded-xl tone-@info.Tone grid place-items-center text-xl" aria-hidden="true">@info.Icon</span>
+                            <span class="min-w-0 grow">
+                                <span class="block text-sm font-semibold text-foreground truncate">@L[$"Area_{t.Area}"]@(t.Topic is { } tp ? $" · {tp}" : "")</span>
+                                <span class="block text-xs text-muted-foreground-1">@L[$"LevelShort_{t.Level}"] · @L[$"QuizMode_{t.Mode}"]@(t.Result is { } pl ? " → " + L[$"LevelShort_{pl}"] : "") · @t.FinishedAt!.Value.ToString("g", culture)</span>
+                            </span>
+                            <span class="w-28 max-sm:hidden"><span class="block h-1.5 rounded-full bg-surface overflow-hidden"><span class="block h-full rounded-full @(pct >= 70 ? "bg-emerald-500" : pct >= 40 ? "bg-amber-500" : "bg-rose-500")" style="width:@(pct)%"></span></span></span>
+                            <span class="text-sm font-semibold text-foreground w-12 text-right">@t.Correct/@t.Length</span>
+                            <span class="text-sm w-12">@Stars(t.Correct, t.Length)</span>
+                            <span class="text-xs text-muted-foreground-1 w-16 text-right">+@t.Xp XP</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+}

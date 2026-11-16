@@ -1,0 +1,61 @@
+@page
+@model EduVerse.Web.Pages.Student.AdventuresModel
+@using EduVerse.Core.Catalog
+@{
+    ViewData["Title"] = L["Nav_Adventures"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var tones = new Dictionary<Theme, string> { [Theme.Space] = "tone-lavender", [Theme.Ocean] = "tone-sky", [Theme.Jungle] = "tone-mint", [Theme.Castle] = "tone-peach" };
+    var won = Model.Played.Count(p => p.Won);
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Adventures_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Adventures_Subtitle"]</p>
+    </div>
+    <span class="@Ui.Pill tone-sun text-foreground py-1.5 px-3 text-sm">🏆 @string.Format(culture, L["Adventures_Won"], won)</span>
+</div>
+
+<form method="get" action="/Student/Quiz" class="space-y-4 sm:space-y-6" data-testid="adventure-form">
+    <input type="hidden" name="mode" value="Adventure" />
+    <fieldset>
+        <legend class="text-base font-semibold text-foreground mb-3">@L["Adventures_Theme"]</legend>
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            @foreach (var theme in Enum.GetValues<Theme>())
+            {
+                <label class="relative cursor-pointer rounded-3xl p-5 @tones[theme] border-2 border-transparent has-checked:border-primary has-checked:shadow-lg transition-all">
+                    <input type="radio" name="theme" value="@theme" class="sr-only" checked="@(theme == Theme.Space)" data-testid="theme-@theme" />
+                    <span class="block text-5xl" aria-hidden="true">@Adventure.Emoji(theme)</span>
+                    <span class="mt-3 block text-lg font-semibold text-foreground">@L[$"Theme_{theme}"]</span>
+                    <span class="block text-sm text-foreground/70">@L[$"ThemeHint_{theme}"]</span>
+                </label>
+            }
+        </div>
+    </fieldset>
+    <section class="@Ui.Card p-5 grid sm:grid-cols-12 gap-3 items-end">
+        <div class="sm:col-span-5"><label class="@Ui.Label" for="adv-area">@L["Explore_Subject"]</label>
+            <select id="adv-area" name="area" class="@Ui.Input">@foreach (var p in Model.Progress.Where(p => Catalog.Available(p.Area, Model.Level))) { <option value="@p.Area">@Catalog.Info(p.Area).Icon @L[$"Area_{p.Area}"]</option> }</select></div>
+        <div class="sm:col-span-4"><label class="@Ui.Label" for="adv-level">@L["Field_Level"]</label>
+            <select id="adv-level" name="level" class="@Ui.Input">@foreach (var lv in Enum.GetValues<Level>()) { <option value="@lv" selected="@(lv == Model.Level)">@L[$"LevelShort_{lv}"]</option> }</select></div>
+        <button type="submit" class="@Ui.BtnPrimary sm:col-span-3 py-3" data-testid="start-adventure">@L["Adventures_Start"] →</button>
+        <p class="sm:col-span-12 text-xs text-muted-foreground-1">@string.Format(culture, L["Adventures_Rules"], Adventure.Doors, Adventure.BossHp, Adventure.Hearts)</p>
+    </section>
+</form>
+
+@if (Model.Played.Count > 0)
+{
+    <section class="@Ui.Card min-w-0">
+        <div class="@Ui.CardHeader"><h2 class="text-base font-semibold text-foreground">@L["Adventures_Played"]</h2></div>
+        <ul class="p-4 md:p-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-3" data-testid="adventures-played">
+            @foreach (var a in Model.Played)
+            {
+                <li>
+                    <a href="/Student/History?id=@a.Id" class="flex items-center gap-3 p-3 rounded-2xl @(a.Won ? "tone-sun" : "bg-surface") hover:-translate-y-0.5 transition-transform">
+                        <span class="text-3xl" aria-hidden="true">@(a.Won ? "🏆" : "🌙")</span>
+                        <span class="min-w-0"><span class="block text-sm font-semibold text-foreground truncate">@Catalog.Info(a.Area).Icon @L[$"Area_{a.Area}"]</span>
+                            <span class="block text-xs text-muted-foreground-1">@L[a.Won ? "Adventures_Victory" : "Adventures_TryAgain"] · @a.FinishedAt!.Value.ToString("d MMM", culture)</span></span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </section>
+}

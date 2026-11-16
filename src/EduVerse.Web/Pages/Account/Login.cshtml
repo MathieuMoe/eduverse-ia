@@ -1,0 +1,37 @@
+@page
+@model EduVerse.Web.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = L["Nav_Login"];
+}
+<div class="max-w-md mx-auto w-full space-y-6">
+    <div class="@Ui.Card">
+        <div class="p-5 sm:p-7">
+            <h1 class="text-2xl font-semibold text-foreground">@L["Login_Heading"]</h1>
+            <p class="mt-1 text-sm text-muted-foreground-1">@L["Login_Subtitle"] <a class="text-primary hover:underline" href="/Account/Register">@L["Nav_Register"]</a></p>
+            <form method="post" class="mt-5 space-y-4">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div><label class="@Ui.Label" asp-for="Email">@L["Field_Email"]</label><input asp-for="Email" class="@Ui.Input" autocomplete="username" /></div>
+                <div><label class="@Ui.Label" asp-for="Password">@L["Field_Password"]</label><input asp-for="Password" class="@Ui.Input" autocomplete="current-password" /></div>
+                @if (Model.Failed)
+                {
+                    <p class="text-sm text-red-600" role="alert">@L["Login_Failed"]</p>
+                }
+                <button type="submit" class="@Ui.BtnPrimary w-full">@L["Nav_Login"]</button>
+            </form>
+        </div>
+    </div>
+    @if (Model.DemoEnabled)
+    {
+        <div class="@Ui.Card p-5 sm:p-7">
+            <h2 class="text-base font-semibold text-foreground">@L["Login_DemoTitle"]</h2>
+            <p class="mt-1 text-sm text-muted-foreground-1">@L["Login_DemoText"]</p>
+            <form method="post" asp-page-handler="Demo" class="mt-4 grid sm:grid-cols-2 gap-3">
+                <button type="submit" name="role" value="Student" class="@Ui.BtnLight">@L["Demo_Student"]</button>
+                <button type="submit" name="role" value="Teacher" class="@Ui.BtnLight">@L["Demo_Teacher"]</button>
+                <button type="submit" name="role" value="Director" class="@Ui.BtnLight">@L["Demo_Director"]</button>
+                <button type="submit" name="role" value="Tutor" class="@Ui.BtnLight">@L["Demo_Tutor"]</button>
+            </form>
+            <p class="mt-3 text-xs text-muted-foreground-1">@string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Login_DemoAccounts"], EduVerse.Infrastructure.Data.DemoSeeder.Password)</p>
+        </div>
+    }
+</div>

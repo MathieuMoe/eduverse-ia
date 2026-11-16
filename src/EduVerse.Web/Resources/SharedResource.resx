@@ -1,0 +1,1103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Lesson" xml:space="preserve"><value>Lesson in 3 levels</value></data>
+  <data name="Nav_Summary" xml:space="preserve"><value>Class summary</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>How it works</value></data>
+  <data name="Nav_Resources" xml:space="preserve"><value>Resources</value></data>
+  <data name="Nav_SourceCode" xml:space="preserve"><value>Source code</value></data>
+  <data name="Nav_OpenMenu" xml:space="preserve"><value>Open menu</value></data>
+  <data name="Nav_ToggleTheme" xml:space="preserve"><value>Toggle dark mode</value></data>
+  <data name="Nav_Language" xml:space="preserve"><value>Interface language</value></data>
+  <data name="Nav_EngineTooltip" xml:space="preserve"><value>Engine used to write the materials</value></data>
+  <data name="Engine_Demo" xml:space="preserve"><value>Demo (offline)</value></data>
+  <data name="Engine_Choose" xml:space="preserve"><value>AI engine</value></data>
+  <data name="Engine_Hint" xml:space="preserve"><value>More engines appear when you configure their API key (see README).</value></data>
+  <data name="Error_Title" xml:space="preserve"><value>Something went wrong</value></data>
+  <data name="Error_Text" xml:space="preserve"><value>An unexpected error occurred. Please try again.</value></data>
+  <data name="Error_Back" xml:space="preserve"><value>Back to home</value></data>
+  <data name="Sample_Button" xml:space="preserve"><value>Load an example</value></data>
+  <data name="Field_Stage" xml:space="preserve"><value>Stage</value></data>
+  <data name="Field_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Language_English" xml:space="preserve"><value>English</value></data>
+  <data name="Language_Spanish" xml:space="preserve"><value>Spanish</value></data>
+  <data name="Language_French" xml:space="preserve"><value>French</value></data>
+  <data name="Language_Catalan" xml:space="preserve"><value>Catalan</value></data>
+  <data name="History_Title" xml:space="preserve"><value>Recent</value></data>
+  <data name="Lesson_Heading" xml:space="preserve"><value>The same lesson in 3 levels</value></data>
+  <data name="Lesson_Subtitle" xml:space="preserve"><value>For mixed-ability classes: paste or upload a lesson and get a basic, a standard and an advanced version with the same objectives, each with glossary, questions and an activity. The readability of every version is measured.</value></data>
+  <data name="Lesson_Source" xml:space="preserve"><value>The lesson</value></data>
+  <data name="Lesson_Upload" xml:space="preserve"><value>Upload PDF or text</value></data>
+  <data name="Lesson_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Lesson_SubjectField" xml:space="preserve"><value>Subject</value></data>
+  <data name="Lesson_Questions" xml:space="preserve"><value>Questions</value></data>
+  <data name="Lesson_Text" xml:space="preserve"><value>Lesson text</value></data>
+  <data name="Lesson_TextPlaceholder" xml:space="preserve"><value>Paste the lesson (at least 150 characters)…</value></data>
+  <data name="Lesson_Submit" xml:space="preserve"><value>Adapt in 3 levels</value></data>
+  <data name="Lesson_EmptyTitle" xml:space="preserve"><value>Your three versions will appear here</value></data>
+  <data name="Lesson_EmptyText" xml:space="preserve"><value>Basic, standard and advanced, with their readability, ready to print for each group.</value></data>
+  <data name="Summary_Heading" xml:space="preserve"><value>Class summary</value></data>
+  <data name="Summary_Subtitle" xml:space="preserve"><value>Type or dictate what happened in class: get the summary for students, what absent students must do, a note for families, homework, review questions and what to start with next time.</value></data>
+  <data name="Summary_Class" xml:space="preserve"><value>The class</value></data>
+  <data name="Summary_Group" xml:space="preserve"><value>Group</value></data>
+  <data name="Summary_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Summary_Notes" xml:space="preserve"><value>Notes or transcript</value></data>
+  <data name="Summary_Dictate" xml:space="preserve"><value>Dictate</value></data>
+  <data name="Summary_NotesPlaceholder" xml:space="preserve"><value>What did you explain, what worked, what was difficult, homework, next class…</value></data>
+  <data name="Summary_Submit" xml:space="preserve"><value>Summarise the class</value></data>
+  <data name="Summary_EmptyTitle" xml:space="preserve"><value>Your summary will appear here</value></data>
+  <data name="Summary_EmptyText" xml:space="preserve"><value>Ready to publish on your platform or send by email.</value></data>
+  <data name="About_Title" xml:space="preserve"><value>How EduVerse AI works</value></data>
+  <data name="About_Subtitle" xml:space="preserve"><value>A tutor that learns how each student learns, and a teacher who keeps the last word.</value></data>
+  <data name="About_Step1_Title" xml:space="preserve"><value>Placement test</value></data>
+  <data name="About_Step1_Text" xml:space="preserve"><value>A binary search along the concepts ordered by prerequisites: about log2(n)+1 questions instead of testing everything.</value></data>
+  <data name="About_Step2_Title" xml:space="preserve"><value>Explanation adapted</value></data>
+  <data name="About_Step2_Text" xml:space="preserve"><value>Five methods (step by step, visual, real life, worked example, analogy). After two failures in a row, the code switches to a method not tried yet.</value></data>
+  <data name="About_Step3_Title" xml:space="preserve"><value>Practice with feedback per mistake</value></data>
+  <data name="About_Step3_Text" xml:space="preserve"><value>Each wrong option is a typical mistake with its code, so the tutor knows WHY the student failed. Difficulty goes up with a streak and down after a mistake.</value></data>
+  <data name="About_Privacy_Title" xml:space="preserve"><value>Privacy and minors</value></data>
+  <data name="About_Privacy_Text" xml:space="preserve"><value>Data minimisation from the start (GDPR): only a first name, no surname. The AI receives the stage, the mastery and the mistake codes, never a name or an email. Texts from users are sent as data, not instructions. The AI recommends; decisions about a student are taken by a person.</value></data>
+  <data name="Stage_Primary" xml:space="preserve"><value>Primary</value></data>
+  <data name="Js_Stage_Primary" xml:space="preserve"><value>Primary</value></data>
+  <data name="Stage_Secondary" xml:space="preserve"><value>Secondary</value></data>
+  <data name="Js_Stage_Secondary" xml:space="preserve"><value>Secondary</value></data>
+  <data name="Stage_HighSchool" xml:space="preserve"><value>High school</value></data>
+  <data name="Js_Stage_HighSchool" xml:space="preserve"><value>High school</value></data>
+  <data name="Stage_University" xml:space="preserve"><value>University</value></data>
+  <data name="Js_Stage_University" xml:space="preserve"><value>University</value></data>
+  <data name="Stage_Adults" xml:space="preserve"><value>Adults</value></data>
+  <data name="Js_Stage_Adults" xml:space="preserve"><value>Adults</value></data>
+  <data name="Stage_ExamPrep" xml:space="preserve"><value>Exam preparation</value></data>
+  <data name="Js_Stage_ExamPrep" xml:space="preserve"><value>Exam preparation</value></data>
+  <data name="Js_RateLimited" xml:space="preserve"><value>Too many requests. Wait a minute and try again.</value></data>
+  <data name="Js_AiError" xml:space="preserve"><value>The AI could not answer. Try again or choose another engine.</value></data>
+  <data name="Js_GenericError" xml:space="preserve"><value>Something went wrong.</value></data>
+  <data name="Js_Err_text_too_short" xml:space="preserve"><value>The lesson is too short (at least 150 characters).</value></data>
+  <data name="Js_Err_text_too_long" xml:space="preserve"><value>The lesson is too long (15,000 characters max.).</value></data>
+  <data name="Js_Err_notes_too_short" xml:space="preserve"><value>The notes are too short (at least 80 characters).</value></data>
+  <data name="Js_Err_notes_too_long" xml:space="preserve"><value>The notes are too long.</value></data>
+  <data name="Js_Err_questions_out_of_range" xml:space="preserve"><value>Between 2 and 8 questions.</value></data>
+  <data name="Js_Err_title_too_long" xml:space="preserve"><value>The title is too long.</value></data>
+  <data name="Js_Working" xml:space="preserve"><value>Working…</value></data>
+  <data name="Js_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Js_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Js_EngineDemo" xml:space="preserve"><value>Demo (rules, no AI)</value></data>
+  <data name="Js_Untitled" xml:space="preserve"><value>Untitled</value></data>
+  <data name="Js_NoHistory" xml:space="preserve"><value>Nothing yet.</value></data>
+  <data name="Js_CharsCount" xml:space="preserve"><value>{0} characters</value></data>
+  <data name="Js_DownloadMd" xml:space="preserve"><value>Download (Markdown)</value></data>
+  <data name="Js_Objectives" xml:space="preserve"><value>Objectives</value></data>
+  <data name="Js_ReadabilityTitle" xml:space="preserve"><value>Readability (0-100, higher = easier)</value></data>
+  <data name="Js_ReadabilityHint" xml:space="preserve"><value>Measured by the app on each text, not estimated by the AI.</value></data>
+  <data name="Js_Original" xml:space="preserve"><value>Original</value></data>
+  <data name="Js_Read_VeryEasy" xml:space="preserve"><value>Very easy</value></data>
+  <data name="Js_Read_Easy" xml:space="preserve"><value>Easy</value></data>
+  <data name="Js_Read_Normal" xml:space="preserve"><value>Normal</value></data>
+  <data name="Js_Read_Difficult" xml:space="preserve"><value>Difficult</value></data>
+  <data name="Js_Read_VeryDifficult" xml:space="preserve"><value>Very difficult</value></data>
+  <data name="Js_StatsLine" xml:space="preserve"><value>{0} words · {1} words/sentence · {2} min</value></data>
+  <data name="Js_Warn_basic_not_easier" xml:space="preserve"><value>The basic version does not read easier than the standard one: generate it again or simplify it by hand.</value></data>
+  <data name="Js_Warn_advanced_shorter" xml:space="preserve"><value>The advanced version is shorter than the standard one.</value></data>
+  <data name="Js_Warn_homework_from_notes" xml:space="preserve"><value>The homework was taken from your notes.</value></data>
+  <data name="Js_Levels" xml:space="preserve"><value>Levels</value></data>
+  <data name="Js_Level_Basic" xml:space="preserve"><value>Basic</value></data>
+  <data name="Js_Level_Standard" xml:space="preserve"><value>Standard</value></data>
+  <data name="Js_Level_Advanced" xml:space="preserve"><value>Advanced</value></data>
+  <data name="Js_LevelHint_Basic" xml:space="preserve"><value>For students who need support or are learning the language.</value></data>
+  <data name="Js_LevelHint_Standard" xml:space="preserve"><value>For the whole group.</value></data>
+  <data name="Js_LevelHint_Advanced" xml:space="preserve"><value>For students who need a challenge.</value></data>
+  <data name="Js_PrintStudents" xml:space="preserve"><value>Worksheet</value></data>
+  <data name="Js_PrintTeacher" xml:space="preserve"><value>With answers</value></data>
+  <data name="Js_Glossary" xml:space="preserve"><value>Glossary</value></data>
+  <data name="Js_QuestionsTitle" xml:space="preserve"><value>Questions</value></data>
+  <data name="Js_ShowAnswer" xml:space="preserve"><value>Show the answer</value></data>
+  <data name="Js_Answer" xml:space="preserve"><value>Answer</value></data>
+  <data name="Js_Activity" xml:space="preserve"><value>Activity</value></data>
+  <data name="Js_TeacherTips" xml:space="preserve"><value>Tips for the class</value></data>
+  <data name="Js_NameLine" xml:space="preserve"><value>Name:</value></data>
+  <data name="Js_FileError" xml:space="preserve"><value>The file could not be read.</value></data>
+  <data name="Js_CopyStudents" xml:space="preserve"><value>Copy for students</value></data>
+  <data name="Js_KeyIdeas" xml:space="preserve"><value>Key ideas</value></data>
+  <data name="Js_Homework" xml:space="preserve"><value>Homework</value></data>
+  <data name="Js_NoHomework" xml:space="preserve"><value>No homework.</value></data>
+  <data name="Js_ForAbsent" xml:space="preserve"><value>For absent students</value></data>
+  <data name="Js_FamilyNote" xml:space="preserve"><value>For families</value></data>
+  <data name="Js_Review" xml:space="preserve"><value>Review answers</value></data>
+  <data name="Js_Difficulties" xml:space="preserve"><value>What was difficult</value></data>
+  <data name="Js_NoDifficulties" xml:space="preserve"><value>Nothing noted.</value></data>
+  <data name="Js_NextClass" xml:space="preserve"><value>Next class</value></data>
+  <data name="Js_NoSpeech" xml:space="preserve"><value>Dictation needs Chrome or Edge.</value></data>
+  <data name="Js_Dictate" xml:space="preserve"><value>Dictate</value></data>
+  <data name="Js_StopDictation" xml:space="preserve"><value>Stop</value></data>
+  <data name="Js_SampleSubject" xml:space="preserve"><value>Natural science</value></data>
+  <data name="Nav_Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Nav_Login" xml:space="preserve"><value>Sign in</value></data>
+  <data name="Nav_Register" xml:space="preserve"><value>Create an account</value></data>
+  <data name="Nav_Logout" xml:space="preserve"><value>Sign out</value></data>
+  <data name="Nav_StudentSpace" xml:space="preserve"><value>Student space</value></data>
+  <data name="Nav_TeacherSpace" xml:space="preserve"><value>Teacher space</value></data>
+  <data name="Nav_StudentHome" xml:space="preserve"><value>My subjects</value></data>
+  <data name="Nav_Learn" xml:space="preserve"><value>Learn</value></data>
+  <data name="Nav_NewSubject" xml:space="preserve"><value>New subject</value></data>
+  <data name="Nav_Classes" xml:space="preserve"><value>My classes</value></data>
+  <data name="Nav_Pack" xml:space="preserve"><value>Lesson pack</value></data>
+  <data name="Role_Student" xml:space="preserve"><value>Student</value></data>
+  <data name="Role_Teacher" xml:space="preserve"><value>Teacher</value></data>
+  <data name="Loading" xml:space="preserve"><value>Loading…</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Field_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Field_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Field_FirstName" xml:space="preserve"><value>First name</value></data>
+  <data name="Home_Title" xml:space="preserve"><value>The AI teacher that knows each student</value></data>
+  <data name="Home_Badge" xml:space="preserve"><value>Educational platform with AI · MVP</value></data>
+  <data name="Home_Heading" xml:space="preserve"><value>An AI teacher that knows what each student does not understand yet</value></data>
+  <data name="Home_Subtitle" xml:space="preserve"><value>EduVerse AI tests, explains, adapts the method when an explanation does not work, spots recurring mistakes and calls the human teacher when the student is stuck. Teachers get their class at a glance and a full lesson from any document.</value></data>
+  <data name="Home_DemoHint" xml:space="preserve"><value>Demo accounts with fictitious data, no AI key needed.</value></data>
+  <data name="Home_LoopTitle" xml:space="preserve"><value>How the AI teacher works</value></data>
+  <data name="Home_Loop_Test" xml:space="preserve"><value>A short adaptive placement test</value></data>
+  <data name="Home_Loop_Detect" xml:space="preserve"><value>Finds which concept is not understood</value></data>
+  <data name="Home_Loop_Explain" xml:space="preserve"><value>Explains it with examples, for this student</value></data>
+  <data name="Home_Loop_Practice" xml:space="preserve"><value>Progressive exercises, checked on the server</value></data>
+  <data name="Home_Loop_Mistakes" xml:space="preserve"><value>Spots recurring mistakes and explains why</value></data>
+  <data name="Home_Loop_Switch" xml:space="preserve"><value>Changes the method when one does not work</value></data>
+  <data name="Home_Loop_Teacher" xml:space="preserve"><value>Calls the human teacher if the student is stuck</value></data>
+  <data name="Demo_Student" xml:space="preserve"><value>Try as a student</value></data>
+  <data name="Demo_Teacher" xml:space="preserve"><value>Try as a teacher</value></data>
+  <data name="Profile_Student" xml:space="preserve"><value>Students</value></data>
+  <data name="Profile_Student_Text" xml:space="preserve"><value>Placement test, mastery map, explanations adapted to the student, exercises with feedback on each mistake, Socratic tutor, any subject from a topic.</value></data>
+  <data name="Profile_Teacher" xml:space="preserve"><value>Teachers</value></data>
+  <data name="Profile_Teacher_Text" xml:space="preserve"><value>Classes with a join code, heatmap students × concepts, alerts, frequent mistakes, lesson pack from a document, lesson in 3 levels, class summary.</value></data>
+  <data name="Profile_Institution" xml:space="preserve"><value>Institutions</value></data>
+  <data name="Profile_Institution_Text" xml:space="preserve"><value>Dashboard of the academy, early dropout alert with explainable rules, messages to families, quality of the teaching, plan and cost per student.</value></data>
+  <data name="Profile_Marketplace" xml:space="preserve"><value>Marketplace</value></data>
+  <data name="Profile_Marketplace_Text" xml:space="preserve"><value>Private teachers recommended from what the student needs, free slots, booking, payment (simulated) and ratings; the teacher's earnings after commission.</value></data>
+  <data name="Profile_Ready" xml:space="preserve"><value>Available</value></data>
+  <data name="Profile_Soon" xml:space="preserve"><value>Next phase</value></data>
+  <data name="Home_Principle_Code" xml:space="preserve"><value>The code decides, the AI writes</value></data>
+  <data name="Home_Principle_Code_Text" xml:space="preserve"><value>Mastery (Bayesian Knowledge Tracing), next step, method changes and alerts are computed in code, explainable and tested.</value></data>
+  <data name="Home_Principle_Validated" xml:space="preserve"><value>Every AI answer is checked</value></data>
+  <data name="Home_Principle_Validated_Text" xml:space="preserve"><value>Invalid exercises are dropped, concept maps with cycles are repaired or rejected. If the AI fails, the offline version answers and says why.</value></data>
+  <data name="Home_Principle_Privacy" xml:space="preserve"><value>Privacy first</value></data>
+  <data name="Home_Principle_Privacy_Text" xml:space="preserve"><value>Only a first name is asked. The AI never receives names or emails: only the stage, the mastery and the mistakes. The AI recommends, a person decides.</value></data>
+  <data name="Login_Heading" xml:space="preserve"><value>Welcome back</value></data>
+  <data name="Login_Subtitle" xml:space="preserve"><value>No account yet?</value></data>
+  <data name="Login_Failed" xml:space="preserve"><value>Wrong email or password.</value></data>
+  <data name="Login_DemoTitle" xml:space="preserve"><value>Just want to look around?</value></data>
+  <data name="Login_DemoText" xml:space="preserve"><value>Enter with a demo account: a teacher with a class of 4 students, or a student with a real learning history.</value></data>
+  <data name="Login_DemoAccounts" xml:space="preserve"><value>Demo accounts: teacher@eduverse.demo, alex@, sara@, leo@, nora@eduverse.demo · password {0}</value></data>
+  <data name="Register_Heading" xml:space="preserve"><value>Create your account</value></data>
+  <data name="Register_Subtitle" xml:space="preserve"><value>Already registered?</value></data>
+  <data name="Register_Role" xml:space="preserve"><value>I am a…</value></data>
+  <data name="Register_FirstNameHint" xml:space="preserve"><value>Only your first name: we do not need your surname.</value></data>
+  <data name="Register_PasswordHint" xml:space="preserve"><value>At least 8 characters, with a digit and a lowercase letter.</value></data>
+  <data name="Register_StageHint" xml:space="preserve"><value>For students: it adapts the vocabulary of the explanations.</value></data>
+  <data name="Register_Privacy" xml:space="preserve"><value>Your data stays on this platform. The AI only receives your school stage, your mastery and your mistakes, never your name or email.</value></data>
+  <data name="Register_Submit" xml:space="preserve"><value>Create my account</value></data>
+  <data name="Register_Error_Generic" xml:space="preserve"><value>The account could not be created. Check the fields.</value></data>
+  <data name="Register_Error_DuplicateUserName" xml:space="preserve"><value>An account already exists with this email.</value></data>
+  <data name="Register_Error_DuplicateEmail" xml:space="preserve"><value>An account already exists with this email.</value></data>
+  <data name="Register_Error_PasswordTooShort" xml:space="preserve"><value>The password must have at least 8 characters.</value></data>
+  <data name="Register_Error_PasswordRequiresDigit" xml:space="preserve"><value>The password needs a digit.</value></data>
+  <data name="Register_Error_PasswordRequiresLower" xml:space="preserve"><value>The password needs a lowercase letter.</value></data>
+  <data name="Register_Error_InvalidEmail" xml:space="preserve"><value>This email is not valid.</value></data>
+  <data name="Register_Error_Invalid_Email" xml:space="preserve"><value>This email is not valid.</value></data>
+  <data name="Register_Error_Invalid_FirstName" xml:space="preserve"><value>Write your first name (2 to 40 characters).</value></data>
+  <data name="Register_Error_Invalid_Password" xml:space="preserve"><value>The password must have at least 8 characters.</value></data>
+  <data name="Student_Hello" xml:space="preserve"><value>Hello {0}</value></data>
+  <data name="Student_Subtitle" xml:space="preserve"><value>Your subjects, what you already master and what to do next. The tutor adapts to how you learn.</value></data>
+  <data name="Student_MasteredOf" xml:space="preserve"><value>{0} of {1} concepts mastered</value></data>
+  <data name="Student_Progress" xml:space="preserve"><value>Progress</value></data>
+  <data name="Student_NextStep" xml:space="preserve"><value>Next step:</value></data>
+  <data name="Student_Map" xml:space="preserve"><value>Mastery map</value></data>
+  <data name="Student_Classes" xml:space="preserve"><value>My classes</value></data>
+  <data name="Student_NoClasses" xml:space="preserve"><value>Ask your teacher for the class code to join.</value></data>
+  <data name="Student_JoinCode" xml:space="preserve"><value>Class code</value></data>
+  <data name="Student_Join" xml:space="preserve"><value>Join</value></data>
+  <data name="Student_Legend" xml:space="preserve"><value>Mastery levels</value></data>
+  <data name="Student_LegendHint" xml:space="preserve"><value>The percentage is the probability that you know the concept, updated after each answer (Bayesian Knowledge Tracing). Mastered from 95 %.</value></data>
+  <data name="Student_Settings" xml:space="preserve"><value>My settings</value></data>
+  <data name="Student_LanguageHint" xml:space="preserve"><value>Explanations are written in the interface language (globe icon above).</value></data>
+  <data name="Notice_Join_Done" xml:space="preserve"><value>You have joined the class. Its subject is now in your list.</value></data>
+  <data name="Notice_Join_Unknown" xml:space="preserve"><value>No class has this code. Check it with your teacher.</value></data>
+  <data name="Notice_Settings_Saved" xml:space="preserve"><value>Settings saved.</value></data>
+  <data name="Notice_Class_Invalid" xml:space="preserve"><value>The class could not be created: check the name.</value></data>
+  <data name="Step_Diagnostic" xml:space="preserve"><value>Take the placement test</value></data>
+  <data name="Step_Learn" xml:space="preserve"><value>Continue learning</value></data>
+  <data name="Step_Practice" xml:space="preserve"><value>Practise</value></data>
+  <data name="Step_Review" xml:space="preserve"><value>Review</value></data>
+  <data name="Step_Done" xml:space="preserve"><value>Open</value></data>
+  <data name="Learn_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Learn_Retake" xml:space="preserve"><value>Retake the placement test</value></data>
+  <data name="Chat_Title" xml:space="preserve"><value>Ask the tutor</value></data>
+  <data name="Chat_Placeholder" xml:space="preserve"><value>Explain what you tried…</value></data>
+  <data name="Chat_Send" xml:space="preserve"><value>Send</value></data>
+  <data name="Chat_Hint" xml:space="preserve"><value>The tutor guides you with questions: it does not give the solution.</value></data>
+  <data name="Js_ChatAbout" xml:space="preserve"><value>About: {0}</value></data>
+  <data name="Js_ChatEmpty" xml:space="preserve"><value>Stuck? Tell the tutor what you think and it will guide you step by step.</value></data>
+  <data name="Js_Loading" xml:space="preserve"><value>Loading…</value></data>
+  <data name="Js_Explaining" xml:space="preserve"><value>Preparing an explanation for you…</value></data>
+  <data name="Js_Retry" xml:space="preserve"><value>Try again</value></data>
+  <data name="Js_MasteredOf" xml:space="preserve"><value>{0} of {1} concepts mastered</value></data>
+  <data name="Js_Step_Diagnostic" xml:space="preserve"><value>Placement test</value></data>
+  <data name="Js_Step_Learn" xml:space="preserve"><value>Explanation</value></data>
+  <data name="Js_Step_Practice" xml:space="preserve"><value>Practice</value></data>
+  <data name="Js_Step_Review" xml:space="preserve"><value>Spaced review</value></data>
+  <data name="Js_DiagTitle" xml:space="preserve"><value>Let's see where you are</value></data>
+  <data name="Js_DiagIntro" xml:space="preserve"><value>A few questions, chosen one after the other according to your answers (a right answer skips the earlier concepts, a wrong one the later ones). It is not an exam: answer without stress, "I don't know" is useful information too.</value></data>
+  <data name="Js_DiagStart" xml:space="preserve"><value>Start</value></data>
+  <data name="Js_DiagProgress" xml:space="preserve"><value>Placement test · question {0} of {1} max</value></data>
+  <data name="Js_DiagDone" xml:space="preserve"><value>Placement test done</value></data>
+  <data name="Js_DiagResultTitle" xml:space="preserve"><value>Your starting point is ready</value></data>
+  <data name="Js_DiagResultStart" xml:space="preserve"><value>We start with "{0}". What you already know will only get a quick check.</value></data>
+  <data name="Js_DiagResultAll" xml:space="preserve"><value>You seem to know the whole subject: a quick practice will confirm it.</value></data>
+  <data name="Js_MethodLabel" xml:space="preserve"><value>Method: {0}</value></data>
+  <data name="Js_SwitchedHint" xml:space="preserve"><value>The previous way of explaining did not work for you, so this one is different.</value></data>
+  <data name="Js_Example" xml:space="preserve"><value>Example</value></data>
+  <data name="Js_CheckYourself" xml:space="preserve"><value>Check yourself</value></data>
+  <data name="Js_Understood" xml:space="preserve"><value>Understood, let's practise</value></data>
+  <data name="Js_AskTutor" xml:space="preserve"><value>I have a question</value></data>
+  <data name="Js_Hint" xml:space="preserve"><value>Hint</value></data>
+  <data name="Js_Difficulty" xml:space="preserve"><value>Difficulty</value></data>
+  <data name="Js_DifficultyOf" xml:space="preserve"><value>Difficulty {0} of 3</value></data>
+  <data name="Js_Correct" xml:space="preserve"><value>Correct!</value></data>
+  <data name="Js_NotQuite" xml:space="preserve"><value>Not quite</value></data>
+  <data name="Js_WhyWrong" xml:space="preserve"><value>Why this answer is tempting:</value></data>
+  <data name="Js_MasteryNow" xml:space="preserve"><value>Probability that you know this concept: {0} %</value></data>
+  <data name="Js_Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="Js_Event_Mastered" xml:space="preserve"><value>🎉 Concept mastered! On to the next one.</value></data>
+  <data name="Js_Event_SwitchMethod" xml:space="preserve"><value>Let's try another way of explaining it: {0}.</value></data>
+  <data name="Js_Event_Recurring" xml:space="preserve"><value>Same mistake again: {0}</value></data>
+  <data name="Js_Event_NeedsTeacher" xml:space="preserve"><value>Your teacher has been told, to help you with this concept in person.</value></data>
+  <data name="Js_DoneTitle" xml:space="preserve"><value>Subject mastered!</value></data>
+  <data name="Js_DoneText" xml:space="preserve"><value>Every concept is mastered. Spaced reviews will come back in a few days so you don't forget.</value></data>
+  <data name="Js_DoneNewSubject" xml:space="preserve"><value>Learn something new</value></data>
+  <data name="Js_RetakeConfirm" xml:space="preserve"><value>Start this subject again with a new placement test? Your progress on it will be reset.</value></data>
+  <data name="Js_Fallback" xml:space="preserve"><value>The AI could not answer ({0}). The offline version is shown instead.</value></data>
+  <data name="Js_EngineCode" xml:space="preserve"><value>computed in code</value></data>
+  <data name="Js_SessionExpired" xml:space="preserve"><value>Your session has expired: sign in again.</value></data>
+  <data name="Js_AiErrorDetail" xml:space="preserve"><value>The AI could not do it: {0}</value></data>
+  <data name="Js_Err_needs_ai" xml:space="preserve"><value>This needs an AI engine: choose Claude, ChatGPT, Gemini or Ollama in the header (the demo only covers the built-in fractions subject).</value></data>
+  <data name="Js_Err_topic_length" xml:space="preserve"><value>Write a topic of 3 to 200 characters.</value></data>
+  <data name="Js_Err_too_many_subjects" xml:space="preserve"><value>You have reached the maximum number of subjects.</value></data>
+  <data name="Js_Err_message_length" xml:space="preserve"><value>Write a message of up to 800 characters.</value></data>
+  <data name="Js_Err_unknown_exercise" xml:space="preserve"><value>This exercise has already been answered. Continue with the next one.</value></data>
+  <data name="NewSubject_Heading" xml:space="preserve"><value>Learn any subject</value></data>
+  <data name="NewSubject_Subtitle" xml:space="preserve"><value>Write a topic: the AI breaks it into concepts in a logical order, each with its prerequisites, and the tutor guides you through them.</value></data>
+  <data name="NewSubject_Form" xml:space="preserve"><value>New subject from a topic</value></data>
+  <data name="NewSubject_Topic" xml:space="preserve"><value>Topic</value></data>
+  <data name="NewSubject_TopicPlaceholder" xml:space="preserve"><value>e.g. The water cycle, Past simple in English, Photosynthesis</value></data>
+  <data name="NewSubject_Submit" xml:space="preserve"><value>Create the concept map</value></data>
+  <data name="NewSubject_Hint" xml:space="preserve"><value>Needs an AI engine (selector in the header). The map is checked in code: unique concepts, known prerequisites, no circular dependency.</value></data>
+  <data name="Js_SubjectCreated" xml:space="preserve"><value>{0} concepts, in the order to learn them:</value></data>
+  <data name="Js_StartLearning" xml:space="preserve"><value>Start learning</value></data>
+  <data name="Js_UseInClass" xml:space="preserve"><value>Assign it to a class</value></data>
+  <data name="Teacher_Hello" xml:space="preserve"><value>Hello {0}</value></data>
+  <data name="Teacher_Subtitle" xml:space="preserve"><value>Your classes, the students who need you and the tools to prepare your lessons.</value></data>
+  <data name="Teacher_AlertsCount" xml:space="preserve"><value>{0} alerts</value></data>
+  <data name="Teacher_StudentsCount" xml:space="preserve"><value>{0} students</value></data>
+  <data name="Teacher_Code" xml:space="preserve"><value>Join code</value></data>
+  <data name="Teacher_NoClasses" xml:space="preserve"><value>No class yet: create one and give its code to your students.</value></data>
+  <data name="Teacher_NewClass" xml:space="preserve"><value>New class</value></data>
+  <data name="Teacher_ClassName" xml:space="preserve"><value>Name</value></data>
+  <data name="Teacher_ClassNamePlaceholder" xml:space="preserve"><value>e.g. Maths 2B</value></data>
+  <data name="Teacher_ClassSubject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Teacher_Create" xml:space="preserve"><value>Create the class</value></data>
+  <data name="Teacher_CodeHint" xml:space="preserve"><value>A 6-character code is generated: students type it in their space to join.</value></data>
+  <data name="Kpi_Students" xml:space="preserve"><value>Students</value></data>
+  <data name="Kpi_Progress" xml:space="preserve"><value>Average progress</value></data>
+  <data name="Kpi_Alerts" xml:space="preserve"><value>Open alerts</value></data>
+  <data name="Kpi_Hardest" xml:space="preserve"><value>Hardest concept</value></data>
+  <data name="Heat_Title" xml:space="preserve"><value>Mastery heatmap</value></data>
+  <data name="Heat_Hint" xml:space="preserve"><value>% = probability of knowing the concept. Click a student to see the answers.</value></data>
+  <data name="Heat_Empty" xml:space="preserve"><value>No student yet. Give them the code {0}.</value></data>
+  <data name="Heat_Student" xml:space="preserve"><value>Student</value></data>
+  <data name="Heat_Progress" xml:space="preserve"><value>Mastered</value></data>
+  <data name="Heat_AtRisk" xml:space="preserve"><value>NEEDS HELP</value></data>
+  <data name="Heat_Attempts" xml:space="preserve"><value>{0} answers</value></data>
+  <data name="Alerts_Title" xml:space="preserve"><value>Alerts from the tutor</value></data>
+  <data name="Alerts_None" xml:space="preserve"><value>No open alert. The tutor is managing on its own.</value></data>
+  <data name="Alerts_Hint" xml:space="preserve"><value>The AI recommends; you decide. Mark an alert as handled once you have talked with the student.</value></data>
+  <data name="AlertKind_NeedsTeacher" xml:space="preserve"><value>Needs you</value></data>
+  <data name="AlertKind_RecurringMisconception" xml:space="preserve"><value>Recurring mistake</value></data>
+  <data name="Alert_NeedsTeacher" xml:space="preserve"><value>Still stuck after trying these methods: {0}.</value></data>
+  <data name="Alert_Recurring" xml:space="preserve"><value>Repeats this mistake: {0}</value></data>
+  <data name="Alert_Resolve" xml:space="preserve"><value>Handled</value></data>
+  <data name="Mistakes_Title" xml:space="preserve"><value>Most frequent mistakes in the class</value></data>
+  <data name="Mistakes_None" xml:space="preserve"><value>No typical mistake recorded yet.</value></data>
+  <data name="Mistakes_Count" xml:space="preserve"><value>{0}× · {1} students</value></data>
+  <data name="Mistakes_Hint" xml:space="preserve"><value>Each wrong option of an exercise is tagged with the mistake that leads to it: a good start for your next class.</value></data>
+  <data name="History_Student" xml:space="preserve"><value>Recent answers of {0}</value></data>
+  <data name="History_None" xml:space="preserve"><value>No answer yet.</value></data>
+  <data name="History_When" xml:space="preserve"><value>When</value></data>
+  <data name="History_Concept" xml:space="preserve"><value>Concept</value></data>
+  <data name="History_Question" xml:space="preserve"><value>Question</value></data>
+  <data name="History_Answer" xml:space="preserve"><value>Answer</value></data>
+  <data name="History_Method" xml:space="preserve"><value>Method</value></data>
+  <data name="History_Diagnostic" xml:space="preserve"><value>Placement test</value></data>
+  <data name="Pack_Heading" xml:space="preserve"><value>Lesson pack from a document</value></data>
+  <data name="Pack_Subtitle" xml:space="preserve"><value>Upload a PDF or paste a text: get a 50-minute class plan, slides, a worksheet, 10 exercises, an exam with solutions and a rubric.</value></data>
+  <data name="Pack_TextPlaceholder" xml:space="preserve"><value>Paste the lesson (200 characters minimum)…</value></data>
+  <data name="Pack_Submit" xml:space="preserve"><value>Generate the pack</value></data>
+  <data name="Pack_Saved" xml:space="preserve"><value>Saved packs</value></data>
+  <data name="Pack_EmptyTitle" xml:space="preserve"><value>Your lesson pack will appear here</value></data>
+  <data name="Pack_EmptyText" xml:space="preserve"><value>Without an AI engine, the demo builds it with rules from the text (key terms, main sentences, cloze questions).</value></data>
+  <data name="Js_Pack_Plan" xml:space="preserve"><value>Class plan</value></data>
+  <data name="Js_Pack_Slides" xml:space="preserve"><value>Slides</value></data>
+  <data name="Js_Pack_Worksheet" xml:space="preserve"><value>Worksheet</value></data>
+  <data name="Js_Pack_Exercises" xml:space="preserve"><value>Exercises</value></data>
+  <data name="Js_Pack_Exam" xml:space="preserve"><value>Exam</value></data>
+  <data name="Js_Pack_Rubric" xml:space="preserve"><value>Rubric</value></data>
+  <data name="Js_PlanMinutes" xml:space="preserve"><value>Class plan · {0} min</value></data>
+  <data name="Js_Tasks" xml:space="preserve"><value>Tasks</value></data>
+  <data name="Js_ExamPoints" xml:space="preserve"><value>Total: {0} points</value></data>
+  <data name="Js_Points" xml:space="preserve"><value>pts</value></data>
+  <data name="Js_ShowSolution" xml:space="preserve"><value>Show the solution</value></data>
+  <data name="Js_Criterion" xml:space="preserve"><value>Criterion</value></data>
+  <data name="Js_Rubric_Excellent" xml:space="preserve"><value>Excellent</value></data>
+  <data name="Js_Rubric_Good" xml:space="preserve"><value>Good</value></data>
+  <data name="Js_Rubric_Sufficient" xml:space="preserve"><value>Sufficient</value></data>
+  <data name="Js_Rubric_Insufficient" xml:space="preserve"><value>Insufficient</value></data>
+  <data name="Js_Print" xml:space="preserve"><value>Print</value></data>
+  <data name="Js_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="About_Step4_Title" xml:space="preserve"><value>The human teacher steps in</value></data>
+  <data name="About_Step4_Text" xml:space="preserve"><value>When three methods have failed (6 answers or more, mastery under 60 %), an alert reaches the teacher, once per concept.</value></data>
+  <data name="About_Rules_Title" xml:space="preserve"><value>The code decides, the AI writes</value></data>
+  <data name="About_Rule1" xml:space="preserve"><value>Mastery = Bayesian Knowledge Tracing (Corbett &amp; Anderson, 1994), with parameters by difficulty. Mastered at 95 %.</value></data>
+  <data name="About_Rule2" xml:space="preserve"><value>Next step decided in code: placement test, learn, practise, go back to a weak prerequisite, or spaced review after 7 days.</value></data>
+  <data name="About_Rule3" xml:space="preserve"><value>Answers are checked on the server: the browser never receives the right option before the student answers.</value></data>
+  <data name="About_Rule4" xml:space="preserve"><value>Fractions exercises are generated in code (always mathematically right); for other subjects the AI writes them and the parser drops any invalid one.</value></data>
+  <data name="About_Rule5" xml:space="preserve"><value>Claude, ChatGPT, Gemini or Ollama, or the offline demo. If the AI fails, the offline version answers and the reason is shown.</value></data>
+  <data name="About_Roadmap_Title" xml:space="preserve"><value>Next phases</value></data>
+  <data name="About_Roadmap_Text" xml:space="preserve"><value>Real payments with Stripe Connect and invoices, online lessons with video, language coach, exercise scanner from a photo, competency maps and adaptive learning paths, database migrations.</value></data>
+  <data name="Method_StepByStep" xml:space="preserve"><value>Step by step</value></data>
+  <data name="Js_Method_StepByStep" xml:space="preserve"><value>Step by step</value></data>
+  <data name="Method_Visual" xml:space="preserve"><value>Visual</value></data>
+  <data name="Js_Method_Visual" xml:space="preserve"><value>Visual</value></data>
+  <data name="Method_RealLife" xml:space="preserve"><value>Real life</value></data>
+  <data name="Js_Method_RealLife" xml:space="preserve"><value>Real life</value></data>
+  <data name="Method_WorkedExample" xml:space="preserve"><value>Worked example</value></data>
+  <data name="Js_Method_WorkedExample" xml:space="preserve"><value>Worked example</value></data>
+  <data name="Method_Analogy" xml:space="preserve"><value>Analogy</value></data>
+  <data name="Js_Method_Analogy" xml:space="preserve"><value>Analogy</value></data>
+  <data name="Reason_FirstTime" xml:space="preserve"><value>First, a short placement test to find where to start.</value></data>
+  <data name="Js_Reason_FirstTime" xml:space="preserve"><value>First, a short placement test to find where to start.</value></data>
+  <data name="Reason_Resume" xml:space="preserve"><value>Let's finish the placement test.</value></data>
+  <data name="Js_Reason_Resume" xml:space="preserve"><value>Let's finish the placement test.</value></data>
+  <data name="Reason_SpacedReview" xml:space="preserve"><value>You mastered this a while ago: a quick review so you don't forget it.</value></data>
+  <data name="Js_Reason_SpacedReview" xml:space="preserve"><value>You mastered this a while ago: a quick review so you don't forget it.</value></data>
+  <data name="Reason_ReviewPrerequisite" xml:space="preserve"><value>This builds on an earlier concept that is not solid yet: let's go back to it first.</value></data>
+  <data name="Js_Reason_ReviewPrerequisite" xml:space="preserve"><value>This builds on an earlier concept that is not solid yet: let's go back to it first.</value></data>
+  <data name="Reason_NewConcept" xml:space="preserve"><value>A new concept. Read the explanation, then practise.</value></data>
+  <data name="Js_Reason_NewConcept" xml:space="preserve"><value>A new concept. Read the explanation, then practise.</value></data>
+  <data name="Reason_NewMethod" xml:space="preserve"><value>Let's look at it in a different way.</value></data>
+  <data name="Js_Reason_NewMethod" xml:space="preserve"><value>Let's look at it in a different way.</value></data>
+  <data name="Reason_AlmostThere" xml:space="preserve"><value>Almost there: a few more right answers to master it.</value></data>
+  <data name="Js_Reason_AlmostThere" xml:space="preserve"><value>Almost there: a few more right answers to master it.</value></data>
+  <data name="Reason_KeepPractising" xml:space="preserve"><value>Practise to make it stick.</value></data>
+  <data name="Js_Reason_KeepPractising" xml:space="preserve"><value>Practise to make it stick.</value></data>
+  <data name="Reason_AllMastered" xml:space="preserve"><value>You have mastered every concept of this subject.</value></data>
+  <data name="Js_Reason_AllMastered" xml:space="preserve"><value>You have mastered every concept of this subject.</value></data>
+  <data name="Status_NotStarted" xml:space="preserve"><value>Not started</value></data>
+  <data name="Status_Learning" xml:space="preserve"><value>Learning</value></data>
+  <data name="Status_Practising" xml:space="preserve"><value>Practising</value></data>
+  <data name="Status_Mastered" xml:space="preserve"><value>Mastered</value></data>
+  <data name="Mistakes_Count_One" xml:space="preserve"><value>{0}× · 1 student</value></data>
+  <data name="Nav_Main" xml:space="preserve"><value>Main menu</value></data>
+  <data name="Nav_ToggleSidebar" xml:space="preserve"><value>Collapse or expand the menu</value></data>
+  <data name="Palette_Open" xml:space="preserve"><value>Quick navigation</value></data>
+  <data name="Palette_Placeholder" xml:space="preserve"><value>Go to a page or run an action…</value></data>
+  <data name="Display_Title" xml:space="preserve"><value>Display</value></data>
+  <data name="Display_Sidebar" xml:space="preserve"><value>Main menu</value></data>
+  <data name="Display_Expanded" xml:space="preserve"><value>Expanded</value></data>
+  <data name="Display_Collapsed" xml:space="preserve"><value>Icons only</value></data>
+  <data name="Display_TextSize" xml:space="preserve"><value>Text size</value></data>
+  <data name="Display_TextSmall" xml:space="preserve"><value>Small text</value></data>
+  <data name="Display_TextMedium" xml:space="preserve"><value>Normal text</value></data>
+  <data name="Display_TextLarge" xml:space="preserve"><value>Large text</value></data>
+  <data name="Display_Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>System</value></data>
+  <data name="Display_Accent" xml:space="preserve"><value>Accent colour</value></data>
+  <data name="Accent_plum" xml:space="preserve"><value>Plum</value></data>
+  <data name="Accent_indigo" xml:space="preserve"><value>Indigo</value></data>
+  <data name="Accent_teal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Accent_rose" xml:space="preserve"><value>Rose</value></data>
+  <data name="Accent_blue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Display_ReduceMotion" xml:space="preserve"><value>Reduce animations</value></data>
+  <data name="Display_Shortcuts" xml:space="preserve"><value>Shortcuts: Ctrl K · [ · /</value></data>
+  <data name="Display_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Js_Greet_Morning" xml:space="preserve"><value>Good morning, {0}</value></data>
+  <data name="Js_Greet_Afternoon" xml:space="preserve"><value>Good afternoon, {0}</value></data>
+  <data name="Js_Greet_Evening" xml:space="preserve"><value>Good evening, {0}</value></data>
+  <data name="Js_Palette_Go" xml:space="preserve"><value>Go to</value></data>
+  <data name="Js_Palette_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Js_Palette_Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Js_Palette_NoResults" xml:space="preserve"><value>Nothing found.</value></data>
+  <data name="Js_Cmd_ToggleTheme" xml:space="preserve"><value>Switch light / dark theme</value></data>
+  <data name="Js_Cmd_ToggleSidebar" xml:space="preserve"><value>Collapse or expand the menu</value></data>
+  <data name="Js_Cmd_TextLarger" xml:space="preserve"><value>Larger text</value></data>
+  <data name="Js_Cmd_TextSmaller" xml:space="preserve"><value>Smaller text</value></data>
+  <data name="Js_Cmd_Focus" xml:space="preserve"><value>Focus mode on / off</value></data>
+  <data name="Js_Cmd_Logout" xml:space="preserve"><value>Sign out</value></data>
+  <data name="Learn_Focus" xml:space="preserve"><value>Focus</value></data>
+  <data name="Learn_FocusHint" xml:space="preserve"><value>Hide the menu and the side panels (F or Esc)</value></data>
+  <data name="Chart_AnswersPerDay" xml:space="preserve"><value>Answers per day this week: hatched = all, solid = right</value></data>
+  <data name="Chart_DayTooltip" xml:space="preserve"><value>{0} answers, {1} right</value></data>
+  <data name="Kpi_Mastered" xml:space="preserve"><value>Concepts mastered</value></data>
+  <data name="Kpi_AnswersWeek" xml:space="preserve"><value>Answers this week</value></data>
+  <data name="Kpi_ClassAnswers" xml:space="preserve"><value>Class answers this week</value></data>
+  <data name="Kpi_VsLastWeek" xml:space="preserve"><value>vs last week</value></data>
+  <data name="Kpi_Accuracy" xml:space="preserve"><value>Accuracy this week</value></data>
+  <data name="Kpi_Points" xml:space="preserve"><value>pts</value></data>
+  <data name="Kpi_RightOf" xml:space="preserve"><value>{0} right of {1} answers</value></data>
+  <data name="Kpi_OpenAlerts" xml:space="preserve"><value>{0} open alerts in this class</value></data>
+  <data name="Teacher_AlertsHint" xml:space="preserve"><value>Students the tutor could not help alone: open the class to see them.</value></data>
+  <data name="Panel_Concepts" xml:space="preserve"><value>Concepts of the subject</value></data>
+  <data name="Panel_ConceptsHint" xml:space="preserve"><value>Average probability of knowing each concept; the number is how many students master it.</value></data>
+  <data name="Panel_Students" xml:space="preserve"><value>Students</value></data>
+  <data name="Panel_Mastered" xml:space="preserve"><value>{0}/{1} mastered</value></data>
+  <data name="Js_Step_Prerequisite" xml:space="preserve"><value>Prerequisite review</value></data>
+  <data name="Role_Director" xml:space="preserve"><value>Management</value></data>
+  <data name="Role_Tutor" xml:space="preserve"><value>Private teacher</value></data>
+  <data name="Demo_Director" xml:space="preserve"><value>Try as a director</value></data>
+  <data name="Demo_Tutor" xml:space="preserve"><value>Try as a private teacher</value></data>
+  <data name="Nav_DirectorSpace" xml:space="preserve"><value>Institution</value></data>
+  <data name="Nav_TutorSpace" xml:space="preserve"><value>Private teacher</value></data>
+  <data name="Nav_Institution" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav_Risk" xml:space="preserve"><value>Dropout radar</value></data>
+  <data name="Nav_Quality" xml:space="preserve"><value>Quality and plan</value></data>
+  <data name="Nav_Marketplace" xml:space="preserve"><value>Private teachers</value></data>
+  <data name="Nav_MyLessons" xml:space="preserve"><value>My lessons</value></data>
+  <data name="Nav_TutorHome" xml:space="preserve"><value>My activity</value></data>
+  <data name="Nav_TutorProfile" xml:space="preserve"><value>Profile and availability</value></data>
+  <data name="SeeAll" xml:space="preserve"><value>See all</value></data>
+  <data name="Field_InstitutionName" xml:space="preserve"><value>Name of the academy, school or centre</value></data>
+  <data name="Field_InstitutionPlaceholder" xml:space="preserve"><value>e.g. Academia Horizonte</value></data>
+  <data name="Register_Error_Invalid_InstitutionName" xml:space="preserve"><value>Write the name of the institution.</value></data>
+  <data name="Institution_Subtitle" xml:space="preserve"><value>classes, teachers and students who need attention.</value></data>
+  <data name="Institution_TeacherCode" xml:space="preserve"><value>Code for teachers</value></data>
+  <data name="Institution_CodeHint" xml:space="preserve"><value>Teachers type this code in their space to join the institution; their classes then appear here.</value></data>
+  <data name="Institution_Active" xml:space="preserve"><value>{0} active this week</value></data>
+  <data name="Institution_Classes" xml:space="preserve"><value>Classes</value></data>
+  <data name="Institution_Class" xml:space="preserve"><value>Class</value></data>
+  <data name="Institution_NoClasses" xml:space="preserve"><value>No class yet: give the code {0} to your teachers.</value></data>
+  <data name="Institution_Teachers" xml:space="preserve"><value>Teachers</value></data>
+  <data name="Institution_TeacherLine" xml:space="preserve"><value>{0} classes · {1} students</value></data>
+  <data name="Kpi_AtRisk" xml:space="preserve"><value>Students at high risk</value></data>
+  <data name="Kpi_AtRiskHint" xml:space="preserve"><value>Open the dropout radar</value></data>
+  <data name="Risk_Subtitle" xml:space="preserve"><value>A score from simple, documented rules: inactivity, drop in activity, accuracy, teacher alerts and progress. A high score is a reason to call and listen, not a label.</value></data>
+  <data name="Risk_All" xml:space="preserve"><value>All</value></data>
+  <data name="RiskLevel_High" xml:space="preserve"><value>High</value></data>
+  <data name="RiskLevel_Medium" xml:space="preserve"><value>Medium</value></data>
+  <data name="RiskLevel_Low" xml:space="preserve"><value>Low</value></data>
+  <data name="Risk_None" xml:space="preserve"><value>No student at this level.</value></data>
+  <data name="Risk_NoFactor" xml:space="preserve"><value>No warning sign.</value></data>
+  <data name="Risk_Hint" xml:space="preserve"><value>Points per rule: inactive 4/7/14 days +10/+20/+35, never started after a week +30, activity halved +20, accuracy under 50 % +15, open alerts +10 each (max 20), progress under 20 % after 3 weeks +10. High from 50, medium from 25.</value></data>
+  <data name="Risk_NeverStarted" xml:space="preserve"><value>Never started ({0} days since joining)</value></data>
+  <data name="Risk_Inactive" xml:space="preserve"><value>Inactive for {0} days</value></data>
+  <data name="Risk_ActivityDrop" xml:space="preserve"><value>Activity −{0} % vs last week</value></data>
+  <data name="Risk_LowAccuracy" xml:space="preserve"><value>Accuracy {0} %</value></data>
+  <data name="Risk_TeacherAlerts" xml:space="preserve"><value>{0} open alerts</value></data>
+  <data name="Risk_LowProgress" xml:space="preserve"><value>Progress {0} %</value></data>
+  <data name="Family_Button" xml:space="preserve"><value>Message to the family</value></data>
+  <data name="Family_Title" xml:space="preserve"><value>Message to the family</value></data>
+  <data name="Family_Empty" xml:space="preserve"><value>Choose a student: the message is written from what the platform measured (progress, activity, mistakes).</value></data>
+  <data name="Family_Tone" xml:space="preserve"><value>Tone</value></data>
+  <data name="Family_Warm" xml:space="preserve"><value>Warm</value></data>
+  <data name="Family_Formal" xml:space="preserve"><value>Formal</value></data>
+  <data name="Family_Note" xml:space="preserve"><value>Note of the staff (optional)</value></data>
+  <data name="Family_NotePlaceholder" xml:space="preserve"><value>e.g. Very participative in class.</value></data>
+  <data name="Family_Generate" xml:space="preserve"><value>Write the message</value></data>
+  <data name="Family_Privacy" xml:space="preserve"><value>The AI only receives the first name and the facts measured; contact data written by the model is removed. A person reviews and sends the message.</value></data>
+  <data name="Js_FamilyFor" xml:space="preserve"><value>For the family of {0}</value></data>
+  <data name="Js_FamilyEmail" xml:space="preserve"><value>Email</value></data>
+  <data name="Js_FamilyKeyPoints" xml:space="preserve"><value>Key points for a call</value></data>
+  <data name="Js_FamilyReview" xml:space="preserve"><value>Review it before sending: you know the family.</value></data>
+  <data name="Js_Err_note_too_long" xml:space="preserve"><value>The note is too long (600 characters max).</value></data>
+  <data name="Quality_Subtitle" xml:space="preserve"><value>Which explanation methods work best for your students, how fast the alerts of the tutor are handled, and what the platform costs.</value></data>
+  <data name="Quality_Best" xml:space="preserve"><value>Most effective method</value></data>
+  <data name="Quality_BestHint" xml:space="preserve"><value>Highest share of right answers (5 answers minimum).</value></data>
+  <data name="Quality_BestTag" xml:space="preserve"><value>best</value></data>
+  <data name="Quality_Mastered" xml:space="preserve"><value>Concepts mastered</value></data>
+  <data name="Quality_AfterSwitch" xml:space="preserve"><value>{0} after a change of method</value></data>
+  <data name="Quality_Alerts" xml:space="preserve"><value>Alerts handled</value></data>
+  <data name="Quality_Hours" xml:space="preserve"><value>{0} h on average to handle an alert</value></data>
+  <data name="Quality_NoResolved" xml:space="preserve"><value>No alert handled yet.</value></data>
+  <data name="Quality_Methods" xml:space="preserve"><value>Right answers by explanation method</value></data>
+  <data name="Quality_MethodsHint" xml:space="preserve"><value>Practice answers given while the tutor was using each method.</value></data>
+  <data name="Plan_Title" xml:space="preserve"><value>Plan and monthly cost</value></data>
+  <data name="Plan_Name" xml:space="preserve"><value>Plan</value></data>
+  <data name="Plan_Academy" xml:space="preserve"><value>Academy</value></data>
+  <data name="Plan_Base" xml:space="preserve"><value>Base</value></data>
+  <data name="Plan_Included" xml:space="preserve"><value>{0} students included</value></data>
+  <data name="Plan_Extra" xml:space="preserve"><value>Each extra student</value></data>
+  <data name="Plan_FreeSeats" xml:space="preserve"><value>Free places in the plan</value></data>
+  <data name="Plan_Monthly" xml:space="preserve"><value>Monthly cost</value></data>
+  <data name="Plan_PerActive" xml:space="preserve"><value>{0} per active student</value></data>
+  <data name="Plan_Hint" xml:space="preserve"><value>Indicative prices of the business plan, computed in code. No billing in this version.</value></data>
+  <data name="Teacher_Institution" xml:space="preserve"><value>My institution</value></data>
+  <data name="Teacher_InstitutionMember" xml:space="preserve"><value>You belong to {0}: its management sees your classes.</value></data>
+  <data name="Teacher_InstitutionHint" xml:space="preserve"><value>Ask the management for the institution code.</value></data>
+  <data name="Notice_Institution_Joined" xml:space="preserve"><value>You have joined the institution.</value></data>
+  <data name="Notice_Institution_Unknown" xml:space="preserve"><value>No institution has this code, or you already belong to one.</value></data>
+  <data name="Market_Heading" xml:space="preserve"><value>Private teachers</value></data>
+  <data name="Market_Subtitle" xml:space="preserve"><value>Book a one-hour lesson with a teacher, online or face to face. Recommendations come from the concepts you find hardest.</value></data>
+  <data name="Market_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Market_SubjectPlaceholder" xml:space="preserve"><value>e.g. Mathematics, English…</value></data>
+  <data name="Market_Any" xml:space="preserve"><value>Any</value></data>
+  <data name="Market_MaxPrice" xml:space="preserve"><value>Max price (€/h)</value></data>
+  <data name="Market_Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Market_Clear" xml:space="preserve"><value>Clear</value></data>
+  <data name="Market_Recommended" xml:space="preserve"><value>Recommended for you</value></data>
+  <data name="Market_All" xml:space="preserve"><value>All the teachers</value></data>
+  <data name="Market_Results" xml:space="preserve"><value>{0} teachers found</value></data>
+  <data name="Market_NoResults" xml:space="preserve"><value>No teacher matches: try with fewer filters.</value></data>
+  <data name="Market_Commission" xml:space="preserve"><value>Payments are simulated in this version. The platform keeps a commission of 15 % (12 % from 500 € a month, 8 % from 1,500 €).</value></data>
+  <data name="Market_Hour" xml:space="preserve"><value>h</value></data>
+  <data name="Market_New" xml:space="preserve"><value>New</value></data>
+  <data name="Market_Lessons" xml:space="preserve"><value>{0} lessons</value></data>
+  <data name="Market_Reviews" xml:space="preserve"><value>{0} reviews</value></data>
+  <data name="Market_Why" xml:space="preserve"><value>Why:</value></data>
+  <data name="Match_Subject" xml:space="preserve"><value>teaches what you need</value></data>
+  <data name="Match_Stage" xml:space="preserve"><value>your level</value></data>
+  <data name="Match_Language" xml:space="preserve"><value>your language</value></data>
+  <data name="Match_TopRated" xml:space="preserve"><value>top rated</value></data>
+  <data name="Match_GoodPrice" xml:space="preserve"><value>good price</value></data>
+  <data name="Market_PerLesson" xml:space="preserve"><value>per one-hour lesson</value></data>
+  <data name="Market_Subjects" xml:space="preserve"><value>Subjects</value></data>
+  <data name="Market_Languages" xml:space="preserve"><value>Languages</value></data>
+  <data name="Market_Stages" xml:space="preserve"><value>Levels</value></data>
+  <data name="Market_ReviewsTitle" xml:space="preserve"><value>Reviews</value></data>
+  <data name="Market_NoReviews" xml:space="preserve"><value>No review yet.</value></data>
+  <data name="Market_Book" xml:space="preserve"><value>Book a lesson</value></data>
+  <data name="Market_TimeZone" xml:space="preserve"><value>Times:</value></data>
+  <data name="Market_NoSlots" xml:space="preserve"><value>No free slot in the next two weeks.</value></data>
+  <data name="Market_ChooseSlot" xml:space="preserve"><value>Choose a time</value></data>
+  <data name="Market_LessonSubject" xml:space="preserve"><value>What do you want to work on?</value></data>
+  <data name="Market_Note" xml:space="preserve"><value>Message to the teacher (optional)</value></data>
+  <data name="Market_NotePlaceholder" xml:space="preserve"><value>e.g. I have an exam on Friday.</value></data>
+  <data name="Market_BookFor" xml:space="preserve"><value>Book · {0}</value></data>
+  <data name="Market_StudentsOnly" xml:space="preserve"><value>Booking is for students.</value></data>
+  <data name="Market_Policy" xml:space="preserve"><value>Pay within 30 minutes to confirm. Free cancellation up to 24 h before the lesson.</value></data>
+  <data name="Notice_Book_Taken" xml:space="preserve"><value>This time has just been taken: choose another one.</value></data>
+  <data name="Notice_Book_Invalid" xml:space="preserve"><value>Choose a time and write what you want to work on.</value></data>
+  <data name="Bookings_Subtitle" xml:space="preserve"><value>Pay to confirm, cancel up to 24 h before for a full refund, rate the lesson afterwards.</value></data>
+  <data name="Bookings_Find" xml:space="preserve"><value>Find a teacher</value></data>
+  <data name="Bookings_Upcoming" xml:space="preserve"><value>Upcoming lessons</value></data>
+  <data name="Bookings_None" xml:space="preserve"><value>No lesson booked.</value></data>
+  <data name="Bookings_Past" xml:space="preserve"><value>History</value></data>
+  <data name="Bookings_NonePast" xml:space="preserve"><value>No past lesson yet.</value></data>
+  <data name="Bookings_Pay" xml:space="preserve"><value>Pay {0} (simulated)</value></data>
+  <data name="Bookings_Simulated" xml:space="preserve"><value>Simulated payment: nothing is charged and no card data is asked.</value></data>
+  <data name="Bookings_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Bookings_RefundYes" xml:space="preserve"><value>Fully refunded (more than 24 h before).</value></data>
+  <data name="Bookings_RefundNo" xml:space="preserve"><value>Less than 24 h before: not refunded.</value></data>
+  <data name="Bookings_Refunded" xml:space="preserve"><value>refunded</value></data>
+  <data name="Bookings_Rating" xml:space="preserve"><value>Rating</value></data>
+  <data name="Bookings_Review" xml:space="preserve"><value>A short comment (optional)</value></data>
+  <data name="Bookings_Rate" xml:space="preserve"><value>Rate</value></data>
+  <data name="BookingStatus_Pending" xml:space="preserve"><value>Waiting for payment</value></data>
+  <data name="BookingStatus_Confirmed" xml:space="preserve"><value>Confirmed</value></data>
+  <data name="BookingStatus_Completed" xml:space="preserve"><value>Done</value></data>
+  <data name="BookingStatus_Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="Notice_Pay_Done" xml:space="preserve"><value>Payment simulated: the lesson is confirmed.</value></data>
+  <data name="Notice_Cancel_Done" xml:space="preserve"><value>Lesson cancelled.</value></data>
+  <data name="Notice_Cancel_DoneTutor" xml:space="preserve"><value>Lesson cancelled: the student is fully refunded.</value></data>
+  <data name="Notice_Rate_Done" xml:space="preserve"><value>Thank you for your review.</value></data>
+  <data name="Notice_Action_Failed" xml:space="preserve"><value>This action is no longer possible.</value></data>
+  <data name="Tutor_Subtitle" xml:space="preserve"><value>Your lessons, your earnings after the platform commission and your reviews.</value></data>
+  <data name="Tutor_SeePublic" xml:space="preserve"><value>See my public profile</value></data>
+  <data name="Tutor_NotPublished" xml:space="preserve"><value>Your profile is not visible yet: complete it and publish it.</value></data>
+  <data name="Tutor_NetMonth" xml:space="preserve"><value>Net earnings this month</value></data>
+  <data name="Tutor_Months" xml:space="preserve"><value>Net earnings of the last 6 months</value></data>
+  <data name="Tutor_Commission" xml:space="preserve"><value>Commission rate now</value></data>
+  <data name="Tutor_CommissionLine" xml:space="preserve"><value>Gross {0} · commission {1} · {2} lessons this month</value></data>
+  <data name="Tutor_Rating" xml:space="preserve"><value>Average rating</value></data>
+  <data name="Tutor_Next" xml:space="preserve"><value>Next lesson</value></data>
+  <data name="Tutor_NoNext" xml:space="preserve"><value>No lesson confirmed yet.</value></data>
+  <data name="Tutor_Upcoming" xml:space="preserve"><value>Upcoming lessons</value></data>
+  <data name="Tutor_NoBookings" xml:space="preserve"><value>No booking yet.</value></data>
+  <data name="Tutor_AfterCommission" xml:space="preserve"><value>net, after {0} of commission</value></data>
+  <data name="Tutor_CancelHint" xml:space="preserve"><value>If you cancel, the student is always fully refunded.</value></data>
+  <data name="Profile_Subtitle" xml:space="preserve"><value>What families see in the marketplace, and the hours you can teach every week.</value></data>
+  <data name="Profile_Presentation" xml:space="preserve"><value>Presentation</value></data>
+  <data name="Profile_Headline" xml:space="preserve"><value>Headline</value></data>
+  <data name="Profile_HeadlinePlaceholder" xml:space="preserve"><value>e.g. Maths for secondary school, step by step</value></data>
+  <data name="Profile_Bio" xml:space="preserve"><value>About you and how you teach</value></data>
+  <data name="Profile_SubjectsPlaceholder" xml:space="preserve"><value>Mathematics, Physics</value></data>
+  <data name="Profile_SubjectsHint" xml:space="preserve"><value>Separated by commas, 8 max.</value></data>
+  <data name="Profile_Price" xml:space="preserve"><value>Price per hour (€)</value></data>
+  <data name="Profile_Availability" xml:space="preserve"><value>Weekly availability</value></data>
+  <data name="Profile_AvailabilityHint" xml:space="preserve"><value>One window per day ({0}). Students see one-hour slots, from 12 h in advance, over the next two weeks.</value></data>
+  <data name="Profile_From" xml:space="preserve"><value>From</value></data>
+  <data name="Profile_To" xml:space="preserve"><value>To</value></data>
+  <data name="Profile_Publish" xml:space="preserve"><value>Visible in the marketplace</value></data>
+  <data name="Profile_PublishHint" xml:space="preserve"><value>Needs a headline, a subject, a language and at least one window.</value></data>
+  <data name="Notice_Profile_Saved" xml:space="preserve"><value>Profile saved.</value></data>
+  <data name="Notice_Profile_Incomplete" xml:space="preserve"><value>Saved, but not published: add a headline, a subject, a language and a window.</value></data>
+  <data name="Nav_Explore" xml:space="preserve"><value>Explore</value></data>
+  <data name="Nav_Arena" xml:space="preserve"><value>Arena</value></data>
+  <data name="Nav_Achievements" xml:space="preserve"><value>Achievements</value></data>
+  <data name="Field_Level" xml:space="preserve"><value>Level of study</value></data>
+  <data name="Mascot_Streak" xml:space="preserve"><value>You're on fire! Keep your {0}-day streak going 🔥</value></data>
+  <data name="Mascot_Today" xml:space="preserve"><value>Great job today! One more test?</value></data>
+  <data name="Mascot_Start" xml:space="preserve"><value>Hi! I'm Evo. Shall we start with a quick test?</value></data>
+  <data name="Game_Xp" xml:space="preserve"><value>Current XP</value></data>
+  <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP to the next level</value></data>
+  <data name="Game_YourLevel" xml:space="preserve"><value>Your level</value></data>
+  <data name="Game_LevelN" xml:space="preserve"><value>Level {0}</value></data>
+  <data name="Game_WeekXp" xml:space="preserve"><value>{0} XP this week</value></data>
+  <data name="Game_Streak" xml:space="preserve"><value>Streak</value></data>
+  <data name="Game_Days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="Game_BestStreak" xml:space="preserve"><value>Best: {0} days</value></data>
+  <data name="Game_PlayToKeep" xml:space="preserve"><value>answer today to keep it</value></data>
+  <data name="Game_Rank" xml:space="preserve"><value>Rank in class</value></data>
+  <data name="Game_ThisWeek" xml:space="preserve"><value>this week</value></data>
+  <data name="Game_NoClassRank" xml:space="preserve"><value>Join a class with its code to compete with your classmates.</value></data>
+  <data name="Game_Continue" xml:space="preserve"><value>Continue learning</value></data>
+  <data name="Game_ContinueHint" xml:space="preserve"><value>Where you left off</value></data>
+  <data name="Game_QuickTest" xml:space="preserve"><value>Quick test</value></data>
+  <data name="Game_Quests" xml:space="preserve"><value>Today's quests</value></data>
+  <data name="Game_QuestsHint" xml:space="preserve"><value>New ones every day · XP when finished</value></data>
+  <data name="Game_MySubjects" xml:space="preserve"><value>My subjects</value></data>
+  <data name="Game_MySubjectsHint" xml:space="preserve"><value>Your level and accuracy in each subject of the catalog</value></data>
+  <data name="Game_NotStarted" xml:space="preserve"><value>Not started</value></data>
+  <data name="Game_Activity" xml:space="preserve"><value>Monthly activity</value></data>
+  <data name="Game_ActivityHint" xml:space="preserve"><value>The darker the day, the more questions you answered.</value></data>
+  <data name="Game_Leaderboard" xml:space="preserve"><value>Leaderboard</value></data>
+  <data name="Game_SeeAll" xml:space="preserve"><value>See all</value></data>
+  <data name="Game_Badges" xml:space="preserve"><value>Badges</value></data>
+  <data name="Rank_Explorer" xml:space="preserve"><value>Explorer</value></data>
+  <data name="Rank_Apprentice" xml:space="preserve"><value>Apprentice</value></data>
+  <data name="Rank_Scholar" xml:space="preserve"><value>Scholar</value></data>
+  <data name="Rank_Expert" xml:space="preserve"><value>Expert</value></data>
+  <data name="Rank_Master" xml:space="preserve"><value>Master</value></data>
+  <data name="Rank_Sage" xml:space="preserve"><value>Sage</value></data>
+  <data name="QuestText_Answer" xml:space="preserve"><value>Answer {0} questions</value></data>
+  <data name="QuestText_CorrectInARow" xml:space="preserve"><value>Get {0} right answers in a row</value></data>
+  <data name="QuestText_FinishTest" xml:space="preserve"><value>Finish {0} test</value></data>
+  <data name="QuestText_PerfectTest" xml:space="preserve"><value>Get a perfect score in {0} test</value></data>
+  <data name="QuestText_ThreeSubjects" xml:space="preserve"><value>Practise {0} different subjects</value></data>
+  <data name="QuestText_PlayDuel" xml:space="preserve"><value>Play {0} duel</value></data>
+  <data name="QuestText_Placement" xml:space="preserve"><value>Take {0} placement test</value></data>
+  <data name="QuestText_Tutor" xml:space="preserve"><value>Answer {0} exercises with the tutor</value></data>
+  <data name="Quest_Answer" xml:space="preserve"><value>Answer questions</value></data>
+  <data name="Quest_CorrectInARow" xml:space="preserve"><value>Right in a row</value></data>
+  <data name="Quest_FinishTest" xml:space="preserve"><value>Finish a test</value></data>
+  <data name="Quest_PerfectTest" xml:space="preserve"><value>Perfect test</value></data>
+  <data name="Quest_ThreeSubjects" xml:space="preserve"><value>Three subjects</value></data>
+  <data name="Quest_PlayDuel" xml:space="preserve"><value>Play a duel</value></data>
+  <data name="Quest_Placement" xml:space="preserve"><value>Placement test</value></data>
+  <data name="Quest_Tutor" xml:space="preserve"><value>Practise with the tutor</value></data>
+  <data name="Badge_FirstSteps" xml:space="preserve"><value>First steps</value></data>
+  <data name="BadgeHint_FirstSteps" xml:space="preserve"><value>Get {0} right answer</value></data>
+  <data name="Badge_Hundred" xml:space="preserve"><value>Hundred</value></data>
+  <data name="BadgeHint_Hundred" xml:space="preserve"><value>{0} right answers</value></data>
+  <data name="Badge_Thousand" xml:space="preserve"><value>Summit</value></data>
+  <data name="BadgeHint_Thousand" xml:space="preserve"><value>{0} right answers</value></data>
+  <data name="Badge_Streak3" xml:space="preserve"><value>Warming up</value></data>
+  <data name="BadgeHint_Streak3" xml:space="preserve"><value>A {0}-day streak</value></data>
+  <data name="Badge_Streak7" xml:space="preserve"><value>On fire</value></data>
+  <data name="BadgeHint_Streak7" xml:space="preserve"><value>A {0}-day streak</value></data>
+  <data name="Badge_Streak30" xml:space="preserve"><value>Comet</value></data>
+  <data name="BadgeHint_Streak30" xml:space="preserve"><value>A {0}-day streak</value></data>
+  <data name="Badge_Perfect" xml:space="preserve"><value>Bullseye</value></data>
+  <data name="BadgeHint_Perfect" xml:space="preserve"><value>{0} perfect test</value></data>
+  <data name="Badge_Sharpshooter" xml:space="preserve"><value>Sharpshooter</value></data>
+  <data name="BadgeHint_Sharpshooter" xml:space="preserve"><value>{0} perfect tests</value></data>
+  <data name="Badge_Curious" xml:space="preserve"><value>Curious</value></data>
+  <data name="BadgeHint_Curious" xml:space="preserve"><value>Practise {0} subjects</value></data>
+  <data name="Badge_Polymath" xml:space="preserve"><value>Polymath</value></data>
+  <data name="BadgeHint_Polymath" xml:space="preserve"><value>Practise {0} subjects</value></data>
+  <data name="Badge_Explorer" xml:space="preserve"><value>Explorer</value></data>
+  <data name="BadgeHint_Explorer" xml:space="preserve"><value>Take {0} placement test</value></data>
+  <data name="Badge_Cartographer" xml:space="preserve"><value>Cartographer</value></data>
+  <data name="BadgeHint_Cartographer" xml:space="preserve"><value>Take {0} placement tests</value></data>
+  <data name="Badge_Duelist" xml:space="preserve"><value>Duelist</value></data>
+  <data name="BadgeHint_Duelist" xml:space="preserve"><value>Win {0} duel</value></data>
+  <data name="Badge_Champion" xml:space="preserve"><value>Champion</value></data>
+  <data name="BadgeHint_Champion" xml:space="preserve"><value>Win {0} duels</value></data>
+  <data name="Badge_Mastery" xml:space="preserve"><value>Mastery</value></data>
+  <data name="BadgeHint_Mastery" xml:space="preserve"><value>Master {0} concept with the tutor</value></data>
+  <data name="Badge_Scholar" xml:space="preserve"><value>Scholar</value></data>
+  <data name="BadgeHint_Scholar" xml:space="preserve"><value>Reach level 5 ({0} XP)</value></data>
+  <data name="Badge_Researcher" xml:space="preserve"><value>Researcher</value></data>
+  <data name="BadgeHint_Researcher" xml:space="preserve"><value>Answer {0} question at master's or doctoral level</value></data>
+  <data name="Team_Owls" xml:space="preserve"><value>Owls</value></data>
+  <data name="Team_Foxes" xml:space="preserve"><value>Foxes</value></data>
+  <data name="Team_Dolphins" xml:space="preserve"><value>Dolphins</value></data>
+  <data name="Team_Bears" xml:space="preserve"><value>Bears</value></data>
+  <data name="Explore_Title" xml:space="preserve"><value>Explore and test yourself</value></data>
+  <data name="Explore_Subtitle" xml:space="preserve"><value>Tests for every subject from 5 years old to doctorate. Find your level, practise with adaptive tests and win XP.</value></data>
+  <data name="Explore_Ages" xml:space="preserve"><value>{0} years</value></data>
+  <data name="Explore_KidsHello" xml:space="preserve"><value>Hi! Pick a subject and let's play! 🎈</value></data>
+  <data name="Explore_MyLevel" xml:space="preserve"><value>My level</value></data>
+  <data name="Explore_Review" xml:space="preserve"><value>To review</value></data>
+  <data name="Explore_Start" xml:space="preserve"><value>Start test</value></data>
+  <data name="Explore_Play" xml:space="preserve"><value>Play</value></data>
+  <data name="Explore_From" xml:space="preserve"><value>From {0}</value></data>
+  <data name="Explore_FindLevel" xml:space="preserve"><value>Find my level</value></data>
+  <data name="Explore_All" xml:space="preserve"><value>All subjects</value></data>
+  <data name="Explore_TopicTitle" xml:space="preserve"><value>Any topic, with the AI</value></data>
+  <data name="Explore_TopicHint" xml:space="preserve"><value>Write a topic (the Roman Empire, photosynthesis, Python loops…) and the AI writes a test of your level. The answers are checked in code.</value></data>
+  <data name="Explore_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Explore_Topic" xml:space="preserve"><value>Topic</value></data>
+  <data name="Explore_TopicPlaceholder" xml:space="preserve"><value>e.g. Volcanoes</value></data>
+  <data name="Explore_Generate" xml:space="preserve"><value>Create test</value></data>
+  <data name="Area_Mathematics" xml:space="preserve"><value>Mathematics</value></data>
+  <data name="Area_Physics" xml:space="preserve"><value>Physics</value></data>
+  <data name="Area_Chemistry" xml:space="preserve"><value>Chemistry</value></data>
+  <data name="Area_Biology" xml:space="preserve"><value>Biology</value></data>
+  <data name="Area_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Area_ForeignLanguage" xml:space="preserve"><value>Spanish (foreign language)</value></data>
+  <data name="Area_History" xml:space="preserve"><value>History</value></data>
+  <data name="Area_Geography" xml:space="preserve"><value>Geography</value></data>
+  <data name="Area_Economics" xml:space="preserve"><value>Economics</value></data>
+  <data name="Area_Programming" xml:space="preserve"><value>Programming</value></data>
+  <data name="AreaHint_Mathematics" xml:space="preserve"><value>Counting, operations, algebra, calculus, statistics</value></data>
+  <data name="AreaHint_Physics" xml:space="preserve"><value>Motion, forces, energy, electricity, relativity</value></data>
+  <data name="AreaHint_Chemistry" xml:space="preserve"><value>Elements, atoms, reactions, acids, thermodynamics</value></data>
+  <data name="AreaHint_Biology" xml:space="preserve"><value>Animals, the body, cells, genetics, molecular biology</value></data>
+  <data name="AreaHint_Language" xml:space="preserve"><value>Letters, words, grammar, literature, linguistics</value></data>
+  <data name="AreaHint_ForeignLanguage" xml:space="preserve"><value>Words, sentences, verbs and idioms</value></data>
+  <data name="AreaHint_History" xml:space="preserve"><value>Dates, chronology, people, historiography</value></data>
+  <data name="AreaHint_Geography" xml:space="preserve"><value>Countries, capitals, relief, climates, theories</value></data>
+  <data name="AreaHint_Economics" xml:space="preserve"><value>Percentages, finance, markets, economists</value></data>
+  <data name="AreaHint_Programming" xml:space="preserve"><value>Loops, variables, functions, algorithms, theory</value></data>
+  <data name="Level_EarlyYears" xml:space="preserve"><value>Early years (5–6 years)</value></data>
+  <data name="Level_Primary1" xml:space="preserve"><value>Primary, years 1–2 (6–8)</value></data>
+  <data name="Level_Primary2" xml:space="preserve"><value>Primary, years 3–4 (8–10)</value></data>
+  <data name="Level_Primary3" xml:space="preserve"><value>Primary, years 5–6 (10–12)</value></data>
+  <data name="Level_Secondary1" xml:space="preserve"><value>Secondary, years 1–2 (12–14)</value></data>
+  <data name="Level_Secondary2" xml:space="preserve"><value>Secondary, years 3–4 (14–16)</value></data>
+  <data name="Level_HighSchool" xml:space="preserve"><value>High school (16–18)</value></data>
+  <data name="Level_Bachelor" xml:space="preserve"><value>University degree</value></data>
+  <data name="Level_Master" xml:space="preserve"><value>Master's degree</value></data>
+  <data name="Level_Doctorate" xml:space="preserve"><value>Doctorate (PhD)</value></data>
+  <data name="LevelShort_EarlyYears" xml:space="preserve"><value>Early years</value></data>
+  <data name="LevelShort_Primary1" xml:space="preserve"><value>Primary 1–2</value></data>
+  <data name="LevelShort_Primary2" xml:space="preserve"><value>Primary 3–4</value></data>
+  <data name="LevelShort_Primary3" xml:space="preserve"><value>Primary 5–6</value></data>
+  <data name="LevelShort_Secondary1" xml:space="preserve"><value>Secondary 1–2</value></data>
+  <data name="LevelShort_Secondary2" xml:space="preserve"><value>Secondary 3–4</value></data>
+  <data name="LevelShort_HighSchool" xml:space="preserve"><value>High school</value></data>
+  <data name="LevelShort_Bachelor" xml:space="preserve"><value>Degree</value></data>
+  <data name="LevelShort_Master" xml:space="preserve"><value>Master</value></data>
+  <data name="LevelShort_Doctorate" xml:space="preserve"><value>Doctorate</value></data>
+  <data name="QuizMode_Practice" xml:space="preserve"><value>Adaptive test</value></data>
+  <data name="QuizMode_Placement" xml:space="preserve"><value>Placement test</value></data>
+  <data name="QuizMode_Duel" xml:space="preserve"><value>Duel</value></data>
+  <data name="QuizMode_Topic" xml:space="preserve"><value>AI topic</value></data>
+  <data name="Quiz_Loading" xml:space="preserve"><value>Preparing your test…</value></data>
+  <data name="Quiz_ReadAloud" xml:space="preserve"><value>Read the questions aloud</value></data>
+  <data name="Quiz_Run" xml:space="preserve"><value>Right answers in a row</value></data>
+  <data name="Duel_Against" xml:space="preserve"><value>against {0}</value></data>
+  <data name="Arena_Title" xml:space="preserve"><value>Arena</value></data>
+  <data name="Arena_Subtitle" xml:space="preserve"><value>Weekly ranking of your class, teams and duels with classmates. Only nicknames are shown, never real names.</value></data>
+  <data name="Arena_NoClass" xml:space="preserve"><value>Join a class with its code to see the ranking and challenge your classmates.</value></data>
+  <data name="Arena_Students" xml:space="preserve"><value>{0} students</value></data>
+  <data name="Arena_You" xml:space="preserve"><value>you</value></data>
+  <data name="Arena_Teams" xml:space="preserve"><value>Teams</value></data>
+  <data name="Arena_TeamsHint" xml:space="preserve"><value>Team score = average XP of its members this week, so small teams can win too.</value></data>
+  <data name="Arena_Challenge" xml:space="preserve"><value>Class challenge</value></data>
+  <data name="Arena_ChallengeText" xml:space="preserve"><value>Together, reach {0} right answers this week.</value></data>
+  <data name="Arena_Duels" xml:space="preserve"><value>Duels</value></data>
+  <data name="Arena_DuelsHint" xml:space="preserve"><value>Challenge a classmate: you both answer the same 5 questions. The higher score wins.</value></data>
+  <data name="Arena_Rival" xml:space="preserve"><value>Classmate</value></data>
+  <data name="Arena_Challenge_Button" xml:space="preserve"><value>Challenge</value></data>
+  <data name="Arena_NoRivals" xml:space="preserve"><value>No classmate can be challenged yet.</value></data>
+  <data name="Arena_CompeteOff" xml:space="preserve"><value>Competition is off: turn it on to appear in rankings and play duels.</value></data>
+  <data name="Arena_Nickname" xml:space="preserve"><value>Your nickname</value></data>
+  <data name="Arena_NicknameHint" xml:space="preserve"><value>Classmates only see this nickname and avatar.</value></data>
+  <data name="Arena_MyTeam" xml:space="preserve"><value>My team</value></data>
+  <data name="Arena_Compete" xml:space="preserve"><value>Take part in rankings and duels</value></data>
+  <data name="Arena_CompeteHint" xml:space="preserve"><value>Off: you keep your XP and badges, but classmates do not see you.</value></data>
+  <data name="Arena_NewNickname" xml:space="preserve"><value>Give me a new nickname</value></data>
+  <data name="Notice_Arena_Saved" xml:space="preserve"><value>Saved.</value></data>
+  <data name="Notice_Duel_NotAllowed" xml:space="preserve"><value>This duel is not possible.</value></data>
+  <data name="Notice_Duel_TooMany" xml:space="preserve"><value>You already have 3 open duels: wait for them to finish.</value></data>
+  <data name="Duel_You_vs" xml:space="preserve"><value>You challenged {0}</value></data>
+  <data name="Duel_Vs_You" xml:space="preserve"><value>{0} challenged you</value></data>
+  <data name="Duel_Play" xml:space="preserve"><value>Play</value></data>
+  <data name="Duel_Won" xml:space="preserve"><value>Won</value></data>
+  <data name="Duel_Lost" xml:space="preserve"><value>Lost</value></data>
+  <data name="Duel_Draw" xml:space="preserve"><value>Draw</value></data>
+  <data name="Duel_Waiting" xml:space="preserve"><value>Waiting</value></data>
+  <data name="Duel_Expired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Achievements_Subtitle" xml:space="preserve"><value>Your titles, badges and today's quests. XP reward effort and progress, never the speed.</value></data>
+  <data name="Achievements_Path" xml:space="preserve"><value>Path of titles</value></data>
+  <data name="Achievements_FromLevel" xml:space="preserve"><value>level {0}</value></data>
+  <data name="Achievements_HowXp" xml:space="preserve"><value>How to win XP</value></data>
+  <data name="Achievements_XpRight" xml:space="preserve"><value>Right answer (more if harder, bonus in a row)</value></data>
+  <data name="Achievements_XpTry" xml:space="preserve"><value>Trying counts too</value></data>
+  <data name="Achievements_XpTest" xml:space="preserve"><value>Finished test (perfect)</value></data>
+  <data name="Achievements_XpDuel" xml:space="preserve"><value>Duel won</value></data>
+  <data name="Achievements_XpBadge" xml:space="preserve"><value>New badge</value></data>
+  <data name="Achievements_Fair" xml:space="preserve"><value>No paid boosts, no time pressure: everyone wins XP the same way.</value></data>
+  <data name="Js_QuestionOf" xml:space="preserve"><value>Question {0} of {1}</value></data>
+  <data name="Js_DifficultyN" xml:space="preserve"><value>Difficulty {0} of 3</value></data>
+  <data name="Js_Right" xml:space="preserve"><value>Right!</value></data>
+  <data name="Js_KidsRight" xml:space="preserve"><value>Well done! 🎉</value></data>
+  <data name="Js_Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Js_SeeResults" xml:space="preserve"><value>See results</value></data>
+  <data name="Js_ScoreOf" xml:space="preserve"><value>{0} of {1} right</value></data>
+  <data name="Js_StarsN" xml:space="preserve"><value>{0} stars out of 3</value></data>
+  <data name="Js_XpWon" xml:space="preserve"><value>{0} XP won in this test</value></data>
+  <data name="Js_YourLevelIs" xml:space="preserve"><value>Your level in this subject</value></data>
+  <data name="Js_PractiseThisLevel" xml:space="preserve"><value>Practise at this level</value></data>
+  <data name="Js_Again" xml:space="preserve"><value>Another test</value></data>
+  <data name="Js_OtherSubjects" xml:space="preserve"><value>Other subjects</value></data>
+  <data name="Js_Dashboard" xml:space="preserve"><value>My dashboard</value></data>
+  <data name="Js_BackToArena" xml:space="preserve"><value>Back to the arena</value></data>
+  <data name="Js_DuelWon" xml:space="preserve"><value>You won the duel! 🏆</value></data>
+  <data name="Js_DuelLost" xml:space="preserve"><value>Your classmate won this time. Rematch?</value></data>
+  <data name="Js_DuelDraw" xml:space="preserve"><value>It's a draw!</value></data>
+  <data name="Js_DuelWaiting" xml:space="preserve"><value>Waiting for your classmate to play.</value></data>
+  <data name="Js_NewBadge" xml:space="preserve"><value>New badge: {0}</value></data>
+  <data name="Js_QuestDone" xml:space="preserve"><value>Quest done: {0}</value></data>
+  <data name="Js_QuizNeedsAi" xml:space="preserve"><value>Tests on a free topic need an AI engine. Choose one in the header, or pick a subject of the catalog: those tests work offline.</value></data>
+  <data name="Js_Generating" xml:space="preserve"><value>Preparing your test…</value></data>
+  <data name="Topic_math_count" xml:space="preserve"><value>Counting</value></data>
+  <data name="Topic_math_add" xml:space="preserve"><value>Addition</value></data>
+  <data name="Topic_math_compare" xml:space="preserve"><value>Comparing numbers</value></data>
+  <data name="Topic_math_shapes" xml:space="preserve"><value>Shapes</value></data>
+  <data name="Topic_math_subtract" xml:space="preserve"><value>Subtraction</value></data>
+  <data name="Topic_math_multiply" xml:space="preserve"><value>Multiplication</value></data>
+  <data name="Topic_math_divide" xml:space="preserve"><value>Division</value></data>
+  <data name="Topic_math_percent" xml:space="preserve"><value>Percentages</value></data>
+  <data name="Topic_math_area" xml:space="preserve"><value>Area</value></data>
+  <data name="Topic_math_perimeter" xml:space="preserve"><value>Perimeter</value></data>
+  <data name="Topic_math_fraction" xml:space="preserve"><value>Fractions</value></data>
+  <data name="Topic_math_integers" xml:space="preserve"><value>Integers</value></data>
+  <data name="Topic_math_proportion" xml:space="preserve"><value>Proportionality</value></data>
+  <data name="Topic_math_equations" xml:space="preserve"><value>Linear equations</value></data>
+  <data name="Topic_math_powers" xml:space="preserve"><value>Powers</value></data>
+  <data name="Topic_math_pythagoras" xml:space="preserve"><value>Pythagoras</value></data>
+  <data name="Topic_math_systems" xml:space="preserve"><value>Systems of equations</value></data>
+  <data name="Topic_math_slope" xml:space="preserve"><value>Slope of a line</value></data>
+  <data name="Topic_math_quadratic" xml:space="preserve"><value>Quadratic equations</value></data>
+  <data name="Topic_math_sequences" xml:space="preserve"><value>Sequences</value></data>
+  <data name="Topic_math_logarithms" xml:space="preserve"><value>Logarithms</value></data>
+  <data name="Topic_math_derivatives" xml:space="preserve"><value>Derivatives</value></data>
+  <data name="Topic_math_trigonometry" xml:space="preserve"><value>Trigonometry</value></data>
+  <data name="Topic_math_probability" xml:space="preserve"><value>Probability</value></data>
+  <data name="Topic_math_determinants" xml:space="preserve"><value>Determinants</value></data>
+  <data name="Topic_math_limits" xml:space="preserve"><value>Limits</value></data>
+  <data name="Topic_math_integrals" xml:space="preserve"><value>Integrals</value></data>
+  <data name="Topic_math_expectation" xml:space="preserve"><value>Expected value</value></data>
+  <data name="Topic_math_eigenvalues" xml:space="preserve"><value>Eigenvalues</value></data>
+  <data name="Topic_math_binomial" xml:space="preserve"><value>Binomial distribution</value></data>
+  <data name="Topic_math_statistics" xml:space="preserve"><value>Statistics</value></data>
+  <data name="Topic_math_series" xml:space="preserve"><value>Power series</value></data>
+  <data name="Topic_physics_states" xml:space="preserve"><value>States of matter</value></data>
+  <data name="Topic_physics_units" xml:space="preserve"><value>Units</value></data>
+  <data name="Topic_physics_motion" xml:space="preserve"><value>Motion</value></data>
+  <data name="Topic_physics_density" xml:space="preserve"><value>Density</value></data>
+  <data name="Topic_physics_forces" xml:space="preserve"><value>Forces and pressure</value></data>
+  <data name="Topic_physics_electricity" xml:space="preserve"><value>Electricity</value></data>
+  <data name="Topic_physics_energy" xml:space="preserve"><value>Energy</value></data>
+  <data name="Topic_physics_dynamics" xml:space="preserve"><value>Dynamics</value></data>
+  <data name="Topic_physics_waves" xml:space="preserve"><value>Waves</value></data>
+  <data name="Topic_physics_relativity" xml:space="preserve"><value>Relativity</value></data>
+  <data name="Topic_physics_modern" xml:space="preserve"><value>Modern physics</value></data>
+  <data name="Topic_chemistry_matter" xml:space="preserve"><value>Matter and formulas</value></data>
+  <data name="Topic_chemistry_elements" xml:space="preserve"><value>Elements</value></data>
+  <data name="Topic_chemistry_atoms" xml:space="preserve"><value>Atoms</value></data>
+  <data name="Topic_chemistry_stoichiometry" xml:space="preserve"><value>Stoichiometry</value></data>
+  <data name="Topic_chemistry_acids" xml:space="preserve"><value>Acids and bases</value></data>
+  <data name="Topic_chemistry_solutions" xml:space="preserve"><value>Solutions</value></data>
+  <data name="Topic_chemistry_constants" xml:space="preserve"><value>Constants</value></data>
+  <data name="Topic_chemistry_kinetics" xml:space="preserve"><value>Kinetics</value></data>
+  <data name="Topic_chemistry_thermodynamics" xml:space="preserve"><value>Thermodynamics</value></data>
+  <data name="Topic_chemistry_bonding" xml:space="preserve"><value>Chemical bonding</value></data>
+  <data name="Topic_chemistry_theory" xml:space="preserve"><value>Theoretical chemistry</value></data>
+  <data name="Topic_biology_animals" xml:space="preserve"><value>Animals</value></data>
+  <data name="Topic_biology_vertebrates" xml:space="preserve"><value>Vertebrates</value></data>
+  <data name="Topic_biology_body" xml:space="preserve"><value>The human body</value></data>
+  <data name="Topic_biology_plants" xml:space="preserve"><value>Plants</value></data>
+  <data name="Topic_biology_cells" xml:space="preserve"><value>Cells</value></data>
+  <data name="Topic_biology_dna" xml:space="preserve"><value>DNA and RNA</value></data>
+  <data name="Topic_biology_heredity" xml:space="preserve"><value>Heredity</value></data>
+  <data name="Topic_biology_genetics" xml:space="preserve"><value>Genetics</value></data>
+  <data name="Topic_biology_populations" xml:space="preserve"><value>Population genetics</value></data>
+  <data name="Topic_biology_molecular" xml:space="preserve"><value>Molecular biology</value></data>
+  <data name="Topic_language_letters" xml:space="preserve"><value>Letters</value></data>
+  <data name="Topic_language_vocabulary" xml:space="preserve"><value>Vocabulary</value></data>
+  <data name="Topic_language_grammar" xml:space="preserve"><value>Grammar</value></data>
+  <data name="Topic_language_literature" xml:space="preserve"><value>Literature</value></data>
+  <data name="Topic_language_linguistics" xml:space="preserve"><value>Linguistics</value></data>
+  <data name="Topic_foreign_vocabulary" xml:space="preserve"><value>Vocabulary</value></data>
+  <data name="Topic_foreign_sentences" xml:space="preserve"><value>Sentences</value></data>
+  <data name="Topic_foreign_grammar" xml:space="preserve"><value>Verbs</value></data>
+  <data name="Topic_foreign_idioms" xml:space="preserve"><value>Idioms</value></data>
+  <data name="Topic_history_dates" xml:space="preserve"><value>Dates</value></data>
+  <data name="Topic_history_chronology" xml:space="preserve"><value>Chronology</value></data>
+  <data name="Topic_history_people" xml:space="preserve"><value>Historical figures</value></data>
+  <data name="Topic_history_historiography" xml:space="preserve"><value>Historiography</value></data>
+  <data name="Topic_geography_countries" xml:space="preserve"><value>Countries and flags</value></data>
+  <data name="Topic_geography_continents" xml:space="preserve"><value>Continents</value></data>
+  <data name="Topic_geography_capitals" xml:space="preserve"><value>Capitals</value></data>
+  <data name="Topic_geography_physical" xml:space="preserve"><value>Physical geography</value></data>
+  <data name="Topic_geography_climate" xml:space="preserve"><value>Climates</value></data>
+  <data name="Topic_geography_theory" xml:space="preserve"><value>Geographical theory</value></data>
+  <data name="Topic_economics_percentages" xml:space="preserve"><value>Percentages</value></data>
+  <data name="Topic_economics_concepts" xml:space="preserve"><value>Basic concepts</value></data>
+  <data name="Topic_economics_finance" xml:space="preserve"><value>Finance</value></data>
+  <data name="Topic_economics_markets" xml:space="preserve"><value>Markets</value></data>
+  <data name="Topic_economics_thinkers" xml:space="preserve"><value>Economists</value></data>
+  <data name="Topic_programming_loops" xml:space="preserve"><value>Loops</value></data>
+  <data name="Topic_programming_variables" xml:space="preserve"><value>Variables</value></data>
+  <data name="Topic_programming_conditions" xml:space="preserve"><value>Conditions</value></data>
+  <data name="Topic_programming_lists" xml:space="preserve"><value>Lists</value></data>
+  <data name="Topic_programming_strings" xml:space="preserve"><value>Strings</value></data>
+  <data name="Topic_programming_functions" xml:space="preserve"><value>Functions</value></data>
+  <data name="Topic_programming_recursion" xml:space="preserve"><value>Recursion</value></data>
+  <data name="Topic_programming_algorithms" xml:space="preserve"><value>Algorithms</value></data>
+  <data name="Topic_programming_complexity" xml:space="preserve"><value>Complexity</value></data>
+  <data name="Topic_programming_theory" xml:space="preserve"><value>Theory of computation</value></data>
+  <data name="Demo_Kid" xml:space="preserve"><value>Kids mode (6 years old)</value></data>
+  <data name="Explore_Accuracy" xml:space="preserve"><value>Accuracy</value></data>
+  <data name="Nav_History" xml:space="preserve"><value>My tests</value></data>
+  <data name="History_Subtitle" xml:space="preserve"><value>Every test you finished, with your score. Open one to review each question, your answer and the right one.</value></data>
+  <data name="History_Recent" xml:space="preserve"><value>Latest tests</value></data>
+  <data name="History_Empty" xml:space="preserve"><value>No test finished yet.</value></data>
+  <data name="History_All" xml:space="preserve"><value>All subjects</value></data>
+  <data name="History_Again" xml:space="preserve"><value>New test (new questions)</value></data>
+  <data name="History_Placed" xml:space="preserve"><value>Level found by this placement test: {0}</value></data>
+  <data name="History_Right" xml:space="preserve"><value>Right</value></data>
+  <data name="History_Wrong" xml:space="preserve"><value>Wrong</value></data>
+  <data name="History_YourAnswer" xml:space="preserve"><value>your answer</value></data>
+  <data name="Explore_TestLevel" xml:space="preserve"><value>Test level</value></data>
+  <data name="Explore_TestsDone" xml:space="preserve"><value>{0} tests done</value></data>
+  <data name="Explore_PlacedAt" xml:space="preserve"><value>placement test: {0}</value></data>
+  <data name="Explore_Viewing" xml:space="preserve"><value>You are viewing the tests of {0}. Your level of study is {1}.</value></data>
+  <data name="Explore_ApplyAll" xml:space="preserve"><value>Use {0} in all my subjects</value></data>
+  <data name="Notice_Level_Applied" xml:space="preserve"><value>Level applied to all your subjects.</value></data>
+  <data name="History_QuestionN" xml:space="preserve"><value>Question {0}</value></data>
+  <data name="QuizMode_Evo" xml:space="preserve"><value>Check Evo</value></data>
+  <data name="QuizMode_Notebook" xml:space="preserve"><value>Evo's notebook</value></data>
+  <data name="QuizMode_Review" xml:space="preserve"><value>Daily review</value></data>
+  <data name="Evo_Hint" xml:space="preserve"><value>Evo answers, you check him: is he right?</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Daily review</value></data>
+  <data name="Review_Due" xml:space="preserve"><value>{0} topics to review today · 2 minutes</value></data>
+  <data name="Review_None" xml:space="preserve"><value>Nothing to review today: do a test to start</value></data>
+  <data name="Notebook_Title" xml:space="preserve"><value>Evo's notebook</value></data>
+  <data name="Notebook_Yours" xml:space="preserve"><value>Evo makes your mistakes ("{0}"): find them!</value></data>
+  <data name="Notebook_Hint" xml:space="preserve"><value>Evo solves fractions with typical mistakes: find what he did wrong</value></data>
+  <data name="Calibration_Title" xml:space="preserve"><value>Confidence meter</value></data>
+  <data name="Calibration_Sure" xml:space="preserve"><value>right when you said "sure" ({0} of {1})</value></data>
+  <data name="Calibration_Unsure" xml:space="preserve"><value>When you have doubts: {0} of {1} right</value></data>
+  <data name="Calibration_Good" xml:space="preserve"><value>Well calibrated: when you say sure, you know it.</value></data>
+  <data name="Calibration_Ok" xml:space="preserve"><value>Not bad: check your answer once more before saying sure.</value></data>
+  <data name="Calibration_Low" xml:space="preserve"><value>Careful: you are often sure and wrong. Those topics come back in your daily review.</value></data>
+  <data name="Calibration_Empty" xml:space="preserve"><value>Before answering, say how sure you are: here you will see if your feeling matches your results.</value></data>
+  <data name="Achievements_XpHint" xml:space="preserve"><value>Each hint used</value></data>
+  <data name="Achievements_XpSure" xml:space="preserve"><value>Right answer said as "sure"</value></data>
+  <data name="QuestText_Review" xml:space="preserve"><value>Do your daily review ({0})</value></data>
+  <data name="QuestText_CheckEvo" xml:space="preserve"><value>Check Evo or open his notebook ({0})</value></data>
+  <data name="Quest_Review" xml:space="preserve"><value>Daily review</value></data>
+  <data name="Quest_CheckEvo" xml:space="preserve"><value>Check Evo</value></data>
+  <data name="Badge_Reviewer" xml:space="preserve"><value>Memory keeper</value></data>
+  <data name="BadgeHint_Reviewer" xml:space="preserve"><value>Do {0} daily reviews</value></data>
+  <data name="Badge_Detective" xml:space="preserve"><value>Detective</value></data>
+  <data name="BadgeHint_Detective" xml:space="preserve"><value>Catch Evo {0} times</value></data>
+  <data name="Js_EvoAnswered" xml:space="preserve"><value>Evo answered:</value></data>
+  <data name="Js_HowSure" xml:space="preserve"><value>How sure are you?</value></data>
+  <data name="Js_Unsure" xml:space="preserve"><value>Not sure</value></data>
+  <data name="Js_ThinkSo" xml:space="preserve"><value>I think so</value></data>
+  <data name="Js_Sure" xml:space="preserve"><value>Sure</value></data>
+  <data name="Js_HintN" xml:space="preserve"><value>Hint {0} of {1}</value></data>
+  <data name="Js_NoMoreHints" xml:space="preserve"><value>No more hints</value></data>
+  <data name="Js_HintCost" xml:space="preserve"><value>Each hint: −25 % XP for this question</value></data>
+  <data name="Js_Removed" xml:space="preserve"><value>Option removed by a hint</value></data>
+  <data name="Js_SureRight" xml:space="preserve"><value>Sure and right: +3 XP.</value></data>
+  <data name="Js_SureWrong" xml:space="preserve"><value>You were sure: this topic comes back in today's review.</value></data>
+  <data name="Js_UnsureRight" xml:space="preserve"><value>You had doubts, but you were right: trust yourself a bit more!</value></data>
+  <data name="Js_HintsUsed" xml:space="preserve"><value>{0} hint(s) used.</value></data>
+  <data name="Js_ReviewDone" xml:space="preserve"><value>Review done! These topics come back later, when you are about to forget them.</value></data>
+  <data name="Js_EvoDone" xml:space="preserve"><value>Evo checked: {0} right answers</value></data>
+  <data name="Js_NothingToReview" xml:space="preserve"><value>Nothing to review right now. Do a test and your topics will come back here at the right time.</value></data>
+  <data name="Review_Sub" xml:space="preserve"><value>What you are about to forget</value></data>
+  <data name="Notebook_Sub" xml:space="preserve"><value>Fractions · your typical mistakes</value></data>
+  <data name="Nav_Adventures" xml:space="preserve"><value>Adventures</value></data>
+  <data name="QuizMode_Adventure" xml:space="preserve"><value>Adventure</value></data>
+  <data name="Adventures_Title" xml:space="preserve"><value>Adventures</value></data>
+  <data name="Adventures_Subtitle" xml:space="preserve"><value>Choose a world and a subject: every door of the story opens with a right answer, and a friendly guardian waits at the end with your hardest questions.</value></data>
+  <data name="Adventures_Card" xml:space="preserve"><value>5 doors and a final guardian</value></data>
+  <data name="Adventures_Won" xml:space="preserve"><value>{0} won</value></data>
+  <data name="Adventures_Theme" xml:space="preserve"><value>Choose your world</value></data>
+  <data name="Adventures_Start" xml:space="preserve"><value>Start the adventure</value></data>
+  <data name="Adventures_Rules" xml:space="preserve"><value>{0} doors, then a guardian who needs {1} right answers. You have {2} hearts: a wrong answer costs one, and the door asks again. The guardian asks your weakest topics.</value></data>
+  <data name="Adventures_Played" xml:space="preserve"><value>Your adventures</value></data>
+  <data name="Adventures_Victory" xml:space="preserve"><value>Victory</value></data>
+  <data name="Adventures_TryAgain" xml:space="preserve"><value>To try again</value></data>
+  <data name="Theme_Space" xml:space="preserve"><value>Space</value></data>
+  <data name="Theme_Ocean" xml:space="preserve"><value>Ocean</value></data>
+  <data name="Theme_Jungle" xml:space="preserve"><value>Jungle</value></data>
+  <data name="Theme_Castle" xml:space="preserve"><value>Castle</value></data>
+  <data name="ThemeHint_Space" xml:space="preserve"><value>Light up the beacons and fly home</value></data>
+  <data name="ThemeHint_Ocean" xml:space="preserve"><value>Bring the magic pearls back to the reef</value></data>
+  <data name="ThemeHint_Jungle" xml:space="preserve"><value>Find the treasure of the lost temple</value></data>
+  <data name="ThemeHint_Castle" xml:space="preserve"><value>Break the spell on the library</value></data>
+  <data name="Badge_BossSlayer" xml:space="preserve"><value>Guardian tamer</value></data>
+  <data name="BadgeHint_BossSlayer" xml:space="preserve"><value>Win {0} adventure</value></data>
+  <data name="Badge_Hero" xml:space="preserve"><value>Hero</value></data>
+  <data name="BadgeHint_Hero" xml:space="preserve"><value>Win {0} adventures</value></data>
+  <data name="Js_DoorN" xml:space="preserve"><value>Door {0}</value></data>
+  <data name="Js_Map" xml:space="preserve"><value>Map of the adventure</value></data>
+  <data name="Js_HeartsN" xml:space="preserve"><value>{0} hearts left</value></data>
+  <data name="Js_QuestionN" xml:space="preserve"><value>Question {0}</value></data>
+  <data name="Js_AdventureWon" xml:space="preserve"><value>Adventure won!</value></data>
+  <data name="Js_AdventureLost" xml:space="preserve"><value>Not this time…</value></data>
+  <data name="Js_NewAdventure" xml:space="preserve"><value>New adventure</value></data>
+  <data name="Nav_Teach" xml:space="preserve"><value>Teach Evo</value></data>
+  <data name="Nav_Interview" xml:space="preserve"><value>Interviews</value></data>
+  <data name="Teach_Title" xml:space="preserve"><value>Explain it to Evo</value></data>
+  <data name="Teach_Subtitle" xml:space="preserve"><value>Evo wants to learn: you are the teacher. Explain a concept in your own words (or by voice); Evo asks about what is missing. Explaining is the best way to really understand.</value></data>
+  <data name="Teach_Card" xml:space="preserve"><value>You are the teacher: explain a concept</value></data>
+  <data name="Teach_NotYet" xml:space="preserve"><value>Not taught yet</value></data>
+  <data name="Teach_Best" xml:space="preserve"><value>Best: {0} of {1} key ideas</value></data>
+  <data name="Teach_Ideas" xml:space="preserve"><value>Key ideas</value></data>
+  <data name="Teach_SecretIdea" xml:space="preserve"><value>Secret idea {0}</value></data>
+  <data name="Teach_YourExplanation" xml:space="preserve"><value>Your explanation</value></data>
+  <data name="Teach_Placeholder" xml:space="preserve"><value>Explain it as if Evo were a younger classmate…</value></data>
+  <data name="Teach_Round" xml:space="preserve"><value>Round {0} of {1}</value></data>
+  <data name="Teach_Send" xml:space="preserve"><value>Explain</value></data>
+  <data name="Teach_HowItWorks" xml:space="preserve"><value>The code checks your explanation with a list of key ideas (the words you use count, not the spelling). Your text stays in your account and is not shared.</value></data>
+  <data name="Voice_Dictate" xml:space="preserve"><value>Dictate</value></data>
+  <data name="Interview_Title" xml:space="preserve"><value>Interview a historical figure</value></data>
+  <data name="Interview_Subtitle" xml:space="preserve"><value>Ask Marie Curie, Leonardo, Newton or Ada Lovelace about their life and discoveries, by writing or by voice. At the end, check what you learned.</value></data>
+  <data name="Interview_Card" xml:space="preserve"><value>Ask Marie Curie, Newton…</value></data>
+  <data name="Interview_Simulation" xml:space="preserve"><value>Educational simulation: the answers are written from documented historical facts; they are not real quotes of the person.</value></data>
+  <data name="Interview_Suggestions" xml:space="preserve"><value>Suggested questions</value></data>
+  <data name="Interview_YourQuestion" xml:space="preserve"><value>Your question…</value></data>
+  <data name="Interview_Ask" xml:space="preserve"><value>Ask</value></data>
+  <data name="Interview_CheckHint" xml:space="preserve"><value>Ready? Check what you learned with 3 questions.</value></data>
+  <data name="Interview_Check" xml:space="preserve"><value>Check what I learned</value></data>
+  <data name="Interview_DemoOnly" xml:space="preserve"><value>In offline mode, {0} can answer the suggested questions. Choose an AI engine in the header to ask anything.</value></data>
+  <data name="QuizMode_Interview" xml:space="preserve"><value>Interview check</value></data>
+  <data name="QuestText_TeachEvo" xml:space="preserve"><value>Explain a concept to Evo ({0})</value></data>
+  <data name="Quest_TeachEvo" xml:space="preserve"><value>Teach Evo</value></data>
+  <data name="Badge_Teacher" xml:space="preserve"><value>Little teacher</value></data>
+  <data name="BadgeHint_Teacher" xml:space="preserve"><value>Explain {0} concepts completely to Evo</value></data>
+  <data name="Badge_TimeTraveler" xml:space="preserve"><value>Time traveller</value></data>
+  <data name="BadgeHint_TimeTraveler" xml:space="preserve"><value>Finish {0} interviews with their check</value></data>
+  <data name="Js_SecretIdea" xml:space="preserve"><value>Secret idea {0}</value></data>
+  <data name="Js_Round" xml:space="preserve"><value>Round {0} of {1}</value></data>
+  <data name="Js_TaughtAll" xml:space="preserve"><value>Evo understood everything: you are a great teacher!</value></data>
+  <data name="Js_TaughtSome" xml:space="preserve"><value>Evo learned {0} of the {1} key ideas.</value></data>
+  <data name="Js_ModelExplanation" xml:space="preserve"><value>How a teacher would explain it</value></data>
+  <data name="Js_TeachAgain" xml:space="preserve"><value>Explain it again</value></data>
+  <data name="Js_OtherConcepts" xml:space="preserve"><value>Other concepts</value></data>
+  <data name="Js_SayAnswer" xml:space="preserve"><value>Say the answer</value></data>
+  <data name="Js_Heard" xml:space="preserve"><value>I heard: "{0}"</value></data>
+  <data name="Js_NotUnderstood" xml:space="preserve"><value>I heard "{0}" but it is not one of the options. Try again or tap your answer.</value></data>
+  <data name="Js_MicError" xml:space="preserve"><value>The microphone is not available. Check the permission of the browser.</value></data>
+  <data name="Js_OtherInterviews" xml:space="preserve"><value>Other interviews</value></data>
+</root>
