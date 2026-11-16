@@ -278,7 +278,7 @@ internal static class EconomicsBank
         var c = q.Between(0, 10);
         var a = c + (b + d) * p;
         return q.Number("economics.markets", q.F("Demand Qd = {0} − {1}P and supply Qs = {2} + {3}P. Equilibrium price?|Demanda Qd = {0} − {1}P y oferta Qs = {2} + {3}P. ¿Precio de equilibrio?|Demande Qd = {0} − {1}P et offre Qs = {2} + {3}P. Prix d'équilibre ?|Demanda Qd = {0} − {1}P i oferta Qs = {2} + {3}P. Preu d'equilibri?", a, b, c, d),
-            p, [a - b * p, (a + c) / (double)(b + d), p + 1], q.F("Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.|Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.|Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.|Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.", a, b, c, d, p));
+            p, [a - b * p, (a + c) / (double)(b + d), p + 1], q.F("Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.|Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.|Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.|Qd = Qs ⇒ {0} − {1}P = {2} + {3}P ⇒ P = {4}.", a, b, c, d, p), visual: Diagram.Market());
     }
 
     private static QuizQuestion Elasticity(Mc q)

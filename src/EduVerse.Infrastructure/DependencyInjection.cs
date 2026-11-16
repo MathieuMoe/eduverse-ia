@@ -63,6 +63,7 @@ public static class DependencyInjection
         services.AddScoped<Gamification.GamificationStore>();
         services.AddScoped<Quizzes.QuizStore>();
         services.AddScoped<Tutor.TeachStore>();
+        services.AddScoped<Tutor.CompanionStore>();
         services.AddSingleton<Core.Institutions.DemoFamilyWriter>();
         services.AddOptions<MarketplaceOptions>().Bind(configuration.GetSection(MarketplaceOptions.SectionName));
         return services;

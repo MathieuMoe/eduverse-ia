@@ -20,8 +20,10 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 ![Daily review with the hint ladder and the confidence meter](docs/screenshot-review.png)
 ![Evo's notebook: Evo makes the student's own mistakes](docs/screenshot-evo.png)
 ![Adventure: doors, hearts, the story and the final guardian](docs/screenshot-adventure.png)
+![Evo, the tutor of every page: knows the progress, remembers the conversation and proposes actions](docs/screenshot-companion.png)
 ![Explain it to Evo: the student teaches, the rubric finds the key ideas](docs/screenshot-teach.png)
-![Interview with Marie Curie (educational simulation) and its comprehension check](docs/screenshot-interview.png)
+![Interview with Marie Curie: illustrated figure that moves its lips, own voice, educational simulation](docs/screenshot-interview.png)
+![Some test questions come with a picture drawn in the browser](docs/screenshot-diagram.png)
 ![Kids mode for 5-8 year olds: pictures, big buttons, questions read aloud](docs/screenshot-kids.png)
 ![Institution dashboard](docs/screenshot-institution.png)
 ![Dropout radar with a message to the family](docs/screenshot-risk.png)
@@ -54,9 +56,11 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 - ⚡ **Daily review** (spaced repetition, Leitner boxes per topic: 1, 2, 4, 7, 15, 30 days): 6 questions from every subject on the topics about to be forgotten
 - 😎 **Confidence meter**: before answering, "not sure / I think so / sure"; sure and right earns a bonus, sure and wrong sends the topic to today's review; the achievements page shows the calibration
 - 🗺️ **Adventures with a final guardian**: choose a world (space, ocean, jungle, castle) and a subject; 5 doors open with right answers, then a friendly guardian asks 4 questions on the student's **weakest topics** at the hardest difficulty; 3 hearts for the whole adventure. The code decides the questions and the progress; the AI only tells the story (age-appropriate, no violence), and offline stories are written in advance in 4 languages
+- 🦉 **Evo, the tutor of every page**: a button in the header opens Evo from anywhere. Evo knows the student's progress (level, streak, tests and results, weak topics with their mastery, reviews due, recurring mistakes, concepts explained, interviews), **remembers the conversation** across pages (the student can delete it) and knows the current page. It proposes **actions computed in code** (review, practise the weakest topic, explain it to Evo, Evo's notebook, an adventure, an interview); the AI writes the reply and may only choose among those actions. During a test or an exercise Evo helps with the method and **never gives the answer**. Offline it answers "what should I do now?", "how am I doing?" and "help me with this page"
 - 🧑‍🏫 **Explain it to Evo**: the student becomes the teacher and explains a concept (fractions, percentages, Pythagoras, photosynthesis, density, loops…) in their own words, writing or by voice. A **rubric in code** checks the key ideas (words in 4 languages, case and accents ignored), the ideas stay secret until found, and Evo asks a naive question about the first one missing; up to 3 rounds, then a model explanation. The AI only writes Evo's words; offline, Evo's questions are written in advance
+- 🖼️ **Pictures in some questions**: clocks, fraction circles, 100-square grids, rectangles, right triangles, lines on axes, angles, bar charts, polygons, circuits, series and parallel resistors, Punnett squares and supply and demand. The server sends a small specification of numbers (`dg:clock:3:30`) and the browser draws the SVG, so the pictures follow the theme, need no translation and cannot carry markup
 - 🎙️ **Talk with the tutor**: answer test questions **with the microphone** (the option is recognised by its text, its letter or a number word) and dictate explanations, using the speech recognition of the browser (hidden where it is not available)
-- ⏳ **Interviews with historical figures**: Marie Curie, Leonardo da Vinci, Isaac Newton and Ada Lovelace answer in the first person, **clearly labelled as an educational simulation** from documented facts (no invented quotes, age-appropriate, answers read aloud on request). Offline they answer the suggested questions; with an AI engine, any question. The interview ends with a 3-question comprehension check built from checked facts
+- ⏳ **Interviews with historical figures**: original illustrated characters that **move their lips while they speak**, blink and look up while thinking, each with **its own voice** (a female or male browser voice of the language when available, its own pitch and speed); 12 figures answer in the first person (Marie Curie, Leonardo da Vinci, Isaac Newton, Ada Lovelace, Galileo Galilei, Charles Darwin, Miguel de Cervantes, Rosalind Franklin, Ibn Battuta, Adam Smith, Emmy Noether and Jean-François Champollion), one or more for each subject, **clearly labelled as an educational simulation** from documented facts (no invented quotes, age-appropriate, answers read aloud on request). Offline they answer the suggested questions; with an AI engine, any question. The interview ends with a 3-question comprehension check built from checked facts
 - ✨ **Any topic with the AI**: the AI writes 10 questions of the student's level, the parser keeps only valid ones (4 distinct options, one right) and the topic is treated as data, not instructions
 - 🏆 **Gamification** (rules in Core, fair: no time pressure, no paid boosts): XP per answer (effort counts too), levels and titles (Explorer → Sage), **daily streak** and monthly calendar, **3 daily quests** chosen per student and day, **23 badges** with progress
 - 🏟️ **Arena**: weekly class ranking and **teams** (score = average XP, so small teams can win), weekly class challenge, **duels** (two classmates answer the same 5 questions, same seed). Only **nicknames** are shown (an animal + a word), never real names, and a student can opt out of competition
@@ -233,6 +237,7 @@ All endpoints need a signed-in user (cookie) and the role of their space (*Stude
 | `POST /api/quiz/topic` | Test on a free topic written by the AI (body: `area`, `level`, `topic`); `409 needs_ai` in demo mode |
 | `GET /api/quiz/{id}` · `POST /api/quiz/{id}/answer` | Current question · `{ correct, correctIndex, explanation, run, hints, confidence, next, summary, reward }` (body: `choice`, `confidence` 0–2) |
 | `POST /api/quiz/adventure` | Starts an adventure (body: `area`, `level`, `theme` = `Space`, `Ocean`, `Jungle` or `Castle`); the story comes from the AI or, offline, from the written stories |
+| `GET /api/companion` · `POST /api/companion` · `DELETE /api/companion` | Evo on every page: greeting, ideas and conversation (query `page`, `title`) · message (body: `message`, `page`, `title`): `{ reply, actions, engine }` · delete the conversation |
 | `POST /api/teach/{concept}` | Explain it to Evo (body: `text`, `sessionId`): `{ ideas, reaction, question, round, done, model, reward }`; missing ideas stay secret |
 | `POST /api/interview/{figure}` | Question to a historical figure (body: `question`, `history`): `{ answer, matched, engine }`; the check is `POST /api/quiz/start` with `mode = Interview` and `figure` |
 | `POST /api/quiz/{id}/hint` · `POST /api/learn/hint` | Next step of the hint ladder (test · tutor): `{ level, removed, text }` |
@@ -240,12 +245,12 @@ All endpoints need a signed-in user (cookie) and the role of their space (*Stude
 
 The marketplace and the institution pages use Razor Pages handlers (forms with antiforgery): booking, simulated payment, cancellation, rating, profile and availability, joining an institution.
 
-Rate limits per IP: 10 AI calls per minute (explanations, chat, subjects, packs, lessons, summaries), 30 tutor messages (Evo, interviews), 40 practice calls and 120 test calls per minute.
+Rate limits per IP: 10 AI calls per minute (explanations, chat, subjects, packs, lessons, summaries), 30 tutor messages (Evo, interviews, the companion), 40 practice calls and 120 test calls per minute.
 
 ## Tests
 
 ```bash
-dotnet test                                   # 235 xUnit tests: rules, question banks, parsers, demos, SQLite, web integration
+dotnet test                                   # 247 xUnit tests: rules, question banks, parsers, demos, SQLite, web integration
 
 # End-to-end (the app running on a fresh database, see Getting started)
 cd tests/e2e

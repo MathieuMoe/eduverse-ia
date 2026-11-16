@@ -1072,8 +1072,8 @@
   <data name="Teach_HowItWorks" xml:space="preserve"><value>El código comprueba tu explicación con una lista de ideas clave (cuentan las palabras que usas, no la ortografía). Tu texto se queda en tu cuenta y no se comparte.</value></data>
   <data name="Voice_Dictate" xml:space="preserve"><value>Dictar</value></data>
   <data name="Interview_Title" xml:space="preserve"><value>Entrevista a un personaje histórico</value></data>
-  <data name="Interview_Subtitle" xml:space="preserve"><value>Pregunta a Marie Curie, Leonardo, Newton o Ada Lovelace por su vida y sus descubrimientos, escribiendo o hablando. Al final, comprueba lo que has aprendido.</value></data>
-  <data name="Interview_Card" xml:space="preserve"><value>Pregunta a Marie Curie, Newton…</value></data>
+  <data name="Interview_Subtitle" xml:space="preserve"><value>Pregunta a 12 personajes de la ciencia, las letras, la economía y los viajes (Marie Curie, Galileo, Darwin, Cervantes, Ibn Battuta…) por su vida y sus descubrimientos, escribiendo o hablando. Al final, comprueba lo que has aprendido.</value></data>
+  <data name="Interview_Card" xml:space="preserve"><value>Pregunta a Marie Curie, Galileo, Cervantes…</value></data>
   <data name="Interview_Simulation" xml:space="preserve"><value>Simulación educativa: las respuestas se escriben a partir de hechos históricos documentados; no son citas reales de la persona.</value></data>
   <data name="Interview_Suggestions" xml:space="preserve"><value>Preguntas sugeridas</value></data>
   <data name="Interview_YourQuestion" xml:space="preserve"><value>Tu pregunta…</value></data>
@@ -1100,4 +1100,25 @@
   <data name="Js_NotUnderstood" xml:space="preserve"><value>He oído «{0}», pero no es ninguna opción. Prueba otra vez o toca tu respuesta.</value></data>
   <data name="Js_MicError" xml:space="preserve"><value>El micrófono no está disponible. Revisa el permiso del navegador.</value></data>
   <data name="Js_OtherInterviews" xml:space="preserve"><value>Otras entrevistas</value></data>
+  <data name="Interview_VoiceOn" xml:space="preserve"><value>Voz activada</value></data>
+  <data name="Interview_Start" xml:space="preserve"><value>Empezar la entrevista</value></data>
+  <data name="Interview_StartHint" xml:space="preserve"><value>{0} te espera para responder a tus preguntas. Sube el sonido para oír su voz.</value></data>
+  <data name="Js_VoiceOn" xml:space="preserve"><value>Voz activada</value></data>
+  <data name="Js_VoiceOff" xml:space="preserve"><value>Voz desactivada</value></data>
+  <data name="Js_Thinking" xml:space="preserve"><value>Pensando…</value></data>
+  <data name="Js_InterviewProgress" xml:space="preserve"><value>Preguntas hechas: {0} de {1} para desbloquear la comprobación</value></data>
+  <data name="Js_InterviewReady" xml:space="preserve"><value>¡Comprobación desbloqueada! Puedes seguir preguntando o comprobar lo aprendido.</value></data>
+  <data name="Topic_math_clock" xml:space="preserve"><value>Leer la hora</value></data>
+  <data name="Companion_Button" xml:space="preserve"><value>Pregunta a Evo</value></data>
+  <data name="Companion_Open" xml:space="preserve"><value>Evo, tu tutor: pregúntale lo que quieras desde cualquier página</value></data>
+  <data name="Companion_Title" xml:space="preserve"><value>Evo, tu tutor</value></data>
+  <data name="Companion_Subtitle" xml:space="preserve"><value>Conoce tus tests, tu progreso y esta página</value></data>
+  <data name="Companion_Clear" xml:space="preserve"><value>Borrar la conversación</value></data>
+  <data name="Companion_QuickNext" xml:space="preserve"><value>¿Qué hago ahora?</value></data>
+  <data name="Companion_QuickProgress" xml:space="preserve"><value>¿Cómo voy?</value></data>
+  <data name="Companion_QuickHelp" xml:space="preserve"><value>Ayúdame con esta página</value></data>
+  <data name="Companion_Placeholder" xml:space="preserve"><value>Pregúntale algo a Evo…</value></data>
+  <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Companion_Privacy" xml:space="preserve"><value>Evo guarda esta conversación en tu cuenta para recordarla; puedes borrarla con la papelera. Durante un test, Evo te ayuda a pensar pero nunca te da la respuesta.</value></data>
+  <data name="Js_ClearConfirm" xml:space="preserve"><value>Pulsa otra vez la papelera para borrar toda la conversación.</value></data>
 </root>

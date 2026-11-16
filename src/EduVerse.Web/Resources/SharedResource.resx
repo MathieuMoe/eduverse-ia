@@ -1072,8 +1072,8 @@
   <data name="Teach_HowItWorks" xml:space="preserve"><value>The code checks your explanation with a list of key ideas (the words you use count, not the spelling). Your text stays in your account and is not shared.</value></data>
   <data name="Voice_Dictate" xml:space="preserve"><value>Dictate</value></data>
   <data name="Interview_Title" xml:space="preserve"><value>Interview a historical figure</value></data>
-  <data name="Interview_Subtitle" xml:space="preserve"><value>Ask Marie Curie, Leonardo, Newton or Ada Lovelace about their life and discoveries, by writing or by voice. At the end, check what you learned.</value></data>
-  <data name="Interview_Card" xml:space="preserve"><value>Ask Marie Curie, Newton…</value></data>
+  <data name="Interview_Subtitle" xml:space="preserve"><value>Ask 12 figures of science, letters, economics and travel (Marie Curie, Galileo, Darwin, Cervantes, Ibn Battuta…) about their life and discoveries, by writing or by voice. At the end, check what you learned.</value></data>
+  <data name="Interview_Card" xml:space="preserve"><value>Ask Marie Curie, Galileo, Cervantes…</value></data>
   <data name="Interview_Simulation" xml:space="preserve"><value>Educational simulation: the answers are written from documented historical facts; they are not real quotes of the person.</value></data>
   <data name="Interview_Suggestions" xml:space="preserve"><value>Suggested questions</value></data>
   <data name="Interview_YourQuestion" xml:space="preserve"><value>Your question…</value></data>
@@ -1100,4 +1100,25 @@
   <data name="Js_NotUnderstood" xml:space="preserve"><value>I heard "{0}" but it is not one of the options. Try again or tap your answer.</value></data>
   <data name="Js_MicError" xml:space="preserve"><value>The microphone is not available. Check the permission of the browser.</value></data>
   <data name="Js_OtherInterviews" xml:space="preserve"><value>Other interviews</value></data>
+  <data name="Interview_VoiceOn" xml:space="preserve"><value>Voice on</value></data>
+  <data name="Interview_Start" xml:space="preserve"><value>Start the interview</value></data>
+  <data name="Interview_StartHint" xml:space="preserve"><value>{0} is ready to answer your questions. Turn the sound on to hear the voice.</value></data>
+  <data name="Js_VoiceOn" xml:space="preserve"><value>Voice on</value></data>
+  <data name="Js_VoiceOff" xml:space="preserve"><value>Voice off</value></data>
+  <data name="Js_Thinking" xml:space="preserve"><value>Thinking…</value></data>
+  <data name="Js_InterviewProgress" xml:space="preserve"><value>Questions asked: {0} of {1} to unlock the check</value></data>
+  <data name="Js_InterviewReady" xml:space="preserve"><value>Check unlocked! You can keep asking or test what you learned.</value></data>
+  <data name="Topic_math_clock" xml:space="preserve"><value>Telling the time</value></data>
+  <data name="Companion_Button" xml:space="preserve"><value>Ask Evo</value></data>
+  <data name="Companion_Open" xml:space="preserve"><value>Evo, your tutor: ask anything on any page</value></data>
+  <data name="Companion_Title" xml:space="preserve"><value>Evo, your tutor</value></data>
+  <data name="Companion_Subtitle" xml:space="preserve"><value>Knows your tests, your progress and this page</value></data>
+  <data name="Companion_Clear" xml:space="preserve"><value>Delete the conversation</value></data>
+  <data name="Companion_QuickNext" xml:space="preserve"><value>What should I do now?</value></data>
+  <data name="Companion_QuickProgress" xml:space="preserve"><value>How am I doing?</value></data>
+  <data name="Companion_QuickHelp" xml:space="preserve"><value>Help me with this page</value></data>
+  <data name="Companion_Placeholder" xml:space="preserve"><value>Ask Evo anything…</value></data>
+  <data name="Companion_Send" xml:space="preserve"><value>Send</value></data>
+  <data name="Companion_Privacy" xml:space="preserve"><value>Evo keeps this conversation in your account to remember it; you can delete it with the bin. During a test Evo helps you think but never gives the answer.</value></data>
+  <data name="Js_ClearConfirm" xml:space="preserve"><value>Press the bin again to delete the whole conversation.</value></data>
 </root>

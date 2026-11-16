@@ -1072,8 +1072,8 @@
   <data name="Teach_HowItWorks" xml:space="preserve"><value>El codi comprova la teva explicació amb una llista d'idees clau (compten les paraules que fas servir, no l'ortografia). El teu text es queda al teu compte i no es comparteix.</value></data>
   <data name="Voice_Dictate" xml:space="preserve"><value>Dictar</value></data>
   <data name="Interview_Title" xml:space="preserve"><value>Entrevista un personatge històric</value></data>
-  <data name="Interview_Subtitle" xml:space="preserve"><value>Pregunta a Marie Curie, Leonardo, Newton o Ada Lovelace per la seva vida i els seus descobriments, escrivint o parlant. Al final, comprova el que has après.</value></data>
-  <data name="Interview_Card" xml:space="preserve"><value>Pregunta a Marie Curie, Newton…</value></data>
+  <data name="Interview_Subtitle" xml:space="preserve"><value>Pregunta a 12 personatges de la ciència, les lletres, l'economia i els viatges (Marie Curie, Galileu, Darwin, Cervantes, Ibn Battuta…) per la seva vida i els seus descobriments, escrivint o parlant. Al final, comprova el que has après.</value></data>
+  <data name="Interview_Card" xml:space="preserve"><value>Pregunta a Marie Curie, Galileu, Cervantes…</value></data>
   <data name="Interview_Simulation" xml:space="preserve"><value>Simulació educativa: les respostes s'escriuen a partir de fets històrics documentats; no són cites reals de la persona.</value></data>
   <data name="Interview_Suggestions" xml:space="preserve"><value>Preguntes suggerides</value></data>
   <data name="Interview_YourQuestion" xml:space="preserve"><value>La teva pregunta…</value></data>
@@ -1100,4 +1100,25 @@
   <data name="Js_NotUnderstood" xml:space="preserve"><value>He sentit «{0}», però no és cap opció. Torna-ho a provar o toca la resposta.</value></data>
   <data name="Js_MicError" xml:space="preserve"><value>El micròfon no està disponible. Revisa el permís del navegador.</value></data>
   <data name="Js_OtherInterviews" xml:space="preserve"><value>Altres entrevistes</value></data>
+  <data name="Interview_VoiceOn" xml:space="preserve"><value>Veu activada</value></data>
+  <data name="Interview_Start" xml:space="preserve"><value>Començar l'entrevista</value></data>
+  <data name="Interview_StartHint" xml:space="preserve"><value>{0} t'espera per respondre les teves preguntes. Apuja el so per sentir-ne la veu.</value></data>
+  <data name="Js_VoiceOn" xml:space="preserve"><value>Veu activada</value></data>
+  <data name="Js_VoiceOff" xml:space="preserve"><value>Veu desactivada</value></data>
+  <data name="Js_Thinking" xml:space="preserve"><value>Pensant…</value></data>
+  <data name="Js_InterviewProgress" xml:space="preserve"><value>Preguntes fetes: {0} de {1} per desbloquejar la comprovació</value></data>
+  <data name="Js_InterviewReady" xml:space="preserve"><value>Comprovació desbloquejada! Pots continuar preguntant o comprovar el que has après.</value></data>
+  <data name="Topic_math_clock" xml:space="preserve"><value>Llegir l'hora</value></data>
+  <data name="Companion_Button" xml:space="preserve"><value>Pregunta a l'Evo</value></data>
+  <data name="Companion_Open" xml:space="preserve"><value>L'Evo, el teu tutor: pregunta-li el que vulguis des de qualsevol pàgina</value></data>
+  <data name="Companion_Title" xml:space="preserve"><value>L'Evo, el teu tutor</value></data>
+  <data name="Companion_Subtitle" xml:space="preserve"><value>Coneix els teus tests, el teu progrés i aquesta pàgina</value></data>
+  <data name="Companion_Clear" xml:space="preserve"><value>Esborrar la conversa</value></data>
+  <data name="Companion_QuickNext" xml:space="preserve"><value>Què faig ara?</value></data>
+  <data name="Companion_QuickProgress" xml:space="preserve"><value>Com vaig?</value></data>
+  <data name="Companion_QuickHelp" xml:space="preserve"><value>Ajuda'm amb aquesta pàgina</value></data>
+  <data name="Companion_Placeholder" xml:space="preserve"><value>Pregunta alguna cosa a l'Evo…</value></data>
+  <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Companion_Privacy" xml:space="preserve"><value>L'Evo guarda aquesta conversa al teu compte per recordar-la; pots esborrar-la amb la paperera. Durant un test, l'Evo t'ajuda a pensar però mai no et dona la resposta.</value></data>
+  <data name="Js_ClearConfirm" xml:space="preserve"><value>Prem un altre cop la paperera per esborrar tota la conversa.</value></data>
 </root>

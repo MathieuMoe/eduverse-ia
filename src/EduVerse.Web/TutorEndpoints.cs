@@ -11,6 +11,8 @@ public sealed record TeachRequest(string Text, string? SessionId);
 
 public sealed record InterviewRequest(string Question, IReadOnlyList<InterviewTurn>? History);
 
+public sealed record CompanionRequest(string Message, string? Page, string? Title);
+
 /// <summary>
 /// "Explain it to Evo" (the rubric decides, the AI only writes Evo's words) and interviews with historical figures
 /// (a simulation from documented facts; offline, prepared answers).
@@ -80,6 +82,64 @@ public static class TutorEndpoints
         })
         .RequireRateLimiting("tutor");
 
+        // Evo on every page: knows the progress of the student and the conversation; the actions are decided in code.
+        api.MapGet("/companion", async (string? page, string? title, HttpContext context, CompanionStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var language = Localization.LanguageForCurrentCulture();
+            var snapshot = await store.SnapshotAsync(context.User.Id(), context.User.DisplayName(), Clip(page, 120), Clip(title, 120), Names(l), context.RequestAborted);
+            var actions = Companion.Suggest(snapshot, language);
+            var history = await store.HistoryAsync(context.User.Id(), ct: context.RequestAborted);
+            return Results.Ok(new
+            {
+                greeting = Companion.Greeting(snapshot, language),
+                actions = actions.Select(ActionView),
+                messages = history.Select(m => new { fromStudent = m.FromStudent, text = m.Text, at = m.At }),
+            });
+        });
+
+        api.MapPost("/companion", async (CompanionRequest request, HttpContext context, CompanionStore store, AiEngines engines, ILogger<CompanionRequest> logger, IStringLocalizer<SharedResource> l) =>
+        {
+            var message = request?.Message?.Trim() ?? "";
+            if (message.Length is < 1 or > Companion.MaxMessage)
+            {
+                return Results.BadRequest();
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var page = Clip(request!.Page, 120);
+            var snapshot = await store.SnapshotAsync(context.User.Id(), context.User.DisplayName(), page, Clip(request.Title, 120), Names(l), context.RequestAborted);
+            var actions = Companion.Suggest(snapshot, language);
+            var history = (await store.HistoryAsync(context.User.Id(), Companion.HistoryForAi, context.RequestAborted)).Select(m => new CompanionTurn(m.FromStudent, m.Text)).ToList();
+            return await AiRunner.GuardAsync(async () =>
+            {
+                var run = await AiRunner.RunAsync(context, engines, logger,
+                    async ai => CompanionPrompt.Parse(await ai.GenerateAsync(CompanionPrompt.Build(snapshot, actions, history, message, language), context.RequestAborted), actions),
+                    () => Task.FromResult(Companion.Demo(snapshot, actions, message, language)));
+                await store.SaveAsync(context.User.Id(), message, run.Result, page, context.RequestAborted);
+                return Results.Ok(new
+                {
+                    reply = run.Result.Text,
+                    actions = actions.Where(a => run.Result.Actions.Contains(a.Id)).Select(ActionView),
+                    engine = run.Engine,
+                    fallback = run.Fallback,
+                });
+            });
+        })
+        .RequireRateLimiting("tutor");
+
+        api.MapDelete("/companion", async (HttpContext context, CompanionStore store) =>
+            Results.Ok(new { deleted = await store.ClearAsync(context.User.Id(), context.RequestAborted) }));
+
         return app;
     }
+
+    private static string Clip(string? text, int max) => text is null ? "" : text.Length > max ? text[..max] : text;
+
+    private static object ActionView(CompanionAction a) => new { id = a.Id, url = a.Url, label = a.Label, icon = a.Icon };
+
+    private static CompanionNames Names(IStringLocalizer l) => new(
+        topic => QuizEndpoints.TopicName(topic, l),
+        area => l[$"Area_{area}"].Value,
+        rank => l[$"Rank_{rank}"].Value,
+        mode => l[$"QuizMode_{mode}"].Value);
 }

@@ -225,3 +225,22 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
 .kids .quiz-option { min-height: 4.5rem; font-size: 1.5rem; border-width: 2px; }
 .kids .quiz-visual { font-size: 3rem; line-height: 1.2; }
 .quiz-option[data-state="removed"] { opacity: .35; text-decoration: line-through; }
+
+/* Question pictures (diagrams.js) */
+.quiz-diagram, [data-diagram] { --dg-accent: #7a6cf0; --dg-soft: #e7e4fd; }
+.dark .quiz-diagram, .dark [data-diagram] { --dg-accent: #b3a9fa; --dg-soft: #2e2a45; }
+
+/* Illustrated figures of the interviews (avatars.js) */
+[data-avatar] .av-mouth { display: none; }
+[data-avatar][data-mouth="closed"] .av-mouth-closed,
+[data-avatar][data-mouth="mid"] .av-mouth-mid,
+[data-avatar][data-mouth="open"] .av-mouth-open { display: inline; }
+[data-avatar] .av-eyes { transform-box: fill-box; transform-origin: center; animation: av-blink 4.6s infinite; }
+[data-avatar].is-talking .av-head { animation: av-bob 0.9s ease-in-out infinite alternate; }
+[data-avatar].is-thinking .av-pupil { transform: translate(2px, -2.5px); transition: transform .3s; }
+@keyframes av-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
+@keyframes av-bob { from { transform: translateY(0) rotate(0); } to { transform: translateY(-1.5px) rotate(-0.6deg); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-avatar] .av-eyes, [data-avatar].is-talking .av-head { animation: none; }
+}
+#iv-root[data-busy="true"] #iv-suggestions, #iv-root[data-busy="true"] #iv-form button[type=submit] { opacity: .55; pointer-events: none; }

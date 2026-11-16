@@ -13,6 +13,9 @@ public sealed record InterviewAnswer(Txt Question, string Keywords, Txt Answer);
 /// <summary>A comprehension question at the end of the interview: the answer and three wrong options.</summary>
 public sealed record InterviewCheck(Txt Question, Txt Answer, Txt[] Wrong);
 
+/// <summary>How the browser voice of a figure sounds: a female or male voice when there is one, its pitch and speed.</summary>
+public sealed record FigureVoice(bool Female, double Pitch, double Rate);
+
 /// <summary>A historical figure for an educational interview (always presented as a simulation).</summary>
 public sealed record Figure(string Key, string Name, string Years, string Emoji, Area Area, Txt Field, Txt Greeting, IReadOnlyList<InterviewAnswer> Answers, IReadOnlyList<InterviewCheck> Checks);
 
@@ -21,7 +24,7 @@ public sealed record Figure(string Key, string Name, string Years, string Emoji,
 /// It is a simulation, said on screen: no real quotes. Offline, prepared answers to suggested questions; with the AI, free questions.
 /// The interview ends with a comprehension test built from checked facts.
 /// </summary>
-public static class Interviews
+public static partial class Interviews
 {
     public const int MaxQuestion = 300;
     public const int MaxTurns = 12;
@@ -30,7 +33,14 @@ public static class Interviews
 
     private static InterviewCheck C(string question, string answer, params string[] wrong) => new(Txt.Of(question), Txt.Of(answer), wrong.Select(Txt.Of).ToArray());
 
-    public static readonly IReadOnlyList<Figure> All =
+    public static IReadOnlyList<Figure> All => Registry.List;
+
+    private static class Registry
+    {
+        public static readonly IReadOnlyList<Figure> List = [.. First, .. More.List];
+    }
+
+    private static readonly IReadOnlyList<Figure> First =
     [
         new("curie", "Marie Curie", "1867–1934", "🔬", Area.Chemistry, Txt.Of("Physicist and chemist|Física y química|Physicienne et chimiste|Física i química"),
             Txt.Of("Hello! I am Marie Curie. I spent my life studying radioactivity in my laboratory in Paris. What would you like to know?|¡Hola! Soy Marie Curie. Pasé mi vida estudiando la radiactividad en mi laboratorio de París. ¿Qué te gustaría saber?|Bonjour ! Je suis Marie Curie. J'ai passé ma vie à étudier la radioactivité dans mon laboratoire à Paris. Que veux-tu savoir ?|Hola! Soc Marie Curie. Vaig passar la vida estudiant la radioactivitat al meu laboratori de París. Què t'agradaria saber?"),
@@ -112,6 +122,23 @@ public static class Interviews
     ];
 
     public static Figure? Find(string? key) => All.FirstOrDefault(f => f.Key == key);
+
+    /// <summary>The voice of each figure (browser speech synthesis): older men a little lower and slower.</summary>
+    public static FigureVoice Voice(Figure figure) => figure?.Key switch
+    {
+        "curie" => new(true, 1.0, 0.95),
+        "lovelace" => new(true, 1.12, 1.02),
+        "leonardo" => new(false, 0.8, 0.9),
+        "franklin" => new(true, 1.05, 1.02),
+        "noether" => new(true, 0.98, 0.97),
+        "darwin" => new(false, 0.82, 0.9),
+        "galileo" => new(false, 0.86, 0.93),
+        "cervantes" => new(false, 0.95, 0.97),
+        "ibnbattuta" => new(false, 0.9, 0.95),
+        "smith" => new(false, 0.9, 0.93),
+        "champollion" => new(false, 1.02, 1.05),
+        _ => new(false, 0.92, 0.95),
+    };
 
     /// <summary>Offline answer: the prepared answer whose keywords match the question best; null when none matches.</summary>
     public static InterviewAnswer? Match(Figure figure, string question, TeachLanguage language)

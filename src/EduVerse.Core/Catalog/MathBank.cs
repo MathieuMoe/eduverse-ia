@@ -8,7 +8,7 @@ internal static class MathBank
     public static QuizQuestion Generate(Mc q) => q.Level switch
     {
         Level.EarlyYears => q.Topic(Count, AddSmall, Biggest)(q),
-        Level.Primary1 => q.Topic(Shapes, Add, Subtract)(q),
+        Level.Primary1 => q.Topic(Shapes, Add, Subtract, Clock)(q),
         Level.Primary2 => q.Topic(Multiply, Divide, AddBig)(q),
         Level.Primary3 => q.Topic(Percent, Rectangle, FractionOf)(q),
         Level.Secondary1 => q.Topic(Integers, Proportion, LinearEquation, Powers)(q),
@@ -58,8 +58,22 @@ internal static class MathBank
         var (name, sides) = q.Pick(ShapeList);
         return q.Number("math.shapes", q.F("How many sides does a {0} have?|¿Cuántos lados tiene un {0}?|Combien de côtés a un {0} ?|Quants costats té un {0}?", q.T(name)), sides,
             [sides - 1, sides + 1, sides + 2], q.F("A {0} has {1} sides.|Un {0} tiene {1} lados.|Un {0} a {1} côtés.|Un {0} té {1} costats.", q.T(name), sides),
-            visual: sides switch { 3 => "🔺", 4 => "🟥", 6 => "⬢", 8 => "🛑", _ => "⬠" });
+            visual: Diagram.Polygon(sides));
     }
+
+    private static QuizQuestion Clock(Mc q)
+    {
+        var hour = q.Between(1, 12);
+        var minute = q.Difficulty switch { 1 => 0, 2 => q.Pick(HalfHours), _ => 5 * q.Between(1, 11) };
+        static string Time(int h, int m) => $"{h}:{m:00}";
+        var swapped = minute == 0 ? Time(12, hour * 5 % 60) : Time(minute / 5 == 0 ? 12 : minute / 5, hour * 5 % 60);
+        return q.Choice("math.clock", q.T("What time does the clock show?|¿Qué hora marca el reloj?|Quelle heure indique l'horloge ?|Quina hora marca el rellotge?"), Time(hour, minute),
+            [swapped, Time(hour % 12 + 1, minute), Time(hour, (minute + 30) % 60), Time(hour == 1 ? 12 : hour - 1, minute)],
+            q.F("The short hand shows the hour ({0}) and the long hand the minutes ({1}).|La aguja corta marca la hora ({0}) y la larga los minutos ({1}).|La petite aiguille indique l'heure ({0}) et la grande les minutes ({1}).|L'agulla curta marca l'hora ({0}) i la llarga els minuts ({1}).", hour, minute),
+            Diagram.Clock(hour, minute));
+    }
+
+    private static readonly int[] HalfHours = [0, 30];
 
     private static QuizQuestion Add(Mc q)
     {
@@ -116,7 +130,8 @@ internal static class MathBank
         var answer = baseValue * p / 100.0;
         return q.Number("math.percent", q.F("What is {0} % of {1}?|¿Cuánto es el {0} % de {1}?|Combien font {0} % de {1} ?|Quant és el {0} % de {1}?", p, baseValue), answer,
             [baseValue * p / 10.0, p, baseValue - answer, answer + 10],
-            q.F("{0} % means {0} out of 100: {1} × {0} ÷ 100 = {2}.|{0} % significa {0} de cada 100: {1} × {0} ÷ 100 = {2}.|{0} % signifie {0} sur 100 : {1} × {0} ÷ 100 = {2}.|{0} % vol dir {0} de cada 100: {1} × {0} ÷ 100 = {2}.", p, baseValue, q.N(answer)));
+            q.F("{0} % means {0} out of 100: {1} × {0} ÷ 100 = {2}.|{0} % significa {0} de cada 100: {1} × {0} ÷ 100 = {2}.|{0} % signifie {0} sur 100 : {1} × {0} ÷ 100 = {2}.|{0} % vol dir {0} de cada 100: {1} × {0} ÷ 100 = {2}.", p, baseValue, q.N(answer)),
+            visual: p <= 100 ? Diagram.Grid(p) : null);
     }
 
     private static QuizQuestion Rectangle(Mc q)
@@ -126,11 +141,11 @@ internal static class MathBank
         if (q.Rng.Next(2) == 0)
         {
             return q.Number("math.area", q.F("Area of a rectangle of {0} cm by {1} cm?|¿Área de un rectángulo de {0} cm por {1} cm?|Aire d'un rectangle de {0} cm sur {1} cm ?|Àrea d'un rectangle de {0} cm per {1} cm?", a, b),
-                a * b, [2 * (a + b), a + b, a * b + a], q.F("Area = length × width = {0} × {1} = {2} cm².|Área = largo × ancho = {0} × {1} = {2} cm².|Aire = longueur × largeur = {0} × {1} = {2} cm².|Àrea = llarg × ample = {0} × {1} = {2} cm².", a, b, a * b), unit: " cm²");
+                a * b, [2 * (a + b), a + b, a * b + a], q.F("Area = length × width = {0} × {1} = {2} cm².|Área = largo × ancho = {0} × {1} = {2} cm².|Aire = longueur × largeur = {0} × {1} = {2} cm².|Àrea = llarg × ample = {0} × {1} = {2} cm².", a, b, a * b), visual: Diagram.Rect(a, b), unit: " cm²");
         }
 
         return q.Number("math.perimeter", q.F("Perimeter of a rectangle of {0} cm by {1} cm?|¿Perímetro de un rectángulo de {0} cm por {1} cm?|Périmètre d'un rectangle de {0} cm sur {1} cm ?|Perímetre d'un rectangle de {0} cm per {1} cm?", a, b),
-            2 * (a + b), [a * b, a + b, 2 * a + b], q.F("Perimeter = 2 × ({0} + {1}) = {2} cm.|Perímetro = 2 × ({0} + {1}) = {2} cm.|Périmètre = 2 × ({0} + {1}) = {2} cm.|Perímetre = 2 × ({0} + {1}) = {2} cm.", a, b, 2 * (a + b)), unit: " cm");
+            2 * (a + b), [a * b, a + b, 2 * a + b], q.F("Perimeter = 2 × ({0} + {1}) = {2} cm.|Perímetro = 2 × ({0} + {1}) = {2} cm.|Périmètre = 2 × ({0} + {1}) = {2} cm.|Perímetre = 2 × ({0} + {1}) = {2} cm.", a, b, 2 * (a + b)), visual: Diagram.Rect(a, b), unit: " cm");
     }
 
     private static QuizQuestion FractionOf(Mc q)
@@ -141,7 +156,8 @@ internal static class MathBank
         var total = d * k;
         return q.Number("math.fraction", q.F("What is {0}/{1} of {2}?|¿Cuánto es {0}/{1} de {2}?|Combien font {0}/{1} de {2} ?|Quant és {0}/{1} de {2}?", n, d, total), n * k,
             [k, total / (double)n, n * k + k, total - n],
-            q.F("{2} ÷ {1} = {3}, then × {0} = {4}.|{2} ÷ {1} = {3}, y luego × {0} = {4}.|{2} ÷ {1} = {3}, puis × {0} = {4}.|{2} ÷ {1} = {3}, i després × {0} = {4}.", n, d, total, k, n * k));
+            q.F("{2} ÷ {1} = {3}, then × {0} = {4}.|{2} ÷ {1} = {3}, y luego × {0} = {4}.|{2} ÷ {1} = {3}, puis × {0} = {4}.|{2} ÷ {1} = {3}, i després × {0} = {4}.", n, d, total, k, n * k),
+            visual: Diagram.Pie(n, d));
     }
 
     private static QuizQuestion Integers(Mc q)
@@ -192,7 +208,8 @@ internal static class MathBank
     {
         var (a, b, c) = q.Pick(Triples);
         return q.Number("math.pythagoras", q.F("A right triangle has legs of {0} and {1}. How long is the hypotenuse?|Un triángulo rectángulo tiene catetos de {0} y {1}. ¿Cuánto mide la hipotenusa?|Un triangle rectangle a des côtés de l'angle droit de {0} et {1}. Combien mesure l'hypoténuse ?|Un triangle rectangle té catets de {0} i {1}. Quant fa la hipotenusa?", a, b),
-            c, [a + b, a * a + b * b, c + 1], q.F("c² = {0}² + {1}² = {2}, so c = {3}.|c² = {0}² + {1}² = {2}, así que c = {3}.|c² = {0}² + {1}² = {2}, donc c = {3}.|c² = {0}² + {1}² = {2}, per tant c = {3}.", a, b, a * a + b * b, c));
+            c, [a + b, a * a + b * b, c + 1], q.F("c² = {0}² + {1}² = {2}, so c = {3}.|c² = {0}² + {1}² = {2}, así que c = {3}.|c² = {0}² + {1}² = {2}, donc c = {3}.|c² = {0}² + {1}² = {2}, per tant c = {3}.", a, b, a * a + b * b, c),
+            visual: Diagram.RightTriangle(a, b));
     }
 
     private static QuizQuestion System2(Mc q)
@@ -211,7 +228,8 @@ internal static class MathBank
         var c = q.Between(-5, 5);
         var (y1, y2) = (m * x1 + c, m * x2 + c);
         return q.Number("math.slope", q.F("Slope of the line through ({0}, {1}) and ({2}, {3})?|¿Pendiente de la recta que pasa por ({0}, {1}) y ({2}, {3})?|Pente de la droite passant par ({0}, {1}) et ({2}, {3}) ?|Pendent de la recta que passa per ({0}, {1}) i ({2}, {3})?", x1, y1, x2, y2),
-            m, [-m, (x2 - x1) / (double)(y2 - y1 == 0 ? 1 : y2 - y1), m + 1, y2 - y1], q.F("m = ({0}) ÷ ({1}) = {2}.|m = ({0}) ÷ ({1}) = {2}.|m = ({0}) ÷ ({1}) = {2}.|m = ({0}) ÷ ({1}) = {2}.", y2 - y1, x2 - x1, m));
+            m, [-m, (x2 - x1) / (double)(y2 - y1 == 0 ? 1 : y2 - y1), m + 1, y2 - y1], q.F("m = ({0}) ÷ ({1}) = {2}.|m = ({0}) ÷ ({1}) = {2}.|m = ({0}) ÷ ({1}) = {2}.|m = ({0}) ÷ ({1}) = {2}.", y2 - y1, x2 - x1, m),
+            visual: Diagram.Line(x1, y1, x2, y2));
     }
 
     private static QuizQuestion Quadratic(Mc q)
@@ -272,7 +290,8 @@ internal static class MathBank
     {
         var (function, angle, value) = q.Pick(Trig);
         return q.Choice("math.trigonometry", $"{function}({angle}°) = ?", value, Trig.Select(t => t.Value).Distinct(),
-            q.F("{0}({1}°) = {2}: remember the triangle with angles 30°, 60° and 90° and the one with 45°.|{0}({1}°) = {2}: recuerda el triángulo de 30°, 60° y 90° y el de 45°.|{0}({1}°) = {2} : souviens-toi du triangle à 30°, 60°, 90° et de celui à 45°.|{0}({1}°) = {2}: recorda el triangle de 30°, 60° i 90° i el de 45°.", function, angle, value));
+            q.F("{0}({1}°) = {2}: remember the triangle with angles 30°, 60° and 90° and the one with 45°.|{0}({1}°) = {2}: recuerda el triángulo de 30°, 60° y 90° y el de 45°.|{0}({1}°) = {2} : souviens-toi du triangle à 30°, 60°, 90° et de celui à 45°.|{0}({1}°) = {2}: recorda el triangle de 30°, 60° i 90° i el de 45°.", function, angle, value),
+            Diagram.Angle(angle));
     }
 
     private static QuizQuestion Dice(Mc q)
@@ -364,7 +383,8 @@ internal static class MathBank
         var mean = data.Sum() / 4.0;
         var squares = data.Sum(x => (x - mean) * (x - mean));
         return q.Number("math.statistics", q.F("Population variance of the data {0}?|¿Varianza poblacional de los datos {0}?|Variance (population) des données {0} ?|Variància poblacional de les dades {0}?", string.Join("; ", data)),
-            squares / 4, [squares / 3, Math.Sqrt(squares / 4), squares, mean], q.F("Mean = {0}; sum of squared deviations = {1}; divided by n = 4.|Media = {0}; suma de desviaciones al cuadrado = {1}; dividida por n = 4.|Moyenne = {0} ; somme des carrés des écarts = {1} ; divisée par n = 4.|Mitjana = {0}; suma de desviacions al quadrat = {1}; dividida per n = 4.", q.N(mean), q.N(squares)));
+            squares / 4, [squares / 3, Math.Sqrt(squares / 4), squares, mean], q.F("Mean = {0}; sum of squared deviations = {1}; divided by n = 4.|Media = {0}; suma de desviaciones al cuadrado = {1}; dividida por n = 4.|Moyenne = {0} ; somme des carrés des écarts = {1} ; divisée par n = 4.|Mitjana = {0}; suma de desviacions al quadrat = {1}; dividida per n = 4.", q.N(mean), q.N(squares)),
+            visual: Diagram.Bars(data));
     }
 
     private static QuizQuestion Radius(Mc q)

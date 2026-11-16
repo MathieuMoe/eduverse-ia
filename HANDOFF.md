@@ -90,6 +90,29 @@ no accents), XpFor (10 per idea + 20 if complete), TeachPrompt (AI writes Evo's 
 /api/interview/{figure}, limiter "tutor" 30/min. wwwroot/js/voice.js (SpeechRecognition: listen, match, dictation) used by quiz.js
 (🎤 button), teach.js and interview.js. Badges Teacher/TimeTraveler (23), quest TeachEvo. DatabaseVersion = 7.
 
+## Pictures and talking figures (Nov 2026)
+Core/Catalog/Diagram.cs: "dg:kind:args" specs (13 kinds, IsValid allows only digits, dots, commas, A/a, p, s), used by MathBank
+(new Clock topic in Primary1, polygons, percent grid, rectangles, pies, Pythagoras, slope, angle, variance bars), ScienceBanks
+(Ohm circuit, resistors, Punnett) and SocialBanks (market). wwwroot/js/diagrams.js draws them (quiz.js, History hydrates
+[data-diagram]); colours --dg-accent/--dg-soft in app.css. wwwroot/js/avatars.js: original SVG figures with 3 mouths
+(data-mouth), blink, bob while talking (.is-talking), look up (.is-thinking). Interviews.Voice(figure) → data-female/pitch/rate;
+interview.js picks a voice by name heuristics, lips follow the speech (or the typing with the voice off), start button
+because browsers need a click before speaking, data-busy for the e2e. Load avatars.js AFTER common.js (common.js replaces window.Edu).
+
+## Evo on every page (Nov 2026)
+Core/Tutor/Companion.cs: StudentSnapshot (names already localised), Suggest (actions decided in code: review, practice, teach,
+notebook, adventure, interview, explore; max 3), Greeting, Progress, PageHelp, Demo (intents: help in a test → never the answer,
+this page, how am I doing, what now, greetings), CompanionPrompt (snapshot as data, InTest rule, AI picks action ids, Parse filters
+unknown ids). Infrastructure/Tutor/CompanionStore (SnapshotAsync from QuizAttempts, TopicSkills, reviews, misconceptions,
+TeachSessions; CompanionMessage entity, last 200 kept, ClearAsync). DatabaseVersion = 8. TutorEndpoints: GET/POST/DELETE
+/api/companion (limiter "tutor"). Layout: header button + <aside id="companion"> for students; wwwroot/js/companion.js is
+self-contained on purpose (pages load common.js later, which replaces window.Edu).
+
+## 12 interview figures (Nov 2026)
+Core/Tutor/InterviewFigures.cs adds 8 figures (nested class More, read through Interviews.Registry so the static
+initialisation order across the partial files does not matter). Each one: 4 prepared answers with keywords, 3 checks, a voice in
+Interviews.Voice and an SVG in avatars.js. Companion.FigureFor picks the figure of each subject.
+
 ## Next
 1. Ideas left from the tutor list: 6 student-made tests for the class; then phase 2 virtual labs and phase 3 knowledge generator.
 2. Real payments (Stripe Connect), video lessons, courses in the marketplace, CSV import of students.

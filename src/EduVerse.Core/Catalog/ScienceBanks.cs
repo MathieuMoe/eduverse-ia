@@ -63,7 +63,7 @@ internal static class PhysicsBank
         var i = q.Between(1, 10) * 0.5;
         var r = q.Between(2, 50);
         return q.Number("physics.electricity", q.F("A current of {0} A flows through a {1} Ω resistor. Voltage?|Por una resistencia de {1} Ω circula una corriente de {0} A. ¿Tensión?|Un courant de {0} A traverse une résistance de {1} Ω. Tension ?|Per una resistència de {1} Ω circula un corrent de {0} A. Tensió?", q.N(i), r),
-            i * r, [r / i, i + r, i * r * 2], q.F("Ohm's law: V = R · I = {0} × {1} = {2} V.|Ley de Ohm: V = R · I = {0} × {1} = {2} V.|Loi d'Ohm : U = R · I = {0} × {1} = {2} V.|Llei d'Ohm: V = R · I = {0} × {1} = {2} V.", r, q.N(i), q.N(i * r)), unit: " V");
+            i * r, [r / i, i + r, i * r * 2], q.F("Ohm's law: V = R · I = {0} × {1} = {2} V.|Ley de Ohm: V = R · I = {0} × {1} = {2} V.|Loi d'Ohm : U = R · I = {0} × {1} = {2} V.|Llei d'Ohm: V = R · I = {0} × {1} = {2} V.", r, q.N(i), q.N(i * r)), visual: Diagram.Circuit(i, r), unit: " V");
     }
 
     private static QuizQuestion Pressure(Mc q)
@@ -129,7 +129,7 @@ internal static class PhysicsBank
         var parallel = q.Rng.Next(2) == 0;
         var answer = parallel ? r / (double)n : r * n;
         return q.Number("physics.electricity", q.F(parallel ? "{0} identical {1} Ω resistors in parallel. Equivalent resistance?|{0} resistencias iguales de {1} Ω en paralelo. ¿Resistencia equivalente?|{0} résistances identiques de {1} Ω en parallèle. Résistance équivalente ?|{0} resistències iguals de {1} Ω en paral·lel. Resistència equivalent?" : "{0} identical {1} Ω resistors in series. Equivalent resistance?|{0} resistencias iguales de {1} Ω en serie. ¿Resistencia equivalente?|{0} résistances identiques de {1} Ω en série. Résistance équivalente ?|{0} resistències iguals de {1} Ω en sèrie. Resistència equivalent?", n, r),
-            answer, [parallel ? r * n : r / (double)n, r, r + n], q.T("Series: resistances add up. Parallel: the inverses add up (n equal resistors → R/n).|En serie se suman las resistencias. En paralelo se suman las inversas (n iguales → R/n).|En série, les résistances s'additionnent. En parallèle, ce sont les inverses (n identiques → R/n).|En sèrie se sumen les resistències. En paral·lel se sumen les inverses (n iguals → R/n)."), unit: " Ω");
+            answer, [parallel ? r * n : r / (double)n, r, r + n], q.T("Series: resistances add up. Parallel: the inverses add up (n equal resistors → R/n).|En serie se suman las resistencias. En paralelo se suman las inversas (n iguales → R/n).|En série, les résistances s'additionnent. En parallèle, ce sont les inverses (n identiques → R/n).|En sèrie se sumen les resistències. En paral·lel se sumen les inverses (n iguals → R/n)."), visual: Diagram.Resistors(n, r, parallel), unit: " Ω");
     }
 
     private static QuizQuestion Centripetal(Mc q)
@@ -363,7 +363,7 @@ internal static class BiologyBank
         var recessive = p1.Count(c => c == 'a') * p2.Count(c => c == 'a');
         var answer = Mc.Frac(recessive, 4);
         return q.Choice("biology.heredity", q.F("Cross {0} × {1} (A dominant). Probability of a child with the recessive trait (aa)?|Cruce {0} × {1} (A dominante). ¿Probabilidad de un descendiente con el carácter recesivo (aa)?|Croisement {0} × {1} (A dominant). Probabilité d'un descendant au caractère récessif (aa) ?|Encreuament {0} × {1} (A dominant). Probabilitat d'un descendent amb el caràcter recessiu (aa)?", p1, p2),
-            answer, ["0", "1/4", "1/2", "3/4", "1"], q.F("Each parent gives one allele: {0} of the 4 boxes of the Punnett square are aa.|Cada progenitor aporta un alelo: {0} de las 4 casillas del cuadro de Punnett son aa.|Chaque parent donne un allèle : {0} des 4 cases de l'échiquier de Punnett sont aa.|Cada progenitor aporta un al·lel: {0} de les 4 caselles del quadre de Punnett són aa.", recessive));
+            answer, ["0", "1/4", "1/2", "3/4", "1"], q.F("Each parent gives one allele: {0} of the 4 boxes of the Punnett square are aa.|Cada progenitor aporta un alelo: {0} de las 4 casillas del cuadro de Punnett son aa.|Chaque parent donne un allèle : {0} des 4 cases de l'échiquier de Punnett sont aa.|Cada progenitor aporta un al·lel: {0} de les 4 caselles del quadre de Punnett són aa.", recessive), Diagram.Punnett(p1, p2));
     }
 
     private static QuizQuestion Complement(Mc q)

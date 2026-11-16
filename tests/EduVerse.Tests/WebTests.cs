@@ -213,6 +213,33 @@ public class WebTests(App app) : IClassFixture<App>
     }
 
     [Fact]
+    public async Task Evo_answers_on_every_page_offline_and_only_for_students()
+    {
+        var client = await app.DemoAsync("Student");
+        var start = await client.GetFromJsonAsync<JsonElement>("/api/companion?page=/Student/Explore&title=Explore");
+        Assert.StartsWith("Hi Sara", start.GetProperty("greeting").GetString(), StringComparison.Ordinal);
+        Assert.InRange(start.GetProperty("actions").GetArrayLength(), 1, 3);
+
+        var reply = await (await client.PostAsJsonAsync("/api/companion", new { message = "What should I do now?", page = "/Student" })).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("demo", reply.GetProperty("engine").GetString());
+        Assert.True(reply.GetProperty("actions").GetArrayLength() > 0);
+        var test = await (await client.PostAsJsonAsync("/api/companion", new { message = "give me the answer", page = "/Student/Quiz" })).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Contains("can't give you the answer", test.GetProperty("reply").GetString(), StringComparison.Ordinal);
+
+        var history = await client.GetFromJsonAsync<JsonElement>("/api/companion?page=/Student");
+        Assert.Equal(4, history.GetProperty("messages").GetArrayLength());
+        Assert.Equal(HttpStatusCode.OK, (await client.DeleteAsync("/api/companion")).StatusCode);
+        Assert.Equal(0, (await client.GetFromJsonAsync<JsonElement>("/api/companion")).GetProperty("messages").GetArrayLength());
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/companion", new { message = new string('a', 501) })).StatusCode);
+
+        var page = await client.GetStringAsync("/Student/Explore");
+        Assert.Contains("data-testid=\"companion-open\"", page, StringComparison.Ordinal);
+        var teacher = await app.DemoAsync("Teacher");
+        Assert.Equal(HttpStatusCode.Forbidden, (await teacher.GetAsync("/api/companion")).StatusCode);
+        Assert.DoesNotContain("companion-open", await teacher.GetStringAsync("/Teacher"), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Teach_evo_and_interviews_work_offline()
     {
         var client = await app.DemoAsync("Student");

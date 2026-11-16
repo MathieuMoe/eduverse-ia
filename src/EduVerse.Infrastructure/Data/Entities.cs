@@ -593,3 +593,22 @@ public sealed class TeachSession
 
     public DateTimeOffset? FinishedAt { get; set; }
 }
+
+/// <summary>A message of the conversation with Evo, the companion of every page (the student can delete it all).</summary>
+public sealed class CompanionMessage
+{
+    public int Id { get; set; }
+
+    public string UserId { get; set; } = "";
+
+    public bool FromStudent { get; set; }
+
+    public string Text { get; set; } = "";
+
+    /// <summary>Ids of the actions shown under Evo's reply, separated by commas.</summary>
+    public string Actions { get; set; } = "";
+
+    public string Page { get; set; } = "";
+
+    public DateTimeOffset At { get; set; }
+}

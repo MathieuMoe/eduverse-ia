@@ -127,6 +127,16 @@
             <div class="flex items-center gap-x-1 sm:gap-x-2 shrink-0">
                 <button type="button" data-palette-open class="md:hidden @Ui.IconBtn" aria-label="@L["Palette_Open"]">@Html.Raw(Svg("<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>", "size-4"))</button>
 
+                @if (user.IsStudent())
+                {
+                    <!-- Evo, the tutor of every page -->
+                    <button type="button" id="companion-open" class="h-9 inline-flex items-center gap-x-1.5 ps-1 pe-2.5 sm:pe-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
+                            aria-controls="companion" aria-expanded="false" title="@L["Companion_Open"]" data-testid="companion-open">
+                        <partial name="_Mascot" model="@("size-7")" />
+                        <span class="max-sm:sr-only">@L["Companion_Button"]</span>
+                    </button>
+                }
+
                 <!-- AI engine: Claude, ChatGPT, Gemini, Ollama or the demo -->
                 <div class="hs-dropdown [--placement:bottom-right] relative inline-flex">
                     <button id="engine-menu" type="button" class="hs-dropdown-toggle h-9 inline-flex items-center gap-x-1.5 px-2.5 sm:px-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden"
@@ -321,6 +331,38 @@
             <ul id="palette-list" class="max-h-80 overflow-y-auto p-2" role="listbox"></ul>
         </div>
     </div>
+
+    @if (user.IsStudent())
+    {
+        <aside id="companion" class="fixed inset-y-0 end-0 z-[70] w-full sm:w-[26rem] flex flex-col bg-layer border-s border-layer-line shadow-2xl" role="dialog" aria-modal="false" aria-labelledby="companion-title" hidden data-testid="companion">
+            <header class="flex items-center gap-3 p-4 border-b border-card-divider">
+                <partial name="_Mascot" model="@("size-11 shrink-0")" />
+                <div class="min-w-0 grow">
+                    <h2 id="companion-title" class="font-semibold text-foreground">@L["Companion_Title"]</h2>
+                    <p class="text-xs text-muted-foreground-1">@L["Companion_Subtitle"]</p>
+                </div>
+                <button type="button" id="companion-speak" class="@Ui.IconBtn" aria-pressed="false" title="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔈</button>
+                <button type="button" id="companion-clear" class="@Ui.IconBtn" title="@L["Companion_Clear"]" aria-label="@L["Companion_Clear"]" data-testid="companion-clear">@Html.Raw(Svg("<path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6\"/>", "size-4"))</button>
+                <button type="button" id="companion-close" class="@Ui.IconBtn" aria-label="@L["Close"]">@Html.Raw(Svg("<path d=\"M18 6 6 18M6 6l12 12\"/>", "size-4"))</button>
+            </header>
+            <div id="companion-chat" class="grow overflow-y-auto p-4 space-y-3" aria-live="polite"></div>
+            <div class="px-4 pb-2 flex flex-wrap gap-2" id="companion-quick">
+                <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickNext"]">🧭 @L["Companion_QuickNext"]</button>
+                <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickProgress"]">📈 @L["Companion_QuickProgress"]</button>
+                <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickHelp"]">🆘 @L["Companion_QuickHelp"]</button>
+            </div>
+            <form id="companion-form" class="p-4 pt-2 border-t border-card-divider">
+                <div class="flex items-end gap-2">
+                    <label for="companion-text" class="sr-only">@L["Companion_Placeholder"]</label>
+                    <textarea id="companion-text" rows="2" maxlength="500" class="@Ui.Input resize-none" placeholder="@L["Companion_Placeholder"]" data-testid="companion-text"></textarea>
+                    <button type="button" id="companion-mic" class="@Ui.IconBtn shrink-0" aria-pressed="false" title="@L["Voice_Dictate"]" aria-label="@L["Voice_Dictate"]" hidden>🎤</button>
+                    <button type="submit" class="@Ui.BtnPrimary shrink-0" data-testid="companion-send">@L["Companion_Send"]</button>
+                </div>
+                <p class="mt-2 text-[11px] text-muted-foreground-1">@L["Companion_Privacy"]</p>
+            </form>
+        </aside>
+        <script src="~/js/companion.js" asp-append-version="true" defer></script>
+    }
 
     <script type="application/json" id="i18n">@Html.Raw(jsStrings)</script>
     <script src="~/lib/preline/preline.js" asp-append-version="true"></script>

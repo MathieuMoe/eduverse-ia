@@ -294,6 +294,31 @@ async function demo(page, role) {
     await page.locator("[data-testid=adventure-end]").waitFor();
     check(await page.locator("[data-testid=adventure-end]").isVisible(), "the adventure ends with the story's ending");
 
+    // Evo, the tutor of every page: knows the progress and proposes actions
+    await page.goto(BASE + "/Student/Explore");
+    await page.click("[data-testid=companion-open]");
+    await page.locator("[data-testid=companion-reply]").first().waitFor();
+    check(await page.locator("[data-testid=companion] [data-testid=companion-actions] a").count() > 0, "Evo greets with ideas computed from the progress");
+    await page.click("#companion-quick [data-ask]");
+    await page.waitForFunction(() => document.querySelectorAll("[data-testid=companion-reply]").length >= 2 && document.getElementById("companion").dataset.busy === "false");
+    await page.fill("[data-testid=companion-text]", "How am I doing?");
+    await page.click("[data-testid=companion-send]");
+    await page.waitForFunction(() => document.querySelectorAll("[data-testid=companion-reply]").length >= 3 && document.getElementById("companion").dataset.busy === "false");
+    check((await page.locator("[data-testid=companion-reply]").last().textContent()).includes("streak"), "Evo knows the level, the streak and the weak topics");
+    await page.screenshot({ path: join(DOCS, "screenshot-companion.png") });
+    await page.goto(BASE + "/Student/Achievements");
+    await page.click("[data-testid=companion-open]");
+    await page.waitForFunction(() => document.querySelectorAll("#companion-chat p").length >= 5);
+    check(true, "the conversation follows the student to another page");
+    await page.keyboard.press("Escape");
+    check(await page.locator("[data-testid=companion]").isHidden(), "Esc closes the panel");
+
+    // Some questions come with a picture drawn in the browser
+    await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
+    await page.locator("[data-testid=quiz-diagram] svg").waitFor();
+    check(true, "a question with a picture (diagram)");
+    await page.screenshot({ path: join(DOCS, "screenshot-diagram.png") });
+
     // Explain it to Evo: the rubric finds the key ideas round by round
     await page.goto(BASE + "/Student/Teach");
     check(await page.locator("[data-testid=teach-concepts] a").count() === 8, "eight concepts to explain to Evo");
@@ -312,12 +337,21 @@ async function demo(page, role) {
     await page.goto(BASE + "/Student/Interview");
     await page.click("[data-testid=figure-curie]");
     check(await page.locator("[data-testid=simulation-notice]").isVisible(), "the interview says it is a simulation");
-    for (const b of (await page.locator("#iv-suggestions [data-question]").all()).slice(0, 3)) {
+    check(await page.locator("[data-testid=iv-avatar] svg .av-mouth-open").count() === 1, "the illustrated figure has a mouth that can open");
+    await page.click("[data-testid=iv-voice]"); // no audio in the headless browser
+    await page.click("[data-testid=iv-start]");
+    await page.locator("[data-testid=iv-answer]").first().waitFor();
+    const mouths = new Set();
+    for (let i = 0; i < 6; i++) { mouths.add(await page.locator("[data-testid=iv-avatar]").getAttribute("data-mouth")); await page.waitForTimeout(60); }
+    check(mouths.size > 1, "the lips move while the figure speaks");
+    for (const [i, b] of (await page.locator("#iv-suggestions [data-question]").all()).slice(0, 3).entries()) {
+        await page.locator("#iv-root[data-busy=false]").waitFor();
         await b.click();
-        await page.waitForTimeout(400);
+        await page.waitForFunction((n) => document.querySelectorAll("[data-testid=iv-answer]").length >= n, i + 2);
     }
+    await page.locator("#iv-root[data-busy=false]").waitFor();
     await page.locator("[data-testid=iv-check]").waitFor();
-    check(await page.locator("[data-testid=iv-answer]").count() === 3, "the figure answers the suggested questions offline");
+    check(await page.locator("[data-testid=iv-answer]").count() === 4, "the figure greets and answers the suggested questions offline");
     await page.screenshot({ path: join(DOCS, "screenshot-interview.png") });
     await page.click("[data-testid=iv-check]");
     for (let i = 0; i < 3; i++) {

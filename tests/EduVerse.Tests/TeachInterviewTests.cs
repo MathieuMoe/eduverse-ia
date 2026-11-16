@@ -129,3 +129,61 @@ public class TeachPersistenceTests(Database database) : IClassFixture<Database>
         Assert.Equal(10, step.Session.Xp);
     }
 }
+
+public class DiagramTests
+{
+    [Fact]
+    public void Every_picture_of_the_banks_is_a_valid_specification_and_some_questions_have_one()
+    {
+        var kinds = new HashSet<string>();
+        var total = 0;
+        var withDiagram = 0;
+        foreach (var area in Enum.GetValues<Area>())
+        {
+            foreach (var level in Enum.GetValues<Level>())
+            {
+                for (var seed = 0; seed < 60; seed++)
+                {
+                    var q = QuestionBanks.Generate(area, level, 1 + seed % 3, seed, TeachLanguage.Spanish);
+                    total++;
+                    if (q.Visual is { } v && v.StartsWith(Diagram.Prefix, StringComparison.Ordinal))
+                    {
+                        Assert.True(Diagram.IsValid(v), v);
+                        kinds.Add(v.Split(':')[1]);
+                        withDiagram++;
+                    }
+                }
+            }
+        }
+
+        Assert.Equal(Diagram.Kinds.Count, kinds.Count);
+        Assert.InRange(withDiagram, total / 30, total / 2); // some questions, not all
+    }
+
+    [Fact]
+    public void A_specification_carries_only_numbers_and_fixed_letters()
+    {
+        Assert.Equal("dg:circuit:1.5:20", Diagram.Circuit(1.5, 20));
+        Assert.Equal("dg:bars:3,5,2", Diagram.Bars([3, 5, 2]));
+        Assert.True(Diagram.IsValid(Diagram.Punnett("Aa", "aa")));
+        Assert.False(Diagram.IsValid("dg:pie:<script>"));
+        Assert.False(Diagram.IsValid("dg:unknown:1"));
+        Assert.False(Diagram.IsValid("🍎 🍎"));
+    }
+
+    [Fact]
+    public void The_clock_answer_matches_its_picture()
+    {
+        for (var seed = 0; seed < 200; seed++)
+        {
+            var q = QuestionBanks.Generate(Area.Mathematics, Level.Primary1, 1 + seed % 3, seed, TeachLanguage.English);
+            if (q.Topic != "math.clock")
+            {
+                continue;
+            }
+
+            var parts = q.Visual!.Split(':');
+            Assert.Equal($"{parts[2]}:{int.Parse(parts[3], System.Globalization.CultureInfo.InvariantCulture):00}", q.Options[q.CorrectIndex]);
+        }
+    }
+}

@@ -97,7 +97,7 @@
                 <span>${esc(q.adventure ? fmt(t("QuestionN"), q.number) : fmt(t("QuestionOf"), q.number, q.length))}</span>
                 <span class="inline-flex items-center gap-2"><span class="inline-flex items-center py-0.5 px-2 rounded-full bg-surface text-foreground">${esc(q.topic)}</span><span class="inline-flex gap-1" title="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyN"), q.difficulty))}">${dots}</span></span>
             </div>
-            ${q.visual ? `<p class="quiz-visual mt-5 text-4xl text-center leading-snug" aria-hidden="true">${esc(q.visual)}</p>` : ""}
+            ${q.visual?.startsWith("dg:") ? `<div class="quiz-diagram mt-5 flex justify-center" data-testid="quiz-diagram">${window.Edu.diagram(q.visual)}</div>` : q.visual ? `<p class="quiz-visual mt-5 text-4xl text-center leading-snug" aria-hidden="true">${esc(q.visual)}</p>` : ""}
             <h2 class="quiz-prompt mt-4 text-xl font-semibold text-foreground text-center" id="qz-prompt">${esc(q.prompt)}</h2>
             ${q.code ? `<pre class="mt-4 p-4 rounded-2xl bg-[#2b2230] text-[#f3eefe] text-sm overflow-x-auto"><code>${esc(q.code)}</code></pre>` : ""}
             ${q.evo ? `<div class="mt-5 flex items-start gap-3 justify-center" data-testid="evo-answer">
@@ -154,7 +154,7 @@
             mic.classList.remove("animate-pulse");
         });
         stage.querySelector("[data-index]")?.focus();
-        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual ? "" : ". " + q.options.join(", ")));
+        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + q.options.join(", ")));
     }
 
     function updateHint() {
