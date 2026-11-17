@@ -94,7 +94,7 @@ public class IdeaStoreTests(Database database) : IClassFixture<Database>
         Assert.Equal(before + 1, (await game.BadgeStatsAsync(leo)).Ideas);
         Assert.Equal(0, (await game.BadgeStatsAsync(nora)).Ideas);
         Assert.Contains(await ideas.NewsAsync(nora), n => n.Text == "Cleopatra" && n.Url == "/Student/Interview");
-        var snapshot = await companion.SnapshotAsync(leo, "Leo", "/Student", "Inicio", Names);
+        var snapshot = await companion.SnapshotAsync(leo, "Leo", "/Student", "Inicio", Names, TeachLanguage.Spanish);
         Assert.Contains("Cleopatra", EduVerse.Core.Tutor.Companion.Greeting(snapshot, TeachLanguage.Spanish), StringComparison.Ordinal);
         Assert.Equal("idea", EduVerse.Core.Tutor.Companion.Suggest(snapshot, TeachLanguage.Spanish)[0].Id);
         await ideas.MarkSeenAsync(leo, IdeaKind.Figure);

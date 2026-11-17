@@ -9,9 +9,14 @@
     const { area, level, mode, topic, duel, theme, figure } = root.dataset;
     const kids = root.dataset.kids === "1";
     const speakButton = $("qz-speak");
+    const oralButton = $("qz-oral");
     let question = null;
     let xp = 0;
     let speak = kids;
+    // "Oral exam": a hands-free loop over the existing voice-in/voice-out of this page (Tutor speaks, then listens on
+    // its own) — not a new backend, just the Tutor's own prompt/feedback/mic already wired here, chained together.
+    let oral = false;
+    let listening = false;
     let attemptId = null;
     let confidence = 1;
     let bets = []; // answers of this test given as sure (2) or not sure (0)
@@ -26,12 +31,14 @@
     const light = `${btn} border border-layer-line bg-layer text-foreground hover:bg-layer-hover`;
     const voices = { en: "en-GB", es: "es-ES", fr: "fr-FR", ca: "ca-ES" };
 
-    function say(text) {
-        if (!speak || !("speechSynthesis" in window)) return;
+    // onend fires even when speak is off (no-op synthesis) so an oral-mode caller can always chain the next step.
+    function say(text, onend) {
+        if (!speak || !("speechSynthesis" in window)) { onend?.(); return; }
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = voices[lang.slice(0, 2)] || "en-GB";
         u.rate = kids ? 0.9 : 1;
+        u.onend = u.onerror = () => onend?.();
         window.speechSynthesis.speak(u);
     }
 
@@ -41,6 +48,61 @@
         if (speak && question) say(question.prompt);
         else window.speechSynthesis?.cancel();
     });
+
+    /** Turns hands-free mode off (a misheard answer, a mic error, or the student turning it off) and says why, if asked to. */
+    function stopOral(message) {
+        if (!oral) return;
+        oral = false;
+        oralButton.setAttribute("aria-pressed", "false");
+        if (message) {
+            const heard = $("qz-heard");
+            if (heard) { heard.textContent = message; heard.classList.remove("hidden"); }
+        }
+    }
+
+    /** Listens once and answers (used by the mic button and, in oral mode, right after the Tutor finishes speaking). */
+    async function autoListen() {
+        const mic = $("qz-mic");
+        const heard = $("qz-heard");
+        if (listening || !question || !mic) return;
+        listening = true;
+        mic.setAttribute("aria-pressed", "true");
+        mic.classList.add("animate-pulse");
+        if (heard) { heard.textContent = t("Listening"); heard.classList.remove("hidden"); }
+        try {
+            const said = await window.Edu.voice.listen();
+            const open = question.options.map((o, i) => stage.querySelector(`[data-index="${i}"]`)?.dataset.state === "removed" ? "\u0000" : o);
+            const i = window.Edu.voice.match(said, open);
+            listening = false;
+            if (i >= 0) {
+                if (heard) { heard.textContent = fmt(t("Heard"), said[0]); heard.classList.remove("hidden"); }
+                answer(i);
+            } else {
+                if (heard) { heard.textContent = fmt(t("NotUnderstood"), said[0]); heard.classList.remove("hidden"); }
+                stopOral(oral ? t("OralPaused") : null);
+            }
+        } catch (e) {
+            listening = false;
+            if (e.message !== "no-speech" && heard) { heard.textContent = t("MicError"); heard.classList.remove("hidden"); }
+            stopOral(oral && e.message !== "no-speech" ? t("OralPaused") : null);
+        }
+        mic.setAttribute("aria-pressed", "false");
+        mic.classList.remove("animate-pulse");
+    }
+
+    if (oralButton && window.Edu.voice?.supported && "speechSynthesis" in window) {
+        oralButton.classList.remove("hidden");
+        oralButton.addEventListener("click", () => {
+            oral = !oral;
+            oralButton.setAttribute("aria-pressed", String(oral));
+            if (oral) {
+                if (!speak) { speak = true; speakButton.setAttribute("aria-pressed", "true"); }
+                if (question && !listening) autoListen();
+            } else {
+                window.speechSynthesis?.cancel();
+            }
+        });
+    }
 
     function setProgress(done, total) {
         const p = total ? Math.round(100 * done / total) : 0;
@@ -155,26 +217,10 @@
         }));
         updateHint();
         $("qz-hint").addEventListener("click", hint);
-        $("qz-mic")?.addEventListener("click", async () => {
-            const mic = $("qz-mic");
-            mic.setAttribute("aria-pressed", "true");
-            mic.classList.add("animate-pulse");
-            const heard = $("qz-heard");
-            try {
-                const said = await window.Edu.voice.listen();
-                const open = q.options.map((o, i) => stage.querySelector(`[data-index="${i}"]`)?.dataset.state === "removed" ? "\u0000" : o);
-                const i = window.Edu.voice.match(said, open);
-                heard.textContent = i >= 0 ? fmt(t("Heard"), said[0]) : fmt(t("NotUnderstood"), said[0]);
-                heard.classList.remove("hidden");
-                if (i >= 0) answer(i);
-            } catch (e) {
-                if (e.message !== "no-speech") { heard.textContent = t("MicError"); heard.classList.remove("hidden"); }
-            }
-            mic.setAttribute("aria-pressed", "false");
-            mic.classList.remove("animate-pulse");
-        });
+        $("qz-mic")?.addEventListener("click", () => autoListen());
         stage.querySelector("[data-index]")?.focus();
-        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + q.options.join(", ")));
+        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + q.options.join(", ")),
+            () => { if (oral) autoListen(); });
     }
 
     function updateHint() {
@@ -326,11 +372,12 @@
             ${res.pace ? `<p class="mt-2 p-2.5 rounded-xl bg-white/60 dark:bg-white/10 text-sm text-foreground" data-testid="quiz-pace" data-pace="${esc(res.pace.kind)}">⏱️ ${esc(res.pace.text)}</p>` : ""}
             ${res.correct || !Object.keys(reasons).length ? "" : thinkingBlock(answered.number)}
             <div class="mt-3 flex justify-end"><button type="button" class="${primary}" id="qz-next" data-testid="quiz-next">${esc(res.summary ? t("SeeResults") : t("Next"))} →</button></div>`;
-        say(res.correct ? t(kids ? "KidsRight" : "Right") : t("NotQuite") + ". " + res.explanation);
         wireThinking(answered.id);
         const next = $("qz-next");
         next.focus();
-        next.addEventListener("click", () => res.summary ? summary(res.summary) : render(res.next));
+        const advance = () => res.summary ? summary(res.summary) : render(res.next);
+        next.addEventListener("click", advance);
+        say(res.correct ? t(kids ? "KidsRight" : "Right") : t("NotQuite") + ". " + res.explanation, () => { if (oral) advance(); });
     }
 
     function summary(s) {

@@ -17,6 +17,9 @@
     let loaded = false;
     let busy = false;
     let speakOn = false;
+    let style = null; // the metaphor Evo explains through this session ("game", "recipe", "story", "debate"), or null for the plain chat
+    // The chip's own text is already localized server-side: read it rather than duplicating the 4 languages in JS.
+    const styleLabel = (code) => panel.querySelector(`.companion-style[data-style="${code}"]`)?.textContent.trim() || code;
     const page = () => location.pathname;
     const title = () => (document.querySelector("main h1")?.textContent || document.title || "").trim().slice(0, 120);
 
@@ -76,7 +79,7 @@
         field.value = "";
         const wait = bubble(false, "…");
         try {
-            const r = await call(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text, page: page(), title: title() }) });
+            const r = await call(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text, page: page(), title: title(), style }) });
             wait.remove();
             bubble(false, r.reply, r.actions);
             speak(r.reply);
@@ -121,6 +124,57 @@
     $("companion-form").addEventListener("submit", (e) => { e.preventDefault(); ask(field.value); });
     field.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(field.value); } });
     panel.querySelectorAll("[data-ask]").forEach((b) => b.addEventListener("click", () => ask(b.dataset.ask)));
+
+    // The hub: "Talk" is the plain chat, "Your way" lets the student pick a metaphor (game, recipe, adventure, debate)
+    // that Evo explains through from then on. Both modes share the same thread, form and history — only the style tag changes.
+    const modes = $("companion-modes");
+    if (modes) {
+        const picker = $("companion-style-picker");
+        const badge = $("companion-style-badge");
+        const badgeLabel = $("companion-style-label");
+        function paintTabs() {
+            modes.querySelectorAll(".companion-tab").forEach((b) => {
+                const on = b.dataset.mode === (modes.dataset.active || "chat");
+                b.setAttribute("aria-selected", String(on));
+                b.classList.toggle("bg-primary", on);
+                b.classList.toggle("text-primary-foreground", on);
+                b.classList.toggle("border-primary", on);
+                b.classList.toggle("bg-layer", !on);
+                b.classList.toggle("text-foreground", !on);
+                b.classList.toggle("border-layer-line", !on);
+            });
+        }
+
+        function showStyleTab() {
+            modes.dataset.active = "style";
+            picker.hidden = !!style;
+            badge.hidden = !style;
+            if (style) badgeLabel.textContent = styleLabel(style);
+            paintTabs();
+        }
+
+        function showChatTab() {
+            modes.dataset.active = "chat";
+            style = null;
+            picker.hidden = true;
+            badge.hidden = true;
+            paintTabs();
+        }
+
+        modes.querySelector('[data-mode="chat"]').addEventListener("click", showChatTab);
+        modes.querySelector('[data-mode="style"]').addEventListener("click", showStyleTab);
+        picker.querySelectorAll(".companion-style").forEach((b) => b.addEventListener("click", () => {
+            style = b.dataset.style;
+            picker.hidden = true;
+            badge.hidden = false;
+            badgeLabel.textContent = styleLabel(style);
+            paintTabs();
+            bubble(false, t("StylePicked").replace("{0}", styleLabel(style)));
+            field.focus();
+        }));
+        $("companion-style-off").addEventListener("click", showChatTab);
+        paintTabs();
+    }
 
     $("companion-speak").addEventListener("click", (e) => {
         speakOn = !speakOn;

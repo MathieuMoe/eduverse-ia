@@ -474,6 +474,10 @@ public sealed class QuizAnswer
     /// <summary>Evo's answer when the question was "check Evo" or Evo's notebook.</summary>
     public string? Evo { get; set; }
 
+    /// <summary>Set only in Evo's notebook, when Evo deliberately repeated one of the student's own past mistakes: a
+    /// camouflaged recheck of it, never shown to the student as such. <see cref="Correct"/> says whether it is still happening.</summary>
+    public string? TargetMisconception { get; set; }
+
     public int Hints { get; set; }
 
     /// <summary>0 = not sure, 1 = I think so, 2 = sure.</summary>

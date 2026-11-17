@@ -318,7 +318,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             Difficulty = question.Difficulty, Correct = correct, At = Now, Number = attempt.Answered, Key = KeyOf(question),
             Prompt = question.Prompt, OptionsJson = JsonSerializer.Serialize(question.Options, JsonOptions), Choice = choice,
             CorrectIndex = question.CorrectIndex, Explanation = question.Explanation, Visual = question.Visual, Code = question.Code,
-            Evo = question.Evo, Hints = hints, Confidence = confidence, Rungs = rungs, Seconds = EduVerse.Core.Tutor.Pace.Clean(seconds),
+            Evo = question.Evo, TargetMisconception = question.TargetMisconception, Hints = hints, Confidence = confidence, Rungs = rungs, Seconds = EduVerse.Core.Tutor.Pace.Clean(seconds),
         });
         await UpdateSkillAsync(userId, attempt, question, correct, confidence, ct).ConfigureAwait(false);
 
@@ -528,6 +528,63 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     public async Task<IReadOnlyList<string>> MistakesAsync(string userId, CancellationToken ct = default) =>
         await db.Attempts.Where(a => a.UserId == userId && a.SubjectId == Core.Curriculum.BuiltInSubjects.FractionsKey && a.Misconception != null)
             .GroupBy(a => a.Misconception!).OrderByDescending(g => g.Count()).Select(g => g.Key).ToListAsync(ct).ConfigureAwait(false);
+
+    /// <summary>
+    /// The real memory of each recurring mistake: not just whether the student makes it today, but whether a later,
+    /// camouflaged recheck (Evo's notebook quietly repeating it weeks after, among ordinary practice) confirms it is
+    /// really gone, or whether it is still there. The check only counts if it happened after the mistake's last
+    /// occurrence — a pass from before a relapse does not count as "overcome".
+    /// </summary>
+    public async Task<IReadOnlyList<MisconceptionMemory>> MisconceptionMemoryAsync(string userId, CancellationToken ct = default)
+    {
+        var occurrences = await db.Attempts.Where(a => a.UserId == userId && a.SubjectId == Core.Curriculum.BuiltInSubjects.FractionsKey && a.Misconception != null)
+            .GroupBy(a => a.Misconception!)
+            .Select(g => new { Code = g.Key, Count = g.Count(), Last = g.Max(a => a.At) })
+            .ToListAsync(ct).ConfigureAwait(false);
+        if (occurrences.Count == 0)
+        {
+            return [];
+        }
+
+        // One row per code, most recent check first (materialized client-side: a single student's own checks are few).
+        var checks = await db.QuizAnswers.Where(a => a.UserId == userId && a.TargetMisconception != null)
+            .OrderByDescending(a => a.At).Select(a => new { a.TargetMisconception, a.At, a.Correct }).ToListAsync(ct).ConfigureAwait(false);
+        var lastCheck = new Dictionary<string, (DateTimeOffset At, bool Correct)>(StringComparer.Ordinal);
+        foreach (var c in checks)
+        {
+            lastCheck.TryAdd(c.TargetMisconception!, (c.At, c.Correct));
+        }
+
+        return occurrences.Select(o => new MisconceptionMemory(o.Code, o.Count, o.Last,
+            lastCheck.TryGetValue(o.Code, out var check) ? check.At : null,
+            lastCheck.TryGetValue(o.Code, out var check2) ? check2.Correct : null)).ToList();
+    }
+
+    /// <summary>
+    /// Topics that look fine by the numbers (knowledge tracing already calls them known) but where most of the correct
+    /// answers were the student's own "not sure" — a string of lucky guesses, not confirmed understanding. The Bayesian
+    /// tracker (<see cref="Bkt"/>) never sees self-reported confidence at all, so this is additive, not a correction to it.
+    /// </summary>
+    public async Task<IReadOnlyList<(Area Area, Level Level, string Topic, int GuessPercent)>> GuessedTopicsAsync(string userId, CancellationToken ct = default)
+    {
+        var byTopic = await db.QuizAnswers.Where(a => a.UserId == userId && a.Correct)
+            .GroupBy(a => new { a.Area, a.Level, a.Topic })
+            .Select(g => new { g.Key.Area, g.Key.Level, g.Key.Topic, Correct = g.Count(), Guessed = g.Count(a => a.Confidence == 0) })
+            .Where(g => g.Correct >= Confidence.MinSample)
+            .ToListAsync(ct).ConfigureAwait(false);
+        if (byTopic.Count == 0)
+        {
+            return [];
+        }
+
+        var known = (await db.TopicSkills.Where(s => s.UserId == userId && s.PKnown >= 0.6)
+                .Select(s => new { s.Area, s.Level, s.Topic }).ToListAsync(ct).ConfigureAwait(false))
+            .Select(s => (s.Area, s.Level, s.Topic)).ToHashSet();
+
+        return byTopic.Where(t => known.Contains((t.Area, t.Level, t.Topic)) && Confidence.LooksGuessed(t.Correct, t.Guessed))
+            .Select(t => (t.Area, t.Level, t.Topic, (int)Math.Round(100.0 * t.Guessed / t.Correct)))
+            .ToList();
+    }
 
     /// <summary>Applies one level of study to every subject (the subjects that start later get their first level).</summary>
     public async Task ApplyLevelToAllAsync(string userId, Level level, CancellationToken ct = default)

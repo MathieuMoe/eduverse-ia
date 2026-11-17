@@ -25,6 +25,10 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
 
     public Level Level { get; private set; }
 
+    /// <summary>True for a young child (see <see cref="Levels.IsKids"/>): the home page swaps the adult dashboard
+    /// (XP, rankings, percentages) for a simpler, image-led one with no numbers to read.</summary>
+    public bool Kids => Levels.IsKids(Level);
+
     public GameSummary Game { get; private set; } = null!;
 
     public (int Position, int Size)? Position { get; private set; }

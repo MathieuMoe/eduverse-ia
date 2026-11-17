@@ -377,6 +377,26 @@
                 <button type="button" id="companion-clear" class="@Ui.IconBtn tip tip-b" data-tip="@L["Companion_Clear"]" aria-label="@L["Companion_Clear"]" data-testid="companion-clear">@Html.Raw(Svg("<path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6\"/>", "size-4"))</button>
                 <button type="button" id="companion-close" class="@Ui.IconBtn" aria-label="@L["Close"]">@Html.Raw(Svg("<path d=\"M18 6 6 18M6 6l12 12\"/>", "size-4"))</button>
             </header>
+            @if (!isTeacherCompanion)
+            {
+                <!-- The hub: clicking the Tutor is not just a chat — "A tu manera" lets the student pick the metaphor Evo explains through. -->
+                <div class="flex gap-1.5 px-4 pt-3" role="tablist" id="companion-modes">
+                    <button type="button" class="companion-tab grow py-1.5 rounded-full text-xs font-semibold border" data-mode="chat" aria-selected="true" data-testid="companion-mode-chat">💬 @L["Companion_ModeChat"]</button>
+                    <button type="button" class="companion-tab grow py-1.5 rounded-full text-xs font-semibold border" data-mode="style" aria-selected="false" data-testid="companion-mode-style">🎭 @L["Companion_ModeStyle"]</button>
+                </div>
+                <div class="px-4 pt-2 flex flex-wrap gap-1.5" id="companion-style-picker" hidden data-testid="companion-style-picker">
+                    <button type="button" class="companion-style py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-style="game">🎮 @L["Companion_StyleGame"]</button>
+                    <button type="button" class="companion-style py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-style="recipe">🍳 @L["Companion_StyleRecipe"]</button>
+                    <button type="button" class="companion-style py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-style="story">🎬 @L["Companion_StyleStory"]</button>
+                    <button type="button" class="companion-style py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-style="debate">🗣️ @L["Companion_StyleDebate"]</button>
+                </div>
+                <div class="px-4 pt-2" id="companion-style-badge" hidden data-testid="companion-style-badge">
+                    <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full tone-lavender text-xs text-foreground">
+                        <span id="companion-style-label" data-testid="companion-style-label"></span>
+                        <button type="button" class="hover:opacity-70" id="companion-style-off" aria-label="@L["Companion_StyleOff"]">✕</button>
+                    </span>
+                </div>
+            }
             <div id="companion-chat" class="grow overflow-y-auto p-4 space-y-3" aria-live="polite"></div>
             @if (isTeacherCompanion)
             {

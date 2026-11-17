@@ -113,7 +113,10 @@ public static class EvoNotebook
                     .Format(language, right, exercise.Explanation, DemoLearningAi.Warning(target, language));
             return new QuizQuestion("math.fraction", exercise.Difficulty, exercise.Question, options, options.IndexOf(answer), explanation,
                 Evo: exercise.Options[evoIndex],
-                EvoTask: Text.Of("What did Evo do wrong?|¿Qué ha hecho mal Evo?|Qu'est-ce qu'Evo a fait de travers ?|Què ha fet malament l'Evo?").In(language));
+                EvoTask: Text.Of("What did Evo do wrong?|¿Qué ha hecho mal Evo?|Qu'est-ce qu'Evo a fait de travers ?|Què ha fet malament l'Evo?").In(language),
+                // When Evo deliberately repeats one of the student's OWN past mistakes, this is a camouflaged recheck of
+                // it (MisconceptionMemory): the student never sees that label, it is just another notebook question.
+                TargetMisconception: target);
         }
 
         throw new InvalidOperationException("No exercise for the mistake " + target);

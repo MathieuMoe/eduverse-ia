@@ -69,7 +69,8 @@ public sealed record QuizQuestion(
     string? Visual = null,
     string? Code = null,
     string? Evo = null,
-    string? EvoTask = null)
+    string? EvoTask = null,
+    string? TargetMisconception = null)
 {
     public const int Choices = 4;
 

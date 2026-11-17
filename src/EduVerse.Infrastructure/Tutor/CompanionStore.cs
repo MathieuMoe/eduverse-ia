@@ -1,4 +1,5 @@
 using EduVerse.Core.Catalog;
+using EduVerse.Core.Common;
 using EduVerse.Core.Gamification;
 using EduVerse.Core.Tutor;
 using EduVerse.Infrastructure.Data;
@@ -16,13 +17,18 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
 {
     public const int Kept = 200;
 
-    public async Task<StudentSnapshot> SnapshotAsync(string userId, string name, string page, string title, CompanionNames names, CancellationToken ct = default)
+    public async Task<StudentSnapshot> SnapshotAsync(string userId, string name, string page, string title, CompanionNames names, TeachLanguage language, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(names);
         var profile = await game.ProfileAsync(userId, ct).ConfigureAwait(false);
         var summary = await game.SummaryAsync(userId, ct).ConfigureAwait(false);
         var due = await quizzes.DueCountAsync(userId, ct).ConfigureAwait(false);
         var misconceptions = (await quizzes.MistakesAsync(userId, ct).ConfigureAwait(false)).Count;
+        var overcome = (await quizzes.MisconceptionMemoryAsync(userId, ct).ConfigureAwait(false))
+            .Where(m => m.Status == Core.Learning.MisconceptionStatus.Overcome)
+            .Select(m => Core.Learning.Misconceptions.Describe(m.Code, Core.Curriculum.BuiltInSubjects.FractionsKey, language)).ToList();
+        var guessed = (await quizzes.GuessedTopicsAsync(userId, ct).ConfigureAwait(false))
+            .Select(g => new GuessedTopic(g.Area, g.Level, g.Topic, names.Topic(g.Topic), names.Area(g.Area), g.GuessPercent)).ToList();
         var weak = await db.TopicSkills.AsNoTracking().Where(s => s.UserId == userId && s.Attempts >= 2 && s.PKnown < 0.6)
             .OrderBy(s => s.PKnown).Take(3).ToListAsync(ct).ConfigureAwait(false);
         var recent = await db.QuizAttempts.AsNoTracking().Where(a => a.UserId == userId && a.FinishedAt != null)
@@ -54,7 +60,7 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
             displayName, profile.Level, summary.Level, names.Rank(summary.Rank), summary.Streak, summary.PlayedToday, due, misconceptions, tests,
             weak.Select(w => new WeakTopic(w.Area, w.Level, w.Topic, names.Topic(w.Topic), names.Area(w.Area), (int)Math.Round(100 * w.PKnown))).ToList(),
             recent.Select(r => new RecentTest(names.Area(r.Area), names.Mode(r.Mode), r.Correct, r.Length, DateOnly.FromDateTime(r.FinishedAt!.Value.UtcDateTime), r.Topic is { } rt ? names.Topic(rt) : null)).ToList(),
-            taught, interviews, page ?? "", title ?? "", evolution, await ideas.NewsAsync(userId, ct).ConfigureAwait(false), await learner.StatsAsync(userId, ct).ConfigureAwait(false), await PlanBriefAsync(userId, names, ct).ConfigureAwait(false));
+            taught, interviews, page ?? "", title ?? "", evolution, await ideas.NewsAsync(userId, ct).ConfigureAwait(false), await learner.StatsAsync(userId, ct).ConfigureAwait(false), await PlanBriefAsync(userId, names, ct).ConfigureAwait(false), overcome, guessed);
     }
 
     private async Task<PlanBrief?> PlanBriefAsync(string userId, CompanionNames names, CancellationToken ct)

@@ -648,6 +648,9 @@
   <data name="Mascot_Streak" xml:space="preserve"><value>Tu es en feu ! Garde ta série de {0} jours 🔥</value></data>
   <data name="Mascot_Today" xml:space="preserve"><value>Bravo pour aujourd'hui ! Encore un test ?</value></data>
   <data name="Mascot_Start" xml:space="preserve"><value>Salut ! Je suis ton Tuteur. On commence par un petit test ?</value></data>
+  <data name="KidHome_SubjectsTitle" xml:space="preserve"><value>À quoi veux-tu jouer ?</value></data>
+  <data name="KidHome_AssignmentTitle" xml:space="preserve"><value>Ton enseignant t'a donné quelque chose !</value></data>
+  <data name="KidHome_StreakLabel" xml:space="preserve"><value>Série de {0} jours</value></data>
   <data name="Game_Xp" xml:space="preserve"><value>XP actuels</value></data>
   <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP avant le niveau suivant</value></data>
   <data name="Game_YourLevel" xml:space="preserve"><value>Ton niveau</value></data>
@@ -796,6 +799,7 @@
   <data name="QuizMode_Topic" xml:space="preserve"><value>Thème IA</value></data>
   <data name="Quiz_Loading" xml:space="preserve"><value>Préparation de ton test…</value></data>
   <data name="Quiz_ReadAloud" xml:space="preserve"><value>Lire les questions à voix haute</value></data>
+  <data name="Quiz_OralExam" xml:space="preserve"><value>Examen oral : le Tuteur parle et écoute, mains libres</value></data>
   <data name="Quiz_Run" xml:space="preserve"><value>Bonnes réponses d'affilée</value></data>
   <data name="Duel_Against" xml:space="preserve"><value>contre {0}</value></data>
   <data name="Arena_Title" xml:space="preserve"><value>Arène</value></data>
@@ -831,6 +835,8 @@
   <data name="Duel_Waiting" xml:space="preserve"><value>En attente</value></data>
   <data name="Duel_Expired" xml:space="preserve"><value>Expiré</value></data>
   <data name="Achievements_Subtitle" xml:space="preserve"><value>Tes titres, badges et missions du jour. Les XP récompensent l'effort et les progrès, jamais la vitesse.</value></data>
+  <data name="KidAch_Subtitle" xml:space="preserve"><value>Regarde tous tes autocollants !</value></data>
+  <data name="KidAch_Earned" xml:space="preserve"><value>Tu as {0} autocollants sur {1}</value></data>
   <data name="Achievements_Path" xml:space="preserve"><value>Parcours des titres</value></data>
   <data name="Achievements_FromLevel" xml:space="preserve"><value>niveau {0}</value></data>
   <data name="Achievements_HowXp" xml:space="preserve"><value>Comment gagner des XP</value></data>
@@ -1099,6 +1105,8 @@
   <data name="Js_Heard" xml:space="preserve"><value>J'ai entendu : « {0} »</value></data>
   <data name="Js_NotUnderstood" xml:space="preserve"><value>J'ai entendu « {0} », mais ce n'est pas une des réponses. Réessaie ou touche ta réponse.</value></data>
   <data name="Js_MicError" xml:space="preserve"><value>Le micro n'est pas disponible. Vérifie l'autorisation du navigateur.</value></data>
+  <data name="Js_Listening" xml:space="preserve"><value>🎧 J'écoute…</value></data>
+  <data name="Js_OralPaused" xml:space="preserve"><value>Je n'ai pas compris, donc j'ai désactivé le mode mains libres pour l'instant — tu peux continuer à répondre en touchant l'écran ou avec le micro.</value></data>
   <data name="Js_OtherInterviews" xml:space="preserve"><value>Autres interviews</value></data>
   <data name="Interview_VoiceOn" xml:space="preserve"><value>Voix activée</value></data>
   <data name="Interview_Start" xml:space="preserve"><value>Commencer l'interview</value></data>
@@ -1120,6 +1128,14 @@
   <data name="Companion_Placeholder" xml:space="preserve"><value>Pose une question au Tuteur…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Envoyer</value></data>
   <data name="Companion_Privacy" xml:space="preserve"><value>Le Tuteur garde cette conversation dans ton compte pour s'en souvenir ; tu peux l'effacer avec la corbeille. Pendant un test, le Tuteur t'aide à réfléchir mais ne donne jamais la réponse.</value></data>
+  <data name="Companion_ModeChat" xml:space="preserve"><value>Parler</value></data>
+  <data name="Companion_ModeStyle" xml:space="preserve"><value>À ta façon</value></data>
+  <data name="Companion_StyleGame" xml:space="preserve"><value>Jeu vidéo</value></data>
+  <data name="Companion_StyleRecipe" xml:space="preserve"><value>Recette</value></data>
+  <data name="Companion_StyleStory" xml:space="preserve"><value>Aventure</value></data>
+  <data name="Companion_StyleDebate" xml:space="preserve"><value>Discussion entre amis</value></data>
+  <data name="Companion_StyleOff" xml:space="preserve"><value>Arrêter d'expliquer ainsi</value></data>
+  <data name="Js_StylePicked" xml:space="preserve"><value>D'accord : à partir de maintenant je t'explique les choses comme {0}. Que veux-tu que je t'explique ?</value></data>
   <data name="TeacherCompanion_Button" xml:space="preserve"><value>Assistant</value></data>
   <data name="TeacherCompanion_Open" xml:space="preserve"><value>Ton assistant de classe : pose-lui une question sur n'importe quelle page</value></data>
   <data name="TeacherCompanion_Title" xml:space="preserve"><value>Ton assistant de classe</value></data>

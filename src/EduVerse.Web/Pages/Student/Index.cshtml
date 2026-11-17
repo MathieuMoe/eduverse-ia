@@ -10,433 +10,491 @@
     var ringPercent = g.Size == 0 ? 0 : 100 * g.Into / g.Size;
     var bubble = g.Streak >= 2 ? string.Format(culture, L["Mascot_Streak"], g.Streak) : g.PlayedToday ? L["Mascot_Today"].Value : L["Mascot_Start"].Value;
 }
-<div class="flex flex-wrap justify-between items-center gap-4">
-    <div class="flex items-center gap-4 min-w-0">
-        <h1 class="text-3xl font-semibold tracking-tight text-foreground" data-greeting="@User.DisplayName()">@string.Format(culture, L["Student_Hello"], User.DisplayName())</h1>
-        <div class="max-sm:hidden flex items-center gap-2">
-            <partial name="_Mascot" model="@("size-14 shrink-0")" />
-            <p class="relative py-2 px-3.5 rounded-2xl tone-sun text-sm font-medium text-foreground max-w-72" data-testid="mascot-bubble">@bubble</p>
-        </div>
-    </div>
-    <div class="flex flex-wrap gap-2">
-        <a href="/Student/Explore" class="@Ui.BtnPrimary">@L["Nav_Explore"]</a>
-        <a href="/Student/Arena" class="@Ui.BtnLight">@L["Nav_Arena"]</a>
-    </div>
-</div>
-
-@if (Model.Opening is { } opening)
-{
-    <a href="@opening.Url" class="@Ui.Card p-4 tone-lavender hover:opacity-95" data-testid="opening"><span class="flex items-center gap-3 w-full text-start">
-        <span class="size-10 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center text-xl" aria-hidden="true">🦉</span>
-        <span class="min-w-0 grow text-sm text-foreground">@opening.Text</span>
-        <span class="shrink-0 text-sm font-semibold text-foreground">@L["Opening_Go"] →</span>
-    </span></a>
-}
-
-@if (Model.Assignments.Count > 0)
-{
-    var writingTasks = EduVerse.Core.Tutor.Writing.Tasks(EduVerse.Web.Localization.LanguageForCurrentCulture());
-    <section class="@Ui.Card p-4" aria-labelledby="hw-title" data-testid="assignments">
-        <h2 id="hw-title" class="text-sm font-semibold text-foreground">🗓️ @L["Assign_Mine"]</h2>
-        <ul class="mt-2 space-y-2">
-            @foreach (var a in Model.Assignments.Take(6))
-            {
-                var x = a.Assignment;
-                var name = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => EduVerse.Web.QuizEndpoints.TopicName(x.Topic, L), EduVerse.Infrastructure.Data.AssignmentKind.Writing => writingTasks.FirstOrDefault(t => t.Key == x.WritingKey)?.Title ?? x.WritingKey, _ => a.MaterialTitle ?? "" };
-                var url = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => $"/Student/Quiz?area={x.Area}&level={x.Level}&mode=Focus&topic={x.Topic}", EduVerse.Infrastructure.Data.AssignmentKind.Writing => $"/Student/Writing?task={x.WritingKey}", _ => $"/Student/Quiz?material={x.MaterialId}" };
-                var late = !a.Status.Done && DateOnly.FromDateTime(x.DueOn) < Model.Today;
-                <li class="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground" data-testid="assignment" data-done="@(a.Status.Done ? "1" : "0")">
-                    <span class="min-w-0">@(x.Kind == EduVerse.Infrastructure.Data.AssignmentKind.Practice ? "🎯" : x.Kind == EduVerse.Infrastructure.Data.AssignmentKind.Writing ? "✍️" : "📄") @name
-                        <span class="text-xs @(late ? "text-rose-700 dark:text-rose-300 font-medium" : "text-muted-foreground-1")">· @a.ClassName · @x.DueOn.ToString("d MMM", System.Globalization.CultureInfo.CurrentCulture)</span></span>
-                    @if (a.Status.Done)
-                    {
-                        <span class="text-emerald-700 dark:text-emerald-300 font-medium">✓ @a.Status.Score/@a.Status.Total</span>
-                    }
-                    else
-                    {
-                        <a class="@Ui.BtnPrimary py-1! px-3! text-xs" href="@url" data-testid="assignment-go">@L["Assign_Do"]</a>
-                    }
-                </li>
-            }
-        </ul>
-    </section>
-}
-
-@if (Model.TeacherNotes.Count > 0)
-{
-    <section class="@Ui.Card p-4 tone-sun" aria-labelledby="tn-title" data-testid="teacher-notes-student">
-        <h2 id="tn-title" class="text-sm font-semibold text-foreground">📝 @L["TNote_ForYou"]</h2>
-        <ul class="mt-1 space-y-1">
-            @foreach (var n in Model.TeacherNotes)
-            {
-                <li class="text-sm text-foreground">@n</li>
-            }
-        </ul>
-    </section>
-}
-
-<section class="@Ui.Card p-4" aria-labelledby="curiosity-title" data-testid="curiosity">
-    <div class="flex items-center justify-between gap-2">
-        <h2 id="curiosity-title" class="text-sm font-semibold text-foreground">💭 @L["Curiosity_Title"]</h2>
-    </div>
-    <p class="mt-1 text-xs text-muted-foreground-1">@L["Curiosity_Subtitle"]</p>
-    @if (Model.Curiosities.Count > 0)
-    {
-        <ul class="mt-3 space-y-2">
-            @foreach (var q in Model.Curiosities)
-            {
-                <li class="flex flex-wrap items-center justify-between gap-2 text-sm text-foreground" data-testid="curiosity-question">
-                    <span class="min-w-0 grow">@q.Text</span>
-                    <span class="flex items-center gap-1.5 shrink-0">
-                        <form method="post" asp-page-handler="CuriosityExplore"><input type="hidden" name="id" value="@q.Id" />
-                            <button type="submit" class="@Ui.BtnPrimary py-1! px-3! text-xs" data-testid="curiosity-explore">@L["Curiosity_Explore"]</button>
-                        </form>
-                        <form method="post" asp-page-handler="CuriosityDismiss"><input type="hidden" name="id" value="@q.Id" />
-                            <button type="submit" class="size-7 inline-flex items-center justify-center rounded-full text-muted-foreground-1 hover:bg-layer-hover hover:text-foreground tip" data-tip="@L["Curiosity_Dismiss"]" aria-label="@L["Curiosity_Dismiss"]" data-testid="curiosity-dismiss">✕</button>
-                        </form>
-                    </span>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p class="mt-3 text-sm text-muted-foreground-1">@L["Curiosity_Empty"]</p>
-    }
-    <form method="post" asp-page-handler="CuriosityAdd" class="mt-3 flex gap-2">
-        <label for="curiosity-text" class="sr-only">@L["Curiosity_Placeholder"]</label>
-        <input id="curiosity-text" name="text" class="@Ui.Input" minlength="6" maxlength="160" placeholder="@L["Curiosity_Placeholder"]" required />
-        <button type="submit" class="@Ui.BtnLight shrink-0" data-testid="curiosity-add">@L["Curiosity_Add"]</button>
-    </form>
-</section>
-
-<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5" data-testid="game-kpis">
-    <div class="@Ui.Kpi tone-lavender">
-        <p class="@Ui.KpiLabel">@L["Game_Xp"]</p>
-        <div class="mt-2 flex items-center justify-between gap-3">
-            <p class="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">@g.Xp.ToString("N0", culture)</p>
-            <div class="xp-ring size-14 shrink-0 rounded-full grid place-items-center" style="--p:@ringPercent" role="img" aria-label="@string.Format(culture, L["Game_ToNextLevel"], g.Size - g.Into)">
-                <span class="size-11 rounded-full bg-white/90 dark:bg-[#262236] grid place-items-center text-sm font-bold text-foreground">@g.Level</span>
-            </div>
-        </div>
-        <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Game_ToNextLevel"], g.Size - g.Into)</p>
-    </div>
-    <div class="@Ui.Kpi tone-sky">
-        <p class="@Ui.KpiLabel">@L["Game_YourLevel"]</p>
-        <p class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">@L[$"Rank_{g.Rank}"]</p>
-        <p class="text-sm text-foreground/70">@string.Format(culture, L["Game_LevelN"], g.Level)</p>
-        <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Game_WeekXp"], g.WeekXp)</p>
-    </div>
-    <div class="@Ui.Kpi tone-peach">
-        <p class="@Ui.KpiLabel">@L["Game_Streak"]</p>
-        <p class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground"><span aria-hidden="true">🔥</span> @string.Format(culture, L["Game_Days"], g.Streak)</p>
-        <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Game_BestStreak"], g.BestStreak)@(g.PlayedToday ? "" : " · " + L["Game_PlayToKeep"])</p>
-    </div>
-    <div class="@Ui.Kpi tone-pink">
-        <p class="@Ui.KpiLabel">@L["Game_Rank"]</p>
-        @if (Model.Position is { } pos)
-        {
-            <p class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">#@pos.Position<span class="text-xl text-foreground/50"> / @pos.Size</span></p>
-            <p class="mt-auto pt-3 text-xs text-foreground/60">@Model.Board!.Name · @L["Game_ThisWeek"]</p>
-        }
-        else
-        {
-            <p class="mt-2 text-sm text-foreground/70">@L["Game_NoClassRank"]</p>
-        }
-    </div>
-</div>
-
 @if (Model.Notice is { } notice)
 {
     <div class="p-3 rounded-lg text-sm @(notice == "Join_Unknown" || (notice.StartsWith("Curiosity_", StringComparison.Ordinal) && notice != "Curiosity_Added") ? "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300" : "bg-teal-50 text-teal-800 dark:bg-teal-500/15 dark:text-teal-300")" role="status">@L[$"Notice_{notice}"]</div>
 }
+@if (Model.Kids)
+{
+    <!-- Kid home: no XP numbers, no rankings, no percentages — a mascot, one big next step, and subjects to play. -->
+    <div class="flex flex-col items-center text-center gap-4 py-2" data-testid="kid-greeting">
+        <partial name="_Mascot" model="@("size-28 shrink-0")" />
+        <p class="relative py-3 px-5 rounded-3xl tone-sun text-xl font-semibold text-foreground max-w-md" data-testid="mascot-bubble">@bubble</p>
+    </div>
 
-<div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
-    <div class="xl:col-span-8 space-y-4 sm:space-y-6 min-w-0">
-        <div class="grid md:grid-cols-3 gap-4 sm:gap-6">
-            <a href="/Student/Quiz?mode=Review" class="group p-5 rounded-3xl tone-sun flex items-center gap-4 hover:-translate-y-0.5 transition-transform @(Model.ReviewCount == 0 ? "opacity-70" : "")" data-testid="review-card">
-                <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">⚡</span>
-                <span class="min-w-0">
-                    <span class="block text-base font-semibold text-foreground">@L["Review_Title"]</span>
-                    <span class="block text-sm text-foreground/70">@(Model.ReviewCount == 0 ? L["Review_None"].Value : string.Format(culture, L["Review_Due"], Model.ReviewCount))</span>
-                </span>
-                <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
-            </a>
-            <a href="/Student/Quiz?mode=Notebook" class="group p-5 rounded-3xl tone-lavender flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="notebook-card">
-                <partial name="_Mascot" model="@("size-14 shrink-0")" />
-                <span class="min-w-0">
-                    <span class="block text-base font-semibold text-foreground">@L["Notebook_Title"]</span>
-                    <span class="block text-sm text-foreground/70">@(Model.Mistakes.Count > 0 ? string.Format(culture, L["Notebook_Yours"], EduVerse.Core.Catalog.EvoNotebook.Describe(Model.Mistakes[0], EduVerse.Web.Localization.LanguageForCurrentCulture()).TrimEnd('.').ToLower(culture)) : L["Notebook_Hint"].Value)</span>
-                </span>
-                <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
-            </a>
-            <a href="/Student/Teach" class="group p-5 rounded-3xl tone-peach flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="teach-card">
-                <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🧑‍🏫</span>
-                <span class="min-w-0">
-                    <span class="block text-base font-semibold text-foreground">@L["Teach_Title"]</span>
-                    <span class="block text-sm text-foreground/70">@L["Teach_Card"]</span>
-                </span>
-                <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
-            </a>
-            <a href="/Student/Interview" class="group p-5 rounded-3xl tone-pink flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="interview-card">
-                <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🎙️</span>
-                <span class="min-w-0">
-                    <span class="block text-base font-semibold text-foreground">@L["Interview_Title"]</span>
-                    <span class="block text-sm text-foreground/70">@L["Interview_Card"]</span>
-                </span>
-                <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
-            </a>
-            <a href="/Student/Adventures" class="group p-5 rounded-3xl tone-mint flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="adventure-card">
-                <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🗺️</span>
-                <span class="min-w-0">
-                    <span class="block text-base font-semibold text-foreground">@L["Adventures_Title"]</span>
-                    <span class="block text-sm text-foreground/70">@L["Adventures_Card"]</span>
-                </span>
-                <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
-            </a>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4 sm:gap-6">
-            <section class="@Ui.Card p-5 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                    <div>
-                        <h2 class="text-base font-semibold text-foreground">@L["Game_Continue"]</h2>
-                        <p class="text-xs text-muted-foreground-1">@L["Game_ContinueHint"]</p>
-                    </div>
-                    <span class="text-2xl" aria-hidden="true">🧭</span>
-                </div>
-                @if (Model.Focus is { } f)
-                {
-                    var p = f.Subject.Concepts.Count == 0 ? 0 : 100 * f.Mastered / f.Subject.Concepts.Count;
-                    <div class="mt-4 rounded-2xl tone-lavender p-4">
-                        <p class="text-xs font-semibold uppercase tracking-wide text-foreground/60">@L["Nav_Learn"] · @f.Subject.Name</p>
-                        <p class="mt-1 font-semibold text-foreground">@(f.Next.ConceptKey is { } k && f.Subject.Find(k) is { } c ? c.Name : f.Subject.Name)</p>
-                        <p class="text-xs text-foreground/70">@L[$"Reason_{f.Next.Reason}"]</p>
-                        <div class="mt-3 h-2 rounded-full bg-white/60 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bar-solid" style="width:@(p)%"></div></div>
-                    </div>
-                    <a href="/Student/Learn?subject=@Uri.EscapeDataString(f.Subject.Key)" class="@Ui.BtnPrimary mt-4 w-full">@L[$"Step_{f.Next.Kind}"] →</a>
-                }
-                @if (Model.Practice is { } pr)
-                {
-                    var info = Catalog.Info(pr.Area);
-                    <a href="/Student/Quiz?area=@pr.Area&level=@pr.Level" class="mt-3 flex items-center gap-3 p-3 rounded-2xl border border-layer-line hover:bg-layer-hover" data-testid="continue-test">
-                        <span class="size-10 shrink-0 rounded-xl tone-@info.Tone grid place-items-center text-xl" aria-hidden="true">@info.Icon</span>
-                        <span class="min-w-0 grow"><span class="block text-sm font-semibold text-foreground truncate">@L["Game_QuickTest"]: @L[$"Area_{pr.Area}"]</span><span class="block text-xs text-muted-foreground-1">@L[$"Level_{pr.Level}"]</span></span>
-                        <span class="text-muted-foreground-1" aria-hidden="true">→</span>
-                    </a>
-                }
-            </section>
+    @if (Model.Assignments.FirstOrDefault(a => !a.Status.Done) is { } firstPending)
+    {
+        var x = firstPending.Assignment;
+        var writingTasks = EduVerse.Core.Tutor.Writing.Tasks(EduVerse.Web.Localization.LanguageForCurrentCulture());
+        var name = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => EduVerse.Web.QuizEndpoints.TopicName(x.Topic, L), EduVerse.Infrastructure.Data.AssignmentKind.Writing => writingTasks.FirstOrDefault(t => t.Key == x.WritingKey)?.Title ?? x.WritingKey, _ => firstPending.MaterialTitle ?? "" };
+        var url = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => $"/Student/Quiz?area={x.Area}&level={x.Level}&mode=Focus&topic={x.Topic}", EduVerse.Infrastructure.Data.AssignmentKind.Writing => $"/Student/Writing?task={x.WritingKey}", _ => $"/Student/Quiz?material={x.MaterialId}" };
+        <a href="@url" class="@Ui.Card p-5 tone-peach flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="kid-assignment">
+            <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🗓️</span>
+            <span class="min-w-0 grow">
+                <span class="block text-lg font-semibold text-foreground">@L["KidHome_AssignmentTitle"]</span>
+                <span class="block text-sm text-foreground/70">@name</span>
+            </span>
+            <span class="@Ui.BtnPrimary shrink-0">@L["Assign_Do"]</span>
+        </a>
+    }
 
-            <section class="@Ui.Card p-5 min-w-0" data-testid="quests">
-                <div class="flex items-start justify-between gap-2">
-                    <div>
-                        <h2 class="text-base font-semibold text-foreground">@L["Game_Quests"]</h2>
-                        <p class="text-xs text-muted-foreground-1">@L["Game_QuestsHint"]</p>
-                    </div>
-                    <span class="text-2xl" aria-hidden="true">🎯</span>
-                </div>
-                <ul class="mt-4 space-y-3">
-                    @foreach (var q in g.Quests)
-                    {
-                        var pct = 100 * q.Progress / q.Quest.Target;
-                        <li class="p-3 rounded-2xl @(q.Done ? "tone-mint" : "bg-surface")">
-                            <div class="flex items-center justify-between gap-2 text-sm">
-                                <span class="font-medium text-foreground">@(q.Done ? "✅ " : "")@string.Format(culture, L[$"QuestText_{q.Quest.Kind}"], q.Quest.Target)</span>
-                                <span class="@Ui.Pill bg-white/70 dark:bg-white/10 text-foreground">+@q.Quest.Reward XP</span>
-                            </div>
-                            <div class="mt-2 flex items-center gap-2">
-                                <div class="h-1.5 grow rounded-full bg-white/70 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-primary" style="width:@(pct)%"></div></div>
-                                <span class="text-[11px] text-muted-foreground-1 shrink-0">@q.Progress / @q.Quest.Target</span>
-                            </div>
-                        </li>
-                    }
-                </ul>
-            </section>
-        </div>
-
-        <section class="@Ui.Card min-w-0" data-testid="catalog-progress">
-            <div class="@Ui.CardHeader">
-                <div>
-                    <h2 class="text-base font-semibold text-foreground">@L["Game_MySubjects"]</h2>
-                    <p class="text-xs text-muted-foreground-1">@L["Game_MySubjectsHint"]</p>
-                </div>
-                <a href="/Student/Explore" class="@Ui.BtnLight">@L["Explore_All"]</a>
-            </div>
-            <div class="p-4 md:p-5 grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                @foreach (var s in Model.CatalogProgress)
-                {
-                    var info = Catalog.Info(s.Area);
-                    <a href="/Student/Quiz?area=@s.Area&level=@s.Level" class="group p-3 rounded-2xl tone-@info.Tone border border-white/60 dark:border-white/5 hover:-translate-y-0.5 transition-transform min-w-0">
-                        <span class="text-2xl" aria-hidden="true">@info.Icon</span>
-                        <span class="mt-1 block text-sm font-semibold text-foreground truncate">@L[$"Area_{s.Area}"]</span>
-                        <span class="block text-[11px] text-foreground/60 truncate">@L[$"LevelShort_{s.Level}"]@(s.Placed ? " ✓" : "")</span>
-                        <span class="mt-2 block text-xs text-foreground/70">@(s.Answers == 0 ? L["Game_NotStarted"].Value : $"{s.Accuracy} % · {s.Answers}")</span>
-                    </a>
-                }
-            </div>
-        </section>
-
-        @foreach (var card in Model.Subjects)
+    <div class="flex items-center justify-center gap-1.5" role="img" aria-label="@string.Format(culture, L["KidHome_StreakLabel"], g.Streak)" data-testid="kid-streak">
+        @for (var i = 1; i <= 7; i++)
         {
-            <section class="@Ui.Card min-w-0" data-testid="subject-card">
-                <div class="@Ui.CardHeader">
-                    <div class="min-w-0">
-                        <h2 class="text-base font-semibold text-foreground truncate">@L["Nav_Learn"]: @card.Subject.Name</h2>
-                        <p class="text-xs text-muted-foreground-1">@card.Subject.Area · @string.Format(culture, L["Student_MasteredOf"], card.Mastered, card.Subject.Concepts.Count)</p>
-                    </div>
-                    <a href="/Student/Learn?subject=@Uri.EscapeDataString(card.Subject.Key)" class="@Ui.BtnPrimary">@L[$"Step_{card.Next.Kind}"]</a>
-                </div>
-                <div class="p-4 md:p-5 space-y-4">
-                    <div>
-                        <div class="flex justify-between text-xs text-muted-foreground-1 mb-1"><span>@L["Student_Progress"]</span><span>@card.Progress %</span></div>
-                        <div class="h-2 rounded-full bg-surface overflow-hidden" role="progressbar" aria-valuenow="@card.Progress" aria-valuemin="0" aria-valuemax="100" aria-label="@L["Student_Progress"]"><div class="h-full bg-primary rounded-full" style="width:@(card.Progress)%"></div></div>
-                    </div>
-                    <ol class="flex flex-wrap gap-2" aria-label="@L["Student_Map"]">
-                        @foreach (var (concept, state) in card.Concepts)
-                        {
-                            var status = state?.Status ?? MasteryStatus.NotStarted;
-                            <li class="inline-flex items-center gap-x-1.5 py-1 px-2 rounded-lg text-xs border @Ui.StatusClass(status) tip" data-tip="@concept.Description">
-                                <span class="size-1.5 rounded-full @Ui.StatusDot(status)"></span>
-                                @concept.Name
-                                @if (state is { Attempts: > 0 })
-                                {
-                                    <span class="opacity-70">@Math.Round(state.PKnown * 100) %</span>
-                                }
-                            </li>
-                        }
-                    </ol>
-                </div>
-            </section>
+            <span class="text-3xl @(i <= Math.Min(g.Streak, 7) ? "" : "opacity-20 grayscale")" aria-hidden="true">⭐</span>
         }
     </div>
 
-    <aside class="xl:col-span-4 space-y-4 sm:space-y-6 min-w-0">
-        <section class="@Ui.Card p-5" data-testid="activity-calendar">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-base font-semibold text-foreground">@L["Game_Activity"]</h2>
-                <span class="@Ui.Pill tone-sun text-foreground">@string.Format(culture, L["Game_Days"], g.Streak) 🔥</span>
-            </div>
-            <div class="mt-4 grid grid-cols-7 gap-1.5 text-center" role="img" aria-label="@L["Game_ActivityHint"]">
-                @foreach (var d in Enum.GetValues<DayOfWeek>().Skip(1).Append(DayOfWeek.Sunday))
-                {
-                    <span class="text-[10px] uppercase text-muted-foreground-1">@culture.DateTimeFormat.GetShortestDayName(d)</span>
-                }
-                @{
-                    var first = g.Calendar[0].Day;
-                    var offset = ((int)first.DayOfWeek + 6) % 7;
-                }
-                @for (var i = 0; i < offset; i++)
-                {
-                    <span></span>
-                }
-                @foreach (var (day, answers) in g.Calendar)
-                {
-                    var cls = answers == 0 ? "cal-0 text-muted-foreground-1" : answers < 5 ? "cal-1 text-foreground" : answers < 15 ? "cal-2 text-foreground" : "cal-3";
-                    <span class="aspect-square rounded-lg grid place-items-center text-[11px] font-medium @cls @(day == g.Today ? "ring-2 ring-primary" : "") tip" data-tip="@day.ToString("D", culture): @answers">@day.Day</span>
-                }
-            </div>
-            <p class="mt-3 text-xs text-muted-foreground-1">@L["Game_ActivityHint"]</p>
-        </section>
+    @if (Model.Focus is { } kidFocus)
+    {
+        <a href="/Student/Learn?subject=@Uri.EscapeDataString(kidFocus.Subject.Key)" class="@Ui.Card p-5 tone-lavender flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="kid-continue">
+            <partial name="_Mascot" model="@("size-14 shrink-0")" />
+            <span class="min-w-0 grow">
+                <span class="block text-lg font-semibold text-foreground">@L["Game_Continue"]</span>
+                <span class="block text-sm text-foreground/70">@kidFocus.Subject.Name</span>
+            </span>
+            <span class="@Ui.BtnPrimary shrink-0" aria-hidden="true">▶</span>
+        </a>
+    }
 
-        <section class="@Ui.Card p-5" data-testid="podium">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-base font-semibold text-foreground">@L["Game_Leaderboard"]</h2>
-                <a href="/Student/Arena" class="text-sm font-medium text-primary hover:underline">@L["Game_SeeAll"]</a>
+    <h2 class="text-xl font-semibold text-foreground text-center mt-2">@L["KidHome_SubjectsTitle"]</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5" data-testid="kid-subjects">
+        @foreach (var s in Model.CatalogProgress)
+        {
+            var info = Catalog.Info(s.Area);
+            <a href="/Student/Quiz?area=@s.Area&level=@s.Level" class="@Ui.Card p-5 flex flex-col items-center gap-2 text-center hover:-translate-y-0.5 transition-transform tone-@info.Tone" data-testid="kid-subject-@s.Area">
+                <span class="size-16 text-4xl grid place-items-center" aria-hidden="true">@info.Icon</span>
+                <span class="text-lg font-semibold text-foreground">@L[$"Area_{s.Area}"]</span>
+                <span class="@Ui.BtnPrimary mt-1">▶ @L["Explore_Play"]</span>
+            </a>
+        }
+    </div>
+}
+else
+{
+    <div class="flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-4 min-w-0">
+            <h1 class="text-3xl font-semibold tracking-tight text-foreground" data-greeting="@User.DisplayName()">@string.Format(culture, L["Student_Hello"], User.DisplayName())</h1>
+            <div class="max-sm:hidden flex items-center gap-2">
+                <partial name="_Mascot" model="@("size-14 shrink-0")" />
+                <p class="relative py-2 px-3.5 rounded-2xl tone-sun text-sm font-medium text-foreground max-w-72" data-testid="mascot-bubble">@bubble</p>
             </div>
-            @if (Model.Board is { Students.Count: > 0 } board)
-            {
-                var top = board.Students.Take(3).ToList();
-                var order = new[] { 1, 0, 2 }.Where(i => i < top.Count).Select(i => top[i]).ToList();
-                <p class="text-xs text-muted-foreground-1">@board.Name · @L["Game_ThisWeek"]</p>
-                <div class="mt-4 flex items-end justify-center gap-2">
-                    @foreach (var s in order)
-                    {
-                        <div class="w-1/3 flex flex-col items-center gap-1 min-w-0">
-                            <span class="text-2xl" aria-hidden="true">@s.Avatar</span>
-                            <span class="text-xs font-semibold text-foreground truncate max-w-full">@s.Nickname@(s.Me ? " ★" : "")</span>
-                            <div class="w-full rounded-t-2xl podium-@s.Position @(s.Position == 1 ? "tone-plum" : s.Position == 2 ? "tone-lavender" : "tone-peach") grid place-items-center">
-                                <span class="text-2xl font-bold @(s.Position == 1 ? "text-white" : "text-foreground")">@s.Position</span>
-                            </div>
-                            <span class="text-[11px] text-muted-foreground-1">@s.Xp XP</span>
-                        </div>
-                    }
-                </div>
-                @if (board.Students.FirstOrDefault(s => s.Me) is { Position: > 3 } me)
-                {
-                    <p class="mt-3 p-2.5 rounded-xl tone-plum text-sm flex justify-between"><span>#@me.Position · @me.Nickname</span><span>@me.Xp XP</span></p>
-                }
-            }
-            else
-            {
-                <p class="mt-2 text-sm text-muted-foreground-1">@L["Game_NoClassRank"]</p>
-            }
-        </section>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="/Student/Explore" class="@Ui.BtnPrimary">@L["Nav_Explore"]</a>
+            <a href="/Student/Arena" class="@Ui.BtnLight">@L["Nav_Arena"]</a>
+        </div>
+    </div>
 
-        <section class="@Ui.Card p-5" data-testid="recent-tests">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-base font-semibold text-foreground">@L["History_Recent"]</h2>
-                <a href="/Student/History" class="text-sm font-medium text-primary hover:underline">@L["Game_SeeAll"]</a>
-            </div>
-            @if (Model.RecentTests.Count == 0)
-            {
-                <p class="mt-2 text-sm text-muted-foreground-1">@L["History_Empty"]</p>
-            }
-            <ul class="mt-3 space-y-2">
-                @foreach (var t in Model.RecentTests)
+    @if (Model.Opening is { } opening)
+    {
+        <a href="@opening.Url" class="@Ui.Card p-4 tone-lavender hover:opacity-95" data-testid="opening"><span class="flex items-center gap-3 w-full text-start">
+            <span class="size-10 shrink-0 rounded-full bg-white/70 dark:bg-white/10 grid place-items-center text-xl" aria-hidden="true">🦉</span>
+            <span class="min-w-0 grow text-sm text-foreground">@opening.Text</span>
+            <span class="shrink-0 text-sm font-semibold text-foreground">@L["Opening_Go"] →</span>
+        </span></a>
+    }
+
+    @if (Model.Assignments.Count > 0)
+    {
+        var writingTasks = EduVerse.Core.Tutor.Writing.Tasks(EduVerse.Web.Localization.LanguageForCurrentCulture());
+        <section class="@Ui.Card p-4" aria-labelledby="hw-title" data-testid="assignments">
+            <h2 id="hw-title" class="text-sm font-semibold text-foreground">🗓️ @L["Assign_Mine"]</h2>
+            <ul class="mt-2 space-y-2">
+                @foreach (var a in Model.Assignments.Take(6))
                 {
-                    var ti = Catalog.Info(t.Area);
-                    <li>
-                        <a href="/Student/History?id=@t.Id" class="flex items-center gap-3 p-2 rounded-xl hover:bg-layer-hover">
-                            <span class="size-9 shrink-0 rounded-xl tone-@ti.Tone grid place-items-center" aria-hidden="true">@ti.Icon</span>
-                            <span class="min-w-0 grow"><span class="block text-sm font-medium text-foreground truncate">@L[$"Area_{t.Area}"]</span><span class="block text-[11px] text-muted-foreground-1">@L[$"QuizMode_{t.Mode}"] · @t.FinishedAt!.Value.ToString("d MMM", culture)</span></span>
-                            <span class="text-sm font-semibold text-foreground shrink-0">@t.Correct/@t.Length</span>
-                        </a>
+                    var x = a.Assignment;
+                    var name = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => EduVerse.Web.QuizEndpoints.TopicName(x.Topic, L), EduVerse.Infrastructure.Data.AssignmentKind.Writing => writingTasks.FirstOrDefault(t => t.Key == x.WritingKey)?.Title ?? x.WritingKey, _ => a.MaterialTitle ?? "" };
+                    var url = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => $"/Student/Quiz?area={x.Area}&level={x.Level}&mode=Focus&topic={x.Topic}", EduVerse.Infrastructure.Data.AssignmentKind.Writing => $"/Student/Writing?task={x.WritingKey}", _ => $"/Student/Quiz?material={x.MaterialId}" };
+                    var late = !a.Status.Done && DateOnly.FromDateTime(x.DueOn) < Model.Today;
+                    <li class="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground" data-testid="assignment" data-done="@(a.Status.Done ? "1" : "0")">
+                        <span class="min-w-0">@(x.Kind == EduVerse.Infrastructure.Data.AssignmentKind.Practice ? "🎯" : x.Kind == EduVerse.Infrastructure.Data.AssignmentKind.Writing ? "✍️" : "📄") @name
+                            <span class="text-xs @(late ? "text-rose-700 dark:text-rose-300 font-medium" : "text-muted-foreground-1")">· @a.ClassName · @x.DueOn.ToString("d MMM", System.Globalization.CultureInfo.CurrentCulture)</span></span>
+                        @if (a.Status.Done)
+                        {
+                            <span class="text-emerald-700 dark:text-emerald-300 font-medium">✓ @a.Status.Score/@a.Status.Total</span>
+                        }
+                        else
+                        {
+                            <a class="@Ui.BtnPrimary py-1! px-3! text-xs" href="@url" data-testid="assignment-go">@L["Assign_Do"]</a>
+                        }
                     </li>
                 }
             </ul>
         </section>
+    }
 
-        <section class="@Ui.Card p-5">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-base font-semibold text-foreground">@L["Game_Badges"]</h2>
-                <a href="/Student/Achievements" class="text-sm font-medium text-primary hover:underline">@L["Game_SeeAll"]</a>
-            </div>
-            <ul class="mt-3 grid grid-cols-4 gap-2">
-                @foreach (var b in g.Badges.OrderByDescending(b => b.EarnedAt.HasValue).ThenByDescending(b => b.EarnedAt).Take(8))
+    @if (Model.TeacherNotes.Count > 0)
+    {
+        <section class="@Ui.Card p-4 tone-sun" aria-labelledby="tn-title" data-testid="teacher-notes-student">
+            <h2 id="tn-title" class="text-sm font-semibold text-foreground">📝 @L["TNote_ForYou"]</h2>
+            <ul class="mt-1 space-y-1">
+                @foreach (var n in Model.TeacherNotes)
                 {
-                    <li class="aspect-square rounded-2xl grid place-items-center text-2xl @(b.EarnedAt.HasValue ? "tone-sun" : "bg-surface grayscale opacity-40") tip" data-tip="@L[$"Badge_{b.Badge.Key}"]" aria-label="@L[$"Badge_{b.Badge.Key}"]">@b.Badge.Icon</li>
+                    <li class="text-sm text-foreground">@n</li>
                 }
             </ul>
         </section>
+    }
 
-        <section class="@Ui.Card p-4 md:p-5">
-            <h2 class="text-base font-semibold text-foreground">@L["Student_Classes"]</h2>
-            @if (Model.Classes.Count == 0)
+    <section class="@Ui.Card p-4" aria-labelledby="curiosity-title" data-testid="curiosity">
+        <div class="flex items-center justify-between gap-2">
+            <h2 id="curiosity-title" class="text-sm font-semibold text-foreground">💭 @L["Curiosity_Title"]</h2>
+        </div>
+        <p class="mt-1 text-xs text-muted-foreground-1">@L["Curiosity_Subtitle"]</p>
+        @if (Model.Curiosities.Count > 0)
+        {
+            <ul class="mt-3 space-y-2">
+                @foreach (var q in Model.Curiosities)
+                {
+                    <li class="flex flex-wrap items-center justify-between gap-2 text-sm text-foreground" data-testid="curiosity-question">
+                        <span class="min-w-0 grow">@q.Text</span>
+                        <span class="flex items-center gap-1.5 shrink-0">
+                            <form method="post" asp-page-handler="CuriosityExplore"><input type="hidden" name="id" value="@q.Id" />
+                                <button type="submit" class="@Ui.BtnPrimary py-1! px-3! text-xs" data-testid="curiosity-explore">@L["Curiosity_Explore"]</button>
+                            </form>
+                            <form method="post" asp-page-handler="CuriosityDismiss"><input type="hidden" name="id" value="@q.Id" />
+                                <button type="submit" class="size-7 inline-flex items-center justify-center rounded-full text-muted-foreground-1 hover:bg-layer-hover hover:text-foreground tip" data-tip="@L["Curiosity_Dismiss"]" aria-label="@L["Curiosity_Dismiss"]" data-testid="curiosity-dismiss">✕</button>
+                            </form>
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="mt-3 text-sm text-muted-foreground-1">@L["Curiosity_Empty"]</p>
+        }
+        <form method="post" asp-page-handler="CuriosityAdd" class="mt-3 flex gap-2">
+            <label for="curiosity-text" class="sr-only">@L["Curiosity_Placeholder"]</label>
+            <input id="curiosity-text" name="text" class="@Ui.Input" minlength="6" maxlength="160" placeholder="@L["Curiosity_Placeholder"]" required />
+            <button type="submit" class="@Ui.BtnLight shrink-0" data-testid="curiosity-add">@L["Curiosity_Add"]</button>
+        </form>
+    </section>
+
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5" data-testid="game-kpis">
+        <div class="@Ui.Kpi tone-lavender">
+            <p class="@Ui.KpiLabel">@L["Game_Xp"]</p>
+            <div class="mt-2 flex items-center justify-between gap-3">
+                <p class="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">@g.Xp.ToString("N0", culture)</p>
+                <div class="xp-ring size-14 shrink-0 rounded-full grid place-items-center" style="--p:@ringPercent" role="img" aria-label="@string.Format(culture, L["Game_ToNextLevel"], g.Size - g.Into)">
+                    <span class="size-11 rounded-full bg-white/90 dark:bg-[#262236] grid place-items-center text-sm font-bold text-foreground">@g.Level</span>
+                </div>
+            </div>
+            <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Game_ToNextLevel"], g.Size - g.Into)</p>
+        </div>
+        <div class="@Ui.Kpi tone-sky">
+            <p class="@Ui.KpiLabel">@L["Game_YourLevel"]</p>
+            <p class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">@L[$"Rank_{g.Rank}"]</p>
+            <p class="text-sm text-foreground/70">@string.Format(culture, L["Game_LevelN"], g.Level)</p>
+            <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Game_WeekXp"], g.WeekXp)</p>
+        </div>
+        <div class="@Ui.Kpi tone-peach">
+            <p class="@Ui.KpiLabel">@L["Game_Streak"]</p>
+            <p class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground"><span aria-hidden="true">🔥</span> @string.Format(culture, L["Game_Days"], g.Streak)</p>
+            <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Game_BestStreak"], g.BestStreak)@(g.PlayedToday ? "" : " · " + L["Game_PlayToKeep"])</p>
+        </div>
+        <div class="@Ui.Kpi tone-pink">
+            <p class="@Ui.KpiLabel">@L["Game_Rank"]</p>
+            @if (Model.Position is { } pos)
             {
-                <p class="mt-1 text-sm text-muted-foreground-1">@L["Student_NoClasses"]</p>
+                <p class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">#@pos.Position<span class="text-xl text-foreground/50"> / @pos.Size</span></p>
+                <p class="mt-auto pt-3 text-xs text-foreground/60">@Model.Board!.Name · @L["Game_ThisWeek"]</p>
             }
             else
             {
-                <ul class="mt-2 space-y-1 text-sm">
-                    @foreach (var (name, teacher) in Model.Classes)
+                <p class="mt-2 text-sm text-foreground/70">@L["Game_NoClassRank"]</p>
+            }
+        </div>
+    </div>
+
+    <div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
+        <div class="xl:col-span-8 space-y-4 sm:space-y-6 min-w-0">
+            <div class="grid md:grid-cols-3 gap-4 sm:gap-6">
+                <a href="/Student/Quiz?mode=Review" class="group p-5 rounded-3xl tone-sun flex items-center gap-4 hover:-translate-y-0.5 transition-transform @(Model.ReviewCount == 0 ? "opacity-70" : "")" data-testid="review-card">
+                    <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">⚡</span>
+                    <span class="min-w-0">
+                        <span class="block text-base font-semibold text-foreground">@L["Review_Title"]</span>
+                        <span class="block text-sm text-foreground/70">@(Model.ReviewCount == 0 ? L["Review_None"].Value : string.Format(culture, L["Review_Due"], Model.ReviewCount))</span>
+                    </span>
+                    <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
+                </a>
+                <a href="/Student/Quiz?mode=Notebook" class="group p-5 rounded-3xl tone-lavender flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="notebook-card">
+                    <partial name="_Mascot" model="@("size-14 shrink-0")" />
+                    <span class="min-w-0">
+                        <span class="block text-base font-semibold text-foreground">@L["Notebook_Title"]</span>
+                        <span class="block text-sm text-foreground/70">@(Model.Mistakes.Count > 0 ? string.Format(culture, L["Notebook_Yours"], EduVerse.Core.Catalog.EvoNotebook.Describe(Model.Mistakes[0], EduVerse.Web.Localization.LanguageForCurrentCulture()).TrimEnd('.').ToLower(culture)) : L["Notebook_Hint"].Value)</span>
+                    </span>
+                    <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
+                </a>
+                <a href="/Student/Teach" class="group p-5 rounded-3xl tone-peach flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="teach-card">
+                    <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🧑‍🏫</span>
+                    <span class="min-w-0">
+                        <span class="block text-base font-semibold text-foreground">@L["Teach_Title"]</span>
+                        <span class="block text-sm text-foreground/70">@L["Teach_Card"]</span>
+                    </span>
+                    <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
+                </a>
+                <a href="/Student/Interview" class="group p-5 rounded-3xl tone-pink flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="interview-card">
+                    <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🎙️</span>
+                    <span class="min-w-0">
+                        <span class="block text-base font-semibold text-foreground">@L["Interview_Title"]</span>
+                        <span class="block text-sm text-foreground/70">@L["Interview_Card"]</span>
+                    </span>
+                    <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
+                </a>
+                <a href="/Student/Adventures" class="group p-5 rounded-3xl tone-mint flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="adventure-card">
+                    <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🗺️</span>
+                    <span class="min-w-0">
+                        <span class="block text-base font-semibold text-foreground">@L["Adventures_Title"]</span>
+                        <span class="block text-sm text-foreground/70">@L["Adventures_Card"]</span>
+                    </span>
+                    <span class="ms-auto text-foreground/60 text-xl" aria-hidden="true">→</span>
+                </a>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4 sm:gap-6">
+                <section class="@Ui.Card p-5 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h2 class="text-base font-semibold text-foreground">@L["Game_Continue"]</h2>
+                            <p class="text-xs text-muted-foreground-1">@L["Game_ContinueHint"]</p>
+                        </div>
+                        <span class="text-2xl" aria-hidden="true">🧭</span>
+                    </div>
+                    @if (Model.Focus is { } f)
                     {
-                        <li class="flex justify-between gap-2"><span class="font-medium text-foreground">@name</span><span class="text-muted-foreground-1">@teacher</span></li>
+                        var p = f.Subject.Concepts.Count == 0 ? 0 : 100 * f.Mastered / f.Subject.Concepts.Count;
+                        <div class="mt-4 rounded-2xl tone-lavender p-4">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-foreground/60">@L["Nav_Learn"] · @f.Subject.Name</p>
+                            <p class="mt-1 font-semibold text-foreground">@(f.Next.ConceptKey is { } k && f.Subject.Find(k) is { } c ? c.Name : f.Subject.Name)</p>
+                            <p class="text-xs text-foreground/70">@L[$"Reason_{f.Next.Reason}"]</p>
+                            <div class="mt-3 h-2 rounded-full bg-white/60 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bar-solid" style="width:@(p)%"></div></div>
+                        </div>
+                        <a href="/Student/Learn?subject=@Uri.EscapeDataString(f.Subject.Key)" class="@Ui.BtnPrimary mt-4 w-full">@L[$"Step_{f.Next.Kind}"] →</a>
+                    }
+                    @if (Model.Practice is { } pr)
+                    {
+                        var info = Catalog.Info(pr.Area);
+                        <a href="/Student/Quiz?area=@pr.Area&level=@pr.Level" class="mt-3 flex items-center gap-3 p-3 rounded-2xl border border-layer-line hover:bg-layer-hover" data-testid="continue-test">
+                            <span class="size-10 shrink-0 rounded-xl tone-@info.Tone grid place-items-center text-xl" aria-hidden="true">@info.Icon</span>
+                            <span class="min-w-0 grow"><span class="block text-sm font-semibold text-foreground truncate">@L["Game_QuickTest"]: @L[$"Area_{pr.Area}"]</span><span class="block text-xs text-muted-foreground-1">@L[$"Level_{pr.Level}"]</span></span>
+                            <span class="text-muted-foreground-1" aria-hidden="true">→</span>
+                        </a>
+                    }
+                </section>
+
+                <section class="@Ui.Card p-5 min-w-0" data-testid="quests">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h2 class="text-base font-semibold text-foreground">@L["Game_Quests"]</h2>
+                            <p class="text-xs text-muted-foreground-1">@L["Game_QuestsHint"]</p>
+                        </div>
+                        <span class="text-2xl" aria-hidden="true">🎯</span>
+                    </div>
+                    <ul class="mt-4 space-y-3">
+                        @foreach (var q in g.Quests)
+                        {
+                            var pct = 100 * q.Progress / q.Quest.Target;
+                            <li class="p-3 rounded-2xl @(q.Done ? "tone-mint" : "bg-surface")">
+                                <div class="flex items-center justify-between gap-2 text-sm">
+                                    <span class="font-medium text-foreground">@(q.Done ? "✅ " : "")@string.Format(culture, L[$"QuestText_{q.Quest.Kind}"], q.Quest.Target)</span>
+                                    <span class="@Ui.Pill bg-white/70 dark:bg-white/10 text-foreground">+@q.Quest.Reward XP</span>
+                                </div>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <div class="h-1.5 grow rounded-full bg-white/70 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-primary" style="width:@(pct)%"></div></div>
+                                    <span class="text-[11px] text-muted-foreground-1 shrink-0">@q.Progress / @q.Quest.Target</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            </div>
+
+            <section class="@Ui.Card min-w-0" data-testid="catalog-progress">
+                <div class="@Ui.CardHeader">
+                    <div>
+                        <h2 class="text-base font-semibold text-foreground">@L["Game_MySubjects"]</h2>
+                        <p class="text-xs text-muted-foreground-1">@L["Game_MySubjectsHint"]</p>
+                    </div>
+                    <a href="/Student/Explore" class="@Ui.BtnLight">@L["Explore_All"]</a>
+                </div>
+                <div class="p-4 md:p-5 grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    @foreach (var s in Model.CatalogProgress)
+                    {
+                        var info = Catalog.Info(s.Area);
+                        <a href="/Student/Quiz?area=@s.Area&level=@s.Level" class="group p-3 rounded-2xl tone-@info.Tone border border-white/60 dark:border-white/5 hover:-translate-y-0.5 transition-transform min-w-0">
+                            <span class="text-2xl" aria-hidden="true">@info.Icon</span>
+                            <span class="mt-1 block text-sm font-semibold text-foreground truncate">@L[$"Area_{s.Area}"]</span>
+                            <span class="block text-[11px] text-foreground/60 truncate">@L[$"LevelShort_{s.Level}"]@(s.Placed ? " ✓" : "")</span>
+                            <span class="mt-2 block text-xs text-foreground/70">@(s.Answers == 0 ? L["Game_NotStarted"].Value : $"{s.Accuracy} % · {s.Answers}")</span>
+                        </a>
+                    }
+                </div>
+            </section>
+
+            @foreach (var card in Model.Subjects)
+            {
+                <section class="@Ui.Card min-w-0" data-testid="subject-card">
+                    <div class="@Ui.CardHeader">
+                        <div class="min-w-0">
+                            <h2 class="text-base font-semibold text-foreground truncate">@L["Nav_Learn"]: @card.Subject.Name</h2>
+                            <p class="text-xs text-muted-foreground-1">@card.Subject.Area · @string.Format(culture, L["Student_MasteredOf"], card.Mastered, card.Subject.Concepts.Count)</p>
+                        </div>
+                        <a href="/Student/Learn?subject=@Uri.EscapeDataString(card.Subject.Key)" class="@Ui.BtnPrimary">@L[$"Step_{card.Next.Kind}"]</a>
+                    </div>
+                    <div class="p-4 md:p-5 space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs text-muted-foreground-1 mb-1"><span>@L["Student_Progress"]</span><span>@card.Progress %</span></div>
+                            <div class="h-2 rounded-full bg-surface overflow-hidden" role="progressbar" aria-valuenow="@card.Progress" aria-valuemin="0" aria-valuemax="100" aria-label="@L["Student_Progress"]"><div class="h-full bg-primary rounded-full" style="width:@(card.Progress)%"></div></div>
+                        </div>
+                        <ol class="flex flex-wrap gap-2" aria-label="@L["Student_Map"]">
+                            @foreach (var (concept, state) in card.Concepts)
+                            {
+                                var status = state?.Status ?? MasteryStatus.NotStarted;
+                                <li class="inline-flex items-center gap-x-1.5 py-1 px-2 rounded-lg text-xs border @Ui.StatusClass(status) tip" data-tip="@concept.Description">
+                                    <span class="size-1.5 rounded-full @Ui.StatusDot(status)"></span>
+                                    @concept.Name
+                                    @if (state is { Attempts: > 0 })
+                                    {
+                                        <span class="opacity-70">@Math.Round(state.PKnown * 100) %</span>
+                                    }
+                                </li>
+                            }
+                        </ol>
+                    </div>
+                </section>
+            }
+        </div>
+
+        <aside class="xl:col-span-4 space-y-4 sm:space-y-6 min-w-0">
+            <section class="@Ui.Card p-5" data-testid="activity-calendar">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold text-foreground">@L["Game_Activity"]</h2>
+                    <span class="@Ui.Pill tone-sun text-foreground">@string.Format(culture, L["Game_Days"], g.Streak) 🔥</span>
+                </div>
+                <div class="mt-4 grid grid-cols-7 gap-1.5 text-center" role="img" aria-label="@L["Game_ActivityHint"]">
+                    @foreach (var d in Enum.GetValues<DayOfWeek>().Skip(1).Append(DayOfWeek.Sunday))
+                    {
+                        <span class="text-[10px] uppercase text-muted-foreground-1">@culture.DateTimeFormat.GetShortestDayName(d)</span>
+                    }
+                    @{
+                        var first = g.Calendar[0].Day;
+                        var offset = ((int)first.DayOfWeek + 6) % 7;
+                    }
+                    @for (var i = 0; i < offset; i++)
+                    {
+                        <span></span>
+                    }
+                    @foreach (var (day, answers) in g.Calendar)
+                    {
+                        var cls = answers == 0 ? "cal-0 text-muted-foreground-1" : answers < 5 ? "cal-1 text-foreground" : answers < 15 ? "cal-2 text-foreground" : "cal-3";
+                        <span class="aspect-square rounded-lg grid place-items-center text-[11px] font-medium @cls @(day == g.Today ? "ring-2 ring-primary" : "") tip" data-tip="@day.ToString("D", culture): @answers">@day.Day</span>
+                    }
+                </div>
+                <p class="mt-3 text-xs text-muted-foreground-1">@L["Game_ActivityHint"]</p>
+            </section>
+
+            <section class="@Ui.Card p-5" data-testid="podium">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold text-foreground">@L["Game_Leaderboard"]</h2>
+                    <a href="/Student/Arena" class="text-sm font-medium text-primary hover:underline">@L["Game_SeeAll"]</a>
+                </div>
+                @if (Model.Board is { Students.Count: > 0 } board)
+                {
+                    var top = board.Students.Take(3).ToList();
+                    var order = new[] { 1, 0, 2 }.Where(i => i < top.Count).Select(i => top[i]).ToList();
+                    <p class="text-xs text-muted-foreground-1">@board.Name · @L["Game_ThisWeek"]</p>
+                    <div class="mt-4 flex items-end justify-center gap-2">
+                        @foreach (var s in order)
+                        {
+                            <div class="w-1/3 flex flex-col items-center gap-1 min-w-0">
+                                <span class="text-2xl" aria-hidden="true">@s.Avatar</span>
+                                <span class="text-xs font-semibold text-foreground truncate max-w-full">@s.Nickname@(s.Me ? " ★" : "")</span>
+                                <div class="w-full rounded-t-2xl podium-@s.Position @(s.Position == 1 ? "tone-plum" : s.Position == 2 ? "tone-lavender" : "tone-peach") grid place-items-center">
+                                    <span class="text-2xl font-bold @(s.Position == 1 ? "text-white" : "text-foreground")">@s.Position</span>
+                                </div>
+                                <span class="text-[11px] text-muted-foreground-1">@s.Xp XP</span>
+                            </div>
+                        }
+                    </div>
+                    @if (board.Students.FirstOrDefault(s => s.Me) is { Position: > 3 } me)
+                    {
+                        <p class="mt-3 p-2.5 rounded-xl tone-plum text-sm flex justify-between"><span>#@me.Position · @me.Nickname</span><span>@me.Xp XP</span></p>
+                    }
+                }
+                else
+                {
+                    <p class="mt-2 text-sm text-muted-foreground-1">@L["Game_NoClassRank"]</p>
+                }
+            </section>
+
+            <section class="@Ui.Card p-5" data-testid="recent-tests">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold text-foreground">@L["History_Recent"]</h2>
+                    <a href="/Student/History" class="text-sm font-medium text-primary hover:underline">@L["Game_SeeAll"]</a>
+                </div>
+                @if (Model.RecentTests.Count == 0)
+                {
+                    <p class="mt-2 text-sm text-muted-foreground-1">@L["History_Empty"]</p>
+                }
+                <ul class="mt-3 space-y-2">
+                    @foreach (var t in Model.RecentTests)
+                    {
+                        var ti = Catalog.Info(t.Area);
+                        <li>
+                            <a href="/Student/History?id=@t.Id" class="flex items-center gap-3 p-2 rounded-xl hover:bg-layer-hover">
+                                <span class="size-9 shrink-0 rounded-xl tone-@ti.Tone grid place-items-center" aria-hidden="true">@ti.Icon</span>
+                                <span class="min-w-0 grow"><span class="block text-sm font-medium text-foreground truncate">@L[$"Area_{t.Area}"]</span><span class="block text-[11px] text-muted-foreground-1">@L[$"QuizMode_{t.Mode}"] · @t.FinishedAt!.Value.ToString("d MMM", culture)</span></span>
+                                <span class="text-sm font-semibold text-foreground shrink-0">@t.Correct/@t.Length</span>
+                            </a>
+                        </li>
                     }
                 </ul>
-            }
-            <form method="post" asp-page-handler="Join" class="mt-4 flex gap-2">
-                <label for="join-code" class="sr-only">@L["Student_JoinCode"]</label>
-                <input id="join-code" name="code" class="@Ui.Input uppercase" placeholder="@L["Student_JoinCode"]" maxlength="10" autocomplete="off" required />
-                <button type="submit" class="@Ui.BtnLight shrink-0">@L["Student_Join"]</button>
-            </form>
-        </section>
-        <section class="@Ui.Card p-4 md:p-5">
-            <h2 class="text-base font-semibold text-foreground">@L["Student_Settings"]</h2>
-            <form method="post" asp-page-handler="Settings" class="mt-3 flex gap-2 items-end">
-                <div class="grow min-w-0"><label class="@Ui.Label" for="level">@L["Field_Level"]</label>
-                    <select id="level" name="level" class="@Ui.Input">@foreach (var lv in Enum.GetValues<Level>()) { <option value="@lv" selected="@(lv == Model.Level)">@L[$"Level_{lv}"]</option> }</select></div>
-                <button type="submit" class="@Ui.BtnLight shrink-0">@L["Save"]</button>
-            </form>
-            <p class="mt-2 text-xs text-muted-foreground-1">@L["Student_LanguageHint"]</p>
-        </section>
-    </aside>
-</div>
+            </section>
+
+            <section class="@Ui.Card p-5">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold text-foreground">@L["Game_Badges"]</h2>
+                    <a href="/Student/Achievements" class="text-sm font-medium text-primary hover:underline">@L["Game_SeeAll"]</a>
+                </div>
+                <ul class="mt-3 grid grid-cols-4 gap-2">
+                    @foreach (var b in g.Badges.OrderByDescending(b => b.EarnedAt.HasValue).ThenByDescending(b => b.EarnedAt).Take(8))
+                    {
+                        <li class="aspect-square rounded-2xl grid place-items-center text-2xl @(b.EarnedAt.HasValue ? "tone-sun" : "bg-surface grayscale opacity-40") tip" data-tip="@L[$"Badge_{b.Badge.Key}"]" aria-label="@L[$"Badge_{b.Badge.Key}"]">@b.Badge.Icon</li>
+                    }
+                </ul>
+            </section>
+
+            <section class="@Ui.Card p-4 md:p-5">
+                <h2 class="text-base font-semibold text-foreground">@L["Student_Classes"]</h2>
+                @if (Model.Classes.Count == 0)
+                {
+                    <p class="mt-1 text-sm text-muted-foreground-1">@L["Student_NoClasses"]</p>
+                }
+                else
+                {
+                    <ul class="mt-2 space-y-1 text-sm">
+                        @foreach (var (name, teacher) in Model.Classes)
+                        {
+                            <li class="flex justify-between gap-2"><span class="font-medium text-foreground">@name</span><span class="text-muted-foreground-1">@teacher</span></li>
+                        }
+                    </ul>
+                }
+                <form method="post" asp-page-handler="Join" class="mt-4 flex gap-2">
+                    <label for="join-code" class="sr-only">@L["Student_JoinCode"]</label>
+                    <input id="join-code" name="code" class="@Ui.Input uppercase" placeholder="@L["Student_JoinCode"]" maxlength="10" autocomplete="off" required />
+                    <button type="submit" class="@Ui.BtnLight shrink-0">@L["Student_Join"]</button>
+                </form>
+            </section>
+            <section class="@Ui.Card p-4 md:p-5">
+                <h2 class="text-base font-semibold text-foreground">@L["Student_Settings"]</h2>
+                <form method="post" asp-page-handler="Settings" class="mt-3 flex gap-2 items-end">
+                    <div class="grow min-w-0"><label class="@Ui.Label" for="level">@L["Field_Level"]</label>
+                        <select id="level" name="level" class="@Ui.Input">@foreach (var lv in Enum.GetValues<Level>()) { <option value="@lv" selected="@(lv == Model.Level)">@L[$"Level_{lv}"]</option> }</select></div>
+                    <button type="submit" class="@Ui.BtnLight shrink-0">@L["Save"]</button>
+                </form>
+                <p class="mt-2 text-xs text-muted-foreground-1">@L["Student_LanguageHint"]</p>
+            </section>
+        </aside>
+    </div>
+}

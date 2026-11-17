@@ -11,7 +11,7 @@ public sealed record TeachRequest(string Text, string? SessionId);
 
 public sealed record InterviewRequest(string Question, IReadOnlyList<InterviewTurn>? History);
 
-public sealed record CompanionRequest(string Message, string? Page, string? Title);
+public sealed record CompanionRequest(string Message, string? Page, string? Title, string? Style = null);
 
 /// <summary>
 /// "Explain it to Evo" (the rubric decides, the AI only writes Evo's words) and interviews with historical figures
@@ -93,7 +93,7 @@ public static class TutorEndpoints
         api.MapGet("/companion", async (string? page, string? title, HttpContext context, CompanionStore store, IStringLocalizer<SharedResource> l) =>
         {
             var language = Localization.LanguageForCurrentCulture();
-            var snapshot = await store.SnapshotAsync(context.User.Id(), context.User.DisplayName(), Clip(page, 120), Clip(title, 120), Names(l), context.RequestAborted);
+            var snapshot = await store.SnapshotAsync(context.User.Id(), context.User.DisplayName(), Clip(page, 120), Clip(title, 120), Names(l), language, context.RequestAborted);
             var actions = Companion.Suggest(snapshot, language);
             var history = await store.HistoryAsync(context.User.Id(), ct: context.RequestAborted);
             return Results.Ok(new
@@ -114,14 +114,15 @@ public static class TutorEndpoints
 
             var language = Localization.LanguageForCurrentCulture();
             var page = Clip(request!.Page, 120);
-            var snapshot = await store.SnapshotAsync(context.User.Id(), context.User.DisplayName(), page, Clip(request.Title, 120), Names(l), context.RequestAborted);
+            var snapshot = await store.SnapshotAsync(context.User.Id(), context.User.DisplayName(), page, Clip(request.Title, 120), Names(l), language, context.RequestAborted);
             var actions = Companion.Suggest(snapshot, language);
             var history = (await store.HistoryAsync(context.User.Id(), Companion.HistoryForAi, context.RequestAborted)).Select(m => new CompanionTurn(m.FromStudent, m.Text)).ToList();
+            var style = Companion.ParseStyle(request.Style);
             return await AiRunner.GuardAsync(async () =>
             {
                 var run = await AiRunner.RunAsync(context, engines, logger,
-                    async ai => CompanionPrompt.Parse(await ai.GenerateAsync(CompanionPrompt.Build(snapshot, actions, history, message, language), context.RequestAborted), actions),
-                    () => Task.FromResult(Companion.Demo(snapshot, actions, message, language)));
+                    async ai => CompanionPrompt.Parse(await ai.GenerateAsync(CompanionPrompt.Build(snapshot, actions, history, message, language, style), context.RequestAborted), actions),
+                    () => Task.FromResult(Companion.Demo(snapshot, actions, message, language, style)));
                 await store.SaveAsync(context.User.Id(), message, run.Result, page, context.RequestAborted);
                 return Results.Ok(new
                 {

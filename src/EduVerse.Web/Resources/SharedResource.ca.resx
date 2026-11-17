@@ -648,6 +648,9 @@
   <data name="Mascot_Streak" xml:space="preserve"><value>Vas llançat! Mantén la ratxa de {0} dies 🔥</value></data>
   <data name="Mascot_Today" xml:space="preserve"><value>Bona feina avui! Un altre test?</value></data>
   <data name="Mascot_Start" xml:space="preserve"><value>Hola! Soc el teu Tutor. Comencem amb un test ràpid?</value></data>
+  <data name="KidHome_SubjectsTitle" xml:space="preserve"><value>Amb què vols jugar?</value></data>
+  <data name="KidHome_AssignmentTitle" xml:space="preserve"><value>El teu mestre t'ha posat una tasca!</value></data>
+  <data name="KidHome_StreakLabel" xml:space="preserve"><value>Ratxa de {0} dies</value></data>
   <data name="Game_Xp" xml:space="preserve"><value>XP actuals</value></data>
   <data name="Game_ToNextLevel" xml:space="preserve"><value>{0} XP per al nivell següent</value></data>
   <data name="Game_YourLevel" xml:space="preserve"><value>El teu nivell</value></data>
@@ -796,6 +799,7 @@
   <data name="QuizMode_Topic" xml:space="preserve"><value>Tema amb IA</value></data>
   <data name="Quiz_Loading" xml:space="preserve"><value>Preparant el teu test…</value></data>
   <data name="Quiz_ReadAloud" xml:space="preserve"><value>Llegir les preguntes en veu alta</value></data>
+  <data name="Quiz_OralExam" xml:space="preserve"><value>Examen oral: el Tutor parla i escolta, sense tocar res</value></data>
   <data name="Quiz_Run" xml:space="preserve"><value>Encerts seguits</value></data>
   <data name="Duel_Against" xml:space="preserve"><value>contra {0}</value></data>
   <data name="Arena_Title" xml:space="preserve"><value>Arena</value></data>
@@ -831,6 +835,8 @@
   <data name="Duel_Waiting" xml:space="preserve"><value>Esperant</value></data>
   <data name="Duel_Expired" xml:space="preserve"><value>Caducat</value></data>
   <data name="Achievements_Subtitle" xml:space="preserve"><value>Els teus títols, insígnies i missions d'avui. Els XP premien l'esforç i el progrés, mai la velocitat.</value></data>
+  <data name="KidAch_Subtitle" xml:space="preserve"><value>Mira totes les teves enganxines!</value></data>
+  <data name="KidAch_Earned" xml:space="preserve"><value>Tens {0} de {1} enganxines</value></data>
   <data name="Achievements_Path" xml:space="preserve"><value>Camí de títols</value></data>
   <data name="Achievements_FromLevel" xml:space="preserve"><value>nivell {0}</value></data>
   <data name="Achievements_HowXp" xml:space="preserve"><value>Com guanyar XP</value></data>
@@ -1099,6 +1105,8 @@
   <data name="Js_Heard" xml:space="preserve"><value>He sentit: «{0}»</value></data>
   <data name="Js_NotUnderstood" xml:space="preserve"><value>He sentit «{0}», però no és cap opció. Torna-ho a provar o toca la resposta.</value></data>
   <data name="Js_MicError" xml:space="preserve"><value>El micròfon no està disponible. Revisa el permís del navegador.</value></data>
+  <data name="Js_Listening" xml:space="preserve"><value>🎧 Escoltant…</value></data>
+  <data name="Js_OralPaused" xml:space="preserve"><value>No t'he entès, així que he desactivat el mode mans lliures per ara — pots continuar responent tocant o amb el micròfon.</value></data>
   <data name="Js_OtherInterviews" xml:space="preserve"><value>Altres entrevistes</value></data>
   <data name="Interview_VoiceOn" xml:space="preserve"><value>Veu activada</value></data>
   <data name="Interview_Start" xml:space="preserve"><value>Començar l'entrevista</value></data>
@@ -1120,6 +1128,14 @@
   <data name="Companion_Placeholder" xml:space="preserve"><value>Pregunta alguna cosa al Tutor…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
   <data name="Companion_Privacy" xml:space="preserve"><value>El Tutor guarda aquesta conversa al teu compte per recordar-la; pots esborrar-la amb la paperera. Durant un test, el Tutor t'ajuda a pensar però mai no et dona la resposta.</value></data>
+  <data name="Companion_ModeChat" xml:space="preserve"><value>Parlar</value></data>
+  <data name="Companion_ModeStyle" xml:space="preserve"><value>A la teva manera</value></data>
+  <data name="Companion_StyleGame" xml:space="preserve"><value>Videojoc</value></data>
+  <data name="Companion_StyleRecipe" xml:space="preserve"><value>Recepta</value></data>
+  <data name="Companion_StyleStory" xml:space="preserve"><value>Aventura</value></data>
+  <data name="Companion_StyleDebate" xml:space="preserve"><value>Xerrada entre amics</value></data>
+  <data name="Companion_StyleOff" xml:space="preserve"><value>Deixar d'explicar així</value></data>
+  <data name="Js_StylePicked" xml:space="preserve"><value>Val: a partir d'ara t'ho explico com {0}. Què vols que t'expliqui?</value></data>
   <data name="TeacherCompanion_Button" xml:space="preserve"><value>Assistent</value></data>
   <data name="TeacherCompanion_Open" xml:space="preserve"><value>El teu assistent de classe: pregunta el que vulguis a qualsevol pàgina</value></data>
   <data name="TeacherCompanion_Title" xml:space="preserve"><value>El teu assistent de classe</value></data>

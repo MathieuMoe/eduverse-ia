@@ -288,3 +288,76 @@ public class CurriculumTests
         Assert.Contains("concept_count", ConceptMapValidator.Check([]));
     }
 }
+
+public class MisconceptionMemoryTests
+{
+    private static readonly DateTimeOffset Mistake = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+    [Fact]
+    public void Never_rechecked_is_still_watching()
+    {
+        var memory = new MisconceptionMemory("AddsDenominators", 2, Mistake, null, null);
+        Assert.Equal(MisconceptionStatus.Watching, memory.Status);
+    }
+
+    [Fact]
+    public void A_wrong_recheck_after_the_mistake_is_still_watching()
+    {
+        var memory = new MisconceptionMemory("AddsDenominators", 2, Mistake, Mistake.AddDays(14), false);
+        Assert.Equal(MisconceptionStatus.Watching, memory.Status);
+    }
+
+    [Fact]
+    public void A_correct_recheck_before_the_mistake_does_not_count_and_is_still_watching()
+    {
+        // The check happened, but the mistake recurred afterwards, so it proves nothing about now.
+        var memory = new MisconceptionMemory("AddsDenominators", 2, Mistake, Mistake.AddDays(-7), true);
+        Assert.Equal(MisconceptionStatus.Watching, memory.Status);
+    }
+
+    [Fact]
+    public void A_correct_recheck_after_the_mistake_is_overcome()
+    {
+        var memory = new MisconceptionMemory("AddsDenominators", 2, Mistake, Mistake.AddDays(14), true);
+        Assert.Equal(MisconceptionStatus.Overcome, memory.Status);
+    }
+
+    [Fact]
+    public void A_relapse_after_being_overcome_flips_it_back_to_watching()
+    {
+        // The check confirmed it was gone, but a new occurrence afterwards means it is not anymore.
+        var checkedAt = Mistake.AddDays(14);
+        var relapse = checkedAt.AddDays(7);
+        var memory = new MisconceptionMemory("AddsDenominators", 3, relapse, checkedAt, true);
+        Assert.Equal(MisconceptionStatus.Watching, memory.Status);
+    }
+}
+
+public class ConfidenceTests
+{
+    [Fact]
+    public void Too_few_correct_answers_never_counts_as_guessed_even_if_all_were_unsure()
+    {
+        Assert.False(Confidence.LooksGuessed(correct: 2, guessed: 2));
+    }
+
+    [Fact]
+    public void A_majority_of_unsure_right_answers_looks_guessed()
+    {
+        Assert.True(Confidence.LooksGuessed(correct: 5, guessed: 3));
+    }
+
+    [Fact]
+    public void Mostly_confident_right_answers_do_not_look_guessed()
+    {
+        Assert.False(Confidence.LooksGuessed(correct: 5, guessed: 1));
+    }
+
+    [Fact]
+    public void Exactly_at_the_threshold_counts_as_guessed()
+    {
+        // 3 of 5 is 60 %, exactly the threshold.
+        Assert.True(Confidence.LooksGuessed(correct: 5, guessed: 3));
+        Assert.False(Confidence.LooksGuessed(correct: 5, guessed: 2));
+    }
+}

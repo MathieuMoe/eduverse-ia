@@ -191,6 +191,10 @@ async function demo(page, role) {
 
     // Adaptive test: answer every question, the answer key only arrives after answering
     await page.goto(BASE + "/Student/Quiz?area=Physics&level=HighSchool");
+    await page.locator("[data-testid=quiz-options] button").first().waitFor();
+    // The hands-free "oral exam" toggle is server-rendered hidden; quiz.js reveals it once the browser actually
+    // offers both speech recognition and speech synthesis (true in this headless browser, so it should unhide).
+    check(await page.locator("#qz-oral").isHidden() === false, "oral exam toggle revealed when the browser supports voice");
     for (let i = 0; i < 10; i++) {
         await page.locator("[data-testid=quiz-options] button").first().waitFor();
         await page.locator("[data-testid=quiz-options] button").nth(i % 4).click();
@@ -351,6 +355,20 @@ async function demo(page, role) {
     await page.waitForFunction(() => document.querySelectorAll("[data-testid=companion-reply]").length >= 3 && document.getElementById("companion").dataset.busy === "false");
     check((await page.locator("[data-testid=companion-reply]").last().textContent()).includes("streak"), "Evo knows the level, the streak and the weak topics");
     await page.screenshot({ path: join(DOCS, "screenshot-companion.png") });
+
+    // The hub: "A tu manera" lets the student pick a metaphor before asking, without leaving the same panel/thread
+    const repliesBeforeStyle = await page.locator("[data-testid=companion-reply]").count();
+    await page.click("[data-testid=companion-mode-style]");
+    check(await page.locator("[data-testid=companion-style-picker]").isVisible(), "the style picker shows once the 'your way' tab is chosen");
+    await page.click('[data-style="recipe"]');
+    check(await page.locator("[data-testid=companion-style-badge]").isVisible(), "picking a style shows its badge and hides the picker");
+    await page.fill("[data-testid=companion-text]", "Explain fractions to me");
+    await page.click("[data-testid=companion-send]");
+    await page.waitForFunction((n) => document.querySelectorAll("[data-testid=companion-reply]").length > n + 1 && document.getElementById("companion").dataset.busy === "false", repliesBeforeStyle);
+    await page.click("#companion-style-off");
+    check(await page.locator("[data-testid=companion-style-badge]").isHidden(), "removing the style clears it and returns to the plain chat");
+    await page.screenshot({ path: join(DOCS, "screenshot-companion-style.png") });
+
     await page.goto(BASE + "/Student/Achievements");
     await page.click("[data-testid=companion-open]");
     await page.waitForFunction(() => document.querySelectorAll("#companion-chat p").length >= 5);
@@ -466,6 +484,19 @@ async function demo(page, role) {
 {
     const { context, page } = await session();
     await demo(page, "kid");
+    // Landing on /Student after sign-in: a playful home with no XP, rankings or percentages to read.
+    await page.waitForLoadState("networkidle");
+    check(await page.locator("[data-testid=kid-greeting]").count() === 1, "kid home shows the mascot greeting, not the adult dashboard");
+    check(await page.locator("[data-testid=kid-subjects]").count() === 1, "kid home shows subject tiles to play");
+    check(await page.locator("[data-testid=game-kpis]").count() === 0, "kid home hides the XP/rank/streak-number KPIs");
+    await page.screenshot({ path: join(DOCS, "screenshot-kids-home.png") });
+
+    await page.goto(BASE + "/Student/Achievements");
+    await page.waitForLoadState("networkidle");
+    check(await page.locator("[data-testid=kid-badges]").count() === 1, "kid achievements is a sticker shelf");
+    check(await page.locator("[data-testid=badges]").count() === 0, "kid achievements hides the adult badge grid with percentages");
+    await page.screenshot({ path: join(DOCS, "screenshot-kids-achievements.png") });
+
     await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=EarlyYears");
     await page.locator("[data-testid=quiz-options] button").first().waitFor();
     check(await page.locator("#qz-root.kids").count() === 1, "kids mode for early years");

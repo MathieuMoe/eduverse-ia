@@ -147,6 +147,18 @@ public class WebTests(App app) : IClassFixture<App>
     }
 
     [Fact]
+    public async Task The_quiz_page_offers_a_hands_free_oral_exam_toggle_next_to_read_aloud()
+    {
+        var client = await app.DemoAsync("Student");
+        var page = await client.GetStringAsync("/Student/Quiz?area=Physics&level=HighSchool");
+        Assert.Contains("data-testid=\"oral-toggle\"", page, StringComparison.Ordinal);
+        Assert.Contains("id=\"qz-oral\"", page, StringComparison.Ordinal);
+        // Hidden by default in the server-rendered markup: quiz.js only reveals it when the browser actually offers
+        // both speech recognition and speech synthesis (checked client-side, since that can't be known on the server).
+        Assert.Matches("id=\"qz-oral\"[^>]*\\bhidden\\b", page);
+    }
+
+    [Fact]
     public async Task Quiz_api_hides_the_answer_until_the_student_answers()
     {
         var client = await app.DemoAsync("Student");
@@ -247,6 +259,37 @@ public class WebTests(App app) : IClassFixture<App>
     }
 
     [Fact]
+    public async Task The_kid_home_shows_playful_tiles_without_the_adult_dashboard_of_numbers()
+    {
+        var kid = await app.DemoAsync("Kid");
+        var kidHome = await kid.GetStringAsync("/Student");
+        Assert.Contains("data-testid=\"kid-subjects\"", kidHome, StringComparison.Ordinal);
+        Assert.Contains("data-testid=\"kid-greeting\"", kidHome, StringComparison.Ordinal);
+        Assert.DoesNotContain("data-testid=\"game-kpis\"", kidHome, StringComparison.Ordinal);
+        Assert.DoesNotContain("data-testid=\"podium\"", kidHome, StringComparison.Ordinal);
+
+        var student = await app.DemoAsync("Student");
+        var studentHome = await student.GetStringAsync("/Student");
+        Assert.Contains("data-testid=\"game-kpis\"", studentHome, StringComparison.Ordinal);
+        Assert.DoesNotContain("data-testid=\"kid-subjects\"", studentHome, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task The_kid_achievements_page_is_a_sticker_shelf_without_the_rank_ladder_or_xp()
+    {
+        var kid = await app.DemoAsync("Kid");
+        var kidAch = await kid.GetStringAsync("/Student/Achievements");
+        Assert.Contains("data-testid=\"kid-badges\"", kidAch, StringComparison.Ordinal);
+        Assert.DoesNotContain("data-testid=\"badges\"", kidAch, StringComparison.Ordinal);
+        Assert.DoesNotContain(" XP</span>", kidAch, StringComparison.Ordinal);
+
+        var student = await app.DemoAsync("Student");
+        var studentAch = await student.GetStringAsync("/Student/Achievements");
+        Assert.Contains("data-testid=\"badges\"", studentAch, StringComparison.Ordinal);
+        Assert.DoesNotContain("data-testid=\"kid-badges\"", studentAch, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Evo_answers_on_every_page_offline_and_only_for_students()
     {
         var client = await app.DemoAsync("Student");
@@ -273,6 +316,22 @@ public class WebTests(App app) : IClassFixture<App>
         var teacherPage = await teacher.GetStringAsync("/Teacher");
         Assert.Contains("data-testid=\"companion-open\"", teacherPage, StringComparison.Ordinal);
         Assert.Contains("data-api=\"/api/teacher-companion\"", teacherPage, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task The_tutor_s_hub_offers_a_style_and_flavours_the_offline_reply_with_it()
+    {
+        var client = await app.DemoAsync("Student");
+        var page = await client.GetStringAsync("/Student");
+        Assert.Contains("data-testid=\"companion-mode-style\"", page, StringComparison.Ordinal);
+        Assert.Contains("data-testid=\"companion-style-picker\"", page, StringComparison.Ordinal);
+        var teacherPage = await (await app.DemoAsync("Teacher")).GetStringAsync("/Teacher");
+        Assert.DoesNotContain("data-testid=\"companion-mode-style\"", teacherPage, StringComparison.Ordinal);
+
+        var reply = await (await client.PostAsJsonAsync("/api/companion", new { message = "Why is the sky blue?", page = "/Student", style = "recipe" })).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Contains("🍳", reply.GetProperty("reply").GetString(), StringComparison.Ordinal);
+        var plain = await (await client.PostAsJsonAsync("/api/companion", new { message = "Why is the sky blue?", page = "/Student" })).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.DoesNotContain("🍳", plain.GetProperty("reply").GetString(), StringComparison.Ordinal);
     }
 
     [Fact]
