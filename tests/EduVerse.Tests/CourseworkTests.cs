@@ -90,6 +90,71 @@ public class MaterialRuleTests
     }
 }
 
+public class MaterialTagsTests
+{
+    [Fact]
+    public void The_code_guesses_the_subject_from_its_own_small_lexicon_and_stays_quiet_when_unsure()
+    {
+        Assert.Equal(Area.Geography, MaterialTags.GuessArea("A volcano and a mountain river shape the climate of a country near the ocean and the desert."));
+        Assert.Null(MaterialTags.GuessArea("Too short and vague to tell what subject this is about.")); // fewer than MinHits words
+        Assert.Null(MaterialTags.GuessArea("")); // empty text
+        var labels = MaterialTags.Offline("Volcanoes", Sample.Volcano);
+        Assert.Equal(Area.Geography, labels.Area);
+        Assert.NotEmpty(labels.Tags);
+        Assert.NotEqual("", labels.Summary);
+    }
+
+    [Fact]
+    public void The_AIs_proposal_is_checked_against_the_platforms_subjects_and_falls_back_to_the_codes_guess()
+    {
+        var offline = new MaterialLabels(Area.Biology, ["cells", "mitosis"], "A short summary of the document.");
+
+        // a real subject the AI named is kept, even one the code did not guess itself
+        Assert.Equal(Area.Physics, MaterialTags.Merge(offline, "Physics", ["gravity", "force"], "The document is about gravity.").Area);
+        // a subject that is not one of the platform's own (e.g. "Other", or nonsense) falls back to the code's guess
+        Assert.Equal(Area.Biology, MaterialTags.Merge(offline, "Other", [], null).Area);
+        Assert.Equal(Area.Biology, MaterialTags.Merge(offline, "Not a subject", [], null).Area);
+        Assert.Equal(Area.Biology, MaterialTags.Merge(offline, "7", [], null).Area); // a number parses as an enum value in .NET: rejected anyway
+
+        // empty tags/summary from the AI fall back to the code's; non-empty ones are cleaned and kept
+        Assert.Equal(offline.Tags, MaterialTags.Merge(offline, null, [], null).Tags);
+        Assert.Equal(["gravity", "force"], MaterialTags.Merge(offline, null, ["Gravity!", "  Force  ", "gravity"], null).Tags);
+        Assert.Equal(offline.Summary, MaterialTags.Merge(offline, null, null, "short").Summary); // too short to replace the code's sentence
+        Assert.Equal("A clear sentence about the document.", MaterialTags.Merge(offline, null, null, "A clear sentence about the document.").Summary);
+    }
+
+    [Fact]
+    public void Tags_are_cleaned_deduplicated_and_capped()
+    {
+        Assert.Equal(["gravity", "force field"], MaterialTags.Clean(["Gravity!!", "  Force   Field  ", "gravity", "", "a"]));
+        Assert.Equal(["gravity", "force"], MaterialTags.Parse("Gravity, force, Gravity"));
+        Assert.Equal("gravity, force", MaterialTags.Join(["Gravity", "force"]));
+        Assert.Equal(MaterialTags.MaxTags, MaterialTags.Clean(Enumerable.Range(0, 20).Select(i => $"tag{i}")).Count);
+    }
+
+    [Fact]
+    public void Only_a_clean_https_link_is_accepted()
+    {
+        Assert.Equal("", MaterialTags.CleanUrl(null));
+        Assert.Equal("", MaterialTags.CleanUrl("   "));
+        Assert.Equal("https://example.com/video", MaterialTags.CleanUrl("https://example.com/video"));
+        Assert.Null(MaterialTags.CleanUrl("http://example.com/video")); // not https
+        Assert.Null(MaterialTags.CleanUrl("not a url"));
+        Assert.Null(MaterialTags.CleanUrl("https://localhost")); // no dot in the host
+        Assert.Null(MaterialTags.CleanUrl("https://user:pass@example.com")); // userinfo not accepted
+        Assert.Null(MaterialTags.CleanUrl(new string('a', MaterialTags.MaxUrl + 1)));
+    }
+
+    [Fact]
+    public void A_matching_subject_label_boosts_the_score_on_top_of_matching_words()
+    {
+        Assert.Equal(1, MaterialTags.Score(Area.Physics, "gravity, force", "gravity", null)); // word match, no subject requested
+        Assert.Equal(2, MaterialTags.Score(Area.Physics, "gravity, force", "gravity", Area.Physics)); // word match and subject match
+        Assert.Equal(1, MaterialTags.Score(Area.Chemistry, "gravity, force", "gravity", Area.Physics)); // word match only: wrong subject, no bonus
+        Assert.Equal(0, MaterialTags.Score(Area.Chemistry, "", "gravity", Area.Physics)); // no words, wrong subject: nothing at all
+    }
+}
+
 public class WritingRuleTests
 {
     private static WritingTask Task(string key) => Writing.Find(key, TeachLanguage.English)!;
@@ -216,6 +281,57 @@ public class CourseworkStoreTests(Database database) : IClassFixture<Database>
         Assert.False(await store.RemoveAsync("another-teacher", mine[0].Material.Id));
         Assert.True(await store.RemoveAsync(teacher, mine[0].Material.Id));
         Assert.Single(await store.OfClassAsync(teacher, c.Id));
+    }
+
+    [Fact]
+    public async Task A_document_without_labels_is_labelled_by_the_code_and_the_teacher_can_correct_it()
+    {
+        var (scope, teacher, _, _, c) = await ClassAsync("Labels group");
+        using var _ = scope;
+        var store = scope.ServiceProvider.GetRequiredService<MaterialStore>();
+
+        Assert.Equal(MaterialOutcome.BadUrl, await store.CheckAsync(teacher, c.Id, MaterialTarget.Course, null, "Volcanoes", Sample.Volcano, "ftp://not-https"));
+        Assert.Equal(MaterialOutcome.Saved, await store.CheckAsync(teacher, c.Id, MaterialTarget.Course, null, "Volcanoes", Sample.Volcano, null));
+
+        // no labels given: the code guesses them itself and the document is marked "demo"
+        Assert.Equal(MaterialOutcome.Saved, await store.AddAsync(teacher, c.Id, MaterialTarget.Course, null, "Volcanoes", Sample.Volcano));
+        var guessed = (await store.OfClassAsync(teacher, c.Id))[0];
+        Assert.Equal(Area.Geography, guessed.Area);
+        Assert.Equal("demo", guessed.LabelledBy);
+        Assert.NotEmpty(guessed.Tags);
+
+        // labels and a link given (as the AI would propose them): kept as given, marked with whoever labelled it
+        var labels = new MaterialLabels(Area.Physics, ["gravity", "forces"], "A short lesson about gravity.");
+        Assert.Equal(MaterialOutcome.BadUrl, await store.AddAsync(teacher, c.Id, MaterialTarget.Course, null, "Gravity", Sample.GoodText, labels, "not a url", "gemini"));
+        Assert.Equal(MaterialOutcome.Saved, await store.AddAsync(teacher, c.Id, MaterialTarget.Course, null, "Gravity", Sample.GoodText, labels, "https://example.com/gravity", "gemini"));
+        var ai = (await store.OfClassAsync(teacher, c.Id)).Single(m => m.Title == "Gravity");
+        Assert.Equal((Area.Physics, "gravity, forces", "https://example.com/gravity", "gemini"), (ai.Area, ai.Tags, ai.Url, ai.LabelledBy));
+
+        // the teacher corrects the labels of their own document
+        Assert.False(await store.RelabelAsync("another-teacher", ai.Id, Area.Chemistry, "acid"));
+        Assert.True(await store.RelabelAsync(teacher, ai.Id, Area.Chemistry, "acid, reaction"));
+        var corrected = (await store.OfClassAsync(teacher, c.Id)).Single(m => m.Id == ai.Id);
+        Assert.Equal((Area.Chemistry, "acid, reaction", "teacher"), (corrected.Area, corrected.Tags, corrected.LabelledBy));
+    }
+
+    [Fact]
+    public async Task A_document_whose_label_matches_another_subject_is_still_offered_to_a_student_of_that_subject()
+    {
+        var (scope, teacher, member, _, c) = await ClassAsync("Cross-subject group");
+        using var _ = scope;
+        var store = scope.ServiceProvider.GetRequiredService<MaterialStore>();
+
+        // attached to the (mathematics) course, but about physics: no word in the text overlaps the question
+        var labels = new MaterialLabels(Area.Physics, ["gravity", "pendulum"], "A short lesson.");
+        var text = "A pendulum swings back and forth many times before it slows down and stops moving. " +
+            "It keeps the same rhythm every time, which is why old clocks used one to keep steady time for many years without stopping.";
+        await store.AddAsync(teacher, c.Id, MaterialTarget.Course, null, "Pendulums", text, labels, null, "gemini");
+
+        var physicsKey = EduVerse.Core.Curriculum.AreaSubjects.Key(Area.Physics, Level.Primary3);
+        var chemistryKey = EduVerse.Core.Curriculum.AreaSubjects.Key(Area.Chemistry, Level.Primary3);
+        Assert.Contains("pendulum", string.Join(' ', (await store.ExcerptsAsync(member, MaterialTarget.Course, physicsKey, "gravity")).Select(e => e.Text)), StringComparison.Ordinal);
+        // wrong subject: the pendulum document is not offered there (other documents of that student may still be, from other tests/classes)
+        Assert.DoesNotContain("pendulum", string.Join(' ', (await store.ExcerptsAsync(member, MaterialTarget.Course, chemistryKey, "gravity")).Select(e => e.Text)), StringComparison.Ordinal);
     }
 
     [Fact]

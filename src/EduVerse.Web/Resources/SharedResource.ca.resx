@@ -1550,4 +1550,16 @@
   <data name="Js_Err_writing_empty" xml:space="preserve"><value>Tria una tasca i escriu abans la teva resposta.</value></data>
   <data name="Js_Err_writing_long" xml:space="preserve"><value>Massa llarg: 4.000 caràcters com a màxim.</value></data>
   <data name="Materials_TestOf" xml:space="preserve"><value>Test sobre el document del teu professor</value></data>
+  <data name="Mat_BadUrl" xml:space="preserve"><value>L'enllaç ha de ser una adreça https vàlida.</value></data>
+  <data name="Mat_Url" xml:space="preserve"><value>Enllaç (vídeo, pàgina — opcional)</value></data>
+  <data name="Mat_Labels" xml:space="preserve"><value>Matèria i temes</value></data>
+  <data name="Mat_NoArea" xml:space="preserve"><value>Matèria no detectada</value></data>
+  <data name="Mat_Correct" xml:space="preserve"><value>Corregir</value></data>
+  <data name="Mat_RelabelArea" xml:space="preserve"><value>Matèria</value></data>
+  <data name="Mat_RelabelTags" xml:space="preserve"><value>Temes, separats per comes</value></data>
+  <data name="Mat_RelabelSave" xml:space="preserve"><value>Desa les etiquetes</value></data>
+  <data name="Mat_RelabelNone" xml:space="preserve"><value>(cap)</value></data>
+  <data name="LabelledBy_demo" xml:space="preserve"><value>endevinat pel codi</value></data>
+  <data name="LabelledBy_teacher" xml:space="preserve"><value>corregit per tu</value></data>
+  <data name="LabelledBy_Ai" xml:space="preserve"><value>etiquetat per {0}</value></data>
 </root>

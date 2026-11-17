@@ -318,6 +318,7 @@ async function demo(page, role) {
     await page.locator("[data-testid=rate-thanks]").waitFor();
     check(true, "the adventure is rated in a few seconds");
     await page.click("[data-testid=rate-thanks] a");
+    await page.click("[data-testid=ideas-toggle-Adventure]"); // ideas are tucked behind a small round icon: open it first
     await page.locator("[data-testid=idea-list-Adventure] li[data-testid]").first().waitFor();
     await page.fill("[data-testid=idea-text-Adventure]", "Volcanes");
     await page.click("[data-testid=idea-send-Adventure]");
@@ -328,8 +329,9 @@ async function demo(page, role) {
     await pirates.click();
     await page.locator("[data-testid=idea-list-Adventure] li:has-text('Piratas') [data-vote][aria-pressed=true]").waitFor();
     check(parseInt((await page.locator("[data-testid=idea-list-Adventure] li:has-text('Piratas') [data-vote]").textContent()).replace(/\D/g, ""), 10) === votes + 1, "a vote is added to an approved idea, once");
-    await page.locator("[data-testid=ideas-Adventure]").screenshot({ path: join(DOCS, "screenshot-ideas.png") });
+    await page.locator("[data-testid=ideas-menu-Adventure]").screenshot({ path: join(DOCS, "screenshot-ideas.png") });
     await page.goto(BASE + "/Student/Interview");
+    await page.click("[data-testid=ideas-toggle-Figure]");
     await page.locator("[data-testid=idea-list-Figure] li[data-testid]").first().waitFor();
     check(await page.locator("[data-testid=idea-list-Figure] li:has-text('Napoleón Bonaparte')").count() === 1, "the figure approved by the teacher is open to votes");
     await page.fill("[data-testid=idea-text-Figure]", "Newton");

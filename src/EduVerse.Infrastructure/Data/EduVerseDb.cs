@@ -90,7 +90,7 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
     public DbSet<DefenceResult> DefenceResults => Set<DefenceResult>();
 
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 17;
+    public const int DatabaseVersion = 18;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

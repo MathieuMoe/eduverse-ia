@@ -1550,4 +1550,16 @@
   <data name="Js_Err_writing_empty" xml:space="preserve"><value>Choisis une consigne et écris d'abord ta réponse.</value></data>
   <data name="Js_Err_writing_long" xml:space="preserve"><value>Trop long : 4 000 caractères maximum.</value></data>
   <data name="Materials_TestOf" xml:space="preserve"><value>Test sur le document de ton professeur</value></data>
+  <data name="Mat_BadUrl" xml:space="preserve"><value>Le lien doit être une adresse https valide.</value></data>
+  <data name="Mat_Url" xml:space="preserve"><value>Lien (vidéo, page — facultatif)</value></data>
+  <data name="Mat_Labels" xml:space="preserve"><value>Matière et sujets</value></data>
+  <data name="Mat_NoArea" xml:space="preserve"><value>Matière non détectée</value></data>
+  <data name="Mat_Correct" xml:space="preserve"><value>Corriger</value></data>
+  <data name="Mat_RelabelArea" xml:space="preserve"><value>Matière</value></data>
+  <data name="Mat_RelabelTags" xml:space="preserve"><value>Sujets, séparés par des virgules</value></data>
+  <data name="Mat_RelabelSave" xml:space="preserve"><value>Enregistrer les étiquettes</value></data>
+  <data name="Mat_RelabelNone" xml:space="preserve"><value>(aucune)</value></data>
+  <data name="LabelledBy_demo" xml:space="preserve"><value>deviné par le code</value></data>
+  <data name="LabelledBy_teacher" xml:space="preserve"><value>corrigé par vous</value></data>
+  <data name="LabelledBy_Ai" xml:space="preserve"><value>étiqueté par {0}</value></data>
 </root>

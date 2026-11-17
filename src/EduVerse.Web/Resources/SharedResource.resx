@@ -1550,4 +1550,16 @@
   <data name="Js_Err_writing_empty" xml:space="preserve"><value>Choose a task and write your answer first.</value></data>
   <data name="Js_Err_writing_long" xml:space="preserve"><value>Too long: 4,000 characters at most.</value></data>
   <data name="Materials_TestOf" xml:space="preserve"><value>Test about your teacher's document</value></data>
+  <data name="Mat_BadUrl" xml:space="preserve"><value>The link must be a valid https address.</value></data>
+  <data name="Mat_Url" xml:space="preserve"><value>Link (video, page — optional)</value></data>
+  <data name="Mat_Labels" xml:space="preserve"><value>Subject and topics</value></data>
+  <data name="Mat_NoArea" xml:space="preserve"><value>Subject not detected</value></data>
+  <data name="Mat_Correct" xml:space="preserve"><value>Correct</value></data>
+  <data name="Mat_RelabelArea" xml:space="preserve"><value>Subject</value></data>
+  <data name="Mat_RelabelTags" xml:space="preserve"><value>Topics, separated by commas</value></data>
+  <data name="Mat_RelabelSave" xml:space="preserve"><value>Save labels</value></data>
+  <data name="Mat_RelabelNone" xml:space="preserve"><value>(none)</value></data>
+  <data name="LabelledBy_demo" xml:space="preserve"><value>guessed by the code</value></data>
+  <data name="LabelledBy_teacher" xml:space="preserve"><value>corrected by you</value></data>
+  <data name="LabelledBy_Ai" xml:space="preserve"><value>labelled by {0}</value></data>
 </root>

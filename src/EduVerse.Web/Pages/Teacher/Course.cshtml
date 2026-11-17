@@ -40,10 +40,28 @@
             <ul class="space-y-2">
                 @foreach (var m in Model.Materials)
                 {
-                    <li class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-surface/60" data-testid="material">
-                        <span class="min-w-0 text-sm text-foreground"><span class="font-medium">@m.Title</span>
-                            <span class="text-muted-foreground-1">· @L["MatTarget_" + m.Target]@(m.Target == MaterialTarget.Figure ? " (" + Interviews.Find(m.Key)?.Name + ")" : "") · @string.Format(culture, L["Mat_Chars"].Value, m.Text.Length)</span></span>
-                        <form method="post" asp-page-handler="MaterialDelete" asp-route-id="@c.Id" asp-route-material="@m.Id"><button class="text-xs text-primary hover:underline" type="submit">@L["Js_Delete"]</button></form>
+                    <li class="flex flex-col gap-2 p-3 rounded-2xl bg-surface/60" data-testid="material">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <span class="min-w-0 text-sm text-foreground"><span class="font-medium">@m.Title</span>
+                                <span class="text-muted-foreground-1">· @L["MatTarget_" + m.Target]@(m.Target == MaterialTarget.Figure ? " (" + Interviews.Find(m.Key)?.Name + ")" : "") · @string.Format(culture, L["Mat_Chars"].Value, m.Text.Length)</span>
+                                @if (!string.IsNullOrEmpty(m.Url)) { <a href="@m.Url" target="_blank" rel="noopener noreferrer" class="ms-1 text-primary hover:underline">🔗</a> }</span>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <details class="relative"><summary class="text-xs text-primary hover:underline cursor-pointer list-none">@L["Mat_Correct"]</summary>
+                                    <form method="post" asp-page-handler="MaterialRelabel" asp-route-id="@c.Id" asp-route-material="@m.Id" class="absolute right-0 z-10 mt-2 w-64 space-y-2 rounded-2xl border border-border bg-surface p-3 shadow-lg">
+                                        <div><label class="@Ui.Label text-xs">@L["Mat_RelabelArea"]</label>
+                                            <select name="area" class="@Ui.Input text-xs"><option value="">@L["Mat_RelabelNone"]</option>@foreach (var a in Enum.GetValues<Area>()) { <option value="@a" selected="@(m.Area == a)">@L["Area_" + a]</option> }</select></div>
+                                        <div><label class="@Ui.Label text-xs">@L["Mat_RelabelTags"]</label><input name="tags" class="@Ui.Input text-xs" value="@m.Tags" maxlength="200" /></div>
+                                        <button type="submit" class="@Ui.BtnPrimary text-xs w-full">@L["Mat_RelabelSave"]</button>
+                                    </form>
+                                </details>
+                                <form method="post" asp-page-handler="MaterialDelete" asp-route-id="@c.Id" asp-route-material="@m.Id"><button class="text-xs text-primary hover:underline" type="submit">@L["Js_Delete"]</button></form>
+                            </div>
+                        </div>
+                        <p class="text-xs text-muted-foreground-1" data-testid="material-labels">
+                            🏷️ @(m.Area is { } ma ? L["Area_" + ma].Value : L["Mat_NoArea"].Value)@(string.IsNullOrEmpty(m.Tags) ? "" : " · " + m.Tags)
+                            <span class="opacity-70">· @(m.LabelledBy == "demo" ? L["LabelledBy_demo"].Value : m.LabelledBy == "teacher" ? L["LabelledBy_teacher"].Value : string.Format(culture, L["LabelledBy_Ai"].Value, m.LabelledBy))</span>
+                        </p>
+                        @if (!string.IsNullOrEmpty(m.Summary)) { <p class="text-xs text-muted-foreground-1 italic">@m.Summary</p> }
                     </li>
                 }
             </ul>
@@ -56,6 +74,8 @@
                 <div><label class="@Ui.Label" for="mat-key">@L["Mat_Figure"]</label>
                     <select id="mat-key" name="key" class="@Ui.Input" data-testid="material-key">@foreach (var f in Interviews.All) { <option value="@f.Key">@f.Name</option> }</select></div>
             </div>
+            <div class="sm:col-span-2"><label class="@Ui.Label" for="mat-url">@L["Mat_Url"]</label>
+                <input id="mat-url" name="url" type="url" maxlength="@MaterialTags.MaxUrl" class="@Ui.Input" data-testid="material-url" /></div>
             <div class="sm:col-span-2">
                 <div class="flex items-center justify-between gap-3"><label class="@Ui.Label" for="mat-text">@L["Mat_Text"]</label>
                     <label class="text-sm font-medium text-primary hover:underline cursor-pointer">@L["Lesson_Upload"]<input id="mat-file" type="file" accept=".txt,.md,.pdf,text/plain,application/pdf" class="sr-only" /></label></div>

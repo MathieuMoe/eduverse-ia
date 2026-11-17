@@ -1,6 +1,7 @@
 using EduVerse.Core.Catalog;
 using EduVerse.Core.Tutor;
 using EduVerse.Infrastructure.Data;
+using EduVerse.Infrastructure.Engines;
 using EduVerse.Infrastructure.Tutor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EduVerse.Web.Pages.Teacher;
 
 /// <summary>Documents and work of a class: what the Tutor may use, what the students must do, and the measured progress of each one.</summary>
-public sealed class CourseModel(EduVerseDb db, MaterialStore materials, AssignmentStore assignments) : PageModel
+public sealed class CourseModel(EduVerseDb db, MaterialStore materials, AssignmentStore assignments, AiEngines engines, ILogger<CourseModel> logger) : PageModel
 {
     public Classroom Classroom { get; private set; } = null!;
 
@@ -45,15 +46,39 @@ public sealed class CourseModel(EduVerseDb db, MaterialStore materials, Assignme
         return Page();
     }
 
-    public async Task<IActionResult> OnPostMaterialAsync(int id, MaterialTarget target, string? key, string? title, string? text)
+    public async Task<IActionResult> OnPostMaterialAsync(int id, MaterialTarget target, string? key, string? title, string? text, string? url)
     {
-        TempData["MaterialResult"] = (await materials.AddAsync(User.Id(), id, target, key, title, text, HttpContext.RequestAborted)).ToString();
+        var userId = User.Id();
+        var check = await materials.CheckAsync(userId, id, target, key, title, text, url, HttpContext.RequestAborted);
+        if (check != MaterialOutcome.Saved)
+        {
+            TempData["MaterialResult"] = check.ToString();
+            return Redirect($"/Teacher/Course?id={id}#materials");
+        }
+
+        // No AI is called for a document the check above would refuse anyway; past this point the document is good, so the AI may label it.
+        var offline = MaterialTags.Offline(title, text);
+        var language = Localization.LanguageForCurrentCulture();
+        var run = await AiRunner.RunAsync(HttpContext, engines, logger,
+            async ai =>
+            {
+                var (area, tags, summary) = MaterialTagPrompt.Parse(await ai.GenerateAsync(MaterialTagPrompt.Build(title ?? "", text ?? "", language), HttpContext.RequestAborted));
+                return MaterialTags.Merge(offline, area, tags, summary);
+            },
+            () => Task.FromResult(offline));
+        TempData["MaterialResult"] = (await materials.AddAsync(userId, id, target, key, title, text, run.Result, url, run.Engine, HttpContext.RequestAborted)).ToString();
         return Redirect($"/Teacher/Course?id={id}#materials");
     }
 
     public async Task<IActionResult> OnPostMaterialDeleteAsync(int id, int material)
     {
         await materials.RemoveAsync(User.Id(), material, HttpContext.RequestAborted);
+        return Redirect($"/Teacher/Course?id={id}#materials");
+    }
+
+    public async Task<IActionResult> OnPostMaterialRelabelAsync(int id, int material, Area? area, string? tags)
+    {
+        await materials.RelabelAsync(User.Id(), material, area, tags, HttpContext.RequestAborted);
         return Redirect($"/Teacher/Course?id={id}#materials");
     }
 

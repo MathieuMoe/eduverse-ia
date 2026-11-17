@@ -781,6 +781,21 @@ public sealed class Material
 
     public string Text { get; set; } = "";
 
+    /// <summary>The subject the document is about, when it is clear (labelled by the AI or the code, corrected by the teacher).</summary>
+    public Area? Area { get; set; }
+
+    /// <summary>Topics of the document, comma separated.</summary>
+    public string Tags { get; set; } = "";
+
+    /// <summary>One sentence about the document.</summary>
+    public string Summary { get; set; } = "";
+
+    /// <summary>Optional https link (a video, a page) the document is the text or the notes of.</summary>
+    public string Url { get; set; } = "";
+
+    /// <summary>Who labelled it: the name of the AI engine, "demo" for the code, "teacher" after a correction.</summary>
+    public string LabelledBy { get; set; } = "demo";
+
     public DateTimeOffset At { get; set; }
 }
 

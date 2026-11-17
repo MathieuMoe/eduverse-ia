@@ -268,11 +268,12 @@
                     @foreach (var item in nav)
                     {
                         var active = current == item.Page;
-                        <li>
-                            <a class="@navLink @(active ? "text-foreground font-semibold" : "")" href="@item.Href" title="@item.Label" data-nav aria-current="@(active ? "page" : null)">
+                        <li class="hs-tooltip [--trigger:hover] [--placement:right]">
+                            <a class="hs-tooltip-toggle @navLink @(active ? "text-foreground font-semibold" : "")" href="@item.Href" data-nav aria-current="@(active ? "page" : null)">
                                 <span class="size-9 shrink-0 grid place-items-center rounded-xl transition-colors @(active ? "bg-primary text-primary-foreground shadow-sm" : "bg-surface/70 group-hover/nav:bg-surface")">@Html.Raw(Svg(item.Icon))</span>
                                 <span class="@navLabel">@item.Label</span>
                             </a>
+                            <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 invisible transition-opacity duration-150 z-50 py-1.5 px-2.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-primary text-primary-foreground shadow-lg" role="tooltip">@item.Label</span>
                         </li>
                     }
                 </ul>

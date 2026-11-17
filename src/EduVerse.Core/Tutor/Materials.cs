@@ -92,10 +92,17 @@ public static class Materials
     /// The pieces of the documents that have most to do with the question, within the budget. When nothing matches, the beginning of the
     /// first document when <paramref name="fallbackToStart"/> (a document attached to exactly this thing is relevant anyway).
     /// </summary>
-    public static IReadOnlyList<MaterialExcerpt> Excerpts(IReadOnlyList<(string Title, string Text)> documents, string? query, bool fallbackToStart, int budget = PromptBudget)
+    public static IReadOnlyList<MaterialExcerpt> Excerpts(IReadOnlyList<(string Title, string Text)> documents, string? query, bool fallbackToStart, int budget = PromptBudget) =>
+        ExcerptsWithLabels(documents.Select(d => (d.Title, d.Text, 0)).ToList(), query, fallbackToStart, budget);
+
+    /// <summary>
+    /// The same, for labelled documents: <c>Labels</c> is how much the labels of the document match the question. A document whose labels
+    /// match is relevant even when no sentence shares a word with the question (its beginning is used), and its pieces come first.
+    /// </summary>
+    public static IReadOnlyList<MaterialExcerpt> ExcerptsWithLabels(IReadOnlyList<(string Title, string Text, int Labels)> documents, string? query, bool fallbackToStart, int budget = PromptBudget)
     {
         ArgumentNullException.ThrowIfNull(documents);
-        var scored = documents.SelectMany(d => Chunks(d.Text).Select((c, i) => (d.Title, Chunk: c, Index: i, Score: Score(c, query ?? ""))))
+        var scored = documents.SelectMany(d => Chunks(d.Text).Select((c, i) => (d.Title, Chunk: c, Index: i, Score: Score(c, query ?? "") is var own && (own > 0 || (i == 0 && d.Labels > 0)) ? own + d.Labels : 0)))
             .Where(x => x.Score > 0).OrderByDescending(x => x.Score).ThenBy(x => x.Index).ToList();
         if (scored.Count == 0 && fallbackToStart && documents.Count > 0 && Chunks(documents[0].Text) is { Count: > 0 } first)
         {
