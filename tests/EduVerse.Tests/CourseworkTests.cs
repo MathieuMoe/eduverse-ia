@@ -153,6 +153,21 @@ public class MaterialTagsTests
         Assert.Equal(1, MaterialTags.Score(Area.Chemistry, "gravity, force", "gravity", Area.Physics)); // word match only: wrong subject, no bonus
         Assert.Equal(0, MaterialTags.Score(Area.Chemistry, "", "gravity", Area.Physics)); // no words, wrong subject: nothing at all
     }
+
+    [Fact]
+    public void A_document_matches_a_weak_topic_only_when_it_is_the_same_subject_and_scores_higher_with_shared_words()
+    {
+        // different subject than the weak topic: never a match, however many words line up
+        Assert.Equal(0, MaterialTags.TopicMatch(Area.Chemistry, "fractions, division", "Fractions", Area.Mathematics, ["Fractions"]));
+        // same subject, no word of the topic's name in the tags or title: still a match, just the base point
+        Assert.Equal(1, MaterialTags.TopicMatch(Area.Mathematics, "algebra", "Numbers", Area.Mathematics, ["Fractions"]));
+        // same subject and the topic's word appears in the tags: scores higher, so it is preferred
+        Assert.Equal(2, MaterialTags.TopicMatch(Area.Mathematics, "fractions, division", "Numbers", Area.Mathematics, ["Fractions"]));
+        // the word can also come from the title instead of the tags
+        Assert.Equal(2, MaterialTags.TopicMatch(Area.Mathematics, "algebra", "All about Fractions", Area.Mathematics, ["Fractions"]));
+        // no document labelled at all (Area is null): never a match
+        Assert.Equal(0, MaterialTags.TopicMatch(null, "fractions", "Fractions", Area.Mathematics, ["Fractions"]));
+    }
 }
 
 public class WritingRuleTests
@@ -332,6 +347,30 @@ public class CourseworkStoreTests(Database database) : IClassFixture<Database>
         Assert.Contains("pendulum", string.Join(' ', (await store.ExcerptsAsync(member, MaterialTarget.Course, physicsKey, "gravity")).Select(e => e.Text)), StringComparison.Ordinal);
         // wrong subject: the pendulum document is not offered there (other documents of that student may still be, from other tests/classes)
         Assert.DoesNotContain("pendulum", string.Join(' ', (await store.ExcerptsAsync(member, MaterialTarget.Course, chemistryKey, "gravity")).Select(e => e.Text)), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task A_weak_topic_found_by_the_detective_is_matched_to_the_teachers_own_document_about_it()
+    {
+        var (scope, teacher, member, _, c) = await ClassAsync("Topic match group");
+        using var _ = scope;
+        var store = scope.ServiceProvider.GetRequiredService<MaterialStore>();
+
+        // no document in the class yet: nothing for the detective to point at
+        Assert.Null(await store.ForTopicAsync(member, Area.Mathematics, "Fractions"));
+
+        // a document of the same subject that does not mention the topic: a weak match, kept as a fallback
+        var algebra = new MaterialLabels(Area.Mathematics, ["algebra", "equations"], "A short lesson.");
+        await store.AddAsync(teacher, c.Id, MaterialTarget.Course, null, "Algebra", Sample.GoodText, algebra, null, "gemini");
+        Assert.Equal("Algebra", (await store.ForTopicAsync(member, Area.Mathematics, "Fractions"))?.Material.Title);
+
+        // a document that actually names the topic in its tags is preferred over the weaker match
+        var fractions = new MaterialLabels(Area.Mathematics, ["fractions", "division"], "A short lesson.");
+        await store.AddAsync(teacher, c.Id, MaterialTarget.Course, null, "Fractions explained", Sample.GoodText, fractions, null, "gemini");
+        Assert.Equal("Fractions explained", (await store.ForTopicAsync(member, Area.Mathematics, "Fractions"))?.Material.Title);
+
+        // wrong subject than the weak topic: never matched, even though documents of that student exist
+        Assert.Null(await store.ForTopicAsync(member, Area.Chemistry, "Fractions"));
     }
 
     [Fact]

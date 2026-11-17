@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EduVerse.Web.Pages.Student;
 
 /// <summary>"How I learn": what the tutor measured and noticed, open to the student, who can correct it and add their own notes.</summary>
-public sealed class LearnerModel(LearnerStore learner, DetectiveStore detective, EduVerseDb db, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
+public sealed class LearnerModel(LearnerStore learner, DetectiveStore detective, MaterialStore materials, EduVerseDb db, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
 {
     public LearnerStats Stats { get; private set; } = LearnerStats.Empty;
 
@@ -17,8 +17,8 @@ public sealed class LearnerModel(LearnerStore learner, DetectiveStore detective,
 
     public IReadOnlyList<string> Interests { get; private set; } = [];
 
-    /// <summary>Weak topics with the step below and what the detective says (already in the student's language).</summary>
-    public IReadOnlyList<(DetectiveCase Case, string Topic, string Below, string Text)> Cases { get; private set; } = [];
+    /// <summary>Weak topics with the step below, what the detective says (already in the student's language), and the teacher's own document about it, when there is one.</summary>
+    public IReadOnlyList<(DetectiveCase Case, string Topic, string Below, string Text, StudentMaterial? Material)> Cases { get; private set; } = [];
 
     /// <summary>Topics answered "sure" and wrong several times.</summary>
     public IReadOnlyList<(FalseCertainty Item, string Topic)> Certainties { get; private set; } = [];
@@ -38,11 +38,14 @@ public sealed class LearnerModel(LearnerStore learner, DetectiveStore detective,
         Insights = LearnerProfile.Insights(Stats, Localization.LanguageForCurrentCulture());
         Notes = await learner.NotesAsync(User.Id(), HttpContext.RequestAborted);
         var language = Localization.LanguageForCurrentCulture();
-        Cases = (await detective.CasesAsync(userId, HttpContext.RequestAborted)).Select(c =>
+        var cases = new List<(DetectiveCase Case, string Topic, string Below, string Text, StudentMaterial? Material)>();
+        foreach (var c in await detective.CasesAsync(userId, HttpContext.RequestAborted))
         {
             var (topic, below) = (QuizEndpoints.TopicName(c.Topic, l), QuizEndpoints.TopicName(c.Below.Topic, l));
-            return (c, topic, below, Prerequisites.Say(c.Verdict, topic, below, language));
-        }).ToList();
+            cases.Add((c, topic, below, Prerequisites.Say(c.Verdict, topic, below, language), await materials.ForTopicAsync(userId, c.Area, topic, HttpContext.RequestAborted)));
+        }
+
+        Cases = cases;
         var bets = await detective.BetsAsync(userId, HttpContext.RequestAborted);
         Bets = bets.Count;
         Map = Calibration.Map(bets).Select(c => (c, (IReadOnlyList<string>)c.Topics.Select(t => QuizEndpoints.TopicName(t, l)).ToList())).ToList();

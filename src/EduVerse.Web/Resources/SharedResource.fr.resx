@@ -1562,4 +1562,5 @@
   <data name="LabelledBy_demo" xml:space="preserve"><value>deviné par le code</value></data>
   <data name="LabelledBy_teacher" xml:space="preserve"><value>corrigé par vous</value></data>
   <data name="LabelledBy_Ai" xml:space="preserve"><value>étiqueté par {0}</value></data>
+  <data name="Detective_Material" xml:space="preserve"><value>Le document de ton professeur : {0}</value></data>
 </root>

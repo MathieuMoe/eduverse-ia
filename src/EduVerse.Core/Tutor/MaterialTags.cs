@@ -99,6 +99,22 @@ public static class MaterialTags
     /// <summary>How much the labels of a document have to do with a question.</summary>
     public static int Score(Area? area, string? tags, string query, Area? wanted) =>
         Materials.Score(tags ?? "", query) + (area is { } a && a == wanted ? 1 : 0);
+
+    /// <summary>
+    /// How well a document matches a weak topic the Detective found: 0 when the document is not about the same subject (so it is never
+    /// suggested for the wrong reason), 1 plus one point per word the topic's name shares with the document's tags or title otherwise.
+    /// </summary>
+    public static int TopicMatch(Area? area, string? tags, string? title, Area caseArea, IReadOnlyList<string> topicWords)
+    {
+        ArgumentNullException.ThrowIfNull(topicWords);
+        if (area != caseArea)
+        {
+            return 0;
+        }
+
+        var hay = TextMeasure.Words((tags ?? "") + " " + (title ?? "")).Select(TextMeasure.Normalize).ToHashSet(StringComparer.Ordinal);
+        return 1 + topicWords.Select(TextMeasure.Normalize).Count(hay.Contains);
+    }
 }
 
 public static class MaterialTagPrompt

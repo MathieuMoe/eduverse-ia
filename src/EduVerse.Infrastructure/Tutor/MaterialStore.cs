@@ -1,5 +1,6 @@
 using EduVerse.Core.Catalog;
 using EduVerse.Core.Curriculum;
+using EduVerse.Core.Text;
 using EduVerse.Core.Tutor;
 using EduVerse.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -125,6 +126,22 @@ public sealed class MaterialStore(EduVerseDb db, TimeProvider clock)
         var documents = all.Where(m => m.Material.Target == target && (target == MaterialTarget.Course ? m.SubjectId == key || (wanted is not null && m.Material.Area == wanted) : m.Material.Key == key))
             .Select(m => (m.Material.Title, m.Material.Text, MaterialTags.Score(m.Material.Area, m.Material.Tags, query ?? "", wanted))).ToList();
         return Materials.ExcerptsWithLabels(documents, query, fallbackToStart: target == MaterialTarget.Figure);
+    }
+
+    /// <summary>
+    /// The teacher's own document (a course document, the one kind a classroom-wide weak topic can point to) that best matches a weak
+    /// topic the Detective found for this student, when the teacher has labelled one for the same subject; null otherwise. So the
+    /// remedy for a root cause can point first at what the student's own teacher gave them, not only at a generic explanation.
+    /// </summary>
+    public async Task<StudentMaterial?> ForTopicAsync(string studentId, Area area, string topicName, CancellationToken ct = default)
+    {
+        var words = TextMeasure.Words(topicName ?? "").ToList();
+        var all = await ForStudentAsync(studentId, ct).ConfigureAwait(false);
+        return all.Where(m => m.Material.Target == MaterialTarget.Course)
+            .Select(m => (Item: m, Score: MaterialTags.TopicMatch(m.Material.Area, m.Material.Tags, m.Material.Title, area, words)))
+            .Where(x => x.Score > 0)
+            .OrderByDescending(x => x.Score).ThenBy(x => x.Item.Material.Id)
+            .Select(x => x.Item).FirstOrDefault();
     }
 
     /// <summary>Marks a test as made from a document (so an assignment about that document can see it was done).</summary>
