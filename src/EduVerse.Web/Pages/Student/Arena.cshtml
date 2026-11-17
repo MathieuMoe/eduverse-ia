@@ -147,6 +147,31 @@
             <p class="mt-3 text-xs text-muted-foreground-1">@L["Arena_NicknameHint"]</p>
             <form method="post" asp-page-handler="Settings" class="mt-4 space-y-4">
                 <fieldset>
+                    <legend class="@Ui.Label">@L["Arena_ChooseAvatar"]</legend>
+                    <div class="grid grid-cols-6 gap-2" data-testid="avatar-picker">
+                        @foreach (var opt in Model.AnimalOptions)
+                        {
+                            <label class="flex items-center justify-center p-2 rounded-xl border border-layer-line cursor-pointer has-checked:bg-primary/10 has-checked:border-primary" title="@opt.Label">
+                                <input type="radio" name="animal" value="@opt.Index" checked="@(opt.Index == Model.CurrentAnimal)" class="sr-only" data-testid="avatar-option" />
+                                <span class="text-xl" aria-hidden="true">@opt.Emoji</span>
+                                <span class="sr-only">@opt.Label</span>
+                            </label>
+                        }
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend class="@Ui.Label">@L["Arena_ChooseNickname"]</legend>
+                    <div class="grid grid-cols-2 gap-2" data-testid="nickname-picker">
+                        @foreach (var opt in Model.WordOptions)
+                        {
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-layer-line cursor-pointer has-checked:bg-primary/10 has-checked:border-primary">
+                                <input type="radio" name="word" value="@opt.Index" checked="@(opt.Index == Model.CurrentWord)" class="sr-only" data-testid="nickname-option" />
+                                <span class="text-sm font-medium text-foreground">@opt.Label</span>
+                            </label>
+                        }
+                    </div>
+                </fieldset>
+                <fieldset>
                     <legend class="@Ui.Label">@L["Arena_MyTeam"]</legend>
                     <div class="grid grid-cols-2 gap-2">
                         @foreach (var t in Enum.GetValues<Team>())
@@ -163,10 +188,6 @@
                     <span><span class="block text-sm font-medium text-foreground">@L["Arena_Compete"]</span><span class="block text-xs text-muted-foreground-1">@L["Arena_CompeteHint"]</span></span>
                 </label>
                 <input type="hidden" name="compete" value="false" />
-                <label class="flex items-center gap-3">
-                    <input type="checkbox" name="newNickname" value="true" class="shrink-0 size-4 rounded border-layer-line text-primary" />
-                    <span class="text-sm text-foreground">@L["Arena_NewNickname"]</span>
-                </label>
                 <button type="submit" class="@Ui.BtnPrimary w-full">@L["Save"]</button>
             </form>
         </section>

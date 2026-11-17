@@ -819,6 +819,8 @@
   <data name="Arena_CompeteOff" xml:space="preserve"><value>La compétition est désactivée : active-la pour apparaître au classement et jouer des duels.</value></data>
   <data name="Arena_Nickname" xml:space="preserve"><value>Ton pseudo</value></data>
   <data name="Arena_NicknameHint" xml:space="preserve"><value>Tes camarades ne voient que ce pseudo et cet avatar.</value></data>
+  <data name="Arena_ChooseAvatar" xml:space="preserve"><value>Choisis ton avatar</value></data>
+  <data name="Arena_ChooseNickname" xml:space="preserve"><value>Choisis ton pseudo</value></data>
   <data name="Arena_MyTeam" xml:space="preserve"><value>Mon équipe</value></data>
   <data name="Arena_Compete" xml:space="preserve"><value>Participer aux classements et aux duels</value></data>
   <data name="Arena_CompeteHint" xml:space="preserve"><value>Désactivé : tu gardes tes XP et tes badges, mais tes camarades ne te voient pas.</value></data>
@@ -1047,10 +1049,14 @@
   <data name="Theme_Ocean" xml:space="preserve"><value>Océan</value></data>
   <data name="Theme_Jungle" xml:space="preserve"><value>Jungle</value></data>
   <data name="Theme_Castle" xml:space="preserve"><value>Château</value></data>
+  <data name="Theme_Dino" xml:space="preserve"><value>Vallée des dinosaures</value></data>
+  <data name="Theme_Circus" xml:space="preserve"><value>Cirque</value></data>
   <data name="ThemeHint_Space" xml:space="preserve"><value>Allume les balises et rentre à la maison</value></data>
   <data name="ThemeHint_Ocean" xml:space="preserve"><value>Rapporte les perles magiques au récif</value></data>
   <data name="ThemeHint_Jungle" xml:space="preserve"><value>Trouve le trésor du temple perdu</value></data>
   <data name="ThemeHint_Castle" xml:space="preserve"><value>Brise le sortilège de la bibliothèque</value></data>
+  <data name="ThemeHint_Dino" xml:space="preserve"><value>Récupère les œufs géants avant le coucher du soleil</value></data>
+  <data name="ThemeHint_Circus" xml:space="preserve"><value>Allume chaque numéro pour le grand spectacle</value></data>
   <data name="Badge_BossSlayer" xml:space="preserve"><value>Dompteur de gardiens</value></data>
   <data name="BadgeHint_BossSlayer" xml:space="preserve"><value>Gagne {0} aventure</value></data>
   <data name="Badge_Hero" xml:space="preserve"><value>Héros</value></data>

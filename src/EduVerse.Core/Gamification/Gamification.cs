@@ -242,8 +242,49 @@ public static class Nicknames
     public static (string Name, string Emoji) Generate(int seed, TeachLanguage language)
     {
         var rng = new Random(seed);
-        var a = Animals[rng.Next(Animals.Length)];
-        var w = Words[rng.Next(Words.Length)];
+        return Build(rng.Next(Animals.Length), rng.Next(Words.Length), language);
+    }
+
+    /// <summary>How many animal options <see cref="Build"/> and <see cref="AnimalLabel"/> accept (valid indexes: 0..AnimalCount-1).</summary>
+    public static int AnimalCount => Animals.Length;
+
+    /// <summary>How many word options <see cref="Build"/> and <see cref="WordLabel"/> accept (valid indexes: 0..WordCount-1).</summary>
+    public static int WordCount => Words.Length;
+
+    /// <summary>The emoji for an animal option, for rendering a picker.</summary>
+    public static string AnimalEmoji(int animal) => Animals[Clamp(animal, Animals.Length)].Emoji;
+
+    /// <summary>The localized label for an animal option, for rendering a picker.</summary>
+    public static string AnimalLabel(int animal, TeachLanguage language)
+    {
+        var a = Animals[Clamp(animal, Animals.Length)];
+        return language switch
+        {
+            TeachLanguage.Spanish => a.Es,
+            TeachLanguage.French => a.Fr,
+            TeachLanguage.Catalan => a.Ca,
+            _ => a.En,
+        };
+    }
+
+    /// <summary>The localized label for a word option, for rendering a picker.</summary>
+    public static string WordLabel(int word, TeachLanguage language)
+    {
+        var w = Words[Clamp(word, Words.Length)];
+        return language switch
+        {
+            TeachLanguage.Spanish => w.Es,
+            TeachLanguage.French => w.Fr,
+            TeachLanguage.Catalan => w.Ca,
+            _ => w.En,
+        };
+    }
+
+    /// <summary>Builds a nickname and avatar from an explicit animal/word choice (out-of-range indexes are clamped).</summary>
+    public static (string Name, string Emoji) Build(int animal, int word, TeachLanguage language)
+    {
+        var a = Animals[Clamp(animal, Animals.Length)];
+        var w = Words[Clamp(word, Words.Length)];
         var name = language switch
         {
             TeachLanguage.Spanish => $"{a.Es} {w.Es}",
@@ -253,6 +294,28 @@ public static class Nicknames
         };
         return (name, a.Emoji);
     }
+
+    /// <summary>Which animal option matches an existing avatar emoji, or -1 if none does (e.g. legacy data).</summary>
+    public static int AnimalIndexOf(string avatar)
+    {
+        for (var i = 0; i < Animals.Length; i++)
+        {
+            if (Animals[i].Emoji == avatar) return i;
+        }
+        return -1;
+    }
+
+    /// <summary>Which word option appears in an existing nickname for the given language, or -1 if none does.</summary>
+    public static int WordIndexOf(string nickname, TeachLanguage language)
+    {
+        for (var i = 0; i < Words.Length; i++)
+        {
+            if (nickname.Contains(WordLabel(i, language), StringComparison.OrdinalIgnoreCase)) return i;
+        }
+        return -1;
+    }
+
+    private static int Clamp(int index, int length) => index < 0 || index >= length ? 0 : index;
 }
 
 public enum Team

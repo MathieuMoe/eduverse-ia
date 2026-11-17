@@ -140,6 +140,8 @@ public static class IdeaRules
         (Theme.Ocean, "ocean;oceano;ocea;mar;mer;sea;submarino"),
         (Theme.Jungle, "jungle;jungla;selva;forest"),
         (Theme.Castle, "castle;castillo;chateau;castell;medieval"),
+        (Theme.Dino, "dino;dinosaur;dinosaurio;dinosaure;dinosauri;dinosaurios"),
+        (Theme.Circus, "circus;circo;cirque;circ;clown;payaso"),
     ];
 
     /// <summary>The name of what the platform already offers for this proposal, if any (then it is not saved).</summary>

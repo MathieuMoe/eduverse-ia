@@ -242,6 +242,17 @@ async function demo(page, role) {
     await page.goto(BASE + "/Student/Arena");
     check(await page.locator("[data-testid=leaderboard] ol li").count() === 4, "class ranking with nicknames");
     check(!(await page.locator("[data-testid=leaderboard]").textContent()).includes("Sara"), "real names are never shown in the ranking");
+
+    // A student can pick their own avatar and nickname (never free text: always one of the safe options).
+    const nicknameBefore = await page.locator("[data-testid=nickname]").textContent();
+    await page.locator('[data-testid=avatar-option][value="7"]').check({ force: true });
+    await page.locator('[data-testid=nickname-option][value="2"]').check({ force: true });
+    await page.click('[data-testid=arena-settings] button[type=submit]');
+    await page.locator("[data-testid=nickname]").waitFor();
+    const nicknameAfter = await page.locator("[data-testid=nickname]").textContent();
+    check(nicknameAfter !== nicknameBefore, "picking a new avatar and nickname changes what's shown");
+    check(await page.locator('[data-testid=avatar-option][value="7"]').isChecked(), "the picked avatar stays selected after saving");
+
     await page.screenshot({ path: join(DOCS, "screenshot-arena.png") });
     await page.click("[data-testid=play-duel]");
     for (let i = 0; i < 5; i++) {

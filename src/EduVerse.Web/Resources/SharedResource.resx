@@ -819,6 +819,8 @@
   <data name="Arena_CompeteOff" xml:space="preserve"><value>Competition is off: turn it on to appear in rankings and play duels.</value></data>
   <data name="Arena_Nickname" xml:space="preserve"><value>Your nickname</value></data>
   <data name="Arena_NicknameHint" xml:space="preserve"><value>Classmates only see this nickname and avatar.</value></data>
+  <data name="Arena_ChooseAvatar" xml:space="preserve"><value>Choose your avatar</value></data>
+  <data name="Arena_ChooseNickname" xml:space="preserve"><value>Choose your nickname</value></data>
   <data name="Arena_MyTeam" xml:space="preserve"><value>My team</value></data>
   <data name="Arena_Compete" xml:space="preserve"><value>Take part in rankings and duels</value></data>
   <data name="Arena_CompeteHint" xml:space="preserve"><value>Off: you keep your XP and badges, but classmates do not see you.</value></data>
@@ -1047,10 +1049,14 @@
   <data name="Theme_Ocean" xml:space="preserve"><value>Ocean</value></data>
   <data name="Theme_Jungle" xml:space="preserve"><value>Jungle</value></data>
   <data name="Theme_Castle" xml:space="preserve"><value>Castle</value></data>
+  <data name="Theme_Dino" xml:space="preserve"><value>Dino valley</value></data>
+  <data name="Theme_Circus" xml:space="preserve"><value>Circus</value></data>
   <data name="ThemeHint_Space" xml:space="preserve"><value>Light up the beacons and fly home</value></data>
   <data name="ThemeHint_Ocean" xml:space="preserve"><value>Bring the magic pearls back to the reef</value></data>
   <data name="ThemeHint_Jungle" xml:space="preserve"><value>Find the treasure of the lost temple</value></data>
   <data name="ThemeHint_Castle" xml:space="preserve"><value>Break the spell on the library</value></data>
+  <data name="ThemeHint_Dino" xml:space="preserve"><value>Gather the giant eggs before sunset</value></data>
+  <data name="ThemeHint_Circus" xml:space="preserve"><value>Light up every act for the big show</value></data>
   <data name="Badge_BossSlayer" xml:space="preserve"><value>Guardian tamer</value></data>
   <data name="BadgeHint_BossSlayer" xml:space="preserve"><value>Win {0} adventure</value></data>
   <data name="Badge_Hero" xml:space="preserve"><value>Hero</value></data>

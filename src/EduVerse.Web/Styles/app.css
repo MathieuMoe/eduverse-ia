@@ -264,7 +264,30 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
   @keyframes xp-pop { 0% { opacity: 0; transform: translateY(8px) scale(.9); } 20% { opacity: 1; transform: translateY(0) scale(1.05); } 100% { opacity: 0; transform: translateY(-24px); } }
   .mascot-bob { animation: mascot-bob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
   @keyframes mascot-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-2deg); } }
-  @media (prefers-reduced-motion: reduce) { .mascot-bob, .xp-pop { animation: none; } .xp-pop { opacity: 0; } }
+
+  /* Kid mode & Adventures: a more playful, game-app feel (floating decorations, bouncy hovers). */
+  .kid-float { animation: kid-float 4s ease-in-out infinite; }
+  @keyframes kid-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+  .kid-float-slow { animation: kid-float-slow 7s ease-in-out infinite; }
+  @keyframes kid-float-slow { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-16px) rotate(4deg); } }
+  .kid-spin-slow { animation: kid-spin 9s linear infinite; }
+  @keyframes kid-spin { to { transform: rotate(360deg); } }
+  .kid-bounce { animation: kid-bounce 1.6s ease-in-out infinite; }
+  @keyframes kid-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .kid-pulse { animation: kid-pulse 1.8s ease-in-out infinite; }
+  @keyframes kid-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+  .kid-pop { transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease; }
+  .kid-pop:hover, .kid-pop:focus-visible { transform: scale(1.07) rotate(-1.5deg); }
+  .kid-pop:active { transform: scale(.95); }
+  .kid-wiggle:hover .kid-wiggle-target, .kid-wiggle:focus-visible .kid-wiggle-target { animation: kid-wiggle .5s ease-in-out; }
+  @keyframes kid-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+  .kid-pop-in { animation: kid-pop-in .45s cubic-bezier(.34,1.56,.64,1) backwards; }
+  @keyframes kid-pop-in { 0% { opacity: 0; transform: scale(.7) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .mascot-bob, .xp-pop, .kid-float, .kid-float-slow, .kid-spin-slow, .kid-bounce, .kid-pulse, .kid-pop-in { animation: none; }
+    .kid-pop:hover, .kid-pop:focus-visible, .kid-wiggle:hover .kid-wiggle-target, .kid-wiggle:focus-visible .kid-wiggle-target { animation: none; transform: none; }
+    .xp-pop, .kid-pop-in { opacity: 1; }
+  }
 }
 
 /* Unlayered: must win over the utility classes of the buttons (state colours, kids sizes) */

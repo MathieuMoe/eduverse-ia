@@ -819,6 +819,8 @@
   <data name="Arena_CompeteOff" xml:space="preserve"><value>La competició està desactivada: activa-la per sortir a la classificació i jugar duels.</value></data>
   <data name="Arena_Nickname" xml:space="preserve"><value>El teu sobrenom</value></data>
   <data name="Arena_NicknameHint" xml:space="preserve"><value>Els companys només veuen aquest sobrenom i avatar.</value></data>
+  <data name="Arena_ChooseAvatar" xml:space="preserve"><value>Tria el teu avatar</value></data>
+  <data name="Arena_ChooseNickname" xml:space="preserve"><value>Tria el teu sobrenom</value></data>
   <data name="Arena_MyTeam" xml:space="preserve"><value>El meu equip</value></data>
   <data name="Arena_Compete" xml:space="preserve"><value>Participar en classificacions i duels</value></data>
   <data name="Arena_CompeteHint" xml:space="preserve"><value>Desactivat: conserves els XP i les insígnies, però els companys no et veuen.</value></data>
@@ -1047,10 +1049,14 @@
   <data name="Theme_Ocean" xml:space="preserve"><value>Oceà</value></data>
   <data name="Theme_Jungle" xml:space="preserve"><value>Selva</value></data>
   <data name="Theme_Castle" xml:space="preserve"><value>Castell</value></data>
+  <data name="Theme_Dino" xml:space="preserve"><value>Vall dels dinosaures</value></data>
+  <data name="Theme_Circus" xml:space="preserve"><value>Circ</value></data>
   <data name="ThemeHint_Space" xml:space="preserve"><value>Encén les balises i torna a casa</value></data>
   <data name="ThemeHint_Ocean" xml:space="preserve"><value>Torna les perles màgiques a l'escull</value></data>
   <data name="ThemeHint_Jungle" xml:space="preserve"><value>Troba el tresor del temple perdut</value></data>
   <data name="ThemeHint_Castle" xml:space="preserve"><value>Trenca l'encanteri de la biblioteca</value></data>
+  <data name="ThemeHint_Dino" xml:space="preserve"><value>Recull els ous gegants abans de la posta de sol</value></data>
+  <data name="ThemeHint_Circus" xml:space="preserve"><value>Encén cada número per al gran espectacle</value></data>
   <data name="Badge_BossSlayer" xml:space="preserve"><value>Domador de guardians</value></data>
   <data name="BadgeHint_BossSlayer" xml:space="preserve"><value>Guanya {0} aventura</value></data>
   <data name="Badge_Hero" xml:space="preserve"><value>Heroi</value></data>

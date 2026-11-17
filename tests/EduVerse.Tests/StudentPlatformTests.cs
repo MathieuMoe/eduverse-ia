@@ -187,6 +187,30 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
     }
 
     [Fact]
+    public async Task A_student_can_pick_their_own_nickname_and_avatar_from_the_safe_options()
+    {
+        using var scope = database.Services.CreateScope();
+        var game = scope.ServiceProvider.GetRequiredService<GamificationStore>();
+        var leo = await database.UserIdAsync("leo@eduverse.demo");
+        var before = await game.ProfileAsync(leo);
+
+        await game.SaveSettingsAsync(leo, before.Team, compete: before.Compete, newNickname: false, animal: 2, word: 5);
+
+        var after = await game.ProfileAsync(leo);
+        var (expectedName, expectedEmoji) = Nicknames.Build(2, 5, before.Language);
+        Assert.Equal(expectedEmoji, after.Avatar);
+        Assert.Equal(expectedName, after.Nickname);
+
+        // picking again with the same indexes doesn't drift: it rebuilds the exact same nickname/avatar.
+        await game.SaveSettingsAsync(leo, after.Team, compete: after.Compete, newNickname: false, animal: 2, word: 5);
+        var again = await game.ProfileAsync(leo);
+        Assert.Equal(expectedEmoji, again.Avatar);
+        Assert.Equal(expectedName, again.Nickname);
+
+        await game.SaveSettingsAsync(leo, before.Team, compete: before.Compete, newNickname: false, animal: Nicknames.AnimalIndexOf(before.Avatar), word: Nicknames.WordIndexOf(before.Nickname, before.Language));
+    }
+
+    [Fact]
     public async Task A_duel_gives_both_students_the_same_questions_and_a_winner()
     {
         using var scope = database.Services.CreateScope();

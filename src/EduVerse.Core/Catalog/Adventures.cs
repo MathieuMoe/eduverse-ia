@@ -11,6 +11,8 @@ public enum Theme
     Ocean,
     Jungle,
     Castle,
+    Dino,
+    Circus,
 }
 
 /// <summary>Progress of an adventure: doors passed, hearts left, health of the boss.</summary>
@@ -62,6 +64,8 @@ public static class Adventure
         Theme.Space => "🚀",
         Theme.Ocean => "🌊",
         Theme.Jungle => "🌴",
+        Theme.Dino => "🦕",
+        Theme.Circus => "🎪",
         _ => "🏰",
     };
 }
@@ -169,6 +173,34 @@ public static class DemoStories
                 T("Kiko yawns on the treasure: \"Answer my four riddles and I'll let you pass... after my nap.\"|Kiko bosteza sobre el tesoro: «Responde mis cuatro acertijos y te dejaré pasar... después de mi siesta.»|Kiko bâille sur le trésor : « Réponds à mes quatre énigmes et je te laisserai passer... après ma sieste. »|En Kiko badalla sobre el tresor: «Respon els meus quatre enigmes i et deixaré passar... després de la migdiada.»"),
                 T("Kiko purrs: \"Well done, explorer!\" The temple fills with golden light: the treasure is yours.|Kiko ronronea: «¡Bien hecho!» El templo se llena de luz dorada: el tesoro es tuyo.|Kiko ronronne : « Bravo ! » Le temple s'illumine d'or : le trésor est à toi.|En Kiko ronca: «Ben fet!» El temple s'omple de llum daurada: el tresor és teu."),
                 T("Night falls on the jungle. Kiko stretches: \"Rest at the camp and come back tomorrow!\"|Cae la noche en la selva. Kiko se estira: «¡Descansa en el campamento y vuelve mañana!»|La nuit tombe sur la jungle. Kiko s'étire : « Repose-toi au camp et reviens demain ! »|Cau la nit a la selva. En Kiko s'estira: «Descansa al campament i torna demà!»")),
+            Theme.Dino => new Story(
+                F("The valley of {0}|El valle de {0}|La vallée de {0}|La vall de {0}"),
+                F("Five giant eggs of {0} are scattered across the valley. Hop on your friendly triceratops and gather them before sunset!|Cinco huevos gigantes de {0} están repartidos por el valle. ¡Sube a tu triceratops amigo y recógelos antes del atardecer!|Cinq œufs géants de {0} sont éparpillés dans la vallée. Monte sur ton tricératops et récupère-les avant le coucher du soleil !|Cinc ous gegants de {0} estan escampats per la vall. Puja al teu tricèratops amic i recull-los abans de la posta de sol!"),
+                [
+                    T("A gentle brontosaurus lowers its long neck to show you the first egg.|Un dulce braquiosaurio baja su largo cuello para enseñarte el primer huevo.|Un gentil brachiosaure baisse son long cou pour te montrer le premier œuf.|Un dolç braquiosaure abaixa el coll llarg per ensenyar-te el primer ou."),
+                    T("Steam rises from a bubbling swamp: the second egg hides among the ferns.|Sale vapor de una ciénaga burbujeante: el segundo huevo se esconde entre los helechos.|De la vapeur monte d'un marécage bouillonnant : le deuxième œuf se cache parmi les fougères.|Surt vapor d'un aiguamoll que bull: el segon ou s'amaga entre les falgueres."),
+                    T("A pack of curious raptors chirps a riddle before letting you pass.|Una manada de raptores curiosos canturrea un acertijo antes de dejarte pasar.|Une bande de raptors curieux chantonne une énigme avant de te laisser passer.|Una manada de ràptors curiosos cantusseja un enigma abans de deixar-te passar."),
+                    T("You climb a rocky ridge where pterodactyls circle slowly overhead.|Subes por una cresta rocosa donde los pterodáctilos vuelan en círculos despacio.|Tu grimpes une crête rocheuse où des ptérodactyles tournent lentement au-dessus de toi.|Puges per una carena rocosa on els pterodàctils volten lentament per sobre teu."),
+                    T("The last egg glows warm beside a waterfall of volcanic steam.|El último huevo brilla cálido junto a una cascada de vapor volcánico.|Le dernier œuf brille doucement près d'une cascade de vapeur volcanique.|L'últim ou brilla càlid al costat d'una cascada de vapor volcànic."),
+                ],
+                T("Terra, the Gentle Triceratops|Terra, la triceratops bondadosa|Terra, la tricératops douce|Terra, la tricèratops bondadosa"),
+                T("Terra lowers her three horns, not to scare you, but to test you: \"Answer my four riddles and the eggs will hatch safely!\"|Terra baja sus tres cuernos, no para asustarte, sino para ponerte a prueba: «¡Responde mis cuatro acertijos y los huevos eclosionarán a salvo!»|Terra baisse ses trois cornes, non pas pour te faire peur, mais pour te tester : « Réponds à mes quatre énigmes et les œufs écloront en sécurité ! »|Terra abaixa les tres banyes, no per espantar-te, sinó per posar-te a prova: «Respon els meus quatre enigmes i els ous eclosionaran sans i estalvis!»"),
+                T("Terra stomps happily and the five eggs wobble, crack, and five tiny dinosaurs peek out!|Terra pisotea feliz y los cinco huevos tiemblan, se agrietan, ¡y asoman cinco dinosaurios diminutos!|Terra tape joyeusement des pieds et les cinq œufs tremblent, se fissurent, et cinq petits dinosaures pointent le nez !|Terra trepitja feliç i els cinc ous tremolen, s'esquerden, i hi treuen el cap cinc dinosaures diminuts!"),
+                T("Terra nuzzles you kindly: \"Even dinosaurs took millions of years. Rest and try again, little explorer!\"|Terra te da un suave empujón con el hocico: «Hasta los dinosaurios tardaron millones de años. ¡Descansa y vuelve a intentarlo!»|Terra te pousse doucement du museau : « Même les dinosaures ont mis des millions d'années. Repose-toi et réessaie, petit explorateur ! »|Terra et fa un cop suau amb el musell: «Fins i tot els dinosaures van trigar milions d'anys. Descansa i torna-ho a provar!»")),
+            Theme.Circus => new Story(
+                F("The Grand Circus of {0}|El Gran Circo de {0}|Le Grand Cirque de {0}|El Gran Circ de {0}"),
+                F("The circus lights have gone out! Five acts of {0} need your help to shine again before the show begins.|¡Las luces del circo se han apagado! Cinco números de {0} necesitan tu ayuda para brillar de nuevo antes de que empiece el show.|Les lumières du cirque se sont éteintes ! Cinq numéros de {0} ont besoin de ton aide pour briller de nouveau avant le spectacle.|Els llums del circ s'han apagat! Cinc números de {0} necessiten la teva ajuda per tornar a brillar abans que comenci l'espectacle."),
+                [
+                    T("A juggling seal balances a ball on its nose, waiting for your answer.|Una foca malabarista equilibra una pelota en la nariz, esperando tu respuesta.|Un phoque jongleur fait tenir une balle sur son nez, en attendant ta réponse.|Una foca malabarista equilibra una pilota al nas, esperant la teva resposta."),
+                    T("The tightrope walker wobbles above you: steady your mind before you answer.|La equilibrista en la cuerda floja se tambalea sobre ti: calma tu mente antes de responder.|Le funambule vacille au-dessus de toi : calme ton esprit avant de répondre.|La funambulista trontolla per sobre teu: calma la ment abans de respondre."),
+                    T("Three clowns pop out of a tiny car, each holding a clue.|Tres payasos salen de un coche diminuto, cada uno con una pista.|Trois clowns sortent d'une minuscule voiture, chacun tenant un indice.|Tres pallassos surten d'un cotxe diminut, cadascun amb una pista."),
+                    T("A kind lion yawns inside its ring, waiting politely for its cue.|Un león amable bosteza dentro de su pista, esperando educadamente su turno.|Un gentil lion bâille dans sa piste, attendant poliment son tour.|Un lleó amable badalla dins la seva pista, esperant educadament el seu torn."),
+                    T("The ringmaster's spotlight finds the last, brightest act of the night.|El foco del maestro de ceremonias encuentra el último y más brillante número de la noche.|Le projecteur du maître de piste trouve le dernier numéro, le plus éclatant de la soirée.|El focus del mestre de cerimònies troba l'últim número, el més brillant de la nit."),
+                ],
+                T("Max, the Juggling Ringmaster|Max, el maestro de ceremonias malabarista|Max, le maître de piste jongleur|Max, el mestre de cerimònies malabarista"),
+                T("Max juggles four glowing balls: \"Catch my four riddles, young performer, and the show goes on!\"|Max hace malabares con cuatro bolas brillantes: «¡Atrapa mis cuatro acertijos, joven artista, y el espectáculo continúa!»|Max jongle avec quatre balles lumineuses : « Attrape mes quatre énigmes, jeune artiste, et le spectacle continue ! »|Max fa malabars amb quatre boles brillants: «Atrapa els meus quatre enigmes, jove artista, i l'espectacle continua!»"),
+                T("Max tips his hat and every light switches on at once: the whole circus bursts into applause for you!|Max se quita el sombrero y todas las luces se encienden a la vez: ¡todo el circo te aplaude!|Max soulève son chapeau et toutes les lumières s'allument d'un coup : tout le cirque t'applaudit !|Max s'aixeca el barret i tots els llums s'encenen alhora: tot el circ t'aplaudeix!"),
+                T("Max winks and catches his balls anyway: \"Even the best jugglers drop a ball. Come back for the next show!\"|Max te guiña un ojo y atrapa sus bolas de todos modos: «Hasta los mejores malabaristas dejan caer alguna bola. ¡Vuelve al próximo show!»|Max te fait un clin d'œil et rattrape ses balles quand même : « Même les meilleurs jongleurs laissent tomber une balle. Reviens pour le prochain spectacle ! »|Max et fa l'ullet i atrapa les boles igualment: «Fins i tot els millors malabaristes deixen caure alguna bola. Torna al pròxim espectacle!»")),
             _ => new Story(
                 F("The castle of {0}|El castillo de {0}|Le château de {0}|El castell de {0}"),
                 F("The kingdom's library has been locked by a spell. Climb the five towers of {0} to break it!|La biblioteca del reino ha quedado cerrada por un hechizo. ¡Sube las cinco torres de {0} para romperlo!|La bibliothèque du royaume a été fermée par un sortilège. Gravis les cinq tours de {0} pour le briser !|La biblioteca del regne ha quedat tancada per un encanteri. Puja les cinc torres de {0} per trencar-lo!"),

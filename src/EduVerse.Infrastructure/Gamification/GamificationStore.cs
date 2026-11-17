@@ -110,12 +110,19 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
         return hash & 0x7fffffff;
     }
 
-    public async Task SaveSettingsAsync(string userId, Team team, bool compete, bool newNickname, CancellationToken ct = default)
+    /// <summary>Saves Arena settings. When <paramref name="animal"/> and <paramref name="word"/> are both given, the
+    /// student's own pick builds the nickname and avatar (see <see cref="Nicknames.Build"/>); otherwise, if
+    /// <paramref name="newNickname"/> is set, a random one is rolled instead; otherwise both are left unchanged.</summary>
+    public async Task SaveSettingsAsync(string userId, Team team, bool compete, bool newNickname, int? animal = null, int? word = null, CancellationToken ct = default)
     {
         var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
         profile.Team = Enum.IsDefined(team) ? team : profile.Team;
         profile.Compete = compete;
-        if (newNickname)
+        if (animal is >= 0 && word is >= 0)
+        {
+            (profile.Nickname, profile.Avatar) = Nicknames.Build(animal.Value, word.Value, profile.Language);
+        }
+        else if (newNickname)
         {
             (profile.Nickname, profile.Avatar) = Nicknames.Generate(StableSeed(userId + Now.Ticks), profile.Language);
         }

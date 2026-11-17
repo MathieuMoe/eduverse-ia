@@ -16,10 +16,18 @@
 }
 @if (Model.Kids)
 {
-    <!-- Kid home: no XP numbers, no rankings, no percentages — a mascot, one big next step, and subjects to play. -->
-    <div class="flex flex-col items-center text-center gap-4 py-2" data-testid="kid-greeting">
-        <partial name="_Mascot" model="@("size-28 shrink-0")" />
-        <p class="relative py-3 px-5 rounded-3xl tone-sun text-xl font-semibold text-foreground max-w-md" data-testid="mascot-bubble">@bubble</p>
+    <!-- Kid home: no XP numbers, no rankings, no percentages — a mascot, one big next step, and subjects to play,
+         dressed up as a game: floating decorations, bouncy hovers, a wiggle on every icon. -->
+    <div class="relative overflow-hidden rounded-[2rem]">
+        <span class="hidden sm:block absolute top-0 left-6 text-3xl kid-float-slow pointer-events-none" aria-hidden="true">🎈</span>
+        <span class="hidden sm:block absolute top-10 right-8 text-2xl kid-float pointer-events-none" aria-hidden="true">⭐</span>
+        <span class="hidden sm:block absolute top-2 right-32 text-3xl kid-spin-slow pointer-events-none" aria-hidden="true">🌟</span>
+        <span class="hidden sm:block absolute bottom-0 left-24 text-2xl kid-float pointer-events-none" aria-hidden="true">✨</span>
+
+        <div class="relative flex flex-col items-center text-center gap-4 py-2" data-testid="kid-greeting">
+            <span class="inline-block kid-float"><partial name="_Mascot" model="@("size-28 shrink-0")" /></span>
+            <p class="kid-pop-in relative py-3 px-5 rounded-3xl tone-sun text-xl font-semibold text-foreground max-w-md shadow-md" data-testid="mascot-bubble">@bubble</p>
+        </div>
     </div>
 
     @if (Model.Assignments.FirstOrDefault(a => !a.Status.Done) is { } firstPending)
@@ -28,8 +36,8 @@
         var writingTasks = EduVerse.Core.Tutor.Writing.Tasks(EduVerse.Web.Localization.LanguageForCurrentCulture());
         var name = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => EduVerse.Web.QuizEndpoints.TopicName(x.Topic, L), EduVerse.Infrastructure.Data.AssignmentKind.Writing => writingTasks.FirstOrDefault(t => t.Key == x.WritingKey)?.Title ?? x.WritingKey, _ => firstPending.MaterialTitle ?? "" };
         var url = x.Kind switch { EduVerse.Infrastructure.Data.AssignmentKind.Practice => $"/Student/Quiz?area={x.Area}&level={x.Level}&mode=Focus&topic={x.Topic}", EduVerse.Infrastructure.Data.AssignmentKind.Writing => $"/Student/Writing?task={x.WritingKey}", _ => $"/Student/Quiz?material={x.MaterialId}" };
-        <a href="@url" class="@Ui.Card p-5 tone-peach flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="kid-assignment">
-            <span class="size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🗓️</span>
+        <a href="@url" class="kid-pop kid-wiggle kid-pop-in @Ui.Card p-5 tone-peach flex items-center gap-4 shadow-md" data-testid="kid-assignment">
+            <span class="kid-wiggle-target size-14 shrink-0 rounded-2xl bg-white/70 dark:bg-white/10 grid place-items-center text-3xl" aria-hidden="true">🗓️</span>
             <span class="min-w-0 grow">
                 <span class="block text-lg font-semibold text-foreground">@L["KidHome_AssignmentTitle"]</span>
                 <span class="block text-sm text-foreground/70">@name</span>
@@ -41,14 +49,15 @@
     <div class="flex items-center justify-center gap-1.5" role="img" aria-label="@string.Format(culture, L["KidHome_StreakLabel"], g.Streak)" data-testid="kid-streak">
         @for (var i = 1; i <= 7; i++)
         {
-            <span class="text-3xl @(i <= Math.Min(g.Streak, 7) ? "" : "opacity-20 grayscale")" aria-hidden="true">⭐</span>
+            var earned = i <= Math.Min(g.Streak, 7);
+            <span class="text-3xl kid-pop-in @(earned ? "kid-pulse" : "opacity-20 grayscale")" style="animation-delay: @(i * 70)ms" aria-hidden="true">⭐</span>
         }
     </div>
 
     @if (Model.Focus is { } kidFocus)
     {
-        <a href="/Student/Learn?subject=@Uri.EscapeDataString(kidFocus.Subject.Key)" class="@Ui.Card p-5 tone-lavender flex items-center gap-4 hover:-translate-y-0.5 transition-transform" data-testid="kid-continue">
-            <partial name="_Mascot" model="@("size-14 shrink-0")" />
+        <a href="/Student/Learn?subject=@Uri.EscapeDataString(kidFocus.Subject.Key)" class="kid-pop kid-wiggle @Ui.Card p-5 tone-lavender flex items-center gap-4 shadow-md" data-testid="kid-continue">
+            <partial name="_Mascot" model="@("size-14 shrink-0 kid-wiggle-target")" />
             <span class="min-w-0 grow">
                 <span class="block text-lg font-semibold text-foreground">@L["Game_Continue"]</span>
                 <span class="block text-sm text-foreground/70">@kidFocus.Subject.Name</span>
@@ -59,11 +68,12 @@
 
     <h2 class="text-xl font-semibold text-foreground text-center mt-2">@L["KidHome_SubjectsTitle"]</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5" data-testid="kid-subjects">
+        @{ var si = 0; }
         @foreach (var s in Model.CatalogProgress)
         {
             var info = Catalog.Info(s.Area);
-            <a href="/Student/Quiz?area=@s.Area&level=@s.Level" class="@Ui.Card p-5 flex flex-col items-center gap-2 text-center hover:-translate-y-0.5 transition-transform tone-@info.Tone" data-testid="kid-subject-@s.Area">
-                <span class="size-16 text-4xl grid place-items-center" aria-hidden="true">@info.Icon</span>
+            <a href="/Student/Quiz?area=@s.Area&level=@s.Level" class="kid-pop kid-wiggle kid-pop-in @Ui.Card p-5 flex flex-col items-center gap-2 text-center tone-@info.Tone shadow-md" style="animation-delay: @(si++ * 70)ms" data-testid="kid-subject-@s.Area">
+                <span class="kid-wiggle-target size-16 text-4xl grid place-items-center" aria-hidden="true">@info.Icon</span>
                 <span class="text-lg font-semibold text-foreground">@L[$"Area_{s.Area}"]</span>
                 <span class="@Ui.BtnPrimary mt-1">▶ @L["Explore_Play"]</span>
             </a>
