@@ -131,6 +131,7 @@ app.MapTeaching();
 app.MapLearning();
 app.MapQuiz();
 app.MapTutor();
+app.MapTeacherCompanion();
 app.MapIdeas();
 app.MapLearner();
 app.MapPlan();

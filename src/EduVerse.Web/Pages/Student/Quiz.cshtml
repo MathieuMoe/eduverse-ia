@@ -39,9 +39,9 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <span class="@Ui.Pill tone-sun text-foreground py-1 px-3 text-sm" title="@L["Game_Xp"]"><span aria-hidden="true">⭐</span> <span id="qz-xp" data-testid="quiz-xp">0</span> XP</span>
-            <span class="@Ui.Pill tone-peach text-foreground py-1 px-3 text-sm" title="@L["Quiz_Run"]"><span aria-hidden="true">🔥</span> <span id="qz-run">0</span></span>
-            <button type="button" id="qz-speak" class="@Ui.IconBtn" aria-pressed="@(Model.Kids ? "true" : "false")" title="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔊</button>
+            <span class="@Ui.Pill tone-sun text-foreground py-1 px-3 text-sm tip tip-b" data-tip="@L["Game_Xp"]"><span aria-hidden="true">⭐</span> <span id="qz-xp" data-testid="quiz-xp">0</span> XP</span>
+            <span class="@Ui.Pill tone-peach text-foreground py-1 px-3 text-sm tip tip-b" data-tip="@L["Quiz_Run"]"><span aria-hidden="true">🔥</span> <span id="qz-run">0</span></span>
+            <button type="button" id="qz-speak" class="@Ui.IconBtn tip tip-b" aria-pressed="@(Model.Kids ? "true" : "false")" data-tip="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔊</button>
         </div>
     </div>
 

@@ -32,7 +32,7 @@
         <div class="mt-auto pt-4 flex -space-x-2">
             @foreach (var r in report.Rows.Take(6))
             {
-                <span class="size-8 grid place-items-center rounded-full ring-2 ring-white dark:ring-[#1f1b23] text-[11px] font-bold text-foreground @Ui.AvatarTone(r.Name)" title="@r.Name">@Ui.Initials(r.Name)</span>
+                <span class="size-8 grid place-items-center rounded-full ring-2 ring-white dark:ring-[#1f1b23] text-[11px] font-bold text-foreground @Ui.AvatarTone(r.Name) tip" data-tip="@r.Name" aria-label="@r.Name">@Ui.Initials(r.Name)</span>
             }
         </div>
     </div>
@@ -47,7 +47,7 @@
         <div class="mt-auto pt-4 flex items-end gap-1.5 h-16" role="img" aria-label="@L["Kpi_Progress"]">
             @foreach (var r in report.Rows)
             {
-                <div class="flex-1 max-w-7 rounded-lg overflow-hidden flex flex-col justify-end bar-hatch h-full" title="@r.Name: @r.Progress %"><div class="bar-solid rounded-lg" style="height:@(Math.Max(4, r.Progress))%"></div></div>
+                <div class="flex-1 max-w-7 rounded-lg overflow-hidden flex flex-col justify-end bar-hatch h-full tip" data-tip="@r.Name: @r.Progress %"><div class="bar-solid rounded-lg" style="height:@(Math.Max(4, r.Progress))%"></div></div>
             }
         </div>
     </div>
@@ -78,10 +78,10 @@
                         <th scope="col" class="py-2 px-4 text-start font-medium text-muted-foreground-1 sticky start-0 bg-card">@L["Heat_Student"]</th>
                         @foreach (var c in report.Concepts)
                         {
-                            <th scope="col" class="py-2 px-1 font-medium text-muted-foreground-1 text-xs min-w-16 max-w-24" title="@c.Name"><span class="line-clamp-2">@c.Name</span></th>
+                            <th scope="col" class="py-2 px-1 font-medium text-muted-foreground-1 text-xs min-w-16 max-w-24 tip" data-tip="@c.Name"><span class="line-clamp-2">@c.Name</span></th>
                         }
                         <th scope="col" class="py-2 px-4 text-end font-medium text-muted-foreground-1">@L["Heat_Progress"]</th>
-                        <th scope="col" class="py-2 px-4 text-end font-medium text-muted-foreground-1" title="@L["Heat_VerifiedHint"]">@L["Heat_Verified"]</th>
+                        <th scope="col" class="py-2 px-4 text-end font-medium text-muted-foreground-1 tip" data-tip="@L["Heat_VerifiedHint"]">@L["Heat_Verified"]</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-card-divider">
@@ -99,8 +99,8 @@
                             {
                                 var label = cell.PKnown is { } p && cell.Attempts > 0 ? $"{Math.Round(p * 100)}" : "·";
                                 <td class="p-1 text-center">
-                                    <span class="block py-2.5 rounded-xl text-sm font-semibold @Ui.HeatClass(cell.Attempts > 0 ? cell.PKnown : null)"
-                                          title="@ConceptName(cell.ConceptKey): @L[$"Status_{cell.Status}"] · @string.Format(culture, L["Heat_Attempts"], cell.Attempts)">@label</span>
+                                    <span class="block py-2.5 rounded-xl text-sm font-semibold @Ui.HeatClass(cell.Attempts > 0 ? cell.PKnown : null) tip"
+                                          data-tip="@ConceptName(cell.ConceptKey): @L[$"Status_{cell.Status}"] · @string.Format(culture, L["Heat_Attempts"], cell.Attempts)">@label</span>
                                 </td>
                             }
                             <td class="py-2 px-4 text-end text-foreground">@row.Progress %</td>
@@ -193,7 +193,7 @@
                             <span class="@Ui.Pill bg-surface text-foreground">@string.Format(culture, L["Panel_Mastered"], r.Mastered, report.Concepts.Count)</span>
                         </div>
                     </div>
-                    <a href="/Teacher/Class?id=@d.Classroom.Id&student=@r.StudentId#student" class="@Ui.IconBtn size-8" title="@string.Format(culture, L["History_Student"], r.Name)" aria-label="@string.Format(culture, L["History_Student"], r.Name)">
+                    <a href="/Teacher/Class?id=@d.Classroom.Id&student=@r.StudentId#student" class="@Ui.IconBtn size-8 tip" data-tip="@string.Format(culture, L["History_Student"], r.Name)" aria-label="@string.Format(culture, L["History_Student"], r.Name)">
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l4 2" /></svg>
                     </a>
                 </li>

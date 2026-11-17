@@ -29,6 +29,11 @@ public static class LearningPrompts
             b.AppendLine("Mistakes this student keeps making (address them explicitly): " + string.Join(", ", s.RecentMisconceptions));
         }
 
+        if (s.RecentQuizMistakes.Count > 0)
+        {
+            b.AppendLine("Recent mistakes in timed quizzes, maybe unrelated to this concept but worth keeping in mind: " + string.Join(" | ", s.RecentQuizMistakes));
+        }
+
         if (s.MethodsTried.Count > 1)
         {
             b.AppendLine("Explanation methods already tried without success: " + string.Join(", ", s.MethodsTried.SkipLast(1)) + ". Do it differently.");

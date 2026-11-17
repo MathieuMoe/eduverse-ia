@@ -53,7 +53,7 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
         return new StudentSnapshot(
             displayName, profile.Level, summary.Level, names.Rank(summary.Rank), summary.Streak, summary.PlayedToday, due, misconceptions, tests,
             weak.Select(w => new WeakTopic(w.Area, w.Level, w.Topic, names.Topic(w.Topic), names.Area(w.Area), (int)Math.Round(100 * w.PKnown))).ToList(),
-            recent.Select(r => new RecentTest(names.Area(r.Area), names.Mode(r.Mode), r.Correct, r.Length, DateOnly.FromDateTime(r.FinishedAt!.Value.UtcDateTime))).ToList(),
+            recent.Select(r => new RecentTest(names.Area(r.Area), names.Mode(r.Mode), r.Correct, r.Length, DateOnly.FromDateTime(r.FinishedAt!.Value.UtcDateTime), r.Topic is { } rt ? names.Topic(rt) : null)).ToList(),
             taught, interviews, page ?? "", title ?? "", evolution, await ideas.NewsAsync(userId, ct).ConfigureAwait(false), await learner.StatsAsync(userId, ct).ConfigureAwait(false), await PlanBriefAsync(userId, names, ct).ConfigureAwait(false));
     }
 

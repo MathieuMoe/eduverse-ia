@@ -35,7 +35,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <p class="text-xs text-muted-foreground-1" id="teach-round">@string.Format(culture, L["Teach_Round"], 1, TeachConcepts.MaxRounds)</p>
                     <div class="flex gap-2">
-                        <button type="button" id="teach-mic" class="@Ui.BtnLight" aria-pressed="false" title="@L["Voice_Dictate"]">🎤 <span class="max-sm:sr-only">@L["Voice_Dictate"]</span></button>
+                        <button type="button" id="teach-mic" class="@Ui.BtnLight tip" aria-pressed="false" data-tip="@L["Voice_Dictate"]">🎤 <span class="max-sm:sr-only">@L["Voice_Dictate"]</span></button>
                         <button type="submit" id="teach-send" class="@Ui.BtnPrimary" data-testid="teach-send">@L["Teach_Send"]</button>
                     </div>
                 </div>

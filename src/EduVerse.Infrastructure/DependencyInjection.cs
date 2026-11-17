@@ -60,6 +60,7 @@ public static class DependencyInjection
         services.AddScoped<LearningStore>();
         services.TryAddSingleton<Core.Curriculum.ICatalogNames, Core.Curriculum.KeyCatalogNames>();
         services.AddScoped<ClassroomStore>();
+        services.AddScoped<TeacherCompanionStore>();
         services.AddScoped<InstitutionStore>();
         services.AddScoped<MarketplaceStore>();
         services.AddScoped<Gamification.GamificationStore>();
@@ -75,6 +76,8 @@ public static class DependencyInjection
         services.AddScoped<Tutor.TeacherNoteStore>();
         services.AddScoped<Tutor.PipStore>();
         services.AddScoped<Tutor.DetectiveStore>();
+        services.AddScoped<Tutor.JourneyStore>();
+        services.AddScoped<Tutor.CuriosityStore>();
         services.AddScoped<Tutor.FadingStore>();
         services.AddScoped<Tutor.MaterialStore>();
         services.AddScoped<Tutor.WritingStore>();

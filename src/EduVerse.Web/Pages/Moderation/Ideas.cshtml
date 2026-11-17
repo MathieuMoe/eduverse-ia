@@ -77,7 +77,7 @@
                 {
                     <p class="text-2xl font-semibold text-foreground">⭐ @r.Stars.ToString("0.0", culture)</p>
                     <p class="text-xs text-muted-foreground-1">@string.Format(culture, L["Mod_RatingsCount"], r.Count) · @string.Format(culture, L["Mod_Fun"], 100 * r.Fun / r.Count)</p>
-                    <div class="mt-2 flex h-2 rounded-full overflow-hidden bg-layer" title="@L["Js_Felt_TooEasy"] @r.TooEasy · @L["Js_Felt_JustRight"] @r.JustRight · @L["Js_Felt_TooHard"] @r.TooHard">
+                    <div class="mt-2 flex h-2 rounded-full overflow-hidden bg-layer tip" data-tip="@L["Js_Felt_TooEasy"] @r.TooEasy · @L["Js_Felt_JustRight"] @r.JustRight · @L["Js_Felt_TooHard"] @r.TooHard">
                         <span class="bg-sky-400" style="width:@(100 * r.TooEasy / r.Count)%"></span><span class="bg-emerald-500" style="width:@(100 * r.JustRight / r.Count)%"></span><span class="bg-rose-500" style="width:@(100 * r.TooHard / r.Count)%"></span>
                     </div>
                     <p class="mt-1 text-[11px] text-muted-foreground-1">@L["Js_Felt_TooEasy"] @r.TooEasy · @L["Js_Felt_JustRight"] @r.JustRight · @L["Js_Felt_TooHard"] @r.TooHard</p>

@@ -1,11 +1,11 @@
-@model (Stage Stage, bool ForStudent)
+@model (Stage Stage, bool ForStudent, string? Topic)
 @* Subject from a topic: the AI proposes the concept map, the code validates it. Used by students and teachers. *@
 <section class="@Ui.Card" aria-labelledby="sb-title">
     <div class="@Ui.CardHeader"><h2 id="sb-title" class="text-base font-semibold text-foreground">@L["NewSubject_Form"]</h2></div>
     <form id="sb-form" class="p-4 md:p-5 space-y-4" data-student="@(Model.ForStudent ? "1" : "0")">
         <div class="grid sm:grid-cols-[1fr_14rem] gap-4">
             <div><label class="@Ui.Label" for="sb-topic">@L["NewSubject_Topic"]</label>
-                <input id="sb-topic" class="@Ui.Input" minlength="3" maxlength="200" required placeholder="@L["NewSubject_TopicPlaceholder"]" /></div>
+                <input id="sb-topic" class="@Ui.Input" minlength="3" maxlength="200" required placeholder="@L["NewSubject_TopicPlaceholder"]" value="@Model.Topic" /></div>
             <div><label class="@Ui.Label" for="sb-stage">@L["Field_Stage"]</label>
                 <select id="sb-stage" class="@Ui.Input">@foreach (var s in Enum.GetValues<Stage>()) { <option value="@s" selected="@(s == Model.Stage)">@L[$"Stage_{s}"]</option> }</select></div>
         </div>

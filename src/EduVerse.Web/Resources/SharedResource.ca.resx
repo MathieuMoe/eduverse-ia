@@ -1120,7 +1120,18 @@
   <data name="Companion_Placeholder" xml:space="preserve"><value>Pregunta alguna cosa al Tutor…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
   <data name="Companion_Privacy" xml:space="preserve"><value>El Tutor guarda aquesta conversa al teu compte per recordar-la; pots esborrar-la amb la paperera. Durant un test, el Tutor t'ajuda a pensar però mai no et dona la resposta.</value></data>
+  <data name="TeacherCompanion_Button" xml:space="preserve"><value>Assistent</value></data>
+  <data name="TeacherCompanion_Open" xml:space="preserve"><value>El teu assistent de classe: pregunta el que vulguis a qualsevol pàgina</value></data>
+  <data name="TeacherCompanion_Title" xml:space="preserve"><value>El teu assistent de classe</value></data>
+  <data name="TeacherCompanion_Subtitle" xml:space="preserve"><value>Coneix el seguiment de totes les teves classes i aquesta pàgina</value></data>
+  <data name="TeacherCompanion_QuickRisk" xml:space="preserve"><value>Qui necessita ajuda?</value></data>
+  <data name="TeacherCompanion_QuickProgress" xml:space="preserve"><value>Com van les meves classes?</value></data>
+  <data name="TeacherCompanion_QuickReteach" xml:space="preserve"><value>Què hauria de repassar?</value></data>
+  <data name="TeacherCompanion_Placeholder" xml:space="preserve"><value>Pregunta a l'assistent el que vulguis…</value></data>
+  <data name="TeacherCompanion_Privacy" xml:space="preserve"><value>L'assistent guarda aquesta conversa al teu compte per recordar-la; la pots esborrar amb la paperera. Només usa el que la plataforma ja et mostra de les teves classes.</value></data>
   <data name="Js_ClearConfirm" xml:space="preserve"><value>Prem un altre cop la paperera per esborrar tota la conversa.</value></data>
+  <data name="Js_PracticeNudgeSent" xml:space="preserve"><value>Fet: ja té al seu tauler una nota per practicar-ho.</value></data>
+  <data name="Js_PracticeNudgeFull" xml:space="preserve"><value>Ja té el màxim de notes teves que pot guardar alhora.</value></data>
   <data name="Dossier_Title" xml:space="preserve"><value>Dossier</value></data>
   <data name="Dossier_Discovery" xml:space="preserve"><value>El que va descobrir o fer</value></data>
   <data name="Dossier_Read" xml:space="preserve"><value>Escoltar</value></data>
@@ -1563,4 +1574,19 @@
   <data name="LabelledBy_teacher" xml:space="preserve"><value>corregit per tu</value></data>
   <data name="LabelledBy_Ai" xml:space="preserve"><value>etiquetat per {0}</value></data>
   <data name="Detective_Material" xml:space="preserve"><value>El material del teu professor: {0}</value></data>
+  <data name="Nav_Journey" xml:space="preserve"><value>El meu camí</value></data>
+  <data name="Journey_Subtitle" xml:space="preserve"><value>La teva pròpia evolució explicada com una història, no com un tauler de xifres — feta només amb el que ja has aconseguit.</value></data>
+  <data name="Journey_Empty" xml:space="preserve"><value>Encara estic coneixent el teu camí. Continua estudiant, defensa una resposta, explica-li alguna cosa a l'Evo — i les teves fites començaran a aparèixer aquí.</value></data>
+  <data name="Curiosity_Title" xml:space="preserve"><value>El que vull saber</value></data>
+  <data name="Curiosity_Subtitle" xml:space="preserve"><value>Coses que et preguntes, amb les teves pròpies paraules. No es qualifica — és només un fil al qual tornar quan vulguis.</value></data>
+  <data name="Curiosity_Placeholder" xml:space="preserve"><value>Ex.: Per què el cel es torna vermell a la posta de sol?</value></data>
+  <data name="Curiosity_Add" xml:space="preserve"><value>Afegeix</value></data>
+  <data name="Curiosity_Explore" xml:space="preserve"><value>Explorar-ho</value></data>
+  <data name="Curiosity_Dismiss" xml:space="preserve"><value>Treure aquesta pregunta</value></data>
+  <data name="Curiosity_Empty" xml:space="preserve"><value>Encara no hi ha res aquí. Què t'has estat preguntant últimament?</value></data>
+  <data name="Notice_Curiosity_Added" xml:space="preserve"><value>Afegida a les teves preguntes.</value></data>
+  <data name="Notice_Curiosity_TooShort" xml:space="preserve"><value>Escriu una mica més perquè entengui la teva pregunta.</value></data>
+  <data name="Notice_Curiosity_TooLong" xml:space="preserve"><value>És una mica llarga. Pots escurçar-la?</value></data>
+  <data name="Notice_Curiosity_NotAllowed" xml:space="preserve"><value>No puc afegir aquesta. Intenta preguntar-ho d'una altra manera.</value></data>
+  <data name="Notice_Curiosity_Limit" xml:space="preserve"><value>Ja tens prou preguntes esperant. Explora o treu-ne una primer.</value></data>
 </root>

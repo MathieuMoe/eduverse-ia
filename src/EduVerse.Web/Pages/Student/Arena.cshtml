@@ -48,7 +48,7 @@
                                 <span class="w-6 text-center text-sm font-bold @(s.Me ? "text-white" : "text-foreground")">@(s.Position switch { 1 => "🥇", 2 => "🥈", 3 => "🥉", _ => s.Position.ToString(culture) })</span>
                                 <span class="text-xl" aria-hidden="true">@s.Avatar</span>
                                 <span class="grow min-w-0 truncate text-sm font-medium @(s.Me ? "text-white" : "text-foreground")">@s.Nickname@(s.Me ? " · " + L["Arena_You"] : "")</span>
-                                <span class="text-xs @(s.Me ? "text-white/80" : "text-muted-foreground-1")" title="@L[$"Team_{s.Team}"]">@Teams.Emoji(s.Team)</span>
+                                <span class="text-xs @(s.Me ? "text-white/80" : "text-muted-foreground-1") tip" data-tip="@L[$"Team_{s.Team}"]" aria-label="@L[$"Team_{s.Team}"]">@Teams.Emoji(s.Team)</span>
                                 <span class="text-sm font-semibold @(s.Me ? "text-white" : "text-foreground") tabular-nums">@s.Xp XP</span>
                             </li>
                         }

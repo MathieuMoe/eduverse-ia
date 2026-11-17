@@ -5,7 +5,7 @@
     var kind = Model.ToString();
 }
 <div class="hs-dropdown [--placement:bottom-right] [--auto-close:outside] relative inline-flex" data-ideas="@kind" data-testid="ideas-@kind" id="ideas">
-    <button type="button" class="hs-dropdown-toggle @Ui.IconBtn" aria-haspopup="dialog" aria-expanded="false" aria-label="@L[$"Ideas_Title_{kind}"]" title="@L[$"Ideas_Title_{kind}"]" data-testid="ideas-toggle-@kind">
+    <button type="button" class="hs-dropdown-toggle @Ui.IconBtn tip" aria-haspopup="dialog" aria-expanded="false" aria-label="@L[$"Ideas_Title_{kind}"]" data-tip="@L[$"Ideas_Title_{kind}"]" data-testid="ideas-toggle-@kind">
         <span aria-hidden="true">💡</span>
     </button>
     <div class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden w-[min(92vw,26rem)] z-50 bg-dropdown border border-layer-line shadow-xl rounded-2xl p-4 md:p-5" role="dialog" aria-label="@L[$"Ideas_Title_{kind}"]" data-testid="ideas-menu-@kind">

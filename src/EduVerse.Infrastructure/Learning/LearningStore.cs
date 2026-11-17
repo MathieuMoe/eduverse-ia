@@ -157,6 +157,12 @@ public sealed class LearningStore(EduVerseDb db, TimeProvider clock, ICatalogNam
         return new StudentContext(profile.Stage, language, mistakes, state.PKnown, state.MethodsTried) { Interests = EduVerse.Core.Tutor.Interests.Parse(profile.Interests) };
     }
 
+    /// <summary>The student's most recent wrong answers in timed quizzes, topic + explanation, for the tutor's context.</summary>
+    public async Task<IReadOnlyList<string>> RecentQuizMistakesAsync(string userId, CancellationToken ct = default) =>
+        await db.QuizAnswers.AsNoTracking().Where(a => a.UserId == userId && !a.Correct)
+            .OrderByDescending(a => a.At).Take(ContextMisconceptions)
+            .Select(a => a.Topic + ": " + a.Explanation).ToListAsync(ct).ConfigureAwait(false);
+
     // ---------- Mastery ----------
     public async Task<Dictionary<string, MasteryState>> StatesAsync(string userId, string subjectId, CancellationToken ct = default)
     {

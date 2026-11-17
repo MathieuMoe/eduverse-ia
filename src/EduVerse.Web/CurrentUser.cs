@@ -33,6 +33,9 @@ public static class CurrentUser
 
     public static bool IsTutor(this ClaimsPrincipal user) => user?.IsInRole(Roles.Tutor) == true;
 
+    /// <summary>True for a student young enough for kids mode (see <see cref="EduVerse.Core.Catalog.Levels.IsKids"/>). Baked into the sign-in cookie at login.</summary>
+    public static bool IsKid(this ClaimsPrincipal user) => user?.FindFirstValue(AppClaimsFactory.KidClaim) == "1";
+
     /// <summary>Where a signed-in user lands: the space of the role.</summary>
     public static string Home(this ClaimsPrincipal user) =>
         user.IsDirector() ? "/Institution" : user.IsTutor() ? "/Tutor" : user.IsTeacher() ? "/Teacher" : user.IsStudent() ? "/Student" : "/";

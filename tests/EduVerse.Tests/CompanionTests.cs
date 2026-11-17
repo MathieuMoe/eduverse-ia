@@ -62,6 +62,25 @@ public class CompanionRuleTests
         Assert.StartsWith("Salut Sara !", Companion.Greeting(s, TeachLanguage.French), StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("Dime por qué seguir y lo que acabo de hacer")]
+    [InlineData("¿Vale la pena seguir?")]
+    [InlineData("Tell me why continue and what I just did")]
+    public void Offline_evo_explains_why_to_continue_and_names_the_last_test(string message)
+    {
+        var s = Snapshot() with { Recent = [new RecentTest("Language", "AI topic", 9, 10, new DateOnly(2026, 11, 17), Topic: "Filosofía")] };
+        var reply = Companion.Demo(s, Companion.Suggest(s, TeachLanguage.Spanish), message, TeachLanguage.Spanish);
+        Assert.Contains("Filosofía", reply.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("motor de IA", reply.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_recent_test_is_named_by_its_topic_when_it_has_one()
+    {
+        Assert.Equal("Filosofía", new RecentTest("Language", "AI topic", 9, 10, new DateOnly(2026, 11, 17), Topic: "Filosofía").Name);
+        Assert.Equal("Mathematics", new RecentTest("Mathematics", "Practice", 7, 10, new DateOnly(2026, 11, 15)).Name);
+    }
+
     [Fact]
     public void The_tutor_knows_how_the_student_is_evolving()
     {

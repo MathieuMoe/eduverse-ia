@@ -971,3 +971,33 @@ public sealed class DefenceResult
 
     public bool Verified => State == DefenceState.Done && Transfer && Reasoned;
 }
+
+/// <summary>Life of something a student wonders about: open (waiting its turn), explored (the student went to learn about it), or
+/// dismissed (the student said no thanks).</summary>
+public enum CuriosityStatus
+{
+    Open,
+    Explored,
+    Dismissed,
+}
+
+/// <summary>Something a student wonders about, in their own words — a thread to come back to, not a graded task.</summary>
+public sealed class CuriosityQuestion
+{
+    public int Id { get; set; }
+
+    public string UserId { get; set; } = "";
+
+    public string Text { get; set; } = "";
+
+    public CuriosityStatus Status { get; set; }
+
+    public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>Last time this question was one of the few shown on the dashboard (null: never shown yet).</summary>
+    public DateTimeOffset? LastSurfacedAt { get; set; }
+
+    public int TimesSurfaced { get; set; }
+
+    public DateTimeOffset? ResolvedAt { get; set; }
+}

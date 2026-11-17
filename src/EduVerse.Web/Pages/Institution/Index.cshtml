@@ -13,7 +13,7 @@
         <h1 class="text-3xl font-semibold tracking-tight text-foreground" data-greeting="@User.DisplayName()">@string.Format(culture, L["Teacher_Hello"], User.DisplayName())</h1>
         <p class="mt-1 text-sm text-muted-foreground-1">@d.Institution.Name · @L["Institution_Subtitle"]</p>
     </div>
-    <div class="flex items-center gap-2 p-1.5 ps-4 rounded-full border border-layer-line bg-layer" title="@L["Institution_CodeHint"]">
+    <div class="flex items-center gap-2 p-1.5 ps-4 rounded-full border border-layer-line bg-layer tip tip-b" data-tip="@L["Institution_CodeHint"]">
         <span class="text-xs text-muted-foreground-1">@L["Institution_TeacherCode"]</span>
         <span class="font-mono text-lg font-semibold tracking-widest text-foreground" data-testid="institution-code">@d.Institution.Code</span>
         <button type="button" data-copy-text="@d.Institution.Code" class="py-1.5 px-3 text-xs font-semibold rounded-full bg-primary text-primary-foreground hover:bg-primary-hover">@L["Copy"]</button>
@@ -37,7 +37,7 @@
         <div class="mt-auto pt-4 flex items-end gap-1.5 h-16" role="img" aria-label="@L["Kpi_Progress"]">
             @foreach (var c in d.Classes)
             {
-                <div class="flex-1 max-w-10 rounded-lg overflow-hidden flex flex-col justify-end bar-hatch h-full" title="@c.Name: @c.Progress %"><div class="bar-solid rounded-lg" style="height:@(Math.Max(4, c.Progress))%"></div></div>
+                <div class="flex-1 max-w-10 rounded-lg overflow-hidden flex flex-col justify-end bar-hatch h-full tip" data-tip="@c.Name: @c.Progress %"><div class="bar-solid rounded-lg" style="height:@(Math.Max(4, c.Progress))%"></div></div>
             }
         </div>
     </div>

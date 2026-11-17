@@ -51,7 +51,7 @@ public static class LearningEndpoints
             }
 
             preferred = preferred || (state.Attempts == 0 && !stats.Hidden.Contains("method") && Core.Tutor.LearnerProfile.BestMethod(stats) == state.Method);
-            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture()) with { Learner = Core.Tutor.LearnerProfile.ForPrompt(stats), TeacherNotes = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.TeacherNoteStore>().ForStudentAsync(context.User.Id(), context.RequestAborted), Material = Core.Tutor.Materials.ForPrompt(await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(context.User.Id(), Core.Tutor.MaterialTarget.Course, subject.Key, concept.Name, context.RequestAborted)) };
+            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture()) with { Learner = Core.Tutor.LearnerProfile.ForPrompt(stats), TeacherNotes = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.TeacherNoteStore>().ForStudentAsync(context.User.Id(), context.RequestAborted), Material = Core.Tutor.Materials.ForPrompt(await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(context.User.Id(), Core.Tutor.MaterialTarget.Course, subject.Key, concept.Name, context.RequestAborted)), RecentQuizMistakes = await store.RecentQuizMistakesAsync(context.User.Id(), context.RequestAborted) };
             return await AiRunner.GuardAsync(async () =>
             {
                 var run = await AiRunner.RunAsync(context, engines, logger,
@@ -242,7 +242,7 @@ public static class LearningEndpoints
             await store.AddChatAsync(userId, subject.Key, concept.Key, true, message, context.RequestAborted);
             var history = (await store.ChatAsync(userId, subject.Key, concept.Key, context.RequestAborted)).Select(m => new ChatTurn(m.FromStudent, m.Text)).ToList();
             var state = await store.StateAsync(userId, subject.Key, concept.Key, context.RequestAborted);
-            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture()) with { Learner = Core.Tutor.LearnerProfile.ForPrompt(await learner.StatsAsync(userId, context.RequestAborted)), TeacherNotes = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.TeacherNoteStore>().ForStudentAsync(userId, context.RequestAborted), Material = Core.Tutor.Materials.ForPrompt(await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(userId, Core.Tutor.MaterialTarget.Course, subject.Key, concept.Name + " " + message, context.RequestAborted)) };
+            var student = LearningStore.Context(profile, state, Localization.LanguageForCurrentCulture()) with { Learner = Core.Tutor.LearnerProfile.ForPrompt(await learner.StatsAsync(userId, context.RequestAborted)), TeacherNotes = await context.RequestServices.GetRequiredService<Infrastructure.Tutor.TeacherNoteStore>().ForStudentAsync(userId, context.RequestAborted), Material = Core.Tutor.Materials.ForPrompt(await context.RequestServices.GetRequiredService<Infrastructure.Tutor.MaterialStore>().ExcerptsAsync(userId, Core.Tutor.MaterialTarget.Course, subject.Key, concept.Name + " " + message, context.RequestAborted)), RecentQuizMistakes = await store.RecentQuizMistakesAsync(userId, context.RequestAborted) };
             return await AiRunner.GuardAsync(async () =>
             {
                 var run = await AiRunner.RunAsync(context, engines, logger,

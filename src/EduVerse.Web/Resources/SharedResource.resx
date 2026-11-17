@@ -1120,7 +1120,18 @@
   <data name="Companion_Placeholder" xml:space="preserve"><value>Ask the Tutor anything…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Send</value></data>
   <data name="Companion_Privacy" xml:space="preserve"><value>The Tutor keeps this conversation in your account to remember it; you can delete it with the bin. During a test the Tutor helps you think but never gives the answer.</value></data>
+  <data name="TeacherCompanion_Button" xml:space="preserve"><value>Assistant</value></data>
+  <data name="TeacherCompanion_Open" xml:space="preserve"><value>Your class assistant: ask anything on any page</value></data>
+  <data name="TeacherCompanion_Title" xml:space="preserve"><value>Your class assistant</value></data>
+  <data name="TeacherCompanion_Subtitle" xml:space="preserve"><value>Knows the follow-up of every one of your classes and this page</value></data>
+  <data name="TeacherCompanion_QuickRisk" xml:space="preserve"><value>Who needs help?</value></data>
+  <data name="TeacherCompanion_QuickProgress" xml:space="preserve"><value>How are my classes going?</value></data>
+  <data name="TeacherCompanion_QuickReteach" xml:space="preserve"><value>What should I reteach?</value></data>
+  <data name="TeacherCompanion_Placeholder" xml:space="preserve"><value>Ask the assistant anything…</value></data>
+  <data name="TeacherCompanion_Privacy" xml:space="preserve"><value>The assistant keeps this conversation in your account to remember it; you can delete it with the bin. It only uses what the platform already shows you about your classes.</value></data>
   <data name="Js_ClearConfirm" xml:space="preserve"><value>Press the bin again to delete the whole conversation.</value></data>
+  <data name="Js_PracticeNudgeSent" xml:space="preserve"><value>Done: a short note to practise it is now on their dashboard.</value></data>
+  <data name="Js_PracticeNudgeFull" xml:space="preserve"><value>They already have as many notes from you as they can keep at once.</value></data>
   <data name="Dossier_Title" xml:space="preserve"><value>Dossier</value></data>
   <data name="Dossier_Discovery" xml:space="preserve"><value>What they discovered or did</value></data>
   <data name="Dossier_Read" xml:space="preserve"><value>Listen</value></data>
@@ -1563,4 +1574,19 @@
   <data name="LabelledBy_teacher" xml:space="preserve"><value>corrected by you</value></data>
   <data name="LabelledBy_Ai" xml:space="preserve"><value>labelled by {0}</value></data>
   <data name="Detective_Material" xml:space="preserve"><value>Your teacher's own document: {0}</value></data>
+  <data name="Nav_Journey" xml:space="preserve"><value>My path</value></data>
+  <data name="Journey_Subtitle" xml:space="preserve"><value>Your own evolution told as a story, not a dashboard — made only from what you have already achieved.</value></data>
+  <data name="Journey_Empty" xml:space="preserve"><value>I am still getting to know your path. Keep studying, defend an answer, explain something to Evo — and your milestones will start to appear here.</value></data>
+  <data name="Curiosity_Title" xml:space="preserve"><value>What I want to know</value></data>
+  <data name="Curiosity_Subtitle" xml:space="preserve"><value>Things you wonder about, in your own words. Not graded — just a thread to come back to whenever you like.</value></data>
+  <data name="Curiosity_Placeholder" xml:space="preserve"><value>E.g. Why is the sky blue at sunset?</value></data>
+  <data name="Curiosity_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Curiosity_Explore" xml:space="preserve"><value>Explore it</value></data>
+  <data name="Curiosity_Dismiss" xml:space="preserve"><value>Remove this question</value></data>
+  <data name="Curiosity_Empty" xml:space="preserve"><value>Nothing here yet. What have you been wondering about lately?</value></data>
+  <data name="Notice_Curiosity_Added" xml:space="preserve"><value>Added to your questions.</value></data>
+  <data name="Notice_Curiosity_TooShort" xml:space="preserve"><value>Write a little more so I understand your question.</value></data>
+  <data name="Notice_Curiosity_TooLong" xml:space="preserve"><value>That's a bit long. Can you make it shorter?</value></data>
+  <data name="Notice_Curiosity_NotAllowed" xml:space="preserve"><value>I can't add that one. Try asking it a different way.</value></data>
+  <data name="Notice_Curiosity_Limit" xml:space="preserve"><value>You already have plenty of questions waiting. Explore or remove one first.</value></data>
 </root>

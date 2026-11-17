@@ -49,7 +49,7 @@
                     @if (b.CanCancel)
                     {
                         <form method="post" asp-page-handler="Cancel" asp-route-id="@b.Booking.Id">
-                            <button type="submit" class="@Ui.BtnLight" title="@(b.Status == BookingStatus.Pending ? "" : b.RefundIfCancelled ? L["Bookings_RefundYes"] : L["Bookings_RefundNo"])">@L["Bookings_Cancel"]</button>
+                            <button type="submit" class="@Ui.BtnLight @(b.Status == BookingStatus.Pending ? "" : "tip")" data-tip="@(b.Status == BookingStatus.Pending ? "" : b.RefundIfCancelled ? L["Bookings_RefundYes"] : L["Bookings_RefundNo"])">@L["Bookings_Cancel"]</button>
                         </form>
                     }
                 </div>

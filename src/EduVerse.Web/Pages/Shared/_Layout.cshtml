@@ -8,11 +8,21 @@
         L.GetAllStrings().Where(s => s.Name.StartsWith("Js_", StringComparison.Ordinal)).ToDictionary(s => s.Name[3..], s => s.Value));
     var user = Context.User;
     var signedIn = user.Identity?.IsAuthenticated == true;
+    var isTeacherCompanion = user.IsTeacher();
     var displayName = signedIn ? user.DisplayName() : "";
     string Svg(string paths, string size = "size-[18px]") => $"<svg class=\"shrink-0 {size}\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">{paths}</svg>";
 
     var nav = new List<(string Page, string Href, string Label, string Icon)>();
-    if (user.IsStudent())
+    if (user.IsStudent() && user.IsKid())
+    {
+        // A young child (EarlyYears/Primary1) gets 3 stops, not the 19-item menu built for an older student
+        // managing their own study plan: the rest (Teach, Interview, Writing, a marketplace of tutors...) means
+        // nothing at that age and is simply not offered, rather than shown and disabled.
+        nav.Add(("/Student/Index", "/Student", L["Nav_StudentHome"], "<path d=\"m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><path d=\"M9 22V12h6v10\"/>"));
+        nav.Add(("/Student/Explore", "/Student/Explore", L["Nav_Explore"], "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z\"/>"));
+        nav.Add(("/Student/Achievements", "/Student/Achievements", L["Nav_Achievements"], "<circle cx=\"12\" cy=\"8\" r=\"6\"/><path d=\"M15.48 12.89 17 22l-5-3-5 3 1.52-9.11\"/>"));
+    }
+    else if (user.IsStudent())
     {
         nav.Add(("/Student/Index", "/Student", L["Nav_StudentHome"], "<path d=\"m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><path d=\"M9 22V12h6v10\"/>"));
         nav.Add(("/Student/Explore", "/Student/Explore", L["Nav_Explore"], "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z\"/>"));
@@ -24,6 +34,7 @@
         nav.Add(("/Student/History", "/Student/History", L["Nav_History"], "<path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5M12 7v5l4 2\"/>"));
         nav.Add(("/Student/Achievements", "/Student/Achievements", L["Nav_Achievements"], "<circle cx=\"12\" cy=\"8\" r=\"6\"/><path d=\"M15.48 12.89 17 22l-5-3-5 3 1.52-9.11\"/>"));
         nav.Add(("/Student/Learner", "/Student/Learner", L["Nav_Learner"], "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-1.8 5.4a2 2 0 0 1-1.27 1.27l-5.4 1.8 1.8-5.4a2 2 0 0 1 1.27-1.27z\"/>"));
+        nav.Add(("/Student/Journey", "/Student/Journey", L["Nav_Journey"], "<circle cx=\"12\" cy=\"12\" r=\"10\"/><polygon points=\"16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88\"/>"));
         nav.Add(("/Student/Plan", "/Student/Plan", L["Nav_Plan"], "<circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>"));
         nav.Add(("/Student/Homework", "/Student/Homework", L["Nav_Homework"], "<path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"/><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"/>"));
         nav.Add(("/Student/Pip", "/Student/Pip", L["Nav_Pip"], "<path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"/><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"/>"));
@@ -118,7 +129,7 @@
                 <button type="button" class="lg:hidden @Ui.IconBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-application-sidebar" aria-label="@L["Nav_OpenMenu"]" data-hs-overlay="#hs-application-sidebar">
                     @Html.Raw(Svg("<line x1=\"4\" x2=\"20\" y1=\"6\" y2=\"6\"/><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/><line x1=\"4\" x2=\"20\" y1=\"18\" y2=\"18\"/>", "size-4"))
                 </button>
-                <button type="button" class="max-lg:hidden! @Ui.IconBtn" data-ui-toggle="sidebar" aria-label="@L["Nav_ToggleSidebar"]" title="@L["Nav_ToggleSidebar"] ( [ )">
+                <button type="button" class="max-lg:hidden! @Ui.IconBtn tip tip-b" data-ui-toggle="sidebar" aria-label="@L["Nav_ToggleSidebar"]" data-tip="@L["Nav_ToggleSidebar"] ( [ )">
                     @Html.Raw(Svg("<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"3\"/><path d=\"M9 3v18\"/><path class=\"sb-collapsed:hidden\" d=\"m16 15-3-3 3-3\"/><path class=\"hidden sb-collapsed:inline\" d=\"m14 9 3 3-3 3\"/>", "size-4"))
                 </button>
                 <div class="min-w-0 ps-1">
@@ -137,20 +148,20 @@
             <div class="flex items-center gap-x-1 sm:gap-x-2 shrink-0">
                 <button type="button" data-palette-open class="md:hidden @Ui.IconBtn" aria-label="@L["Palette_Open"]">@Html.Raw(Svg("<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>", "size-4"))</button>
 
-                @if (user.IsStudent())
+                @if (user.IsStudent() || user.IsTeacher())
                 {
-                    <!-- The Tutor of every page -->
-                    <button type="button" id="companion-open" class="h-9 inline-flex items-center gap-x-1.5 ps-1 pe-2.5 sm:pe-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
-                            aria-controls="companion" aria-expanded="false" title="@L["Companion_Open"]" data-testid="companion-open">
+                    <!-- The Tutor of every page (student) / the class assistant (teacher) -->
+                    <button type="button" id="companion-open" class="h-9 inline-flex items-center gap-x-1.5 ps-1 pe-2.5 sm:pe-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30 tip tip-b"
+                            aria-controls="companion" aria-expanded="false" data-tip="@L[isTeacherCompanion ? "TeacherCompanion_Open" : "Companion_Open"]" data-testid="companion-open">
                         <partial name="_Mascot" model="@("size-7")" />
-                        <span class="max-sm:sr-only">@L["Companion_Button"]</span>
+                        <span class="max-sm:sr-only">@L[isTeacherCompanion ? "TeacherCompanion_Button" : "Companion_Button"]</span>
                     </button>
                 }
 
                 <!-- AI engine: Claude, ChatGPT, Gemini, Ollama or the demo -->
                 <div class="hs-dropdown [--placement:bottom-right] relative inline-flex">
-                    <button id="engine-menu" type="button" class="hs-dropdown-toggle h-9 inline-flex items-center gap-x-1.5 px-2.5 sm:px-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden"
-                            aria-haspopup="menu" aria-expanded="false" title="@L["Nav_EngineTooltip"]">
+                    <button id="engine-menu" type="button" class="hs-dropdown-toggle h-9 inline-flex items-center gap-x-1.5 px-2.5 sm:px-3 rounded-full text-xs font-semibold border border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden tip tip-b"
+                            aria-haspopup="menu" aria-expanded="false" data-tip="@L["Nav_EngineTooltip"]">
                         <span class="size-2 rounded-full @(engine.IsDemo ? "bg-amber-500" : "bg-emerald-500")"></span>
                         <span class="max-w-28 truncate max-sm:sr-only">@EngineLabel(engine)</span>
                         @Html.Raw(Svg("<path d=\"m6 9 6 6 6-6\"/>", "size-3"))
@@ -170,8 +181,8 @@
 
                 <!-- Interface language -->
                 <div class="hs-dropdown [--placement:bottom-right] relative inline-flex">
-                    <button id="lang-menu" type="button" class="hs-dropdown-toggle h-9 px-2.5 inline-flex items-center gap-x-1.5 rounded-full text-sm font-semibold text-foreground hover:bg-layer-hover focus:outline-hidden"
-                            aria-haspopup="menu" aria-expanded="false" aria-label="@L["Nav_Language"]" title="@L["Nav_Language"]">
+                    <button id="lang-menu" type="button" class="hs-dropdown-toggle h-9 px-2.5 inline-flex items-center gap-x-1.5 rounded-full text-sm font-semibold text-foreground hover:bg-layer-hover focus:outline-hidden tip tip-b"
+                            aria-haspopup="menu" aria-expanded="false" aria-label="@L["Nav_Language"]" data-tip="@L["Nav_Language"]">
                         @Html.Raw(Svg("<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z\"/>", "size-4"))
                         <span class="uppercase max-sm:sr-only">@culture</span>
                     </button>
@@ -188,7 +199,7 @@
 
                 <!-- Display: sidebar, text size, theme, accent colour, motion -->
                 <div class="hs-dropdown [--placement:bottom-right] [--auto-close:outside] relative inline-flex">
-                    <button id="display-menu" type="button" class="hs-dropdown-toggle @Ui.IconBtn" aria-haspopup="menu" aria-expanded="false" aria-label="@L["Display_Title"]" title="@L["Display_Title"]" data-testid="display-menu">
+                    <button id="display-menu" type="button" class="hs-dropdown-toggle @Ui.IconBtn tip tip-b" aria-haspopup="menu" aria-expanded="false" aria-label="@L["Display_Title"]" data-tip="@L["Display_Title"]" data-testid="display-menu">
                         @Html.Raw(Svg("<path d=\"M20 7h-9M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/>", "size-4"))
                     </button>
                     <div class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden w-72 z-50 bg-dropdown border border-layer-line shadow-xl rounded-2xl p-3 space-y-3" role="dialog" aria-labelledby="display-menu">
@@ -221,7 +232,7 @@
                             <div class="flex gap-2">
                                 @foreach (var (accent, color) in new[] { ("plum", "#352b38"), ("indigo", "#4f46e5"), ("teal", "#0f766e"), ("rose", "#be185d"), ("blue", "#2563eb") })
                                 {
-                                    <button type="button" data-ui="accent" data-value="@accent" class="size-8 rounded-full ring-offset-2 ring-offset-dropdown aria-pressed:ring-2 aria-pressed:ring-foreground/60 focus:outline-hidden focus-visible:ring-2" style="background:@color" aria-label="@L[$"Accent_{accent}"]" title="@L[$"Accent_{accent}"]"></button>
+                                    <button type="button" data-ui="accent" data-value="@accent" class="size-8 rounded-full ring-offset-2 ring-offset-dropdown aria-pressed:ring-2 aria-pressed:ring-foreground/60 focus:outline-hidden focus-visible:ring-2 tip" style="background:@color" aria-label="@L[$"Accent_{accent}"]" data-tip="@L[$"Accent_{accent}"]"></button>
                                 }
                             </div>
                         </div>
@@ -236,11 +247,11 @@
                     </div>
                 </div>
 
-                <button type="button" id="theme-toggle" class="@Ui.IconBtn" aria-label="@L["Nav_ToggleTheme"]" title="@L["Nav_ToggleTheme"]">
+                <button type="button" id="theme-toggle" class="@Ui.IconBtn tip tip-b" aria-label="@L["Nav_ToggleTheme"]" data-tip="@L["Nav_ToggleTheme"]">
                     @Html.Raw(Svg("<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/>", "size-4 dark:hidden"))
                     @Html.Raw(Svg("<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/>", "size-4 hidden dark:block"))
                 </button>
-                <a href="https://github.com/MathieuMoe/eduverse-ia" class="max-md:hidden! @Ui.IconBtn" aria-label="GitHub" title="GitHub">
+                <a href="https://github.com/MathieuMoe/eduverse-ia" class="max-md:hidden! @Ui.IconBtn tip tip-b" aria-label="GitHub" data-tip="GitHub">
                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z" /></svg>
                 </a>
             </div>
@@ -273,31 +284,34 @@
                                 <span class="size-9 shrink-0 grid place-items-center rounded-xl transition-colors @(active ? "bg-primary text-primary-foreground shadow-sm" : "bg-surface/70 group-hover/nav:bg-surface")">@Html.Raw(Svg(item.Icon))</span>
                                 <span class="@navLabel">@item.Label</span>
                             </a>
-                            <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 invisible transition-opacity duration-150 z-50 py-1.5 px-2.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-primary text-primary-foreground shadow-lg" role="tooltip">@item.Label</span>
+                            <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible absolute hidden lg:sb-collapsed:block opacity-0 invisible transition-opacity duration-150 z-50 py-1.5 px-2.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-primary text-primary-foreground shadow-lg" role="tooltip">@item.Label</span>
                         </li>
                     }
                 </ul>
 
-                <span class="block mt-6 mb-2 px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground-1 lg:sb-collapsed:sr-only">@L["Nav_Resources"]</span>
-                <span class="hidden lg:sb-collapsed:block mx-auto my-4 w-6 border-t border-card-divider" aria-hidden="true"></span>
-                <ul class="flex flex-col gap-y-0.5">
-                    @foreach (var (href, name, icon) in resources)
-                    {
-                        <li>
-                            <a class="@navLink py-1 text-muted-foreground-1 hover:text-foreground" href="@href" title="@name" data-nav>
-                                <span class="size-8 shrink-0 grid place-items-center rounded-xl">@Html.Raw(Svg(icon, "size-4"))</span>
-                                <span class="@navLabel">@name</span>
-                            </a>
-                        </li>
-                    }
-                </ul>
+                @if (!user.IsKid())
+                {
+                    <span class="block mt-6 mb-2 px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground-1 lg:sb-collapsed:sr-only">@L["Nav_Resources"]</span>
+                    <span class="hidden lg:sb-collapsed:block mx-auto my-4 w-6 border-t border-card-divider" aria-hidden="true"></span>
+                    <ul class="flex flex-col gap-y-0.5">
+                        @foreach (var (href, name, icon) in resources)
+                        {
+                            <li>
+                                <a class="@navLink py-1 text-muted-foreground-1 hover:text-foreground tip" href="@href" data-tip="@name" data-nav>
+                                    <span class="size-8 shrink-0 grid place-items-center rounded-xl">@Html.Raw(Svg(icon, "size-4"))</span>
+                                    <span class="@navLabel">@name</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
             </nav>
 
             @if (signedIn)
             {
                 <div class="m-3 mt-0 p-2 rounded-2xl bg-surface/70 flex items-center justify-between gap-2 lg:sb-collapsed:flex-col lg:sb-collapsed:m-2 lg:sb-collapsed:px-1">
                     <span class="flex items-center gap-x-2.5 min-w-0">
-                        <span class="size-9 shrink-0 grid place-items-center rounded-full bg-primary text-primary-foreground text-xs font-bold" title="@displayName">@CurrentUser.Initials(displayName)</span>
+                        <span class="size-9 shrink-0 grid place-items-center rounded-full bg-primary text-primary-foreground text-xs font-bold tip" data-tip="@displayName">@CurrentUser.Initials(displayName)</span>
                         <span class="text-sm leading-tight min-w-0 lg:sb-collapsed:sr-only">
                             <span class="block font-semibold text-foreground truncate" data-testid="user-name">@displayName</span>
                             <span class="block text-xs text-muted-foreground-1">@(user.IsDirector() ? L["Role_Director"] : user.IsTutor() ? L["Role_Tutor"] : user.IsTeacher() ? L["Role_Teacher"] : L["Role_Student"])</span>
@@ -305,7 +319,7 @@
                     </span>
                     <form method="post" action="/Account/Logout">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="size-8 inline-flex justify-center items-center rounded-full text-muted-foreground-1 hover:bg-layer hover:text-foreground" title="@L["Nav_Logout"]" aria-label="@L["Nav_Logout"]" data-palette-logout>
+                        <button type="submit" class="size-8 inline-flex justify-center items-center rounded-full text-muted-foreground-1 hover:bg-layer hover:text-foreground tip" data-tip="@L["Nav_Logout"]" aria-label="@L["Nav_Logout"]" data-palette-logout>
                             @Html.Raw(Svg("<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9\"/>", "size-4"))
                         </button>
                     </form>
@@ -313,7 +327,7 @@
             }
             else
             {
-                <a href="https://www.linkedin.com/in/mathieu-moreau-045b26114/" class="m-3 mt-0 p-2 rounded-2xl flex items-center gap-x-2.5 hover:bg-sidebar-nav-hover focus:outline-hidden lg:sb-collapsed:justify-center" title="Mathieu Moreau">
+                <a href="https://www.linkedin.com/in/mathieu-moreau-045b26114/" class="m-3 mt-0 p-2 rounded-2xl flex items-center gap-x-2.5 hover:bg-sidebar-nav-hover focus:outline-hidden lg:sb-collapsed:justify-center tip" data-tip="Mathieu Moreau">
                     <span class="size-9 shrink-0 grid place-items-center rounded-full bg-surface text-xs font-bold text-foreground">MM</span>
                     <span class="text-sm leading-tight lg:sb-collapsed:sr-only">
                         <span class="block font-semibold text-foreground">Mathieu Moreau</span>
@@ -350,33 +364,44 @@
         </div>
     </div>
 
-    @if (user.IsStudent())
+    @if (user.IsStudent() || user.IsTeacher())
     {
-        <aside id="companion" class="fixed inset-y-0 end-0 z-[70] w-full sm:w-[26rem] flex flex-col bg-layer border-s border-layer-line shadow-2xl" role="dialog" aria-modal="false" aria-labelledby="companion-title" hidden data-testid="companion">
+        <aside id="companion" class="fixed inset-y-0 end-0 z-[70] w-full sm:w-[26rem] flex flex-col bg-layer border-s border-layer-line shadow-2xl" role="dialog" aria-modal="false" aria-labelledby="companion-title" hidden data-testid="companion" data-api="@(isTeacherCompanion ? "/api/teacher-companion" : "/api/companion")">
             <header class="flex items-center gap-3 p-4 border-b border-card-divider">
                 <partial name="_Mascot" model="@("size-11 shrink-0")" />
                 <div class="min-w-0 grow">
-                    <h2 id="companion-title" class="font-semibold text-foreground">@L["Companion_Title"]</h2>
-                    <p class="text-xs text-muted-foreground-1">@L["Companion_Subtitle"]</p>
+                    <h2 id="companion-title" class="font-semibold text-foreground">@L[isTeacherCompanion ? "TeacherCompanion_Title" : "Companion_Title"]</h2>
+                    <p class="text-xs text-muted-foreground-1">@L[isTeacherCompanion ? "TeacherCompanion_Subtitle" : "Companion_Subtitle"]</p>
                 </div>
-                <button type="button" id="companion-speak" class="@Ui.IconBtn" aria-pressed="false" title="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔈</button>
-                <button type="button" id="companion-clear" class="@Ui.IconBtn" title="@L["Companion_Clear"]" aria-label="@L["Companion_Clear"]" data-testid="companion-clear">@Html.Raw(Svg("<path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6\"/>", "size-4"))</button>
+                <button type="button" id="companion-speak" class="@Ui.IconBtn tip tip-b" aria-pressed="false" data-tip="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔈</button>
+                <button type="button" id="companion-clear" class="@Ui.IconBtn tip tip-b" data-tip="@L["Companion_Clear"]" aria-label="@L["Companion_Clear"]" data-testid="companion-clear">@Html.Raw(Svg("<path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6\"/>", "size-4"))</button>
                 <button type="button" id="companion-close" class="@Ui.IconBtn" aria-label="@L["Close"]">@Html.Raw(Svg("<path d=\"M18 6 6 18M6 6l12 12\"/>", "size-4"))</button>
             </header>
             <div id="companion-chat" class="grow overflow-y-auto p-4 space-y-3" aria-live="polite"></div>
-            <div class="px-4 pb-2 flex flex-wrap gap-2" id="companion-quick">
-                <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickNext"]">🧭 @L["Companion_QuickNext"]</button>
-                <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickProgress"]">📈 @L["Companion_QuickProgress"]</button>
-                <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickHelp"]">🆘 @L["Companion_QuickHelp"]</button>
-            </div>
+            @if (isTeacherCompanion)
+            {
+                <div class="px-4 pb-2 flex flex-wrap gap-2" id="companion-quick">
+                    <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["TeacherCompanion_QuickRisk"]">🔎 @L["TeacherCompanion_QuickRisk"]</button>
+                    <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["TeacherCompanion_QuickProgress"]">📈 @L["TeacherCompanion_QuickProgress"]</button>
+                    <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["TeacherCompanion_QuickReteach"]">🔁 @L["TeacherCompanion_QuickReteach"]</button>
+                </div>
+            }
+            else
+            {
+                <div class="px-4 pb-2 flex flex-wrap gap-2" id="companion-quick">
+                    <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickNext"]">🧭 @L["Companion_QuickNext"]</button>
+                    <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickProgress"]">📈 @L["Companion_QuickProgress"]</button>
+                    <button type="button" class="py-1 px-2.5 rounded-full border border-layer-line text-xs text-foreground hover:bg-layer-hover" data-ask="@L["Companion_QuickHelp"]">🆘 @L["Companion_QuickHelp"]</button>
+                </div>
+            }
             <form id="companion-form" class="p-4 pt-2 border-t border-card-divider">
                 <div class="flex items-end gap-2">
-                    <label for="companion-text" class="sr-only">@L["Companion_Placeholder"]</label>
-                    <textarea id="companion-text" rows="2" maxlength="500" class="@Ui.Input resize-none" placeholder="@L["Companion_Placeholder"]" data-testid="companion-text"></textarea>
-                    <button type="button" id="companion-mic" class="@Ui.IconBtn shrink-0" aria-pressed="false" title="@L["Voice_Dictate"]" aria-label="@L["Voice_Dictate"]" hidden>🎤</button>
+                    <label for="companion-text" class="sr-only">@L[isTeacherCompanion ? "TeacherCompanion_Placeholder" : "Companion_Placeholder"]</label>
+                    <textarea id="companion-text" rows="2" maxlength="500" class="@Ui.Input resize-none" placeholder="@L[isTeacherCompanion ? "TeacherCompanion_Placeholder" : "Companion_Placeholder"]" data-testid="companion-text"></textarea>
+                    <button type="button" id="companion-mic" class="@Ui.IconBtn shrink-0 tip" aria-pressed="false" data-tip="@L["Voice_Dictate"]" aria-label="@L["Voice_Dictate"]" hidden>🎤</button>
                     <button type="submit" class="@Ui.BtnPrimary shrink-0" data-testid="companion-send">@L["Companion_Send"]</button>
                 </div>
-                <p class="mt-2 text-[11px] text-muted-foreground-1">@L["Companion_Privacy"]</p>
+                <p class="mt-2 text-[11px] text-muted-foreground-1">@L[isTeacherCompanion ? "TeacherCompanion_Privacy" : "Companion_Privacy"]</p>
             </form>
         </aside>
         <script src="~/js/companion.js" asp-append-version="true" defer></script>

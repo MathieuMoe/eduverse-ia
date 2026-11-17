@@ -12,8 +12,14 @@ namespace EduVerse.Core.Tutor;
 /// <summary>A topic the student does not know well yet (mastery 0-100 from knowledge tracing).</summary>
 public sealed record WeakTopic(Area Area, Level Level, string Topic, string Name, string AreaName, int Mastery);
 
-/// <summary>A finished test, with names already in the language of the student.</summary>
-public sealed record RecentTest(string AreaName, string ModeName, int Correct, int Length, DateOnly Day);
+/// <summary>A finished test, with names already in the language of the student. <see cref="Topic"/> is the free topic
+/// the student typed or explored (a "What I wonder about" question, a document title...), null for a regular catalog test.</summary>
+public sealed record RecentTest(string AreaName, string ModeName, int Correct, int Length, DateOnly Day, string? Topic = null)
+{
+    /// <summary>What to call this test when naming it to the student: the topic when there is one (more specific and more
+    /// recognisable than the broad area), the area otherwise.</summary>
+    public string Name => string.IsNullOrWhiteSpace(Topic) ? AreaName : Topic;
+}
 
 /// <summary>How the student is evolving: the last 7 days compared with the 7 days before (answers, accuracy, tests, XP).</summary>
 public sealed record Evolution(int Answers, int Accuracy, int PreviousAnswers, int PreviousAccuracy, int Tests, int PreviousTests, int Xp, int PreviousXp, IReadOnlyList<string> Improving)
@@ -222,7 +228,7 @@ public static class Companion
         if (s.Recent.Count > 0)
         {
             var r = s.Recent[0];
-            text += " " + Txt.Of("Your last test: {0}, {1} of {2} right.|Tu último test: {0}, {1} de {2} bien.|Ton dernier test : {0}, {1} sur {2} justes.|El teu últim test: {0}, {1} de {2} bé.").Format(language, r.AreaName, r.Correct, r.Length);
+            text += " " + Txt.Of("Your last test: {0}, {1} of {2} right.|Tu último test: {0}, {1} de {2} bien.|Ton dernier test : {0}, {1} sur {2} justes.|El teu últim test: {0}, {1} de {2} bé.").Format(language, r.Name, r.Correct, r.Length);
         }
 
         text += Trend(s, language);
@@ -296,6 +302,12 @@ public static class Companion
                 ids.Take(2).ToList());
         }
 
+        if (Any("porque seguir", "por que seguir", "vale la pena", "para que sirve", "acabo de hacer", "que hice", "lo que hice", "why continue", "why keep", "whats the point", "what did i just do", "what have i done", "pourquoi continuer", "ca sert a quoi", "je viens de faire", "per que continuar", "val la pena", "acabo de fer", "que he fet"))
+        {
+            return new(Txt.Of("Here's why it's worth it, and what you just did:|Esto es por qué merece la pena, y lo que acabas de hacer:|Voici pourquoi ça vaut le coup, et ce que tu viens de faire :|Això és per què val la pena, i el que acabes de fer:").In(language)
+                + " " + Progress(s, language), ids.Take(2).ToList());
+        }
+
         if (Any("que hago", "what should", "what can i", "what now", "que puedo", "que faig", "que puc", "quoi faire", "que faire", "recomien", "suggest", "propon", "idea", "aburr", "bored", "ennuie", "avorr"))
         {
             return new(Txt.Of("Here is what I suggest, from your tests:|Esto es lo que te propongo, según tus tests:|Voici ce que je te propose, d'après tes tests :|Això és el que et proposo, segons els teus tests:").In(language), ids);
@@ -334,7 +346,7 @@ public static class CompanionPrompt
         ArgumentNullException.ThrowIfNull(history);
         static string Cut(string? x, int n) => x is null ? "" : x.Length > n ? x[..n] : x;
         var weak = string.Join("; ", s.Weak.Select(w => $"{w.Name} ({w.AreaName}, {w.Mastery} %)"));
-        var recent = string.Join("; ", s.Recent.Select(r => $"{r.Day:yyyy-MM-dd} {r.AreaName} {r.ModeName} {r.Correct}/{r.Length}"));
+        var recent = string.Join("; ", s.Recent.Select(r => $"{r.Day:yyyy-MM-dd} {r.Name} {r.ModeName} {r.Correct}/{r.Length}"));
         var system = $"""
             You are the Tutor of EduVerse (a friendly owl), talking with a student of {Levels.PromptName(s.Level)} on any page of the platform.
             You know the student's progress (below, computed by the platform: do not invent other data). Be warm, specific and brief: 2 to 5 short sentences

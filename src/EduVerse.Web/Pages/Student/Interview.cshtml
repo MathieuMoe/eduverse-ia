@@ -20,7 +20,7 @@
                     <p class="text-sm text-muted-foreground-1">@f.Years · @f.Field.In(language)</p>
                     <div class="mt-3 flex flex-wrap lg:justify-center gap-2">
                         <button type="button" id="iv-speak" class="@Ui.BtnLight" aria-pressed="true" data-testid="iv-voice">🔊 <span id="iv-speak-label">@L["Interview_VoiceOn"]</span></button>
-                        <button type="button" id="iv-voice-next" class="@Ui.BtnLight" title="@L["Interview_NextVoice"]">🎚️ <span class="max-lg:sr-only">@L["Interview_NextVoice"]</span></button>
+                        <button type="button" id="iv-voice-next" class="@Ui.BtnLight tip" data-tip="@L["Interview_NextVoice"]">🎚️ <span class="max-lg:sr-only">@L["Interview_NextVoice"]</span></button>
                     </div>
                     <p class="mt-1 text-[11px] text-muted-foreground-1" id="iv-voice-name" aria-live="polite"></p>
                     <p class="mt-3 text-xs text-muted-foreground-1" id="iv-progress" aria-live="polite"></p>
@@ -55,7 +55,7 @@
                     <form id="iv-form" class="flex gap-2">
                         <label for="iv-text" class="sr-only">@L["Interview_YourQuestion"]</label>
                         <input id="iv-text" class="@Ui.Input" maxlength="@Interviews.MaxQuestion" placeholder="@L["Interview_YourQuestion"]" autocomplete="off" />
-                        <button type="button" id="iv-mic" class="@Ui.BtnLight shrink-0" aria-pressed="false" title="@L["Voice_Dictate"]" aria-label="@L["Voice_Dictate"]">🎤</button>
+                        <button type="button" id="iv-mic" class="@Ui.BtnLight shrink-0 tip" aria-pressed="false" data-tip="@L["Voice_Dictate"]" aria-label="@L["Voice_Dictate"]">🎤</button>
                         <button type="submit" class="@Ui.BtnPrimary shrink-0" data-testid="iv-send">@L["Interview_Ask"]</button>
                     </form>
                     <div id="iv-check" class="hidden p-4 rounded-2xl tone-lavender flex flex-wrap items-center justify-between gap-3">

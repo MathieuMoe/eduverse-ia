@@ -11,7 +11,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 <details>
 <summary>Student platform (catalog, adaptive test, arena, kids mode), teacher follow-up, institution, dropout radar, marketplace, private teacher, lesson pack, focus mode, mobile and dark mode</summary>
 
-![Student dashboard: XP, level, streak, rank, quests, activity calendar, podium](docs/screenshot-student.png)
+![Student dashboard: XP, level, streak, rank, quests, activity calendar, podium, curiosity thread](docs/screenshot-student.png)
 ![Catalog of tests: 10 subjects, 10 levels from early years to doctorate](docs/screenshot-explore.png)
 ![Adaptive test: the answer key arrives only after answering](docs/screenshot-quiz.png)
 ![Arena: weekly ranking with nicknames, teams, class challenge, duels](docs/screenshot-arena.png)
@@ -41,6 +41,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 ![A teacher's document as a test: without an AI, sentences of the document with a missing word](docs/screenshot-material-quiz.png)
 ![Work from the teacher on the student's dashboard, ticked by itself when it is really done](docs/screenshot-assignments.png)
 ![The detective: when a topic is weak, the Tutor checks the step below it](docs/screenshot-detective.png)
+![My path: the student's own evolution told as a story, built only from facts already measured elsewhere](docs/screenshot-journey.png)
 ![Step by step: worked examples where the help fades until the student solves one alone](docs/screenshot-fading-2.png)
 ![Confidence map: what the student believed against what happened, in four boxes](docs/screenshot-confidence-map.png)
 ![Rhythm: a gentle note when the student rushes, gets stuck or gets tired](docs/screenshot-pace.png)
@@ -75,6 +76,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 - 📚 **10 subjects × 10 levels**: mathematics, physics, chemistry, biology, language, a foreign language, history, geography, economics and programming, from early years (5–6) through primary, secondary, high school, degree, master and **doctorate**
 - 🧮 **Offline question banks checked in code**: numeric questions are generated *and solved* by the code (arithmetic to eigenvalues, kinematics to Lorentz factors, pH, Punnett squares, compound interest, Python programs whose output is computed…); fact questions come from a checked table in 4 languages, wrong options are typical mistakes. A test checks thousands of generated questions (4 distinct options, one right)
 - 🎯 **Adaptive tests**: 2 right answers in a row → harder, a wrong one → easier; **every new test avoids the questions already seen** (last 300 of the subject and level); knowledge per topic tracked with Bayesian Knowledge Tracing; topics to review shown in the catalog
+- 💬 **Why, right or wrong**: the feedback after each answer always says why — a miss now also names the correct answer out loud — worded for the student's stage (shorter and warmer in primary, the reasoning spelled out from high school up); the Tutor's own chat and explanations also know the student's most recent quiz misses
 - 📝 **Tests done** saved with every question, the answer given and the right one: list per subject and **review** of each test
 - 🎚️ **One level of study for all subjects**: changing it (dashboard or catalog) applies it to every subject; a placement test can then refine one subject
 - 🧭 **Placement test per subject**: a binary search over the 10 levels (2 questions per level, 10 at most) gives the level to practise
@@ -97,6 +99,8 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 - 🗓️ **Assignments that tick themselves**: the teacher sets work with a date — practise a topic, an open answer, the test of a document. Nobody ticks anything: it is done when the student's own activity after the assignment shows it, with the result. The student sees the pending work on the dashboard
 - 📈 **Measured progress and a printable report**: for each student, right answers of the last 30 days against the 30 before (no percentage under 5 answers), topic by topic, the work done, and what the Tutor found (root one step below, false certainties). Made only from the student's own answers
 - 🕵️ **The prerequisite detective**: when a topic is weak, the cause is often one step below (fractions fail because division is weak). A hand-written map of "what you need first" for mathematics (20 links, from addition to derivatives) and the student's own answers give a verdict in code: *check the step below*, *the root is there*, or *your base is solid, practise the topic itself* — with one button to do it. The teacher sees the same finding for each student. When the teacher has labelled a document for that same subject, the detective points at it first — "your teacher's own document about this" — before the generic practice button, so the remedy starts with the class's own material
+- 🧭 **"My path"**: the student's own evolution told as a story, not a dashboard — a topic that turned from weak to solid across two months, the first time an answer was really defended (a new question, right, with a real reason), the first concept explained completely to the Tutor, the longest run of days studying in a row. Nothing new is tracked for it: every milestone is built from facts the platform already measures elsewhere (quiz answers, defences, "explain it to the Tutor" sessions, XP), just read across months instead of inside a short window — 100% code, no AI call, and no milestone without real, dated evidence behind it
+- 💭 **"What I want to know"**: a small dashboard widget where a student jots down what they're curious about, in their own words — not graded, not measured, just a thread to come back to. They can explore a question whenever they like, which drops it straight into "learn any topic" already filled in, or dismiss it. A gentle daily limit and a cap on how many can wait open keep it a thread, not a backlog, and the widget rotates through them so nothing waits forever unseen
 - 🪄 **Step by step** (fading examples): the Tutor solves a whole problem, then the last result is missing, then every result, and at the end the student solves one alone. A wrong try shows the solution and brings another problem of the same kind. Six kinds (order of operations, percentage, mean, perimeter, discount, equation), all computed and checked in code
 - ⏱️ **Rhythm and tiredness**: the page measures the seconds on each question; the code notices three things — very fast and wrong (*read twice*), very slow and wrong (*ask for a hint earlier*), a long test that started well and drops (*take a break*) — and says one gentle sentence. It never changes the score and is off in placement tests and duels
 - 🪞 **Pip makes your mistakes**: two times out of three, Pip stumbles on a topic the student got wrong lately in their own tests (or on a kind of mistake they did not spot last time), so the student corrects in someone else what they do wrong themselves
@@ -115,7 +119,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 - ✨ **Any topic with the AI**: the AI writes 10 questions of the student's level, the parser keeps only valid ones (4 distinct options, one right) and the topic is treated as data, not instructions
 - 🏆 **Gamification** (rules in Core, fair: no time pressure, no paid boosts): XP per answer (effort counts too), levels and titles (Explorer → Sage), **daily streak** and monthly calendar, **3 daily quests** chosen per student and day, **25 badges** with progress
 - 🏟️ **Arena**: weekly class ranking and **teams** (score = average XP, so small teams can win), weekly class challenge, **duels** (two classmates answer the same 5 questions, same seed). Only **nicknames** are shown (an animal + a word), never real names, and a student can opt out of competition
-- 🧸 **Kids mode** for 5–8 year olds: pictures (count the apples, which flag, which animal), big buttons, questions **read aloud** with the browser's speech synthesis, an original owl mascot (the Tutor)
+- 🧸 **Kids mode** for 5–8 year olds: pictures (count the apples, which flag, which animal), big buttons, questions **read aloud** with the browser's speech synthesis, an original owl mascot (the Tutor), and its own 3-stop menu (Home, Explore, Achievements) instead of the full menu built for an older student managing their own study plan
 
 **Student space: AI tutor**
 - 🧭 **Adaptive placement test**: a binary search along the concepts ordered by prerequisites (about log2(n)+1 questions), then a starting probability per concept
@@ -135,6 +139,8 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 - 📊 **Most frequent mistakes of the class**, with the concept they belong to, and each student's recent answers
 - 📦 **Lesson pack from a document** (PDF or text): 50-minute class plan, slides, worksheet, 10 exercises, exam with solutions, 4-level rubric; saved, printable, exportable to Markdown
 - 🪜 **Lesson in 3 levels** with measured readability and 🎙️ **class summary** by dictation (from MatGPT Teacher)
+- 🦉 **The teacher's own assistant**: the same companion widget the student has on every page, now also open to the teacher, scoped to **their own classes** instead of one student's progress. It knows who needs help first, how each class is doing and which concept to reteach — all computed in code from the same class follow-up data (heatmap, alerts, mistakes) — and proposes actions (check on a student, review a class, reteach a concept); the AI only writes the reply and picks among them, offline it answers the same questions from the facts directly. No new data is collected for it
+- 🎯 **One-click practice nudge**: when a class has a hardest concept and students still struggling with it, the assistant offers a one-click action that writes each of them a short teacher note ("Practise: {concept}") — the existing, student-facing note the Tutor already reads — straight from the chat, with no page to fill in and no new system (notes keep their own 3-per-student limit, so a repeat click is told so rather than silently dropped)
 
 **Institution space** (role *Management*)
 - 🏫 Dashboard of the academy: students and active students, answers of the week, progress per class, teachers; teachers join the institution with a **code**
@@ -289,6 +295,8 @@ All endpoints need a signed-in user (cookie) and the role of their space (*Stude
 | `GET /api/quiz/{id}` · `POST /api/quiz/{id}/answer` | Current question · `{ correct, correctIndex, explanation, run, hints, confidence, next, summary, reward }` (body: `choice`, `confidence` 0–2) |
 | `POST /api/quiz/adventure` | Starts an adventure (body: `area`, `level`, `theme` = `Space`, `Ocean`, `Jungle` or `Castle`); the story comes from the AI or, offline, from the written stories |
 | `GET /api/companion` · `POST /api/companion` · `DELETE /api/companion` | the Tutor on every page: greeting, ideas and conversation (query `page`, `title`) · message (body: `message`, `page`, `title`): `{ reply, actions, engine }` · delete the conversation |
+| `GET /api/teacher-companion` · `POST /api/teacher-companion` · `DELETE /api/teacher-companion` | the teacher's own assistant: same shape as `/api/companion`, scoped to the teacher's own classes; teacher-only |
+| `POST /api/teacher-companion/practice-note` | one-click nudge (query `classId`): writes a teacher note to every struggling student of that class; `{ saved, full, concept }` |
 | `POST /api/teach/{concept}` | Explain it to the Tutor (body: `text`, `sessionId`): `{ ideas, reaction, question, round, done, model, reward }`; missing ideas stay secret |
 | `POST /api/interview/{figure}` | Question to a historical figure (body: `question`, `history`): `{ answer, matched, engine }`; the check is `POST /api/quiz/start` with `mode = Interview` and `figure` |
 | `POST /api/quiz/{id}/hint` · `POST /api/learn/hint` | Next step of the hint ladder (test · tutor): `{ level, removed, text }` |

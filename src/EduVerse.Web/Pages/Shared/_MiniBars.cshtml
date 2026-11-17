@@ -9,7 +9,7 @@
     {
         var h = d.Answers == 0 ? 6 : Math.Max(14, 100 * d.Answers / max);
         var solid = d.Answers == 0 ? 0 : 100 * d.Correct / d.Answers;
-        <div class="flex-1 min-w-0 flex flex-col items-center gap-1 h-full justify-end" title="@d.Day.ToString("dddd d MMM", culture): @string.Format(culture, L["Chart_DayTooltip"], d.Answers, d.Correct)">
+        <div class="flex-1 min-w-0 flex flex-col items-center gap-1 h-full justify-end tip" data-tip="@d.Day.ToString("dddd d MMM", culture): @string.Format(culture, L["Chart_DayTooltip"], d.Answers, d.Correct)">
             <div class="w-full max-w-7 rounded-lg overflow-hidden flex flex-col justify-end bar-hatch" style="height:@(h)%">
                 <div class="bar-solid w-full rounded-lg" style="height:@(solid)%"></div>
             </div>

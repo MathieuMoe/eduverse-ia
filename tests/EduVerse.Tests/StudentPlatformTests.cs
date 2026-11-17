@@ -3,6 +3,7 @@ using EduVerse.Core.Common;
 using EduVerse.Core.Gamification;
 using EduVerse.Infrastructure.Data;
 using EduVerse.Infrastructure.Gamification;
+using EduVerse.Infrastructure.Learning;
 using EduVerse.Infrastructure.Quizzes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +71,52 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
         Assert.False(result!.Correct);
         Assert.Equal(1, result.Next!.Difficulty);
         Assert.Equal(Xp.Wrong, result.Reward.Xp);
+        // A wrong answer now says what the right one was (never shown before) and still carries the question's own reasoning.
+        Assert.Contains(current.Answer, result.Explanation, StringComparison.Ordinal);
+        Assert.Contains(current.Explanation.TrimEnd('.'), result.Explanation, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task A_right_answer_explains_why_it_is_right_and_a_wrong_one_names_the_right_answer()
+    {
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
+        var nora = await database.UserIdAsync("nora@eduverse.demo");
+        var q = await quizzes.StartAsync(nora, Area.Mathematics, Level.Primary2, QuizMode.Practice, TeachLanguage.Spanish);
+        var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
+        var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
+
+        var right = await quizzes.AnswerAsync(nora, q.AttemptId, current.CorrectIndex, TeachLanguage.Spanish);
+        Assert.True(right!.Correct);
+        Assert.NotEqual(current.Explanation, right.Explanation); // framed, not the bare bank text
+        Assert.Contains(current.Explanation.TrimEnd('.'), right.Explanation, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task The_tutor_context_remembers_the_student_s_most_recent_quiz_mistakes()
+    {
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
+        var learning = scope.ServiceProvider.GetRequiredService<LearningStore>();
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        async Task<string> MissOneAsync(Area area, Level level)
+        {
+            var q = await quizzes.StartAsync(sara, area, level, QuizMode.Practice, TeachLanguage.English);
+            var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
+            var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
+            await quizzes.AnswerAsync(sara, q.AttemptId, (current.CorrectIndex + 1) % 4, TeachLanguage.English);
+            return current.Topic;
+        }
+
+        await MissOneAsync(Area.Geography, Level.Secondary1);
+        var lastTopic = await MissOneAsync(Area.History, Level.Secondary1);
+
+        var mistakes = await learning.RecentQuizMistakesAsync(sara);
+        Assert.True(mistakes.Count is > 0 and <= LearningStore.ContextMisconceptions);
+        Assert.StartsWith(lastTopic + ":", mistakes[0], StringComparison.Ordinal); // most recent first
     }
 
     [Fact]

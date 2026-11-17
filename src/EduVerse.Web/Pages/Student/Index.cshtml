@@ -75,6 +75,41 @@
     </section>
 }
 
+<section class="@Ui.Card p-4" aria-labelledby="curiosity-title" data-testid="curiosity">
+    <div class="flex items-center justify-between gap-2">
+        <h2 id="curiosity-title" class="text-sm font-semibold text-foreground">💭 @L["Curiosity_Title"]</h2>
+    </div>
+    <p class="mt-1 text-xs text-muted-foreground-1">@L["Curiosity_Subtitle"]</p>
+    @if (Model.Curiosities.Count > 0)
+    {
+        <ul class="mt-3 space-y-2">
+            @foreach (var q in Model.Curiosities)
+            {
+                <li class="flex flex-wrap items-center justify-between gap-2 text-sm text-foreground" data-testid="curiosity-question">
+                    <span class="min-w-0 grow">@q.Text</span>
+                    <span class="flex items-center gap-1.5 shrink-0">
+                        <form method="post" asp-page-handler="CuriosityExplore"><input type="hidden" name="id" value="@q.Id" />
+                            <button type="submit" class="@Ui.BtnPrimary py-1! px-3! text-xs" data-testid="curiosity-explore">@L["Curiosity_Explore"]</button>
+                        </form>
+                        <form method="post" asp-page-handler="CuriosityDismiss"><input type="hidden" name="id" value="@q.Id" />
+                            <button type="submit" class="size-7 inline-flex items-center justify-center rounded-full text-muted-foreground-1 hover:bg-layer-hover hover:text-foreground tip" data-tip="@L["Curiosity_Dismiss"]" aria-label="@L["Curiosity_Dismiss"]" data-testid="curiosity-dismiss">✕</button>
+                        </form>
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="mt-3 text-sm text-muted-foreground-1">@L["Curiosity_Empty"]</p>
+    }
+    <form method="post" asp-page-handler="CuriosityAdd" class="mt-3 flex gap-2">
+        <label for="curiosity-text" class="sr-only">@L["Curiosity_Placeholder"]</label>
+        <input id="curiosity-text" name="text" class="@Ui.Input" minlength="6" maxlength="160" placeholder="@L["Curiosity_Placeholder"]" required />
+        <button type="submit" class="@Ui.BtnLight shrink-0" data-testid="curiosity-add">@L["Curiosity_Add"]</button>
+    </form>
+</section>
+
 <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5" data-testid="game-kpis">
     <div class="@Ui.Kpi tone-lavender">
         <p class="@Ui.KpiLabel">@L["Game_Xp"]</p>
@@ -113,7 +148,7 @@
 
 @if (Model.Notice is { } notice)
 {
-    <div class="p-3 rounded-lg text-sm @(notice == "Join_Unknown" ? "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300" : "bg-teal-50 text-teal-800 dark:bg-teal-500/15 dark:text-teal-300")" role="status">@L[$"Notice_{notice}"]</div>
+    <div class="p-3 rounded-lg text-sm @(notice == "Join_Unknown" || (notice.StartsWith("Curiosity_", StringComparison.Ordinal) && notice != "Curiosity_Added") ? "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300" : "bg-teal-50 text-teal-800 dark:bg-teal-500/15 dark:text-teal-300")" role="status">@L[$"Notice_{notice}"]</div>
 }
 
 <div class="grid xl:grid-cols-12 gap-4 sm:gap-6 items-start">
@@ -259,7 +294,7 @@
                         @foreach (var (concept, state) in card.Concepts)
                         {
                             var status = state?.Status ?? MasteryStatus.NotStarted;
-                            <li class="inline-flex items-center gap-x-1.5 py-1 px-2 rounded-lg text-xs border @Ui.StatusClass(status)" title="@concept.Description">
+                            <li class="inline-flex items-center gap-x-1.5 py-1 px-2 rounded-lg text-xs border @Ui.StatusClass(status) tip" data-tip="@concept.Description">
                                 <span class="size-1.5 rounded-full @Ui.StatusDot(status)"></span>
                                 @concept.Name
                                 @if (state is { Attempts: > 0 })
@@ -296,7 +331,7 @@
                 @foreach (var (day, answers) in g.Calendar)
                 {
                     var cls = answers == 0 ? "cal-0 text-muted-foreground-1" : answers < 5 ? "cal-1 text-foreground" : answers < 15 ? "cal-2 text-foreground" : "cal-3";
-                    <span class="aspect-square rounded-lg grid place-items-center text-[11px] font-medium @cls @(day == g.Today ? "ring-2 ring-primary" : "")" title="@day.ToString("D", culture): @answers">@day.Day</span>
+                    <span class="aspect-square rounded-lg grid place-items-center text-[11px] font-medium @cls @(day == g.Today ? "ring-2 ring-primary" : "") tip" data-tip="@day.ToString("D", culture): @answers">@day.Day</span>
                 }
             </div>
             <p class="mt-3 text-xs text-muted-foreground-1">@L["Game_ActivityHint"]</p>
@@ -368,7 +403,7 @@
             <ul class="mt-3 grid grid-cols-4 gap-2">
                 @foreach (var b in g.Badges.OrderByDescending(b => b.EarnedAt.HasValue).ThenByDescending(b => b.EarnedAt).Take(8))
                 {
-                    <li class="aspect-square rounded-2xl grid place-items-center text-2xl @(b.EarnedAt.HasValue ? "tone-sun" : "bg-surface grayscale opacity-40")" title="@L[$"Badge_{b.Badge.Key}"]">@b.Badge.Icon</li>
+                    <li class="aspect-square rounded-2xl grid place-items-center text-2xl @(b.EarnedAt.HasValue ? "tone-sun" : "bg-surface grayscale opacity-40") tip" data-tip="@L[$"Badge_{b.Badge.Key}"]" aria-label="@L[$"Badge_{b.Badge.Key}"]">@b.Badge.Icon</li>
                 }
             </ul>
         </section>

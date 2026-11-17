@@ -45,7 +45,7 @@
                         <div class="mt-2 flex flex-wrap gap-1.5">
                             @foreach (var f in r.Factors)
                             {
-                                <span class="py-1 px-2 rounded-lg text-xs bg-surface text-foreground" title="+@f.Points">@string.Format(culture, L[$"Risk_{f.Code}"], f.Value)</span>
+                                <span class="py-1 px-2 rounded-lg text-xs bg-surface text-foreground tip" data-tip="+@f.Points">@string.Format(culture, L[$"Risk_{f.Code}"], f.Value)</span>
                             }
                             @if (r.Factors.Count == 0)
                             {

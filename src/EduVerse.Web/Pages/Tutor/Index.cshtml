@@ -36,7 +36,7 @@
         <div class="mt-4 flex items-end gap-1.5 h-16" role="img" aria-label="@L["Tutor_Months"]">
             @foreach (var (month, net) in e.Months)
             {
-                <div class="flex-1 min-w-0 flex flex-col items-center gap-1 h-full justify-end" title="@month.ToString("MMMM yyyy", culture): @Ui.Money(net)">
+                <div class="flex-1 min-w-0 flex flex-col items-center gap-1 h-full justify-end tip" data-tip="@month.ToString("MMMM yyyy", culture): @Ui.Money(net)">
                     <div class="w-full max-w-7 rounded-lg bar-solid" style="height:@(Math.Max(6, (int)(100 * net / maxMonth)))%"></div>
                     <span class="text-[10px] leading-none text-foreground/60 uppercase">@month.ToString("MMM", culture)[..1]</span>
                 </div>
@@ -94,7 +94,7 @@
                     @if (b.CanCancel)
                     {
                         <form method="post" asp-page-handler="Cancel" asp-route-id="@b.Booking.Id">
-                            <button type="submit" class="@Ui.BtnLight" title="@L["Tutor_CancelHint"]">@L["Bookings_Cancel"]</button>
+                            <button type="submit" class="@Ui.BtnLight tip" data-tip="@L["Tutor_CancelHint"]">@L["Bookings_Cancel"]</button>
                         </form>
                     }
                 </li>

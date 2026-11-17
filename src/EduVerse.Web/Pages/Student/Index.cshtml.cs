@@ -15,7 +15,7 @@ namespace EduVerse.Web.Pages.Student;
 public sealed record SubjectCard(Subject Subject, IReadOnlyList<(Concept Concept, MasteryState? State)> Concepts, int Mastered, int Progress, NextStep Next);
 
 /// <summary>Student dashboard: subjects with their mastery map and next step, classes, settings.</summary>
-public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
+public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, EduVerse.Infrastructure.Tutor.CuriosityStore curiosity, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
 {
     public IReadOnlyList<SubjectCard> Subjects { get; private set; } = [];
 
@@ -52,6 +52,9 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
 
     /// <summary>Work set by the student's teachers: pending first.</summary>
     public IReadOnlyList<EduVerse.Infrastructure.Tutor.StudentAssignment> Assignments { get; private set; } = [];
+
+    /// <summary>Things the student wonders about, waiting to be explored ("What I wonder about").</summary>
+    public IReadOnlyList<EduVerse.Infrastructure.Tutor.CuriosityView> Curiosities { get; private set; } = [];
 
     public DateOnly Today => assignments.Today;
 
@@ -96,6 +99,7 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
         Activity = await store.ActivityAsync([userId], null, HttpContext.RequestAborted);
         TeacherNotes = await teacherNotes.ForStudentAsync(userId, HttpContext.RequestAborted);
         Assignments = await assignments.ForStudentAsync(userId, HttpContext.RequestAborted);
+        Curiosities = await curiosity.ForWidgetAsync(userId, HttpContext.RequestAborted);
         var facts = await openings.FactsAsync(userId, HttpContext.RequestAborted);
         Opening = EduVerse.Core.Tutor.Opening.Build(facts with
         {
@@ -122,6 +126,32 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
         await store.SaveProfileAsync(profile, HttpContext.RequestAborted);
         await quizzes.ApplyLevelToAllAsync(User.Id(), profile.Level, HttpContext.RequestAborted);
         Notice = "Settings_Saved";
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostCuriosityAddAsync(string? text)
+    {
+        Notice = await curiosity.AddAsync(User.Id(), text, HttpContext.RequestAborted) switch
+        {
+            EduVerse.Infrastructure.Tutor.CuriosityOutcome.Created => "Curiosity_Added",
+            EduVerse.Infrastructure.Tutor.CuriosityOutcome.TooShort => "Curiosity_TooShort",
+            EduVerse.Infrastructure.Tutor.CuriosityOutcome.TooLong => "Curiosity_TooLong",
+            EduVerse.Infrastructure.Tutor.CuriosityOutcome.NotAllowed => "Curiosity_NotAllowed",
+            _ => "Curiosity_Limit",
+        };
+        return RedirectToPage();
+    }
+
+    /// <summary>Marks the question explored and sends the student straight into exploring it as a new subject.</summary>
+    public async Task<IActionResult> OnPostCuriosityExploreAsync(int id)
+    {
+        var text = await curiosity.ExploreAsync(User.Id(), id, HttpContext.RequestAborted);
+        return text is null ? RedirectToPage() : LocalRedirect("/Student/NewSubject?topic=" + Uri.EscapeDataString(text));
+    }
+
+    public async Task<IActionResult> OnPostCuriosityDismissAsync(int id)
+    {
+        await curiosity.DismissAsync(User.Id(), id, HttpContext.RequestAborted);
         return RedirectToPage();
     }
 }

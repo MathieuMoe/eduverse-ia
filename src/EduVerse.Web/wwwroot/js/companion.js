@@ -1,11 +1,12 @@
-// The Tutor of every page of the student. The panel loads the conversation and the ideas (computed by the server
-// from the tests, topics and reviews of the student) and sends the page the student is on. Self-contained: it does not
-// depend on common.js, which some pages load after it.
+// The companion of every page: the Tutor for a student (progress, tests, reviews), the class assistant for a teacher
+// (every class's own follow-up). Which one depends on `data-api` on the panel, set by the layout from the user's role.
+// Self-contained: it does not depend on common.js, which some pages load after it.
 (() => {
     "use strict";
     const panel = document.getElementById("companion");
     const openBtn = document.getElementById("companion-open");
     if (!panel || !openBtn) return;
+    const api = panel.dataset.api || "/api/companion";
     const T = JSON.parse(document.getElementById("i18n")?.textContent || "{}");
     const t = (k) => T[k] ?? k;
     const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -34,10 +35,13 @@
         speechSynthesis.speak(u);
     }
 
+    // A "Practice" action is a one-click nudge (a POST, no navigation): it stays on the page and reports back in the chat.
+    // Every other kind is a plain link to somewhere on the platform the teacher can already see.
     function actionsHtml(actions) {
         if (!actions?.length) return "";
-        return `<div class="mt-2 flex flex-col gap-1.5" data-testid="companion-actions">${actions.map((a) =>
-            `<a href="${esc(a.url)}" class="flex items-center gap-2 py-2 px-3 rounded-xl border border-layer-line bg-layer hover:bg-layer-hover text-sm text-foreground" data-action="${esc(a.id)}"><span aria-hidden="true">${esc(a.icon)}</span><span class="grow">${esc(a.label)}</span><span aria-hidden="true" class="text-muted-foreground-1">→</span></a>`).join("")}</div>`;
+        return `<div class="mt-2 flex flex-col gap-1.5" data-testid="companion-actions">${actions.map((a) => a.kind === "Practice"
+            ? `<button type="button" class="flex items-center gap-2 py-2 px-3 rounded-xl border border-layer-line bg-layer hover:bg-layer-hover text-sm text-foreground text-left w-full" data-action="${esc(a.id)}" data-nudge="${esc(a.url)}"><span aria-hidden="true">${esc(a.icon)}</span><span class="grow">${esc(a.label)}</span></button>`
+            : `<a href="${esc(a.url)}" class="flex items-center gap-2 py-2 px-3 rounded-xl border border-layer-line bg-layer hover:bg-layer-hover text-sm text-foreground" data-action="${esc(a.id)}"><span aria-hidden="true">${esc(a.icon)}</span><span class="grow">${esc(a.label)}</span><span aria-hidden="true" class="text-muted-foreground-1">→</span></a>`).join("")}</div>`;
     }
 
     function bubble(fromStudent, text, actions) {
@@ -54,8 +58,8 @@
     async function load() {
         chat.innerHTML = "";
         try {
-            const r = await call(`/api/companion?page=${encodeURIComponent(page())}&title=${encodeURIComponent(title())}`);
-            r.messages.forEach((m) => bubble(m.fromStudent, m.text));
+            const r = await call(`${api}?page=${encodeURIComponent(page())}&title=${encodeURIComponent(title())}`);
+            r.messages.forEach((m) => bubble(m.fromUser, m.text));
             bubble(false, r.greeting, r.actions);
             loaded = true;
         } catch (e) {
@@ -72,7 +76,7 @@
         field.value = "";
         const wait = bubble(false, "…");
         try {
-            const r = await call("/api/companion", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text, page: page(), title: title() }) });
+            const r = await call(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text, page: page(), title: title() }) });
             wait.remove();
             bubble(false, r.reply, r.actions);
             speak(r.reply);
@@ -98,6 +102,19 @@
         openBtn.focus();
     }
 
+    chat.addEventListener("click", async (e) => {
+        const btn = e.target.closest("[data-nudge]");
+        if (!btn || btn.disabled) return;
+        btn.disabled = true;
+        try {
+            const r = await call(btn.dataset.nudge, { method: "POST" });
+            bubble(false, r.saved > 0 ? t("PracticeNudgeSent") : t("PracticeNudgeFull"));
+        } catch (err) {
+            bubble(false, err.message);
+            btn.disabled = false;
+        }
+    });
+
     openBtn.addEventListener("click", () => (panel.hidden ? open() : close()));
     $("companion-close").addEventListener("click", close);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) close(); });
@@ -114,7 +131,7 @@
 
     $("companion-clear").addEventListener("click", async () => {
         if (!confirmClear()) return;
-        try { await call("/api/companion", { method: "DELETE" }); } catch { }
+        try { await call(api, { method: "DELETE" }); } catch { }
         loaded = false;
         load();
     });

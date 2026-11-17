@@ -1,8 +1,8 @@
 @model EduVerse.Web.Breadcrumb
 @* Navigable path of the page, top left of the content: a back button and the crumbs. *@
 <nav aria-label="@L["Crumb_Label"]" class="flex items-center gap-2 min-w-0" data-testid="breadcrumb">
-    <a href="@Model.Back" class="shrink-0 size-9 inline-flex items-center justify-center rounded-full border border-layer-line bg-layer text-foreground shadow-xs hover:bg-layer-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
-       aria-label="@L["Crumb_Back"]" title="@L["Crumb_Back"]" data-testid="breadcrumb-back">
+    <a href="@Model.Back" class="shrink-0 size-9 inline-flex items-center justify-center rounded-full border border-layer-line bg-layer text-foreground shadow-xs hover:bg-layer-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30 tip tip-b"
+       aria-label="@L["Crumb_Back"]" data-tip="@L["Crumb_Back"]" data-testid="breadcrumb-back">
         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
     </a>
     <ol class="flex items-center flex-wrap gap-x-1.5 gap-y-1 min-w-0 py-1.5 px-3.5 rounded-full border border-layer-line bg-layer/80 text-sm shadow-xs">

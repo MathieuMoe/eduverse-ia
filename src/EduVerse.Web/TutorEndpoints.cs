@@ -100,7 +100,7 @@ public static class TutorEndpoints
             {
                 greeting = Companion.Greeting(snapshot, language),
                 actions = actions.Select(ActionView),
-                messages = history.Select(m => new { fromStudent = m.FromStudent, text = m.Text, at = m.At }),
+                messages = history.Select(m => new { fromUser = m.FromStudent, text = m.Text, at = m.At }),
             });
         });
 

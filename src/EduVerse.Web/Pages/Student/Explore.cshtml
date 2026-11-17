@@ -87,7 +87,7 @@
                 }
                 @if (available)
                 {
-                    <a href="/Student/Quiz?area=@p.Area&level=@Model.TestLevel(p.Area)&mode=Evo" class="@Ui.BtnLight" data-testid="evo-@p.Area" title="@L["Evo_Hint"]">🦉 @L["QuizMode_Evo"]</a>
+                    <a href="/Student/Quiz?area=@p.Area&level=@Model.TestLevel(p.Area)&mode=Evo" class="@Ui.BtnLight tip" data-testid="evo-@p.Area" data-tip="@L["Evo_Hint"]">🦉 @L["QuizMode_Evo"]</a>
                 }
                 @if (!Model.Kids)
                 {

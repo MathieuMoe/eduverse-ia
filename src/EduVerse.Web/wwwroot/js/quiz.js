@@ -100,7 +100,7 @@
         stage.innerHTML = `${adventureHtml(q.adventure)}
             <div class="${q.adventure ? "mt-5 " : ""}flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground-1">
                 <span>${esc(q.adventure ? fmt(t("QuestionN"), q.number) : fmt(t("QuestionOf"), q.number, q.length))}</span>
-                <span class="inline-flex items-center gap-2"><span class="inline-flex items-center py-0.5 px-2 rounded-full bg-surface text-foreground">${esc(q.topic)}</span><span class="inline-flex gap-1" title="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyN"), q.difficulty))}">${dots}</span></span>
+                <span class="inline-flex items-center gap-2"><span class="inline-flex items-center py-0.5 px-2 rounded-full bg-surface text-foreground">${esc(q.topic)}</span><span class="inline-flex gap-1 tip" data-tip="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyN"), q.difficulty))}">${dots}</span></span>
             </div>
             ${q.visual?.startsWith("dg:") ? `<div class="quiz-diagram mt-5 flex justify-center" data-testid="quiz-diagram">${window.Edu.diagram(q.visual)}</div>` : q.visual ? `<p class="quiz-visual mt-5 text-4xl text-center leading-snug" aria-hidden="true">${esc(q.visual)}</p>` : ""}
             <h2 class="quiz-prompt mt-4 text-xl font-semibold text-foreground text-center" id="qz-prompt">${esc(q.prompt)}</h2>

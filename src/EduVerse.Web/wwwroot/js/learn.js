@@ -43,7 +43,7 @@
             const current = data.next.conceptKey === c.key;
             return `<li class="-mx-2 px-2 py-1.5 rounded-xl ${current ? "tone-lavender" : ""}" ${current ? 'aria-current="step"' : ""}>
                 <div class="flex items-center justify-between gap-2 text-sm">
-                    <span class="flex items-center gap-x-2 min-w-0"><span class="size-2 shrink-0 rounded-full ${statusClass[status]}"></span><span class="truncate text-foreground" title="${esc(c.description)}">${esc(c.name)}</span></span>
+                    <span class="flex items-center gap-x-2 min-w-0"><span class="size-2 shrink-0 rounded-full ${statusClass[status]}"></span><span class="truncate text-foreground tip" data-tip="${esc(c.description)}">${esc(c.name)}</span></span>
                     <span class="text-xs text-muted-foreground-1 shrink-0">${s ? p + " %" : "–"}</span>
                 </div>
                 <div class="mt-1.5 h-2 rounded-full bg-surface overflow-hidden"><div class="h-full rounded-full ${statusClass[status]}" style="width:${s ? p : 0}%"></div></div>
@@ -172,7 +172,7 @@
         const stars = "●".repeat(x.difficulty) + "○".repeat(3 - x.difficulty);
         stage.innerHTML = `<div class="max-w-3xl">
             <div class="flex flex-wrap items-center gap-2">${pill(o.label)}
-                <span class="text-xs text-muted-foreground-1">${esc(conceptName(x.conceptKey))} · <span title="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyOf"), x.difficulty))}">${stars}</span></span>
+                <span class="text-xs text-muted-foreground-1">${esc(conceptName(x.conceptKey))} · <span class="tip" data-tip="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyOf"), x.difficulty))}">${stars}</span></span>
                 <span class="ms-auto">${small(engineLabel(o.engine))}</span></div>
             ${o.reason ? `<p class="mt-3 text-sm text-muted-foreground-1">${esc(o.reason)}</p>` : ""}
             ${x.visual?.startsWith("dg:") && window.Edu.diagram ? `<div class="mt-4 flex justify-center quiz-diagram">${window.Edu.diagram(x.visual)}</div>` : x.visual ? `<p class="mt-4 text-4xl text-center leading-snug" aria-hidden="true">${esc(x.visual)}</p>` : ""}

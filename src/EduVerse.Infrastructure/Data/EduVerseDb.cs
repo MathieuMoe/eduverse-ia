@@ -89,8 +89,10 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
 
     public DbSet<DefenceResult> DefenceResults => Set<DefenceResult>();
 
+    public DbSet<CuriosityQuestion> CuriosityQuestions => Set<CuriosityQuestion>();
+
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 18;
+    public const int DatabaseVersion = 19;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -259,6 +261,11 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
         {
             e.HasIndex(d => d.ChallengerId);
             e.HasIndex(d => d.OpponentId);
+        });
+        builder.Entity<CuriosityQuestion>(e =>
+        {
+            e.Property(c => c.Text).HasMaxLength(200);
+            e.HasIndex(c => new { c.UserId, c.Status, c.CreatedAt });
         });
     }
 }

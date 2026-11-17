@@ -1120,7 +1120,18 @@
   <data name="Companion_Placeholder" xml:space="preserve"><value>Pregúntale algo al Tutor…</value></data>
   <data name="Companion_Send" xml:space="preserve"><value>Enviar</value></data>
   <data name="Companion_Privacy" xml:space="preserve"><value>El Tutor guarda esta conversación en tu cuenta para recordarla; puedes borrarla con la papelera. Durante un test, el Tutor te ayuda a pensar pero nunca te da la respuesta.</value></data>
+  <data name="TeacherCompanion_Button" xml:space="preserve"><value>Asistente</value></data>
+  <data name="TeacherCompanion_Open" xml:space="preserve"><value>Tu asistente de clase: pregunta lo que quieras en cualquier página</value></data>
+  <data name="TeacherCompanion_Title" xml:space="preserve"><value>Tu asistente de clase</value></data>
+  <data name="TeacherCompanion_Subtitle" xml:space="preserve"><value>Conoce el seguimiento de todas tus clases y esta página</value></data>
+  <data name="TeacherCompanion_QuickRisk" xml:space="preserve"><value>¿Quién necesita ayuda?</value></data>
+  <data name="TeacherCompanion_QuickProgress" xml:space="preserve"><value>¿Cómo van mis clases?</value></data>
+  <data name="TeacherCompanion_QuickReteach" xml:space="preserve"><value>¿Qué debería reforzar?</value></data>
+  <data name="TeacherCompanion_Placeholder" xml:space="preserve"><value>Pregúntale al asistente lo que quieras…</value></data>
+  <data name="TeacherCompanion_Privacy" xml:space="preserve"><value>El asistente guarda esta conversación en tu cuenta para recordarla; puedes borrarla con la papelera. Solo usa lo que la plataforma ya te muestra de tus clases.</value></data>
   <data name="Js_ClearConfirm" xml:space="preserve"><value>Pulsa otra vez la papelera para borrar toda la conversación.</value></data>
+  <data name="Js_PracticeNudgeSent" xml:space="preserve"><value>Hecho: ya tienen en su panel una nota para practicarlo.</value></data>
+  <data name="Js_PracticeNudgeFull" xml:space="preserve"><value>Ya tienen el máximo de notas tuyas que pueden guardar a la vez.</value></data>
   <data name="Dossier_Title" xml:space="preserve"><value>Dossier</value></data>
   <data name="Dossier_Discovery" xml:space="preserve"><value>Lo que descubrió o hizo</value></data>
   <data name="Dossier_Read" xml:space="preserve"><value>Escuchar</value></data>
@@ -1563,4 +1574,19 @@
   <data name="LabelledBy_teacher" xml:space="preserve"><value>corregido por ti</value></data>
   <data name="LabelledBy_Ai" xml:space="preserve"><value>etiquetado por {0}</value></data>
   <data name="Detective_Material" xml:space="preserve"><value>El material de tu profesor: {0}</value></data>
+  <data name="Nav_Journey" xml:space="preserve"><value>Mi camino</value></data>
+  <data name="Journey_Subtitle" xml:space="preserve"><value>Tu propia evolución contada como una historia, no como un panel de cifras — hecha solo con lo que ya has conseguido.</value></data>
+  <data name="Journey_Empty" xml:space="preserve"><value>Todavía estoy conociendo tu camino. Sigue estudiando, defiende una respuesta, explícale algo a Evo — y tus hitos empezarán a aparecer aquí.</value></data>
+  <data name="Curiosity_Title" xml:space="preserve"><value>Lo que quiero saber</value></data>
+  <data name="Curiosity_Subtitle" xml:space="preserve"><value>Cosas que te preguntas, con tus propias palabras. No se califica — es solo un hilo al que volver cuando quieras.</value></data>
+  <data name="Curiosity_Placeholder" xml:space="preserve"><value>Ej.: ¿Por qué el cielo se pone rojo al atardecer?</value></data>
+  <data name="Curiosity_Add" xml:space="preserve"><value>Añadir</value></data>
+  <data name="Curiosity_Explore" xml:space="preserve"><value>Explorarlo</value></data>
+  <data name="Curiosity_Dismiss" xml:space="preserve"><value>Quitar esta pregunta</value></data>
+  <data name="Curiosity_Empty" xml:space="preserve"><value>Todavía no hay nada aquí. ¿Qué te has estado preguntando últimamente?</value></data>
+  <data name="Notice_Curiosity_Added" xml:space="preserve"><value>Añadida a tus preguntas.</value></data>
+  <data name="Notice_Curiosity_TooShort" xml:space="preserve"><value>Escribe un poco más para que entienda tu pregunta.</value></data>
+  <data name="Notice_Curiosity_TooLong" xml:space="preserve"><value>Es un poco larga. ¿Puedes acortarla?</value></data>
+  <data name="Notice_Curiosity_NotAllowed" xml:space="preserve"><value>No puedo añadir esa. Intenta preguntarlo de otra manera.</value></data>
+  <data name="Notice_Curiosity_Limit" xml:space="preserve"><value>Ya tienes bastantes preguntas esperando. Explora o quita una primero.</value></data>
 </root>

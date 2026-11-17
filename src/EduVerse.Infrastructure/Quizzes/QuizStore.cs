@@ -381,7 +381,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             pace = EduVerse.Core.Tutor.Pace.Read(points.Select(a => new EduVerse.Core.Tutor.PacePoint(a.Seconds, a.Correct)).ToList());
         }
 
-        return new AnswerResult(correct, question.CorrectIndex, question.Explanation, reward.Xp, attempt.Run, next,
+        return new AnswerResult(correct, question.CorrectIndex, AnswerExplainer.Explain(question, correct, attempt.Level, language), reward.Xp, attempt.Run, next,
             summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Hints = hints, Confidence = confidence, Rungs = rungs, Pace = pace };
     }
 

@@ -229,6 +229,24 @@ public class WebTests(App app) : IClassFixture<App>
     }
 
     [Fact]
+    public async Task A_young_child_gets_a_3_stop_menu_instead_of_the_full_student_nav()
+    {
+        // The sidebar's own nav links (and the "Resources" GitHub links) all carry data-nav; the dashboard's
+        // own quick-action cards (e.g. the "Teach" card on /Student) do not, so this only looks at the menu itself.
+        static List<string> NavHrefs(string html) =>
+            Regex.Matches(html, """href="([^"]+)"[^>]*\bdata-nav\b""").Select(m => m.Groups[1].Value).ToList();
+
+        var kid = await app.DemoAsync("Kid");
+        var kidNav = NavHrefs(await kid.GetStringAsync("/Student"));
+        Assert.Equal(["/Student", "/Student/Explore", "/Student/Achievements", "/About"], kidNav);
+
+        var student = await app.DemoAsync("Student");
+        var studentNav = NavHrefs(await student.GetStringAsync("/Student"));
+        Assert.Contains("/Student/Teach", studentNav);
+        Assert.True(studentNav.Count > kidNav.Count);
+    }
+
+    [Fact]
     public async Task Evo_answers_on_every_page_offline_and_only_for_students()
     {
         var client = await app.DemoAsync("Student");
@@ -252,7 +270,63 @@ public class WebTests(App app) : IClassFixture<App>
         Assert.Contains("data-testid=\"companion-open\"", page, StringComparison.Ordinal);
         var teacher = await app.DemoAsync("Teacher");
         Assert.Equal(HttpStatusCode.Forbidden, (await teacher.GetAsync("/api/companion")).StatusCode);
-        Assert.DoesNotContain("companion-open", await teacher.GetStringAsync("/Teacher"), StringComparison.Ordinal);
+        var teacherPage = await teacher.GetStringAsync("/Teacher");
+        Assert.Contains("data-testid=\"companion-open\"", teacherPage, StringComparison.Ordinal);
+        Assert.Contains("data-api=\"/api/teacher-companion\"", teacherPage, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task The_teacher_s_class_assistant_answers_offline_from_every_class()
+    {
+        var teacher = await app.DemoAsync("Teacher");
+        var start = await teacher.GetFromJsonAsync<JsonElement>("/api/teacher-companion?page=/Teacher&title=Teacher");
+        Assert.Contains("assistant of your classes", start.GetProperty("greeting").GetString() ?? start.ToString(), StringComparison.Ordinal);
+
+        var risk = await (await teacher.PostAsJsonAsync("/api/teacher-companion", new { message = "Who needs help?", page = "/Teacher" })).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("demo", risk.GetProperty("engine").GetString());
+        Assert.True(risk.GetProperty("actions").GetArrayLength() > 0);
+        Assert.Contains(risk.GetProperty("actions").EnumerateArray(), a => a.GetProperty("label").GetString()!.Contains("Leo", StringComparison.Ordinal));
+
+        var progress = await (await teacher.PostAsJsonAsync("/api/teacher-companion", new { message = "How are my classes going?", page = "/Teacher" })).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Contains("students", progress.GetProperty("reply").GetString(), StringComparison.Ordinal);
+
+        var history = await teacher.GetFromJsonAsync<JsonElement>("/api/teacher-companion?page=/Teacher");
+        Assert.Equal(4, history.GetProperty("messages").GetArrayLength());
+        Assert.Equal(HttpStatusCode.OK, (await teacher.DeleteAsync("/api/teacher-companion")).StatusCode);
+        Assert.Equal(0, (await teacher.GetFromJsonAsync<JsonElement>("/api/teacher-companion")).GetProperty("messages").GetArrayLength());
+        Assert.Equal(HttpStatusCode.BadRequest, (await teacher.PostAsJsonAsync("/api/teacher-companion", new { message = new string('a', 501) })).StatusCode);
+
+        var student = await app.DemoAsync("Student");
+        Assert.Equal(HttpStatusCode.Forbidden, (await student.GetAsync("/api/teacher-companion")).StatusCode);
+    }
+
+    [Fact]
+    public async Task The_teacher_s_assistant_nudges_struggling_students_with_a_note_instead_of_an_assignment()
+    {
+        var teacher = await app.DemoAsync("Teacher");
+        var start = await teacher.GetFromJsonAsync<JsonElement>("/api/teacher-companion?page=/Teacher");
+        var nudge = start.GetProperty("actions").EnumerateArray().FirstOrDefault(a => a.GetProperty("kind").GetString() == "Practice");
+        Assert.NotEqual(JsonValueKind.Undefined, nudge.ValueKind);
+        var url = nudge.GetProperty("url").GetString()!;
+        Assert.StartsWith("/api/teacher-companion/practice-note?classId=", url, StringComparison.Ordinal);
+
+        // Leo and Sara are the struggling students of "Maths 2B" in the demo data: each of the first 3 calls (the
+        // per-student note limit) writes one note to each of them…
+        var first = await (await teacher.PostAsync(url, null)).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(2, first.GetProperty("saved").GetInt32());
+        Assert.Equal(0, first.GetProperty("full").GetInt32());
+        await teacher.PostAsync(url, null);
+        var third = await (await teacher.PostAsync(url, null)).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(2, third.GetProperty("saved").GetInt32());
+
+        // …and the one after that finds them already at the 3-note limit, instead of silently dropping the notes.
+        var fourth = await (await teacher.PostAsync(url, null)).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(0, fourth.GetProperty("saved").GetInt32());
+        Assert.Equal(2, fourth.GetProperty("full").GetInt32());
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await teacher.PostAsync("/api/teacher-companion/practice-note?classId=999999", null)).StatusCode);
+        var student = await app.DemoAsync("Student");
+        Assert.Equal(HttpStatusCode.Forbidden, (await student.PostAsync(url, null)).StatusCode);
     }
 
     [Fact]

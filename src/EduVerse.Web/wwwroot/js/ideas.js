@@ -18,8 +18,8 @@
         function item(i) {
             const [cls, icon, label] = pills[i.status] || pills.New;
             const vote = i.canVote
-                ? `<button type="button" class="py-1 px-2.5 inline-flex items-center gap-1 rounded-full text-xs font-semibold border ${i.voted ? "border-primary bg-primary text-primary-foreground" : "border-layer-line bg-layer text-foreground hover:bg-layer-hover"}"
-                     data-vote="${i.id}" ${i.voted ? "disabled" : ""} aria-pressed="${i.voted}" title="${esc(t(i.voted ? "IdeaVoted" : "IdeaVote"))}">👍 ${i.votes}</button>`
+                ? `<button type="button" class="py-1 px-2.5 inline-flex items-center gap-1 rounded-full text-xs font-semibold border tip ${i.voted ? "border-primary bg-primary text-primary-foreground" : "border-layer-line bg-layer text-foreground hover:bg-layer-hover"}"
+                     data-vote="${i.id}" ${i.voted ? "disabled" : ""} aria-pressed="${i.voted}" data-tip="${esc(t(i.voted ? "IdeaVoted" : "IdeaVote"))}">👍 ${i.votes}</button>`
                 : `<span class="text-xs text-muted-foreground-1">👍 ${i.votes}</span>`;
             return `<li class="flex items-center gap-3 p-2.5 rounded-2xl bg-surface/60" data-testid="idea-${i.id}">
                 <span class="min-w-0 flex-1"><span class="block text-sm font-medium text-foreground truncate">${esc(i.text)}${i.mine ? ` <span class="text-xs text-primary">· ${esc(t("IdeaMine"))}</span>` : ""}</span>

@@ -127,8 +127,11 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
 @layer base {
   button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 
-  /* Soft lavender light behind the floating panels */
+  /* Soft lavender light behind the floating panels. overflow-x: clip also stops a tooltip bubble (.tip::after)
+     sitting near the left/right edge of a narrow (mobile) viewport from widening the page's own scrollable
+     width — the bubble is only ever reached by hover/focus, so clipping it here costs nothing. */
   body {
+    overflow-x: clip;
     background-color: var(--background-1);
     background-image:
       radial-gradient(60rem 40rem at 100% -10%, rgb(218 216 249 / 0.55), transparent 60%),
@@ -149,8 +152,58 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
 }
 
 @layer components {
-  /* Glass cards: the panels float on the background */
-  .glass { backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+  /* Styled tooltip: put class "tip" on an element and its hint text in data-tip (title="" would show the
+     browser's own plain box). Shown above the element by default; add "tip-b" too for one near the top of
+     the viewport (the top nav icons), which shows it below instead. Native focus/hover triggers it, so it
+     still works with the keyboard and needs no JS; data-tip never doubles as the accessible name — an icon
+     with no visible label keeps its own aria-label alongside it. */
+  /* layout containment: the ::after bubble is wider than many of these elements and would otherwise count
+     towards the page's scrollable width wherever it sits near an edge, even fully transparent at opacity 0. */
+  .tip { position: relative; contain: layout; }
+  .tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 7px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: max-content;
+    max-width: 16rem;
+    text-align: center;
+    background: var(--foreground);
+    color: var(--background);
+    padding: .3rem .55rem;
+    border-radius: .375rem;
+    font-size: .6875rem;
+    line-height: 1.25;
+    font-weight: 500;
+    box-shadow: 0 4px 14px rgb(0 0 0 / .18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s ease, transform .12s ease;
+    z-index: 60;
+  }
+  .tip::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--foreground);
+    opacity: 0;
+    transition: opacity .12s ease;
+    z-index: 60;
+  }
+  .tip:hover::after, .tip:hover::before, .tip:focus-visible::after, .tip:focus-visible::before { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .tip.tip-b::after { bottom: auto; top: calc(100% + 7px); transform: translateX(-50%) translateY(-4px); }
+  .tip.tip-b::before { bottom: auto; top: calc(100% + 2px); transform: translateX(-50%); border-top-color: transparent; border-bottom-color: var(--foreground); }
+  .tip.tip-b:hover::after, .tip.tip-b:hover::before, .tip.tip-b:focus-visible::after, .tip.tip-b:focus-visible::before { transform: translateX(-50%) translateY(0); }
+  .reduce-motion .tip::after, .reduce-motion .tip::before { transition-delay: 0s; }
+
+  /* Glass cards: the panels float on the background. transform/will-change force their own compositing
+     layer up front — without it, Chromium can show a hairline gap along the rounded, bordered edge that
+     only disappears once something (e.g. a hover on a child) forces a repaint. */
+  .glass { backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); transform: translateZ(0); will-change: backdrop-filter; }
 
   /* Pastel tones of the KPI cards (reference: lavender, sky, pink, mint) */
   .tone-lavender { background: linear-gradient(160deg, #eceafe 0%, #dad8f9 100%); }
@@ -225,6 +278,10 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
 .kids .quiz-option { min-height: 4.5rem; font-size: 1.5rem; border-width: 2px; }
 .kids .quiz-visual { font-size: 3rem; line-height: 1.2; }
 .quiz-option[data-state="removed"] { opacity: .35; text-decoration: line-through; }
+
+/* Preline's own tooltip markup needs this before it initializes on hover: without it, the invisible
+   .hs-tooltip-content still sits in the flow (position: static) and pads out every sidebar nav item. */
+.hs-tooltip-content { position: absolute; }
 
 /* Question pictures (diagrams.js) */
 .quiz-diagram, [data-diagram] { --dg-accent: #7a6cf0; --dg-soft: #e7e4fd; }

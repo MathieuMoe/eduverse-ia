@@ -17,6 +17,9 @@ public sealed record StudentContext(Stage Stage, TeachLanguage Language, IReadOn
 
     /// <summary>Pieces of the teacher's documents chosen for this question, ready for the prompt ("" = none).</summary>
     public string Material { get; init; } = "";
+
+    /// <summary>A few of the student's most recent wrong answers in timed quizzes (topic + why they were wrong), so the tutor can address them too.</summary>
+    public IReadOnlyList<string> RecentQuizMistakes { get; init; } = [];
 }
 
 public sealed record ChatTurn(bool FromStudent, string Text);

@@ -183,7 +183,7 @@ async function demo(page, role) {
     await demo(page, "student");
     check(await page.locator("[data-testid=game-kpis] > div").count() === 4, "dashboard shows XP, level, streak and rank");
     check(await page.locator("[data-testid=quests] li").count() === 3, "three daily quests");
-    check(await page.locator("[data-testid=activity-calendar] [title]").count() >= 35, "monthly activity calendar");
+    check(await page.locator("[data-testid=activity-calendar] [data-tip]").count() >= 35, "monthly activity calendar");
     await page.goto(BASE + "/Student/Explore");
     check(await page.locator("[data-testid=levels] li").count() === 10, "ten levels from early years to doctorate");
     check(await page.locator("[data-testid=subjects] section").count() === 10, "ten subjects in the catalog");
@@ -457,6 +457,7 @@ async function demo(page, role) {
     check(await page.locator("[data-testid=badges] li").count() === 28, "all badges with their progress");
     await page.screenshot({ path: join(DOCS, "screenshot-achievements.png"), fullPage: true });
     await page.goto(BASE + "/Student");
+    check((await page.locator("[data-testid=curiosity]").count()) === 1, "what I want to know widget is on the dashboard");
     await page.screenshot({ path: join(DOCS, "screenshot-student.png") });
     await context.close();
 }
@@ -546,6 +547,11 @@ async function demo(page, role) {
     await page.keyboard.press("[");
     await page.waitForTimeout(400);
     check(!(await page.evaluate(() => document.documentElement.classList.contains("sb-collapsed"))), "the [ shortcut expands it again");
+
+    // Each nav item's own height, not padded out by its still-in-flow (pre-hover) tooltip bubble.
+    const navGaps = await page.evaluate(() => [...document.querySelectorAll("#hs-application-sidebar li.hs-tooltip")]
+        .map((li) => li.getBoundingClientRect().height - li.querySelector("a").getBoundingClientRect().height));
+    check(navGaps.every((gap) => gap < 1), `sidebar nav items have no leftover tooltip gap (${navGaps.map((g) => Math.round(g)).join(",")})`);
 
     await page.click("[data-testid=display-menu]");
     await page.click("[data-ui=text][data-value=l]");
@@ -725,6 +731,11 @@ async function demo(page, role) {
     check(paced, "answering very fast and wrong gets a gentle rhythm warning");
     check(detected, "the detective points at the step below a weak topic");
     await page.locator("[data-testid=detective]").screenshot({ path: join(DOCS, "screenshot-detective.png") });
+    // "My path": built only from facts already measured above (answers, defence, teaching the Tutor)
+    await page.goto(BASE + "/Student/Journey");
+    check((await page.locator("[data-testid=journey], [data-testid=journey-empty]").count()) === 1, "my path shows real milestones or an honest empty state");
+    await page.screenshot({ path: join(DOCS, "screenshot-journey.png") });
+    await page.goto(BASE + "/Student/Learner");
     const sureCount = Number(await page.locator("[data-testid=quadrant-Solid]").getAttribute("data-count")) + Number(await page.locator("[data-testid=quadrant-FalseCertainty]").getAttribute("data-count"));
     check(sureCount >= 5, "the confidence map fills with the answers given as sure");
     await page.locator("[data-testid=confidence-map]").screenshot({ path: join(DOCS, "screenshot-confidence-map.png") });
@@ -855,6 +866,24 @@ async function demo(page, role) {
     await teacher.page.waitForSelector("[data-testid=report]");
     check(await teacher.page.locator("[data-testid=report-work] li").count() === 3, "the progress report of a student can be printed");
     await teacher.page.locator("[data-testid=report]").screenshot({ path: join(DOCS, "screenshot-report.png") });
+
+    // The teacher's own assistant: the same follow-up already shown on /Teacher/Class, across every class
+    await teacher.page.goto(BASE + "/Teacher");
+    await teacher.page.click("[data-testid=companion-open]");
+    await teacher.page.locator("[data-testid=companion-reply]").first().waitFor();
+    await teacher.page.click("#companion-quick [data-ask]");
+    await teacher.page.waitForFunction(() => document.querySelectorAll("[data-testid=companion-reply]").length >= 2 && document.getElementById("companion").dataset.busy === "false");
+    check((await teacher.page.locator("[data-testid=companion-reply]").last().textContent()).length > 0, "the teacher's assistant answers from the real follow-up of their classes");
+    await teacher.page.screenshot({ path: join(DOCS, "screenshot-teacher-companion.png") });
+
+    // The one-click nudge: a button, not a link — it posts and confirms right there in the chat, never navigates away
+    const repliesBefore = await teacher.page.locator("[data-testid=companion-reply]").count();
+    const nudgeBtn = teacher.page.locator("[data-nudge]").first();
+    check(await nudgeBtn.count() > 0, "the assistant suggests nudging the struggling students of its hardest class");
+    await nudgeBtn.click();
+    await teacher.page.waitForFunction((n) => document.querySelectorAll("[data-testid=companion-reply]").length > n, repliesBefore);
+    check(teacher.page.url().endsWith("/Teacher"), "clicking the nudge stays on the page instead of navigating");
+    check((await teacher.page.locator("[data-testid=companion-reply]").last().textContent()).length > 0, "the nudge confirms in the chat");
     await teacher.context.close();
 }
 
@@ -866,7 +895,7 @@ for (const dark of [false, true]) {
         await noOverflow(page, `mobile${dark ? " dark" : ""} /`);
         await demo(page, role);
         const pages = {
-            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
+            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
             teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Course?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary", "/Moderation/Ideas"],
             director: ["/Institution", "/Institution/Risk", "/Institution/Quality"],
             tutor: ["/Tutor", "/Tutor/Profile", "/Marketplace"],
