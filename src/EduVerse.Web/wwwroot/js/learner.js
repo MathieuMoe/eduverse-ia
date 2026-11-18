@@ -2,7 +2,7 @@
 // to write the card as a short message. Every change reloads the page, which is computed on the server.
 (() => {
     "use strict";
-    const { t, api } = window.Edu;
+    const { t, api, fmt } = window.Edu;
     const $ = (id) => document.getElementById(id);
 
     document.querySelectorAll("[data-insight]").forEach((b) => b.addEventListener("click", async () => {
@@ -52,7 +52,7 @@
         try {
             const r = await api("/api/learner/summary", { method: "POST" });
             $("lr-summary").textContent = r.summary;
-            $("lr-summary-engine").textContent = r.fallback ? t("AiFallbackShort", "") : "";
+            $("lr-summary-engine").textContent = r.engine === "demo" ? t("LearnerDemoNote") : (r.fallback ? fmt(t("Fallback"), r.fallback) : "");
             $("lr-summary").dataset.engine = r.engine;
         } catch (err) {
             $("lr-summary-engine").textContent = err.message;

@@ -278,6 +278,7 @@
   <data name="Js_DoneNewSubject" xml:space="preserve"><value>Learn something new</value></data>
   <data name="Js_RetakeConfirm" xml:space="preserve"><value>Start this subject again with a new placement test? Your progress on it will be reset.</value></data>
   <data name="Js_Fallback" xml:space="preserve"><value>The AI could not answer ({0}). The offline version is shown instead.</value></data>
+  <data name="Js_LearnerDemoNote" xml:space="preserve"><value>Same text — written by the code, not the AI. Choose an AI engine in the header for a personalized version.</value></data>
   <data name="Js_EngineCode" xml:space="preserve"><value>computed in code</value></data>
   <data name="Js_SessionExpired" xml:space="preserve"><value>Your session has expired: sign in again.</value></data>
   <data name="Js_AiErrorDetail" xml:space="preserve"><value>The AI could not do it: {0}</value></data>

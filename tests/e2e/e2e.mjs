@@ -677,7 +677,7 @@ async function demo(page, role) {
     check(true, "a note is added to How I learn");
     await page.click("[data-testid=learner-summary-ai]");
     await page.waitForFunction(() => document.querySelector("#lr-summary")?.dataset.engine);
-    check(true, "the summary can be rewritten (offline fallback)");
+    check((await page.locator("#lr-summary-engine").textContent())?.trim().length > 0, "the summary rewrite (offline fallback) explains why the text looks unchanged");
     await page.screenshot({ path: join(DOCS, "screenshot-learner.png"), fullPage: true });
     await context.close();
 }

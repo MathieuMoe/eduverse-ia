@@ -278,6 +278,7 @@
   <data name="Js_DoneNewSubject" xml:space="preserve"><value>Aprender algo nuevo</value></data>
   <data name="Js_RetakeConfirm" xml:space="preserve"><value>¿Empezar de nuevo esta asignatura con otra prueba de nivel? Se reiniciará tu progreso.</value></data>
   <data name="Js_Fallback" xml:space="preserve"><value>La IA no ha podido responder ({0}). Se muestra la versión sin IA.</value></data>
+  <data name="Js_LearnerDemoNote" xml:space="preserve"><value>Mismo texto — escrito por el código, no por la IA. Elige un motor de IA en la cabecera para una versión personalizada.</value></data>
   <data name="Js_EngineCode" xml:space="preserve"><value>calculado en código</value></data>
   <data name="Js_SessionExpired" xml:space="preserve"><value>Tu sesión ha caducado: vuelve a iniciar sesión.</value></data>
   <data name="Js_AiErrorDetail" xml:space="preserve"><value>La IA no ha podido hacerlo: {0}</value></data>
