@@ -408,6 +408,36 @@ public class PracticeExerciseQuizTests(Database database) : IClassFixture<Databa
     }
 
     [Fact]
+    public async Task CheckMatchPairAsync_gives_live_feedback_without_finishing_the_drill()
+    {
+        // Backs the Duolingo-style instant green/red border on each pairing: a read-only per-pair check, so the
+        // student can see right away without the whole drill being scored or the attempt advancing.
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        var started = await quizzes.StartAsync(sara, Area.ForeignLanguage, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
+        var exercise = ExerciseBank.Match(Area.ForeignLanguage, Level.Primary3, TeachLanguage.English, 7)!;
+        var attempt = await db.QuizAttempts.SingleAsync(a => a.Id == started.AttemptId);
+        attempt.CurrentExerciseJson = System.Text.Json.JsonSerializer.Serialize(exercise);
+        await db.SaveChangesAsync();
+        var answeredBefore = attempt.Answered;
+
+        var firstPair = exercise.Pairs![0];
+        var wrongRight = exercise.Pairs.First(p => p.Right != firstPair.Right).Right;
+
+        Assert.True(await quizzes.CheckMatchPairAsync(sara, started.AttemptId, firstPair.Left, firstPair.Right));
+        Assert.False(await quizzes.CheckMatchPairAsync(sara, started.AttemptId, firstPair.Left, wrongRight));
+        Assert.Null(await quizzes.CheckMatchPairAsync(sara, started.AttemptId, "not a real left item", firstPair.Right));
+
+        // None of the checks above scored or advanced the attempt — the drill is still current, untouched.
+        var after = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == started.AttemptId);
+        Assert.Equal(answeredBefore, after.Answered);
+        Assert.NotNull(after.CurrentExerciseJson);
+    }
+
+    [Fact]
     public async Task A_drill_answered_during_an_adventure_advances_the_door_state_and_keeps_the_adventure_view()
     {
         // Task #74: a drill can now land on any of Adventure's turns, not just Practice's. Answering it right

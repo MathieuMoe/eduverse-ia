@@ -19,6 +19,8 @@ public sealed record QuizReorderRequest(IReadOnlyList<string> Order, int? Confid
 
 public sealed record QuizMatchRequest(IReadOnlyDictionary<string, string> Pairs, int? Confidence = null, int? Seconds = null);
 
+public sealed record QuizMatchPairRequest(string Left, string Right);
+
 public sealed record AdventureRequest(Area Area, Level Level, Theme Theme);
 
 /// <summary>
@@ -155,6 +157,20 @@ public static class QuizEndpoints
         {
             var result = request is null || request.Pairs is null or { Count: 0 } ? null : await store.AnswerMatchAsync(context.User.Id(), attemptId, request.Pairs, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
             return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
+
+        // Live per-pair feedback for the Match drill (Duolingo-style green/red border as the student taps), read-only:
+        // doesn't score, finish or advance the attempt — the /match call above still does that once every pair is right.
+        api.MapPost("/{attemptId}/match/pair", async (string attemptId, QuizMatchPairRequest request, HttpContext context, QuizStore store) =>
+        {
+            if (request is null || string.IsNullOrEmpty(request.Left) || string.IsNullOrEmpty(request.Right))
+            {
+                return Results.BadRequest();
+            }
+
+            var correct = await store.CheckMatchPairAsync(context.User.Id(), attemptId, request.Left, request.Right, context.RequestAborted);
+            return correct is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(new { correct = correct.Value });
         })
         .RequireRateLimiting("quiz");
 

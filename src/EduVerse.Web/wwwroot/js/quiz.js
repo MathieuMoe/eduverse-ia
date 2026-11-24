@@ -483,14 +483,27 @@
         }));
         rightEls.forEach((el) => el.addEventListener("click", () => {
             if (el.disabled || !selectedLeft) return;
-            pairs[lefts[+selectedLeft.dataset.left]] = rights[+el.dataset.right];
-            selectedLeft.disabled = true;
-            selectedLeft.classList.remove("border-primary", "bg-primary/10");
-            selectedLeft.classList.add("opacity-40");
+            const leftEl = selectedLeft;
+            const leftText = lefts[+leftEl.dataset.left];
+            const rightText = rights[+el.dataset.right];
+            pairs[leftText] = rightText;
+            leftEl.disabled = true;
+            leftEl.classList.remove("border-primary", "bg-primary/10");
             el.disabled = true;
-            el.classList.add("opacity-40");
             selectedLeft = null;
             checkBtn.classList.toggle("hidden", Object.keys(pairs).length !== lefts.length);
+            // Duolingo-style instant feedback: color the pair green/red as soon as it's made, rather than waiting
+            // for the final Check. Read-only server check (CheckMatchPairAsync) — doesn't score or advance the attempt.
+            api(`/api/quiz/${encodeURIComponent(question.id)}/match/pair`, { json: { left: leftText, right: rightText } })
+                .then((res) => {
+                    const cls = res.correct ? ["border-green-500", "bg-green-500/10"] : ["border-red-500", "bg-red-500/10"];
+                    leftEl.classList.add(...cls);
+                    el.classList.add(...cls);
+                })
+                .catch(() => {
+                    leftEl.classList.add("opacity-40");
+                    el.classList.add("opacity-40");
+                });
         }));
         checkBtn.addEventListener("click", () => {
             checkBtn.disabled = true;

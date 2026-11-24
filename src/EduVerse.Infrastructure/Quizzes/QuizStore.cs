@@ -565,6 +565,29 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
     }
 
+    /// <summary>Checks a single left/right pairing of the current Match drill, Duolingo-style — a live green/red
+    /// border as the student taps, instead of waiting for the final "Check". Read-only: no attempt state changes,
+    /// no XP, no "answered" count, so the student can retry a wrong pairing freely; the final <see cref="AnswerMatchAsync"/>
+    /// call (made once every pair has been matched correctly) is still what actually scores and advances the attempt.
+    /// Returns null when there is no current Match drill, or <paramref name="left"/> isn't one of its items.</summary>
+    public async Task<bool?> CheckMatchPairAsync(string userId, string attemptId, string left, string right, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        if (exercise.Kind != ExerciseKind.Match)
+        {
+            return null;
+        }
+
+        var pair = exercise.Pairs!.FirstOrDefault(p => p.Left == left);
+        return pair is null ? null : pair.Right == right;
+    }
+
     /// <summary>Shared tail for the 4 drill-answer methods (true/false, fill-blank, reorder, match): scores the exercise,
     /// updates skill/streak/xp, and queues the next item (another drill, a classic question, or the test summary).
     /// Seconds (time on screen) is reserved for the same rhythm-advice path the classic flow uses.</summary>
