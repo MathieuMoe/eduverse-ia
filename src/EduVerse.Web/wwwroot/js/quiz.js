@@ -175,11 +175,30 @@
                 <span class="text-muted-foreground-1 me-1">${esc(t("HowSure"))}</span>
                 ${[[0, "🤔", t("Unsure")], [1, "🙂", t("ThinkSo")], [2, "😎", t("Sure")]].map(([v, e, label]) => `<button type="button" role="radio" aria-checked="${v === 1}" data-confidence="${v}" class="py-1 px-3 rounded-full border ${v === 1 ? "border-primary bg-primary/10" : "border-layer-line"} text-foreground">${e} ${esc(label)}</button>`).join("")}
             </div>`}
-            <div class="mt-6 grid sm:grid-cols-2 ${q.options.every((o) => String(o).length < 40) && !q.code ? "2xl:grid-cols-4" : ""} gap-3" role="group" aria-labelledby="qz-prompt" data-testid="quiz-options">
+            ${q.exerciseKind === "TrueFalse" ? `<div class="mt-6 grid grid-cols-2 gap-3" role="group" aria-labelledby="qz-prompt" data-testid="quiz-truefalse">
+                <button type="button" class="quiz-option flex items-center justify-center gap-2 w-full p-5 rounded-2xl border border-layer-line bg-layer text-foreground text-lg font-semibold hover:bg-layer-hover disabled:cursor-default" data-index="0">❌ ${esc(t("False"))}</button>
+                <button type="button" class="quiz-option flex items-center justify-center gap-2 w-full p-5 rounded-2xl border border-layer-line bg-layer text-foreground text-lg font-semibold hover:bg-layer-hover disabled:cursor-default" data-index="1">✅ ${esc(t("True"))}</button>
+            </div>` : q.exerciseKind === "FillBlank" ? `<div class="mt-6" data-testid="quiz-fillblank">
+                <label for="qz-fillblank-input" class="sr-only">${esc(t("Answer"))}</label>
+                <input id="qz-fillblank-input" type="text" autocomplete="off" class="w-full py-3 px-4 rounded-2xl border border-layer-line bg-layer text-foreground text-lg text-center" placeholder="${esc(t("Answer"))}">
+                <button type="button" id="qz-fillblank-check" class="${primary} mt-3 w-full justify-center" data-testid="quiz-check">${esc(t("Check"))}</button>
+            </div>` : q.exerciseKind === "Reorder" ? `<div class="mt-6" data-testid="quiz-reorder">
+                <div id="qz-reorder-built" class="flex flex-wrap gap-2 min-h-14 p-3 rounded-2xl border-2 border-dashed border-layer-line mb-3"></div>
+                <div id="qz-reorder-pool" class="flex flex-wrap gap-2" role="group" aria-labelledby="qz-prompt">
+                    ${q.tokens.map((tok, i) => `<button type="button" class="quiz-token py-2 px-3.5 rounded-xl border border-layer-line bg-layer text-foreground text-sm font-medium hover:bg-layer-hover" data-pos="${i}">${esc(tok)}</button>`).join("")}
+                </div>
+                <button type="button" id="qz-reorder-check" class="${primary} mt-3 w-full justify-center hidden" data-testid="quiz-check">${esc(t("Check"))}</button>
+            </div>` : q.exerciseKind === "Match" ? `<div class="mt-6" data-testid="quiz-match">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-2" id="qz-match-left">${q.matchLeft.map((l, i) => `<button type="button" class="quiz-match-item w-full text-left py-2.5 px-3.5 rounded-xl border border-layer-line bg-layer text-foreground text-sm font-medium hover:bg-layer-hover" data-left="${i}">${esc(l)}</button>`).join("")}</div>
+                    <div class="space-y-2" id="qz-match-right">${q.matchRight.map((r, i) => `<button type="button" class="quiz-match-item w-full text-left py-2.5 px-3.5 rounded-xl border border-layer-line bg-layer text-foreground text-sm font-medium hover:bg-layer-hover" data-right="${i}">${esc(r)}</button>`).join("")}</div>
+                </div>
+                <button type="button" id="qz-match-check" class="${primary} mt-3 w-full justify-center hidden" data-testid="quiz-check">${esc(t("Check"))}</button>
+            </div>` : `<div class="mt-6 grid sm:grid-cols-2 ${q.options.every((o) => String(o).length < 40) && !q.code ? "2xl:grid-cols-4" : ""} gap-3" role="group" aria-labelledby="qz-prompt" data-testid="quiz-options">
                 ${q.options.map((o, i) => `<button type="button" class="quiz-option flex items-center gap-3 w-full text-left p-4 rounded-2xl border border-layer-line bg-layer text-foreground text-base font-medium hover:bg-layer-hover disabled:cursor-default" data-index="${i}">
                     <span class="size-7 shrink-0 rounded-full bg-surface grid place-items-center text-xs font-bold" aria-hidden="true">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}
-            </div>
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+            </div>`}
+            ${q.exerciseKind ? "" : `<div class="mt-4 flex flex-wrap items-center justify-between gap-2">
                 <button type="button" id="qz-hint" class="py-1.5 px-3.5 inline-flex items-center gap-x-1.5 text-sm font-medium rounded-full border border-layer-line bg-layer text-foreground hover:bg-layer-hover disabled:opacity-50" data-testid="hint">💡 <span id="qz-hint-label"></span></button>
                 ${ladderAllowed ? `<button type="button" id="qz-ladder-open" class="py-1.5 px-3.5 inline-flex items-center gap-x-1.5 text-sm font-medium rounded-full border border-layer-line bg-layer text-foreground hover:bg-layer-hover disabled:opacity-50" data-testid="ladder-open">🪜 ${esc(t("LadderOpen"))}</button>` : ""}
                 ${window.Edu.voice?.supported ? `<button type="button" id="qz-mic" class="py-1.5 px-3.5 inline-flex items-center gap-x-1.5 text-sm font-medium rounded-full border border-layer-line bg-layer text-foreground hover:bg-layer-hover" aria-pressed="false" data-testid="mic">🎤 ${esc(t("SayAnswer"))}</button>` : ""}
@@ -196,7 +215,7 @@
                     <button type="submit" class="${light}" id="qz-ladder-next" data-testid="ladder-next"></button>
                 </form>
                 <p class="mt-2 text-[11px] text-foreground/70">${esc(t("LadderRule"))}</p>
-            </section>
+            </section>`}
             <div id="qz-feedback" class="hidden mt-5"></div>`;
         stage.querySelectorAll("[data-index]").forEach((b) => b.addEventListener("click", () => answer(+b.dataset.index)));
         confidence = 1;
@@ -216,10 +235,16 @@
             });
         }));
         updateHint();
-        $("qz-hint").addEventListener("click", hint);
+        $("qz-hint")?.addEventListener("click", hint);
         $("qz-mic")?.addEventListener("click", () => autoListen());
+        $("qz-fillblank-check")?.addEventListener("click", checkFillBlank);
+        $("qz-fillblank-input")?.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkFillBlank(); } });
+        if (q.exerciseKind === "Reorder") wireReorder(q.tokens);
+        if (q.exerciseKind === "Match") wireMatch(q.matchLeft, q.matchRight);
         stage.querySelector("[data-index]")?.focus();
-        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + q.options.join(", ")),
+        $("qz-fillblank-input")?.focus();
+        const spokenOptions = q.exerciseKind === "TrueFalse" ? [t("False"), t("True")].join(", ") : q.options.join(", ");
+        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + spokenOptions),
             () => { if (oral) autoListen(); });
     }
 
@@ -332,29 +357,9 @@
         if ($("qz-think-mic")) window.Edu.voice.dictation($("qz-think-mic"), $("qz-think-text"), () => {});
     }
 
-    async function answer(index) {
-        const buttons = [...stage.querySelectorAll("[data-index]")];
-        if (buttons.some((b) => b.disabled && b.dataset.state !== "removed") || buttons[index].dataset.state === "removed") return;
-        buttons.forEach((b) => { b.disabled = true; });
-        stage.querySelectorAll("[data-confidence]").forEach((b) => { b.disabled = true; });
-        if ($("qz-hint")) $("qz-hint").disabled = true;
-        if ($("qz-ladder-open")) $("qz-ladder-open").disabled = true;
-        $("qz-ladder-form")?.querySelectorAll("input, button").forEach((x) => { x.disabled = true; });
-        const answered = { id: question.id, number: question.number };
-        let res;
-        try {
-            res = await api(`/api/quiz/${encodeURIComponent(question.id)}/answer`, { json: { choice: index, confidence, seconds: shownAt ? Math.max(1, Math.round((Date.now() - shownAt) / 1000)) : 0 } });
-        } catch (e) {
-            buttons.forEach((b) => { b.disabled = b.dataset.state === "removed"; });
-            $("qz-ladder-form")?.querySelectorAll("input, button").forEach((x) => { x.disabled = false; });
-            if ($("qz-ladder-open") && rungsUsed === 0) $("qz-ladder-open").disabled = false;
-            showError(e);
-            return;
-        }
-
+    function finishAnswer(res, isDrill, answered, markCorrect) {
         if (res.confidence !== 1 && res.confidence !== undefined) bets.push({ sure: res.confidence === 2, correct: res.correct });
-        buttons[res.correctIndex].dataset.state = "right";
-        if (!res.correct) buttons[index].dataset.state = "wrong";
+        markCorrect?.();
         $("qz-run").textContent = String(res.run);
         addXp(res.reward?.xp);
         toast(res.reward);
@@ -370,7 +375,7 @@
             <p class="mt-1 text-sm text-foreground/80">${esc(res.explanation)}</p>
             ${notes.map((n) => `<p class="mt-1 text-xs text-foreground/70">${esc(n)}</p>`).join("")}
             ${res.pace ? `<p class="mt-2 p-2.5 rounded-xl bg-white/60 dark:bg-white/10 text-sm text-foreground" data-testid="quiz-pace" data-pace="${esc(res.pace.kind)}">⏱️ ${esc(res.pace.text)}</p>` : ""}
-            ${res.correct || !Object.keys(reasons).length ? "" : thinkingBlock(answered.number)}
+            ${res.correct || !Object.keys(reasons).length || isDrill ? "" : thinkingBlock(answered.number)}
             <div class="mt-3 flex justify-end"><button type="button" class="${primary}" id="qz-next" data-testid="quiz-next">${esc(res.summary ? t("SeeResults") : t("Next"))} →</button></div>`;
         wireThinking(answered.id);
         const next = $("qz-next");
@@ -378,6 +383,119 @@
         const advance = () => res.summary ? summary(res.summary) : render(res.next);
         next.addEventListener("click", advance);
         say(res.correct ? t(kids ? "KidsRight" : "Right") : t("NotQuite") + ". " + res.explanation, () => { if (oral) advance(); });
+    }
+
+    async function answer(index) {
+        const buttons = [...stage.querySelectorAll("[data-index]")];
+        if (buttons.some((b) => b.disabled && b.dataset.state !== "removed") || buttons[index].dataset.state === "removed") return;
+        buttons.forEach((b) => { b.disabled = true; });
+        stage.querySelectorAll("[data-confidence]").forEach((b) => { b.disabled = true; });
+        if ($("qz-hint")) $("qz-hint").disabled = true;
+        if ($("qz-ladder-open")) $("qz-ladder-open").disabled = true;
+        $("qz-ladder-form")?.querySelectorAll("input, button").forEach((x) => { x.disabled = true; });
+        const answered = { id: question.id, number: question.number };
+        const seconds = shownAt ? Math.max(1, Math.round((Date.now() - shownAt) / 1000)) : 0;
+        const isDrill = question.exerciseKind === "TrueFalse";
+        let res;
+        try {
+            res = isDrill
+                ? await api(`/api/quiz/${encodeURIComponent(question.id)}/truefalse`, { json: { value: index === 1, confidence, seconds } })
+                : await api(`/api/quiz/${encodeURIComponent(question.id)}/answer`, { json: { choice: index, confidence, seconds } });
+        } catch (e) {
+            buttons.forEach((b) => { b.disabled = b.dataset.state === "removed"; });
+            $("qz-ladder-form")?.querySelectorAll("input, button").forEach((x) => { x.disabled = false; });
+            if ($("qz-ladder-open") && rungsUsed === 0) $("qz-ladder-open").disabled = false;
+            showError(e);
+            return;
+        }
+
+        finishAnswer(res, isDrill, answered, () => {
+            buttons[res.correctIndex].dataset.state = "right";
+            if (!res.correct) buttons[index].dataset.state = "wrong";
+        });
+    }
+
+    async function submitDrill(kind, extra, onError) {
+        const answered = { id: question.id, number: question.number };
+        const seconds = shownAt ? Math.max(1, Math.round((Date.now() - shownAt) / 1000)) : 0;
+        stage.querySelectorAll("[data-confidence]").forEach((b) => { b.disabled = true; });
+        let res;
+        try {
+            res = await api(`/api/quiz/${encodeURIComponent(question.id)}/${kind}`, { json: { ...extra, confidence, seconds } });
+        } catch (e) {
+            stage.querySelectorAll("[data-confidence]").forEach((b) => { b.disabled = false; });
+            onError?.();
+            showError(e);
+            return;
+        }
+        finishAnswer(res, true, answered, null);
+    }
+
+    function checkFillBlank() {
+        const b = $("qz-fillblank-check");
+        const input = $("qz-fillblank-input");
+        if (!b || !input || b.disabled) return;
+        b.disabled = true; input.disabled = true;
+        submitDrill("fillblank", { value: input.value.trim() }, () => { b.disabled = false; input.disabled = false; });
+    }
+
+    function wireReorder(tokens) {
+        const poolButtons = [...$("qz-reorder-pool").querySelectorAll("[data-pos]")];
+        const builtEl = $("qz-reorder-built");
+        const checkBtn = $("qz-reorder-check");
+        const order = [];
+        function renderBuilt() {
+            builtEl.innerHTML = order.map((pos) => `<button type="button" class="quiz-token py-2 px-3.5 rounded-xl border border-primary bg-primary/10 text-foreground text-sm font-medium" data-pos="${pos}">${esc(tokens[pos])}</button>`).join("");
+            builtEl.querySelectorAll("[data-pos]").forEach((b) => b.addEventListener("click", () => {
+                const pos = +b.dataset.pos;
+                order.splice(order.indexOf(pos), 1);
+                poolButtons[pos].disabled = false;
+                poolButtons[pos].classList.remove("opacity-30");
+                renderBuilt();
+            }));
+            checkBtn.classList.toggle("hidden", order.length !== tokens.length);
+        }
+        poolButtons.forEach((b) => b.addEventListener("click", () => {
+            if (b.disabled) return;
+            const pos = +b.dataset.pos;
+            order.push(pos);
+            b.disabled = true;
+            b.classList.add("opacity-30");
+            renderBuilt();
+        }));
+        checkBtn.addEventListener("click", () => {
+            checkBtn.disabled = true;
+            submitDrill("reorder", { order: order.map((pos) => tokens[pos]) }, () => { checkBtn.disabled = false; });
+        });
+    }
+
+    function wireMatch(lefts, rights) {
+        const leftEls = [...$("qz-match-left").querySelectorAll("[data-left]")];
+        const rightEls = [...$("qz-match-right").querySelectorAll("[data-right]")];
+        const checkBtn = $("qz-match-check");
+        const pairs = {};
+        let selectedLeft = null;
+        leftEls.forEach((el) => el.addEventListener("click", () => {
+            if (el.disabled) return;
+            leftEls.forEach((x) => x.classList.remove("border-primary", "bg-primary/10"));
+            selectedLeft = el;
+            el.classList.add("border-primary", "bg-primary/10");
+        }));
+        rightEls.forEach((el) => el.addEventListener("click", () => {
+            if (el.disabled || !selectedLeft) return;
+            pairs[lefts[+selectedLeft.dataset.left]] = rights[+el.dataset.right];
+            selectedLeft.disabled = true;
+            selectedLeft.classList.remove("border-primary", "bg-primary/10");
+            selectedLeft.classList.add("opacity-40");
+            el.disabled = true;
+            el.classList.add("opacity-40");
+            selectedLeft = null;
+            checkBtn.classList.toggle("hidden", Object.keys(pairs).length !== lefts.length);
+        }));
+        checkBtn.addEventListener("click", () => {
+            checkBtn.disabled = true;
+            submitDrill("match", { pairs }, () => { checkBtn.disabled = false; });
+        });
     }
 
     function summary(s) {

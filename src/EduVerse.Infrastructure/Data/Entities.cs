@@ -393,6 +393,9 @@ public sealed class QuizAttempt
 
     public string CurrentJson { get; set; } = "";
 
+    /// <summary>Set instead of <see cref="CurrentJson"/> when the current item is a Duolingo-style drill (true/false, etc.) rather than a classic multiple-choice question.</summary>
+    public string? CurrentExerciseJson { get; set; }
+
     public string? PlacementJson { get; set; }
 
     public string? PoolJson { get; set; }

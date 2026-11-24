@@ -73,14 +73,33 @@ public class DefenceStoreTests(Database database) : IClassFixture<Database>
         var unfinished = await quizzes.StartAsync(omar, Area.Mathematics, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
         Assert.Empty(await defences.StartAsync(omar, unfinished.AttemptId, TeachLanguage.English));
 
-        // Answer a whole test with the right options (the test knows them)
+        // Answer a whole test with the right options (the test knows them; any of the 4 drill kinds the quiz
+        // happens to serve — task #73 mixes all of them in now, not just true/false — is answered right too via
+        // its own stored answer key).
         var attempt = unfinished.AttemptId;
         var q = unfinished;
         while (true)
         {
-            var correct = await CorrectIndexAsync(db, attempt, q.Number);
-            var r = await quizzes.AnswerAsync(omar, attempt, correct, TeachLanguage.English);
-            if (r!.Next is null)
+            var row = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == attempt);
+            AnswerResult r;
+            if (row.CurrentExerciseJson is { } exerciseJson)
+            {
+                var exercise = JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, Web)!;
+                r = (await (exercise.Kind switch
+                {
+                    ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(omar, attempt, exercise.Answer!, 1, 0, TeachLanguage.English),
+                    ExerciseKind.Reorder => quizzes.AnswerReorderAsync(omar, attempt, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
+                    ExerciseKind.Match => quizzes.AnswerMatchAsync(omar, attempt, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
+                    _ => quizzes.AnswerTrueFalseAsync(omar, attempt, exercise.CorrectBool!.Value, 1, 0, TeachLanguage.English),
+                }))!;
+            }
+            else
+            {
+                var correct = await CorrectIndexAsync(db, attempt, q.Number);
+                r = (await quizzes.AnswerAsync(omar, attempt, correct, TeachLanguage.English))!;
+            }
+
+            if (r.Next is null)
             {
                 break;
             }
@@ -132,12 +151,41 @@ public class DefenceWebTests(App app) : IClassFixture<App>
         for (var attempt = 0; attempt < 6 && id is null; attempt++)
         {
             var start = await (await client.PostAsJsonAsync("/api/quiz/start", new { area = "Mathematics", level = "Primary3", mode = "Practice" })).Content.ReadFromJsonAsync<JsonElement>();
-            var candidate = start.GetProperty("question").GetProperty("id").GetString()!;
-            var right = 0;
+            var current = start.GetProperty("question");
+            var candidate = current.GetProperty("id").GetString()!;
+            var right = 0; // classic (multiple-choice) answers only: a drill isn't logged as a QuizAnswer, so a
+                            // correct drill alone would leave nothing for the defence endpoint to pick from (task #70's
+                            // documented limitation) and this loop would wrongly think the attempt is defendable.
             for (var i = 0; i < 10; i++)
             {
-                var answer = await (await client.PostAsJsonAsync($"/api/quiz/{candidate}/answer", new { choice = i % 4, confidence = 1 })).Content.ReadFromJsonAsync<JsonElement>();
-                right += answer.GetProperty("correct").GetBoolean() ? 1 : 0;
+                // A drill (no options) is answered on its own endpoint, exactly as the real quiz page does; which of
+                // the 4 drill kinds shows up is now mixed for every subject (task #73), not just true/false.
+                var isDrill = current.TryGetProperty("exerciseKind", out var kind) && kind.ValueKind != JsonValueKind.Null;
+                var (url, body) = isDrill
+                    ? kind.GetString() switch
+                    {
+                        "FillBlank" => ($"/api/quiz/{candidate}/fillblank", (object)new { value = "x", confidence = 1 }),
+                        "Reorder" => ($"/api/quiz/{candidate}/reorder", new { order = current.GetProperty("tokens").EnumerateArray().Select(t => t.GetString()).ToArray(), confidence = 1 }),
+                        "Match" => ($"/api/quiz/{candidate}/match", new
+                        {
+                            pairs = current.GetProperty("matchLeft").EnumerateArray().Select(t => t.GetString()!)
+                                .Zip(current.GetProperty("matchRight").EnumerateArray().Select(t => t.GetString()!))
+                                .ToDictionary(p => p.First, p => p.Second),
+                            confidence = 1,
+                        }),
+                        _ => ($"/api/quiz/{candidate}/truefalse", new { value = true, confidence = 1 }),
+                    }
+                    : ($"/api/quiz/{candidate}/answer", new { choice = i % 4, confidence = 1 });
+                var answer = await (await client.PostAsJsonAsync(url, body)).Content.ReadFromJsonAsync<JsonElement>();
+                if (!isDrill && answer.GetProperty("correct").GetBoolean())
+                {
+                    right++;
+                }
+
+                if (answer.TryGetProperty("next", out var next) && next.ValueKind != JsonValueKind.Null)
+                {
+                    current = next;
+                }
             }
 
             id = right > 0 ? candidate : null;

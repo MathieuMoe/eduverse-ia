@@ -115,6 +115,7 @@
   <data name="Js_QuestionsTitle" xml:space="preserve"><value>Questions</value></data>
   <data name="Js_ShowAnswer" xml:space="preserve"><value>Voir la réponse</value></data>
   <data name="Js_Answer" xml:space="preserve"><value>Réponse</value></data>
+  <data name="Js_Check" xml:space="preserve"><value>Vérifier</value></data>
   <data name="Js_Activity" xml:space="preserve"><value>Activité</value></data>
   <data name="Js_TeacherTips" xml:space="preserve"><value>Conseils pour la classe</value></data>
   <data name="Js_NameLine" xml:space="preserve"><value>Nom :</value></data>
@@ -852,6 +853,8 @@
   <data name="Js_QuestionOf" xml:space="preserve"><value>Question {0} sur {1}</value></data>
   <data name="Js_DifficultyN" xml:space="preserve"><value>Difficulté {0} sur 3</value></data>
   <data name="Js_Right" xml:space="preserve"><value>Bonne réponse !</value></data>
+  <data name="Js_True" xml:space="preserve"><value>Vrai</value></data>
+  <data name="Js_False" xml:space="preserve"><value>Faux</value></data>
   <data name="Js_KidsRight" xml:space="preserve"><value>Bravo ! 🎉</value></data>
   <data name="Js_Next" xml:space="preserve"><value>Suivant</value></data>
   <data name="Js_SeeResults" xml:space="preserve"><value>Voir le résultat</value></data>

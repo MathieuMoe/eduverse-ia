@@ -1,0 +1,1113 @@
+using EduVerse.Core.Common;
+
+namespace EduVerse.Core.Catalog;
+
+/// <summary>
+/// Demo content for the Duolingo-style exercise kinds (<see cref="ExerciseKind"/>) that are mixed into Practice-mode
+/// quizzes alongside classic multiple-choice questions. True/False now covers all 10 subjects (task #72); the other
+/// three kinds (fill-the-blank, reorder, match) are filled in incrementally in later passes, starting with the
+/// subjects where they fit most naturally (Language, ForeignLanguage — task #71).
+/// </summary>
+public static class ExerciseBank
+{
+    private sealed record TrueFalseItem(string Topic, int Difficulty, Text Prompt, bool Answer, Text Explanation);
+
+    private static readonly IReadOnlyList<TrueFalseItem> MathTrueFalse =
+    [
+        new("math.compare", 1,
+            Text.Of("7 is bigger than 4.|7 es más grande que 4.|7 est plus grand que 4.|7 és més gran que 4."),
+            true,
+            Text.Of("Yes: 7 comes after 4, so it's bigger.|Sí: 7 va después de 4, así que es más grande.|Oui : 7 vient après 4, donc c'est plus grand.|Sí: 7 va després de 4, així que és més gran.")),
+        new("math.add", 1,
+            Text.Of("3 + 4 = 8.|3 + 4 = 8.|3 + 4 = 8.|3 + 4 = 8."),
+            false,
+            Text.Of("No: 3 + 4 = 7, not 8.|No: 3 + 4 = 7, no 8.|Non : 3 + 4 = 7, pas 8.|No: 3 + 4 = 7, no 8.")),
+        new("math.percent", 2,
+            Text.Of("50% of 20 is 10.|El 50% de 20 es 10.|50 % de 20, c'est 10.|El 50% de 20 és 10."),
+            true,
+            Text.Of("Yes: 50% is half, and half of 20 is 10.|Sí: el 50% es la mitad, y la mitad de 20 es 10.|Oui : 50 % c'est la moitié, et la moitié de 20 c'est 10.|Sí: el 50% és la meitat, i la meitat de 20 és 10.")),
+        new("math.integers", 2,
+            Text.Of("-3 is bigger than -1.|-3 es más grande que -1.|-3 est plus grand que -1.|-3 és més gran que -1."),
+            false,
+            Text.Of("No: on the number line, -1 is to the right of -3, so -1 is bigger.|No: en la recta numérica, -1 está a la derecha de -3, así que -1 es más grande.|Non : sur la droite numérique, -1 est à droite de -3, donc -1 est plus grand.|No: a la recta numèrica, -1 està a la dreta de -3, així que -1 és més gran.")),
+        new("math.pythagoras", 3,
+            Text.Of("In a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides.|En un triángulo rectángulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados de los otros dos lados.|Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés.|En un triangle rectangle, el quadrat de la hipotenusa és igual a la suma dels quadrats dels altres dos costats."),
+            true,
+            Text.Of("Yes: that's the Pythagorean theorem, a² + b² = c².|Sí: es el teorema de Pitágoras, a² + b² = c².|Oui : c'est le théorème de Pythagore, a² + b² = c².|Sí: és el teorema de Pitàgores, a² + b² = c².")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> PhysicsTrueFalse =
+    [
+        new("physics.boiling", 1,
+            Text.Of("Water boils at 100°C at sea level.|El agua hierve a 100°C al nivel del mar.|L'eau bout à 100°C au niveau de la mer.|L'aigua bull a 100°C al nivell del mar."),
+            true,
+            Text.Of("Yes: at normal atmospheric pressure, water's boiling point is 100°C.|Sí: a la presión atmosférica normal, el punto de ebullición del agua es 100°C.|Oui : à la pression atmosphérique normale, le point d'ébullition de l'eau est 100°C.|Sí: a la pressió atmosfèrica normal, el punt d'ebullició de l'aigua és 100°C.")),
+        new("physics.orbit", 1,
+            Text.Of("The Earth orbits the Sun.|La Tierra orbita alrededor del Sol.|La Terre tourne autour du Soleil.|La Terra orbita al voltant del Sol."),
+            true,
+            Text.Of("Yes: the Earth completes one orbit around the Sun roughly every 365 days.|Sí: la Tierra completa una vuelta alrededor del Sol cada 365 días aproximadamente.|Oui : la Terre fait un tour complet autour du Soleil en environ 365 jours.|Sí: la Terra completa una volta al voltant del Sol cada 365 dies aproximadament.")),
+        new("physics.light_sound", 2,
+            Text.Of("Light travels faster than sound.|La luz viaja más rápido que el sonido.|La lumière voyage plus vite que le son.|La llum viatja més ràpid que el so."),
+            true,
+            Text.Of("Yes: that's why you see lightning before you hear the thunder.|Sí: por eso se ve el relámpago antes de oír el trueno.|Oui : c'est pour ça qu'on voit l'éclair avant d'entendre le tonnerre.|Sí: per això es veu el llamp abans de sentir el tro.")),
+        new("physics.vacuum_fall", 2,
+            Text.Of("In a vacuum, a feather and a hammer fall at the same speed.|En el vacío, una pluma y un martillo caen a la misma velocidad.|Dans le vide, une plume et un marteau tombent à la même vitesse.|Al buit, una ploma i un martell cauen a la mateixa velocitat."),
+            true,
+            Text.Of("Yes: without air resistance, gravity accelerates every object equally, whatever its mass.|Sí: sin resistencia del aire, la gravedad acelera a todos los objetos por igual, sea cual sea su masa.|Oui : sans résistance de l'air, la gravité accélère tous les objets de la même façon, quelle que soit leur masse.|Sí: sense resistència de l'aire, la gravetat accelera tots els objectes per igual, sigui quina sigui la seva massa.")),
+        new("physics.energy", 3,
+            Text.Of("Energy can be created out of nothing.|La energía se puede crear de la nada.|L'énergie peut être créée à partir de rien.|L'energia es pot crear del no-res."),
+            false,
+            Text.Of("No: the law of conservation of energy says energy can only change form, never be created or destroyed.|No: la ley de conservación de la energía dice que la energía solo puede cambiar de forma, nunca crearse ni destruirse.|Non : la loi de conservation de l'énergie dit que l'énergie ne peut que changer de forme, jamais être créée ni détruite.|No: la llei de conservació de l'energia diu que l'energia només pot canviar de forma, mai crear-se ni destruir-se.")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> ChemistryTrueFalse =
+    [
+        new("chemistry.water", 1,
+            Text.Of("Water is made of hydrogen and oxygen.|El agua está formada por hidrógeno y oxígeno.|L'eau est composée d'hydrogène et d'oxygène.|L'aigua està formada per hidrogen i oxigen."),
+            true,
+            Text.Of("Yes: a water molecule is H₂O — two hydrogen atoms and one oxygen atom.|Sí: una molécula de agua es H₂O, dos átomos de hidrógeno y uno de oxígeno.|Oui : une molécule d'eau est H₂O, deux atomes d'hydrogène et un d'oxygène.|Sí: una molècula d'aigua és H₂O, dos àtoms d'hidrogen i un d'oxigen.")),
+        new("chemistry.salt", 1,
+            Text.Of("Table salt is made of carbon and oxygen.|La sal de mesa está formada por carbono y oxígeno.|Le sel de table est composé de carbone et d'oxygène.|La sal de taula està formada per carboni i oxigen."),
+            false,
+            Text.Of("No: table salt (NaCl) is made of sodium and chlorine.|No: la sal de mesa (NaCl) está formada por sodio y cloro.|Non : le sel de table (NaCl) est composé de sodium et de chlore.|No: la sal de taula (NaCl) està formada per sodi i clor.")),
+        new("chemistry.ice", 2,
+            Text.Of("Ice is denser than liquid water.|El hielo es más denso que el agua líquida.|La glace est plus dense que l'eau liquide.|El gel és més dens que l'aigua líquida."),
+            false,
+            Text.Of("No: ice is less dense than liquid water, which is exactly why it floats.|No: el hielo es menos denso que el agua líquida, por eso flota.|Non : la glace est moins dense que l'eau liquide, c'est pour ça qu'elle flotte.|No: el gel és menys dens que l'aigua líquida, per això flota.")),
+        new("chemistry.ph", 2,
+            Text.Of("A pH of 7 is neutral.|Un pH de 7 es neutro.|Un pH de 7 est neutre.|Un pH de 7 és neutre."),
+            true,
+            Text.Of("Yes: pH 7 is neutral; below 7 is acidic, above 7 is basic.|Sí: el pH 7 es neutro; por debajo de 7 es ácido, por encima de 7 es básico.|Oui : le pH 7 est neutre ; en dessous de 7 c'est acide, au-dessus c'est basique.|Sí: el pH 7 és neutre; per sota de 7 és àcid, per sobre de 7 és bàsic.")),
+        new("chemistry.protons", 3,
+            Text.Of("Atoms of the same element always have the same number of protons.|Los átomos de un mismo elemento siempre tienen el mismo número de protones.|Les atomes d'un même élément ont toujours le même nombre de protons.|Els àtoms d'un mateix element sempre tenen el mateix nombre de protons."),
+            true,
+            Text.Of("Yes: the number of protons (the atomic number) is exactly what defines an element.|Sí: el número de protones (el número atómico) es precisamente lo que define a un elemento.|Oui : le nombre de protons (le numéro atomique) est précisément ce qui définit un élément.|Sí: el nombre de protons (el nombre atòmic) és precisament el que defineix un element.")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> BiologyTrueFalse =
+    [
+        new("biology.heart", 1,
+            Text.Of("Humans have one heart.|Los humanos tenemos un corazón.|Les humains ont un cœur.|Els humans tenim un cor."),
+            true,
+            Text.Of("Yes: humans have a single heart, with four chambers.|Sí: los humanos tenemos un solo corazón, con cuatro cámaras.|Oui : les humains ont un seul cœur, avec quatre cavités.|Sí: els humans tenim un sol cor, amb quatre cavitats.")),
+        new("biology.photosynthesis", 1,
+            Text.Of("Plants make their own food using sunlight.|Las plantas fabrican su propio alimento usando la luz del sol.|Les plantes fabriquent leur propre nourriture grâce à la lumière du soleil.|Les plantes fabriquen el seu propi aliment fent servir la llum del sol."),
+            true,
+            Text.Of("Yes: that process is called photosynthesis.|Sí: ese proceso se llama fotosíntesis.|Oui : ce processus s'appelle la photosynthèse.|Sí: aquest procés s'anomena fotosíntesi.")),
+        new("biology.bones", 2,
+            Text.Of("Adults have more bones than babies.|Los adultos tienen más huesos que los bebés.|Les adultes ont plus d'os que les bébés.|Els adults tenen més ossos que els nadons."),
+            false,
+            Text.Of("No: babies are born with more bones, and some fuse together as they grow.|No: los bebés nacen con más huesos, y algunos se fusionan a medida que crecen.|Non : les bébés naissent avec plus d'os, et certains fusionnent en grandissant.|No: els nadons neixen amb més ossos, i alguns es fusionen a mesura que creixen.")),
+        new("biology.cells", 2,
+            Text.Of("All living things are made of cells.|Todos los seres vivos están formados por células.|Tous les êtres vivants sont constitués de cellules.|Tots els éssers vius estan formats per cèl·lules."),
+            true,
+            Text.Of("Yes: the cell is the basic unit of every living thing, from bacteria to humans.|Sí: la célula es la unidad básica de todo ser vivo, desde las bacterias hasta los humanos.|Oui : la cellule est l'unité de base de tout être vivant, des bactéries aux humains.|Sí: la cèl·lula és la unitat bàsica de tot ésser viu, des dels bacteris fins als humans.")),
+        new("biology.dna", 3,
+            Text.Of("DNA carries genetic information in humans.|El ADN contiene la información genética en los humanos.|L'ADN porte l'information génétique chez les humains.|L'ADN conté la informació genètica en els humans."),
+            true,
+            Text.Of("Yes: DNA stores the instructions that build and run every cell in the body.|Sí: el ADN guarda las instrucciones que construyen y hacen funcionar cada célula del cuerpo.|Oui : l'ADN stocke les instructions qui construisent et font fonctionner chaque cellule du corps.|Sí: l'ADN guarda les instruccions que construeixen i fan funcionar cada cèl·lula del cos.")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> HistoryTrueFalse =
+    [
+        new("history.pyramids", 1,
+            Text.Of("The pyramids of Egypt were built by the Romans.|Las pirámides de Egipto fueron construidas por los romanos.|Les pyramides d'Égypte ont été construites par les Romains.|Les piràmides d'Egipte van ser construïdes pels romans."),
+            false,
+            Text.Of("No: the pyramids were built by the ancient Egyptians, long before Rome existed.|No: las pirámides fueron construidas por los antiguos egipcios, mucho antes de que existiera Roma.|Non : les pyramides ont été construites par les anciens Égyptiens, bien avant que Rome n'existe.|No: les piràmides van ser construïdes pels antics egipcis, molt abans que existís Roma.")),
+        new("history.ww2", 2,
+            Text.Of("World War II ended in 1945.|La Segunda Guerra Mundial terminó en 1945.|La Seconde Guerre mondiale s'est terminée en 1945.|La Segona Guerra Mundial va acabar el 1945."),
+            true,
+            Text.Of("Yes: the war ended in 1945, with Germany surrendering in May and Japan in September.|Sí: la guerra terminó en 1945, con la rendición de Alemania en mayo y la de Japón en septiembre.|Oui : la guerre s'est terminée en 1945, avec la capitulation de l'Allemagne en mai et celle du Japon en septembre.|Sí: la guerra va acabar el 1945, amb la rendició d'Alemanya al maig i la del Japó al setembre.")),
+        new("history.columbus", 2,
+            Text.Of("Christopher Columbus was the first person to reach the Americas.|Cristóbal Colón fue la primera persona en llegar a América.|Christophe Colomb a été la première personne à atteindre les Amériques.|Cristòfor Colom va ser la primera persona a arribar a Amèrica."),
+            false,
+            Text.Of("No: Indigenous peoples had already lived in the Americas for thousands of years before Columbus arrived.|No: los pueblos indígenas ya vivían en América desde hacía miles de años antes de que llegara Colón.|Non : les peuples autochtones vivaient déjà en Amérique depuis des milliers d'années avant l'arrivée de Colomb.|No: els pobles indígenes ja vivien a Amèrica des de feia milers d'anys abans que hi arribés Colom.")),
+        new("history.berlin_wall", 2,
+            Text.Of("The Berlin Wall fell in 1989.|El Muro de Berlín cayó en 1989.|Le mur de Berlin est tombé en 1989.|El Mur de Berlín va caure el 1989."),
+            true,
+            Text.Of("Yes: the Berlin Wall fell in November 1989, a key moment in the end of the Cold War.|Sí: el Muro de Berlín cayó en noviembre de 1989, un momento clave en el fin de la Guerra Fría.|Oui : le mur de Berlin est tombé en novembre 1989, un moment clé de la fin de la guerre froide.|Sí: el Mur de Berlín va caure el novembre de 1989, un moment clau en la fi de la Guerra Freda.")),
+        new("history.french_revolution", 3,
+            Text.Of("The French Revolution began in 1789.|La Revolución Francesa comenzó en 1789.|La Révolution française a commencé en 1789.|La Revolució Francesa va començar el 1789."),
+            true,
+            Text.Of("Yes: it began in 1789, with the storming of the Bastille in July.|Sí: comenzó en 1789, con la toma de la Bastilla en julio.|Oui : elle a commencé en 1789, avec la prise de la Bastille en juillet.|Sí: va començar el 1789, amb la presa de la Bastilla al juliol.")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> GeographyTrueFalse =
+    [
+        new("geography.paris", 1,
+            Text.Of("Paris is the capital of France.|París es la capital de Francia.|Paris est la capitale de la France.|París és la capital de França."),
+            true,
+            Text.Of("Yes: Paris has been France's capital for centuries.|Sí: París es la capital de Francia desde hace siglos.|Oui : Paris est la capitale de la France depuis des siècles.|Sí: París és la capital de França des de fa segles.")),
+        new("geography.continent", 1,
+            Text.Of("Africa is the largest continent.|África es el continente más grande.|L'Afrique est le plus grand continent.|L'Àfrica és el continent més gran."),
+            false,
+            Text.Of("No: Asia is the largest continent; Africa is the second largest.|No: Asia es el continente más grande; África es el segundo más grande.|Non : l'Asie est le plus grand continent ; l'Afrique est le deuxième.|No: Àsia és el continent més gran; l'Àfrica és el segon més gran.")),
+        new("geography.amazon", 2,
+            Text.Of("The Amazon rainforest is located in South America.|La selva amazónica está ubicada en Sudamérica.|La forêt amazonienne se trouve en Amérique du Sud.|La selva amazònica es troba a Sud-amèrica."),
+            true,
+            Text.Of("Yes: the Amazon spans several South American countries, mostly Brazil.|Sí: el Amazonas se extiende por varios países sudamericanos, sobre todo Brasil.|Oui : l'Amazonie s'étend sur plusieurs pays d'Amérique du Sud, surtout le Brésil.|Sí: l'Amazones s'estén per diversos països sud-americans, sobretot el Brasil.")),
+        new("geography.pacific", 2,
+            Text.Of("The Pacific is the largest ocean on Earth.|El Pacífico es el océano más grande de la Tierra.|Le Pacifique est le plus grand océan de la Terre.|El Pacífic és l'oceà més gran de la Terra."),
+            true,
+            Text.Of("Yes: the Pacific Ocean covers more area than any other ocean.|Sí: el océano Pacífico cubre más superficie que cualquier otro océano.|Oui : l'océan Pacifique couvre plus de surface que tout autre océan.|Sí: l'oceà Pacífic cobreix més superfície que qualsevol altre oceà.")),
+        new("geography.everest", 3,
+            Text.Of("Mount Everest is the tallest mountain on Earth, measured from sea level.|El Everest es la montaña más alta de la Tierra, medida desde el nivel del mar.|L'Everest est la plus haute montagne de la Terre, mesurée depuis le niveau de la mer.|L'Everest és la muntanya més alta de la Terra, mesurada des del nivell del mar."),
+            true,
+            Text.Of("Yes: at 8,849 meters above sea level, Everest is the highest point on Earth.|Sí: con 8.849 metros sobre el nivel del mar, el Everest es el punto más alto de la Tierra.|Oui : avec 8 849 mètres au-dessus du niveau de la mer, l'Everest est le point le plus haut de la Terre.|Sí: amb 8.849 metres sobre el nivell del mar, l'Everest és el punt més alt de la Terra.")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> EconomicsTrueFalse =
+    [
+        new("economics.scarcity", 1,
+            Text.Of("Scarcity means there's an unlimited supply of resources.|La escasez significa que hay una oferta ilimitada de recursos.|La rareté signifie qu'il existe une offre illimitée de ressources.|L'escassetat significa que hi ha una oferta il·limitada de recursos."),
+            false,
+            Text.Of("No: scarcity means resources are limited compared to what people want.|No: la escasez significa que los recursos son limitados en comparación con lo que la gente quiere.|Non : la rareté signifie que les ressources sont limitées par rapport à ce que les gens veulent.|No: l'escassetat significa que els recursos són limitats en comparació amb el que la gent vol.")),
+        new("economics.supply", 2,
+            Text.Of("When supply increases and demand stays the same, prices tend to fall.|Cuando la oferta aumenta y la demanda se mantiene igual, los precios tienden a bajar.|Quand l'offre augmente et que la demande reste la même, les prix ont tendance à baisser.|Quan l'oferta augmenta i la demanda es manté igual, els preus tendeixen a baixar."),
+            true,
+            Text.Of("Yes: more supply with the same demand usually pushes prices down.|Sí: más oferta con la misma demanda suele hacer bajar los precios.|Oui : plus d'offre avec la même demande fait généralement baisser les prix.|Sí: més oferta amb la mateixa demanda sol fer baixar els preus.")),
+        new("economics.inflation", 2,
+            Text.Of("Inflation means prices are falling over time.|La inflación significa que los precios bajan con el tiempo.|L'inflation signifie que les prix baissent avec le temps.|La inflació significa que els preus baixen amb el temps."),
+            false,
+            Text.Of("No: inflation means prices are rising over time, so money buys less.|No: la inflación significa que los precios suben con el tiempo, así que el dinero compra menos.|Non : l'inflation signifie que les prix augmentent avec le temps, donc l'argent achète moins.|No: la inflació significa que els preus pugen amb el temps, així que els diners compren menys.")),
+        new("economics.central_bank", 2,
+            Text.Of("A country's central bank can set interest rates.|El banco central de un país puede fijar los tipos de interés.|La banque centrale d'un pays peut fixer les taux d'intérêt.|El banc central d'un país pot fixar els tipus d'interès."),
+            true,
+            Text.Of("Yes: setting interest rates is one of a central bank's main tools.|Sí: fijar los tipos de interés es una de las principales herramientas de un banco central.|Oui : fixer les taux d'intérêt est l'un des principaux outils d'une banque centrale.|Sí: fixar els tipus d'interès és una de les principals eines d'un banc central.")),
+        new("economics.gdp", 3,
+            Text.Of("GDP measures the total value of goods and services produced in a country.|El PIB mide el valor total de los bienes y servicios producidos en un país.|Le PIB mesure la valeur totale des biens et services produits dans un pays.|El PIB mesura el valor total dels béns i serveis produïts en un país."),
+            true,
+            Text.Of("Yes: Gross Domestic Product adds up the value of everything produced in a country, usually per year.|Sí: el Producto Interior Bruto suma el valor de todo lo producido en un país, normalmente por año.|Oui : le Produit intérieur brut additionne la valeur de tout ce qui est produit dans un pays, en général par an.|Sí: el Producte Interior Brut suma el valor de tot el que es produeix en un país, normalment per any.")),
+    ];
+
+    private static readonly IReadOnlyList<TrueFalseItem> ProgrammingTrueFalse =
+    [
+        new("programming.loop", 1,
+            Text.Of("A loop lets code repeat multiple times.|Un bucle permite que el código se repita varias veces.|Une boucle permet au code de se répéter plusieurs fois.|Un bucle permet que el codi es repeteixi diverses vegades."),
+            true,
+            Text.Of("Yes: loops (like 'for' or 'while') run the same code again without rewriting it each time.|Sí: los bucles (como 'for' o 'while') ejecutan el mismo código otra vez sin tener que reescribirlo cada vez.|Oui : les boucles (comme 'for' ou 'while') exécutent le même code à nouveau sans le réécrire à chaque fois.|Sí: els bucles (com 'for' o 'while') executen el mateix codi una altra vegada sense haver-lo de reescriure cada cop.")),
+        new("programming.variable", 1,
+            Text.Of("A variable can only ever store one value for the whole life of a program.|Una variable solo puede almacenar un valor durante toda la vida de un programa.|Une variable ne peut stocker qu'une seule valeur pendant toute la vie d'un programme.|Una variable només pot emmagatzemar un valor durant tota la vida d'un programa."),
+            false,
+            Text.Of("No: a variable's value can be changed (reassigned) as many times as the program needs.|No: el valor de una variable se puede cambiar (reasignar) tantas veces como el programa necesite.|Non : la valeur d'une variable peut être modifiée (réaffectée) autant de fois que le programme en a besoin.|No: el valor d'una variable es pot canviar (reassignar) tantes vegades com el programa necessiti.")),
+        new("programming.bug", 2,
+            Text.Of("A \"bug\" in programming is a mistake that makes a program behave incorrectly.|Un \"bug\" en programación es un error que hace que un programa se comporte de forma incorrecta.|Un \"bug\" en programmation est une erreur qui fait que le programme se comporte mal.|Un \"bug\" en programació és un error que fa que un programa es comporti de manera incorrecta."),
+            true,
+            Text.Of("Yes: a bug is any mistake in the code that causes unexpected or wrong behavior.|Sí: un bug es cualquier error en el código que provoca un comportamiento inesperado o incorrecto.|Oui : un bug est toute erreur dans le code qui provoque un comportement inattendu ou incorrect.|Sí: un bug és qualsevol error en el codi que provoca un comportament inesperat o incorrecte.")),
+        new("programming.binary", 2,
+            Text.Of("Computers store data internally using only 0s and 1s.|Los ordenadores almacenan los datos internamente usando solo 0 y 1.|Les ordinateurs stockent les données en interne en utilisant seulement des 0 et des 1.|Els ordinadors emmagatzemen les dades internament fent servir només 0 i 1."),
+            true,
+            Text.Of("Yes: that's binary code — every piece of data a computer handles is ultimately 0s and 1s.|Sí: eso es el código binario; todo dato que maneja un ordenador es, en el fondo, 0 y 1.|Oui : c'est le code binaire ; toute donnée qu'un ordinateur traite est, au fond, des 0 et des 1.|Sí: això és el codi binari; tota dada que gestiona un ordinador és, al fons, 0 i 1.")),
+        new("programming.html", 3,
+            Text.Of("HTML is a programming language.|HTML es un lenguaje de programación.|HTML est un langage de programmation.|HTML és un llenguatge de programació."),
+            false,
+            Text.Of("No: HTML is a markup language — it describes a page's structure, but it can't do logic like loops or conditions on its own.|No: HTML es un lenguaje de marcado; describe la estructura de una página, pero no puede hacer lógica como bucles o condiciones por sí solo.|Non : HTML est un langage de balisage ; il décrit la structure d'une page, mais ne peut pas faire de logique comme des boucles ou des conditions à lui seul.|No: HTML és un llenguatge de marcatge; descriu l'estructura d'una pàgina, però no pot fer lògica com bucles o condicions per si sol.")),
+    ];
+
+    private static readonly Dictionary<Area, IReadOnlyList<TrueFalseItem>> Banks = new()
+    {
+        [Area.Mathematics] = MathTrueFalse,
+        [Area.Physics] = PhysicsTrueFalse,
+        [Area.Chemistry] = ChemistryTrueFalse,
+        [Area.Biology] = BiologyTrueFalse,
+        [Area.History] = HistoryTrueFalse,
+        [Area.Geography] = GeographyTrueFalse,
+        [Area.Economics] = EconomicsTrueFalse,
+        [Area.Programming] = ProgrammingTrueFalse,
+    };
+
+    /// <summary>The 3 difficulty tiers every bank is organized into, from a subject's level.</summary>
+    private static int DifficultyFor(Level level) => level switch
+    {
+        Level.EarlyYears or Level.Primary1 or Level.Primary2 => 1,
+        Level.Primary3 or Level.Secondary1 => 2,
+        _ => 3,
+    };
+
+    /// <summary>A true/false drill for the given subject and level, or null if the bank has none yet
+    /// (today: Language and ForeignLanguage, where fill-blank/reorder/match fit more naturally — task #71).</summary>
+    public static PracticeExercise? TrueFalse(Area area, Level level, TeachLanguage language, int seed)
+    {
+        if (!Banks.TryGetValue(area, out var bank))
+        {
+            return null;
+        }
+
+        var pool = bank.Where(i => i.Difficulty == DifficultyFor(level)).ToList();
+        if (pool.Count == 0)
+        {
+            return null;
+        }
+
+        var item = pool[new Random(seed).Next(pool.Count)];
+        return new PracticeExercise(item.Topic, item.Difficulty, ExerciseKind.TrueFalse, item.Prompt.In(language), item.Explanation.In(language))
+        {
+            CorrectBool = item.Answer,
+        };
+    }
+
+    // ---- Language & ForeignLanguage: fill-blank, reorder and match (task #71) ----
+
+    /// <summary>"English" / "Spanish" etc., in the student's own interface language — the only two foreign-language
+    /// targets this app teaches (<see cref="QuestionBanks.ForeignTarget"/>).</summary>
+    private static string TargetName(TeachLanguage language) =>
+        (QuestionBanks.ForeignTarget(language) == TeachLanguage.English
+            ? Text.Of("English|inglés|anglais|anglès")
+            : Text.Of("Spanish|español|espagnol|castellà")).In(language);
+
+    /// <summary>Fisher-Yates, seeded so the same drill always looks the same way (the student submits by text, not
+    /// position, so a different shuffle between two views of the same drill — e.g. a page reload — is harmless).</summary>
+    private static List<string> Shuffled(IReadOnlyList<string> items, int seed)
+    {
+        var copy = items.ToList();
+        var rng = new Random(seed);
+        for (var i = copy.Count - 1; i > 0; i--)
+        {
+            var j = rng.Next(i + 1);
+            (copy[i], copy[j]) = (copy[j], copy[i]);
+        }
+        return copy;
+    }
+
+    private sealed record FillBlankItem(string Topic, int Difficulty, Text Prompt, Text Answer, Text Explanation);
+
+    private static readonly IReadOnlyList<FillBlankItem> LanguageFillBlank =
+    [
+        new("language.opposites", 1,
+            Text.Of("The opposite of \"hot\" is ___.|Lo contrario de \"caliente\" es ___.|Le contraire de « chaud » est ___.|El contrari de \"calent\" és ___."),
+            Text.Of("cold|frío|froid|fred"),
+            Text.Of("\"Cold\" is the opposite of \"hot\".|\"Frío\" es lo contrario de \"caliente\".|« Froid » est le contraire de « chaud ».|\"Fred\" és el contrari de \"calent\".")),
+        new("language.parts_of_speech", 2,
+            Text.Of("A word that describes a noun is called an ___.|Una palabra que describe a un sustantivo se llama ___.|Un mot qui décrit un nom s'appelle un ___.|Una paraula que descriu un nom s'anomena ___."),
+            Text.Of("adjective|adjetivo|adjectif|adjectiu"),
+            Text.Of("Words like \"blue\" or \"tall\" that describe a noun are adjectives.|Palabras como \"azul\" o \"alto\" que describen un sustantivo son adjetivos.|Des mots comme « bleu » ou « grand » qui décrivent un nom sont des adjectifs.|Paraules com \"blau\" o \"alt\" que descriuen un nom són adjectius.")),
+        new("language.literary_devices", 3,
+            Text.Of("When a writer compares two things using \"like\" or \"as\", it's called a ___.|Cuando un escritor compara dos cosas usando \"como\", se llama ___.|Quand un auteur compare deux choses avec « comme », on appelle ça une ___.|Quan un escriptor compara dues coses fent servir \"com\", se'n diu ___."),
+            Text.Of("simile|símil|comparaison|símil"),
+            Text.Of("\"As brave as a lion\" compares two things with \"as\": that's a simile.|\"Tan valiente como un león\" compara dos cosas con \"como\": eso es un símil.|« Aussi courageux qu'un lion » compare deux choses avec « comme » : c'est une comparaison.|\"Tan valent com un lleó\" compara dues coses amb \"com\": això és un símil.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> ForeignFillBlankWords =
+    [
+        new("foreign.vocabulary", 1, Text.Of("dog|perro|chien|gos"), Text.Of("dog|perro|chien|gos"), Text.Of("")),
+        new("foreign.vocabulary", 2, Text.Of("house|casa|maison|casa"), Text.Of("house|casa|maison|casa"), Text.Of("")),
+        new("foreign.vocabulary", 3, Text.Of("friend|amigo|ami|amic"), Text.Of("friend|amigo|ami|amic"), Text.Of("")),
+    ];
+
+    private static readonly Text ForeignFillBlankPrompt =
+        Text.Of("How do you say \"{0}\" in {1}?|¿Cómo se dice \"{0}\" en {1}?|Comment dit-on « {0} » en {1} ?|Com es diu «{0}» en {1}?");
+
+    private static readonly Text ForeignFillBlankExplanation =
+        Text.Of("\"{0}\" in {1} is \"{2}\".|\"{0}\" en {1} es \"{2}\".|« {0} » en {1} se dit « {2} ».|\"{0}\" en {1} és \"{2}\".");
+
+    // ---- Fill-blank content for the other 8 subjects (task #73) ----
+
+    private static readonly IReadOnlyList<FillBlankItem> MathFillBlank =
+    [
+        new("math.arithmetic", 1,
+            Text.Of("The result of 5 + 5 is ___.|El resultado de 5 + 5 es ___.|Le résultat de 5 + 5 est ___.|El resultat de 5 + 5 és ___."),
+            Text.Of("10|10|10|10"),
+            Text.Of("5 + 5 = 10.|5 + 5 = 10.|5 + 5 = 10.|5 + 5 = 10.")),
+        new("math.shapes", 2,
+            Text.Of("A triangle has ___ sides.|Un triángulo tiene ___ lados.|Un triangle a ___ côtés.|Un triangle té ___ costats."),
+            Text.Of("three|tres|trois|tres"),
+            Text.Of("A triangle always has three sides.|Un triángulo siempre tiene tres lados.|Un triangle a toujours trois côtés.|Un triangle sempre té tres costats.")),
+        new("math.roots", 3,
+            Text.Of("The square root of 81 is ___.|La raíz cuadrada de 81 es ___.|La racine carrée de 81 est ___.|L'arrel quadrada de 81 és ___."),
+            Text.Of("9|9|9|9"),
+            Text.Of("9 × 9 = 81, so the square root of 81 is 9.|9 × 9 = 81, así que la raíz cuadrada de 81 es 9.|9 × 9 = 81, donc la racine carrée de 81 est 9.|9 × 9 = 81, així que l'arrel quadrada de 81 és 9.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> PhysicsFillBlank =
+    [
+        new("physics.sun", 1,
+            Text.Of("The Sun gives us light and ___.|El Sol nos da luz y ___.|Le Soleil nous donne de la lumière et de la ___.|El Sol ens dona llum i ___."),
+            Text.Of("heat|calor|chaleur|calor"),
+            Text.Of("The Sun gives off both light and heat.|El Sol emite tanto luz como calor.|Le Soleil émet à la fois de la lumière et de la chaleur.|El Sol emet tant llum com calor.")),
+        new("physics.gravity", 2,
+            Text.Of("The force that pulls objects toward the Earth is called ___.|La fuerza que atrae los objetos hacia la Tierra se llama ___.|La force qui attire les objets vers la Terre s'appelle la ___.|La força que atrau els objectes cap a la Terra s'anomena ___."),
+            Text.Of("gravity|gravedad|gravité|gravetat"),
+            Text.Of("Gravity is the force that pulls objects down toward Earth.|La gravedad es la fuerza que atrae los objetos hacia la Tierra.|La gravité est la force qui attire les objets vers la Terre.|La gravetat és la força que atrau els objectes cap a la Terra.")),
+        new("physics.units", 3,
+            Text.Of("The unit used to measure electric current is the ___.|La unidad usada para medir la corriente eléctrica es el ___.|L'unité utilisée pour mesurer le courant électrique est l'___.|La unitat usada per mesurar el corrent elèctric és l'___."),
+            Text.Of("ampere|amperio|ampère|amper"),
+            Text.Of("Electric current is measured in amperes (amps).|La corriente eléctrica se mide en amperios.|Le courant électrique se mesure en ampères.|El corrent elèctric es mesura en ampers.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> ChemistryFillBlank =
+    [
+        new("chemistry.symbols", 1,
+            Text.Of("The chemical symbol for oxygen is ___.|El símbolo químico del oxígeno es ___.|Le symbole chimique de l'oxygène est ___.|El símbol químic de l'oxigen és ___."),
+            Text.Of("O|O|O|O"),
+            Text.Of("Oxygen's chemical symbol is the single letter O.|El símbolo químico del oxígeno es la letra O.|Le symbole chimique de l'oxygène est la lettre O.|El símbol químic de l'oxigen és la lletra O.")),
+        new("chemistry.states", 2,
+            Text.Of("When a solid turns directly into a gas, it's called ___.|Cuando un sólido se convierte directamente en gas, se llama ___.|Quand un solide se transforme directement en gaz, on appelle ça la ___.|Quan un sòlid es converteix directament en gas, s'anomena ___."),
+            Text.Of("sublimation|sublimación|sublimation|sublimació"),
+            Text.Of("Sublimation skips the liquid state entirely, like dry ice turning into gas.|La sublimación se salta por completo el estado líquido, como el hielo seco al convertirse en gas.|La sublimation saute complètement l'état liquide, comme la glace carbonique qui se transforme en gaz.|La sublimació es salta completament l'estat líquid, com el gel sec en convertir-se en gas.")),
+        new("chemistry.atom", 3,
+            Text.Of("The smallest unit of a chemical element is the ___.|La unidad más pequeña de un elemento químico es el ___.|La plus petite unité d'un élément chimique est l'___.|La unitat més petita d'un element químic és l'___."),
+            Text.Of("atom|átomo|atome|àtom"),
+            Text.Of("Atoms are the basic building blocks of all matter.|Los átomos son los bloques básicos de toda la materia.|Les atomes sont les éléments de base de toute matière.|Els àtoms són els blocs bàsics de tota la matèria.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> BiologyFillBlank =
+    [
+        new("biology.heart", 1,
+            Text.Of("The organ that pumps blood around the body is the ___.|El órgano que bombea la sangre por el cuerpo es el ___.|L'organe qui pompe le sang dans le corps est le ___.|L'òrgan que bombeja la sang pel cos és el ___."),
+            Text.Of("heart|corazón|cœur|cor"),
+            Text.Of("The heart pumps blood through the whole body.|El corazón bombea la sangre por todo el cuerpo.|Le cœur pompe le sang dans tout le corps.|El cor bombeja la sang per tot el cos.")),
+        new("biology.photosynthesis", 2,
+            Text.Of("Plants take in carbon dioxide and release ___.|Las plantas absorben dióxido de carbono y liberan ___.|Les plantes absorbent du dioxyde de carbone et libèrent de l'___.|Les plantes absorbeixen diòxid de carboni i alliberen ___."),
+            Text.Of("oxygen|oxígeno|oxygène|oxigen"),
+            Text.Of("During photosynthesis, plants absorb CO2 and release oxygen.|Durante la fotosíntesis, las plantas absorben CO2 y liberan oxígeno.|Pendant la photosynthèse, les plantes absorbent le CO2 et libèrent de l'oxygène.|Durant la fotosíntesi, les plantes absorbeixen CO2 i alliberen oxigen.")),
+        new("biology.genetics", 3,
+            Text.Of("The basic unit of heredity is called a ___.|La unidad básica de la herencia se llama ___.|L'unité de base de l'hérédité s'appelle un ___.|La unitat bàsica de l'herència s'anomena un ___."),
+            Text.Of("gene|gen|gène|gen"),
+            Text.Of("Genes are the units of DNA that carry hereditary information.|Los genes son las unidades de ADN que llevan la información hereditaria.|Les gènes sont les unités d'ADN qui portent l'information héréditaire.|Els gens són les unitats d'ADN que porten la informació hereditària.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> HistoryFillBlank =
+    [
+        new("history.egypt", 1,
+            Text.Of("Ancient Egyptian kings were called ___.|Los reyes del antiguo Egipto se llamaban ___.|Les rois de l'Égypte antique s'appelaient ___.|Els reis de l'antic Egipte s'anomenaven ___."),
+            Text.Of("pharaohs|faraones|pharaons|faraons"),
+            Text.Of("Pharaohs were the rulers of ancient Egypt.|Los faraones eran los gobernantes del antiguo Egipto.|Les pharaons étaient les dirigeants de l'Égypte antique.|Els faraons eren els governants de l'antic Egipte.")),
+        new("history.titanic", 2,
+            Text.Of("The ship that sank in 1912 after hitting an iceberg was called the ___.|El barco que se hundió en 1912 tras chocar con un iceberg se llamaba el ___.|Le navire qui a coulé en 1912 après avoir heurté un iceberg s'appelait le ___.|El vaixell que es va enfonsar el 1912 després de xocar amb un iceberg es deia el ___."),
+            Text.Of("Titanic|Titanic|Titanic|Titanic"),
+            Text.Of("The Titanic sank in 1912 on its first voyage.|El Titanic se hundió en 1912 en su primer viaje.|Le Titanic a coulé en 1912 lors de son premier voyage.|El Titanic es va enfonsar el 1912 en el seu primer viatge.")),
+        new("history.declaration", 3,
+            Text.Of("The 1776 document that declared the United States independent is called the Declaration of ___.|El documento de 1776 que declaró la independencia de Estados Unidos se llama la Declaración de ___.|Le document de 1776 qui a déclaré l'indépendance des États-Unis s'appelle la déclaration d'___.|El document de 1776 que va declarar la independència dels Estats Units s'anomena la Declaració d'___."),
+            Text.Of("Independence|Independencia|Indépendance|Independència"),
+            Text.Of("The Declaration of Independence was adopted on July 4, 1776.|La Declaración de Independencia se adoptó el 4 de julio de 1776.|La déclaration d'Indépendance a été adoptée le 4 juillet 1776.|La Declaració d'Independència es va adoptar el 4 de juliol de 1776.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> GeographyFillBlank =
+    [
+        new("geography.pacific", 1,
+            Text.Of("The largest ocean on Earth is the ___.|El océano más grande de la Tierra es el ___.|Le plus grand océan de la Terre est le ___.|L'oceà més gran de la Terra és el ___."),
+            Text.Of("Pacific|Pacífico|Pacifique|Pacífic"),
+            Text.Of("The Pacific Ocean is the largest and deepest ocean on Earth.|El océano Pacífico es el más grande y profundo de la Tierra.|L'océan Pacifique est le plus grand et le plus profond de la Terre.|L'oceà Pacífic és el més gran i profund de la Terra.")),
+        new("geography.nile", 2,
+            Text.Of("The longest river in the world is the ___.|El río más largo del mundo es el ___.|Le fleuve le plus long du monde est le ___.|El riu més llarg del món és el ___."),
+            Text.Of("Nile|Nilo|Nil|Nil"),
+            Text.Of("The Nile River, in Africa, is generally considered the longest river in the world.|El río Nilo, en África, se considera generalmente el más largo del mundo.|Le fleuve Nil, en Afrique, est généralement considéré comme le plus long du monde.|El riu Nil, a l'Àfrica, es considera generalment el més llarg del món.")),
+        new("geography.equator", 3,
+            Text.Of("The imaginary line around the middle of the Earth is called the ___.|La línea imaginaria alrededor de la mitad de la Tierra se llama el ___.|La ligne imaginaire autour du milieu de la Terre s'appelle l'___.|La línia imaginària al voltant de la meitat de la Terra s'anomena l'___."),
+            Text.Of("equator|ecuador|équateur|equador"),
+            Text.Of("The equator divides the Earth into the Northern and Southern hemispheres.|El ecuador divide la Tierra en el hemisferio norte y el hemisferio sur.|L'équateur divise la Terre en hémisphère nord et hémisphère sud.|L'equador divideix la Terra en hemisferi nord i hemisferi sud.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> EconomicsFillBlank =
+    [
+        new("economics.income", 1,
+            Text.Of("Money that a person earns from working is called ___.|El dinero que una persona gana trabajando se llama ___.|L'argent qu'une personne gagne en travaillant s'appelle le ___.|Els diners que una persona guanya treballant s'anomenen ___."),
+            Text.Of("income|ingresos|revenu|ingressos"),
+            Text.Of("Income is the money a person receives, usually from work.|Los ingresos son el dinero que una persona recibe, normalmente del trabajo.|Le revenu est l'argent qu'une personne reçoit, généralement du travail.|Els ingressos són els diners que una persona rep, normalment de la feina.")),
+        new("economics.budget", 2,
+            Text.Of("A plan for how to spend and save money is called a ___.|Un plan para gastar y ahorrar dinero se llama un ___.|Un plan pour dépenser et épargner de l'argent s'appelle un ___.|Un pla per gastar i estalviar diners s'anomena un ___."),
+            Text.Of("budget|presupuesto|budget|pressupost"),
+            Text.Of("A budget helps plan income and expenses.|Un presupuesto ayuda a planificar los ingresos y los gastos.|Un budget aide à planifier les revenus et les dépenses.|Un pressupost ajuda a planificar els ingressos i les despeses.")),
+        new("economics.monopoly", 3,
+            Text.Of("A market where only one company sells a product is called a ___.|Un mercado donde solo una empresa vende un producto se llama un ___.|Un marché où une seule entreprise vend un produit s'appelle un ___.|Un mercat on només una empresa ven un producte s'anomena un ___."),
+            Text.Of("monopoly|monopolio|monopole|monopoli"),
+            Text.Of("In a monopoly, one company controls the whole market for a product.|En un monopolio, una sola empresa controla todo el mercado de un producto.|Dans un monopole, une seule entreprise contrôle tout le marché d'un produit.|En un monopoli, una sola empresa controla tot el mercat d'un producte.")),
+    ];
+
+    private static readonly IReadOnlyList<FillBlankItem> ProgrammingFillBlank =
+    [
+        new("programming.algorithm", 1,
+            Text.Of("A list of step-by-step instructions for a computer is called an ___.|Una lista de instrucciones paso a paso para un ordenador se llama un ___.|Une liste d'instructions étape par étape pour un ordinateur s'appelle un ___.|Una llista d'instruccions pas a pas per a un ordinador s'anomena un ___."),
+            Text.Of("algorithm|algoritmo|algorithme|algorisme"),
+            Text.Of("An algorithm is a sequence of steps that solves a problem.|Un algoritmo es una secuencia de pasos que resuelve un problema.|Un algorithme est une suite d'étapes qui résout un problème.|Un algorisme és una seqüència de passos que resol un problema.")),
+        new("programming.function", 2,
+            Text.Of("A piece of reusable code that performs a task is called a ___.|Un fragmento de código reutilizable que realiza una tarea se llama una ___.|Un morceau de code réutilisable qui effectue une tâche s'appelle une ___.|Un fragment de codi reutilitzable que fa una tasca s'anomena una ___."),
+            Text.Of("function|función|fonction|funció"),
+            Text.Of("A function groups code so it can be reused without rewriting it.|Una función agrupa código para poder reutilizarlo sin reescribirlo.|Une fonction regroupe du code pour pouvoir le réutiliser sans le réécrire.|Una funció agrupa codi perquè es pugui reutilitzar sense reescriure'l.")),
+        new("programming.loop", 3,
+            Text.Of("An instruction that repeats only while a condition is true is called a ___ loop.|Una instrucción que se repite solo mientras una condición es verdadera se llama un bucle ___.|Une instruction qui se répète seulement tant qu'une condition est vraie s'appelle une boucle ___.|Una instrucció que es repeteix només mentre una condició és certa s'anomena un bucle ___."),
+            Text.Of("while|while|while|while"),
+            Text.Of("A \"while\" loop keeps repeating as long as its condition stays true.|Un bucle \"while\" sigue repitiéndose mientras su condición sea verdadera.|Une boucle \"while\" continue de se répéter tant que sa condition reste vraie.|Un bucle \"while\" segueix repetint-se mentre la seva condició sigui certa.")),
+    ];
+
+    private static readonly Dictionary<Area, IReadOnlyList<FillBlankItem>> FillBlankBanks = new()
+    {
+        [Area.Mathematics] = MathFillBlank,
+        [Area.Physics] = PhysicsFillBlank,
+        [Area.Chemistry] = ChemistryFillBlank,
+        [Area.Biology] = BiologyFillBlank,
+        [Area.History] = HistoryFillBlank,
+        [Area.Geography] = GeographyFillBlank,
+        [Area.Economics] = EconomicsFillBlank,
+        [Area.Programming] = ProgrammingFillBlank,
+    };
+
+    /// <summary>A fill-in-the-blank drill, or null if the bank has none for this subject/level.</summary>
+    public static PracticeExercise? FillBlank(Area area, Level level, TeachLanguage language, int seed)
+    {
+        var difficulty = DifficultyFor(level);
+        if (FillBlankBanks.TryGetValue(area, out var genericBank))
+        {
+            var genericPool = genericBank.Where(i => i.Difficulty == difficulty).ToList();
+            if (genericPool.Count == 0)
+            {
+                return null;
+            }
+
+            var genericItem = genericPool[new Random(seed).Next(genericPool.Count)];
+            return new PracticeExercise(genericItem.Topic, genericItem.Difficulty, ExerciseKind.FillBlank, genericItem.Prompt.In(language), genericItem.Explanation.In(language))
+            {
+                Answer = genericItem.Answer.In(language),
+            };
+        }
+
+        if (area == Area.Language)
+        {
+            var pool = LanguageFillBlank.Where(i => i.Difficulty == difficulty).ToList();
+            if (pool.Count == 0)
+            {
+                return null;
+            }
+
+            var item = pool[new Random(seed).Next(pool.Count)];
+            return new PracticeExercise(item.Topic, item.Difficulty, ExerciseKind.FillBlank, item.Prompt.In(language), item.Explanation.In(language))
+            {
+                Answer = item.Answer.In(language),
+            };
+        }
+
+        if (area == Area.ForeignLanguage)
+        {
+            var pool = ForeignFillBlankWords.Where(i => i.Difficulty == difficulty).ToList();
+            if (pool.Count == 0)
+            {
+                return null;
+            }
+
+            var word = pool[new Random(seed).Next(pool.Count)];
+            var target = QuestionBanks.ForeignTarget(language);
+            var targetName = TargetName(language);
+            var sourceWord = word.Answer.In(language); // the "Answer" field doubles as the word concept here
+            var targetWord = word.Answer.In(target);
+            return new PracticeExercise(word.Topic, word.Difficulty, ExerciseKind.FillBlank,
+                ForeignFillBlankPrompt.Format(language, sourceWord, targetName),
+                ForeignFillBlankExplanation.Format(language, sourceWord, targetName, targetWord))
+            {
+                Answer = targetWord,
+            };
+        }
+
+        return null;
+    }
+
+    // Each language's sentence is kept whole (not word-aligned across languages, since a translation rarely has the
+    // same word count) and split into tokens at build time by Reorder() — see TokensOf.
+    private sealed record ReorderItem(string Topic, int Difficulty, Text Prompt, Text Sentence, Text Explanation);
+
+    private static string[] TokensOf(Text sentence, TeachLanguage language) =>
+        sentence.In(language).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+    private static readonly IReadOnlyList<ReorderItem> LanguageReorder =
+    [
+        new("language.sentences", 1, Text.Of("Put the words in the right order.|Pon las palabras en el orden correcto.|Mets les mots dans le bon ordre.|Posa les paraules en l'ordre correcte."),
+            Text.Of("The cat is sleeping|El gato está durmiendo|Le chat dort|El gat dorm"),
+            Text.Of("\"The cat is sleeping.\"|\"El gato está durmiendo.\"|« Le chat dort. »|\"El gat dorm.\"")),
+        new("language.sentences", 2, Text.Of("Put the words in the right order.|Pon las palabras en el orden correcto.|Mets les mots dans le bon ordre.|Posa les paraules en l'ordre correcte."),
+            Text.Of("She quickly closed the door|Ella cerró la puerta rápidamente|Elle a rapidement fermé la porte|Ella va tancar la porta ràpidament"),
+            Text.Of("\"She quickly closed the door.\"|\"Ella cerró la puerta rápidamente.\"|« Elle a rapidement fermé la porte. »|\"Ella va tancar la porta ràpidament.\"")),
+        new("language.sentences", 3, Text.Of("Put the words in the right order.|Pon las palabras en el orden correcto.|Mets les mots dans le bon ordre.|Posa les paraules en l'ordre correcte."),
+            Text.Of("Although it was raining they went outside|Aunque estaba lloviendo salieron afuera|Bien qu'il pleuve ils sont sortis|Encara que plovia van sortir fora"),
+            Text.Of("A sentence can start with \"although\" to show a contrast.|Una frase puede empezar con \"aunque\" para mostrar un contraste.|Une phrase peut commencer par « bien que » pour montrer un contraste.|Una frase pot començar amb \"encara que\" per mostrar un contrast.")),
+    ];
+
+    private static readonly (string Topic, int Difficulty, string[] English, string[] Spanish, Text Explanation)[] ForeignReorder =
+    [
+        ("foreign.sentences", 1, ["Good", "morning"], ["Buenos", "días"],
+            Text.Of("A simple greeting.|Un saludo sencillo.|Une salutation simple.|Una salutació senzilla.")),
+        ("foreign.sentences", 2, ["I", "am", "hungry"], ["Tengo", "mucha", "hambre"],
+            Text.Of("A common everyday sentence.|Una frase habitual del día a día.|Une phrase courante du quotidien.|Una frase habitual del dia a dia.")),
+        ("foreign.sentences", 3, ["Can", "you", "help", "me", "please"], ["Puedes", "ayudarme", "por", "favor"],
+            Text.Of("A polite way to ask for help.|Una forma educada de pedir ayuda.|Une façon polie de demander de l'aide.|Una manera educada de demanar ajuda.")),
+    ];
+
+    private static readonly Text ForeignReorderPrompt =
+        Text.Of("Put the {0} words in the right order.|Pon en orden las palabras en {0}.|Mets les mots en {0} dans le bon ordre.|Posa en ordre les paraules en {0}.");
+
+    /// <summary>A word-reorder drill, or null if the bank has none for this subject/level.</summary>
+    // ---- Reorder content for the other 8 subjects (task #73) ----
+
+    private static readonly Text GenericReorderPrompt =
+        Text.Of("Put the words in the right order.|Pon las palabras en el orden correcto.|Mets les mots dans le bon ordre.|Posa les paraules en l'ordre correcte.");
+
+    private static readonly IReadOnlyList<ReorderItem> MathReorder =
+    [
+        new("math.arithmetic", 1, GenericReorderPrompt,
+            Text.Of("Two plus two equals four|Dos más dos es igual a cuatro|Deux plus deux égale quatre|Dos més dos és igual a quatre"),
+            Text.Of("2 + 2 = 4.|2 + 2 = 4.|2 + 2 = 4.|2 + 2 = 4.")),
+        new("math.shapes", 2, GenericReorderPrompt,
+            Text.Of("A square has four equal sides|Un cuadrado tiene cuatro lados iguales|Un carré a quatre côtés égaux|Un quadrat té quatre costats iguals"),
+            Text.Of("All four sides of a square are the same length.|Los cuatro lados de un cuadrado tienen la misma longitud.|Les quatre côtés d'un carré ont la même longueur.|Els quatre costats d'un quadrat tenen la mateixa longitud.")),
+        new("math.multiplication", 3, GenericReorderPrompt,
+            Text.Of("Multiplication is repeated addition|La multiplicación es una suma repetida|La multiplication est une addition répétée|La multiplicació és una suma repetida"),
+            Text.Of("3 × 4 means adding 3 four times: 3+3+3+3.|3 × 4 significa sumar 3 cuatro veces: 3+3+3+3.|3 × 4 signifie additionner 3 quatre fois : 3+3+3+3.|3 × 4 significa sumar 3 quatre vegades: 3+3+3+3.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> PhysicsReorder =
+    [
+        new("physics.sun", 1, GenericReorderPrompt,
+            Text.Of("The sun rises in the east|El sol sale por el este|Le soleil se lève à l'est|El sol surt per l'est"),
+            Text.Of("Yes, and it sets in the west.|Sí, y se pone por el oeste.|Oui, et il se couche à l'ouest.|Sí, i es pon per l'oest.")),
+        new("physics.sound", 2, GenericReorderPrompt,
+            Text.Of("Sound cannot travel through empty space|El sonido no puede viajar por el espacio vacío|Le son ne peut pas voyager dans l'espace vide|El so no pot viatjar per l'espai buit"),
+            Text.Of("Sound needs a medium like air or water to travel; space is a vacuum.|El sonido necesita un medio como el aire o el agua para viajar; el espacio es un vacío.|Le son a besoin d'un support comme l'air ou l'eau pour voyager ; l'espace est un vide.|El so necessita un mitjà com l'aire o l'aigua per viatjar; l'espai és un buit.")),
+        new("physics.magnetism", 3, GenericReorderPrompt,
+            Text.Of("A magnet has a north pole and a south pole|Un imán tiene un polo norte y un polo sur|Un aimant a un pôle nord et un pôle sud|Un imant té un pol nord i un pol sud"),
+            Text.Of("Every magnet has two poles, north and south.|Todo imán tiene dos polos, norte y sur.|Tout aimant a deux pôles, nord et sud.|Tot imant té dos pols, nord i sud.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> ChemistryReorder =
+    [
+        new("chemistry.solutions", 1, GenericReorderPrompt,
+            Text.Of("Salt dissolves in water|La sal se disuelve en agua|Le sel se dissout dans l'eau|La sal es dissol en aigua"),
+            Text.Of("Dissolving means the salt spreads evenly through the water.|Disolverse significa que la sal se reparte de manera uniforme por el agua.|Se dissoudre signifie que le sel se répartit uniformément dans l'eau.|Dissoldre's significa que la sal es reparteix de manera uniforme per l'aigua.")),
+        new("chemistry.acids", 2, GenericReorderPrompt,
+            Text.Of("Mixing an acid and a base can neutralize both|Mezclar un ácido y una base puede neutralizar a ambos|Mélanger un acide et une base peut neutraliser les deux|Barrejar un àcid i una base pot neutralitzar tots dos"),
+            Text.Of("The acid and the base cancel out each other's effects.|El ácido y la base anulan sus efectos mutuamente.|L'acide et la base annulent leurs effets mutuels.|L'àcid i la base anul·len els seus efectes mutus.")),
+        new("chemistry.reactions", 3, GenericReorderPrompt,
+            Text.Of("Every chemical reaction conserves mass|Toda reacción química conserva la masa|Toute réaction chimique conserve la masse|Tota reacció química conserva la massa"),
+            Text.Of("Matter isn't created or destroyed in a chemical reaction, just rearranged.|La materia no se crea ni se destruye en una reacción química, solo se reorganiza.|La matière n'est ni créée ni détruite dans une réaction chimique, elle est juste réorganisée.|La matèria no es crea ni es destrueix en una reacció química, només es reorganitza.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> BiologyReorder =
+    [
+        new("biology.fish", 1, GenericReorderPrompt,
+            Text.Of("Fish breathe using gills|Los peces respiran con branquias|Les poissons respirent avec des branchies|Els peixos respiren amb brànquies"),
+            Text.Of("Gills let fish take oxygen from the water.|Las branquias permiten que los peces tomen oxígeno del agua.|Les branchies permettent aux poissons de prendre l'oxygène de l'eau.|Les brànquies permeten que els peixos prenguin oxigen de l'aigua.")),
+        new("biology.pollination", 2, GenericReorderPrompt,
+            Text.Of("Bees help plants reproduce by carrying pollen|Las abejas ayudan a las plantas a reproducirse llevando polen|Les abeilles aident les plantes à se reproduire en transportant du pollen|Les abelles ajuden les plantes a reproduir-se portant pol·len"),
+            Text.Of("This process is called pollination.|Este proceso se llama polinización.|Ce processus s'appelle la pollinisation.|Aquest procés s'anomena pol·linització.")),
+        new("biology.cells", 3, GenericReorderPrompt,
+            Text.Of("The human body is made of many tiny cells|El cuerpo humano está formado por muchas células diminutas|Le corps humain est composé de nombreuses cellules minuscules|El cos humà està format per moltes cèl·lules diminutes"),
+            Text.Of("Cells are the tiny building blocks that make up the whole body.|Las células son los diminutos componentes que forman todo el cuerpo.|Les cellules sont les minuscules éléments qui composent tout le corps.|Les cèl·lules són els diminuts components que formen tot el cos.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> HistoryReorder =
+    [
+        new("history.rome", 1, GenericReorderPrompt,
+            Text.Of("Ancient Rome was ruled by emperors|La antigua Roma estaba gobernada por emperadores|La Rome antique était gouvernée par des empereurs|L'antiga Roma estava governada per emperadors"),
+            Text.Of("After the Republic, Rome became an empire ruled by emperors.|Después de la República, Roma se convirtió en un imperio gobernado por emperadores.|Après la République, Rome est devenue un empire gouverné par des empereurs.|Després de la República, Roma es va convertir en un imperi governat per emperadors.")),
+        new("history.printing", 2, GenericReorderPrompt,
+            Text.Of("The printing press changed how information spread|La imprenta cambió cómo se difundía la información|L'imprimerie a changé la façon dont l'information se diffusait|La impremta va canviar com es difonia la informació"),
+            Text.Of("Gutenberg's printing press made books much cheaper and faster to produce.|La imprenta de Gutenberg hizo que los libros fueran mucho más baratos y rápidos de producir.|L'imprimerie de Gutenberg a rendu les livres bien moins chers et plus rapides à produire.|La impremta de Gutenberg va fer que els llibres fossin molt més barats i ràpids de produir.")),
+        new("history.rivers", 3, GenericReorderPrompt,
+            Text.Of("Many ancient civilizations developed near rivers|Muchas civilizaciones antiguas se desarrollaron cerca de ríos|De nombreuses civilisations anciennes se sont développées près des rivières|Moltes civilitzacions antigues es van desenvolupar a prop de rius"),
+            Text.Of("Rivers like the Nile and the Tigris gave water for farming and travel.|Ríos como el Nilo y el Tigris daban agua para la agricultura y el transporte.|Des fleuves comme le Nil et le Tigre fournissaient de l'eau pour l'agriculture et les déplacements.|Rius com el Nil i el Tigris donaven aigua per a l'agricultura i el transport.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> GeographyReorder =
+    [
+        new("geography.mountains", 1, GenericReorderPrompt,
+            Text.Of("Mountains are taller than hills|Las montañas son más altas que las colinas|Les montagnes sont plus hautes que les collines|Les muntanyes són més altes que els turons"),
+            Text.Of("Mountains rise higher and more steeply than hills.|Las montañas se elevan más y de forma más abrupta que las colinas.|Les montagnes s'élèvent plus haut et plus abruptement que les collines.|Les muntanyes s'eleven més i de manera més abrupta que els turons.")),
+        new("geography.deserts", 2, GenericReorderPrompt,
+            Text.Of("A desert receives very little rainfall|Un desierto recibe muy poca lluvia|Un désert reçoit très peu de pluie|Un desert rep molt poca pluja"),
+            Text.Of("Deserts are defined by how dry they are, not by heat alone.|Los desiertos se definen por lo secos que son, no solo por el calor.|Les déserts sont définis par leur sécheresse, pas seulement par la chaleur.|Els deserts es defineixen per la seva sequedat, no només per la calor.")),
+        new("geography.earthquakes", 3, GenericReorderPrompt,
+            Text.Of("Earthquakes happen along tectonic plate boundaries|Los terremotos ocurren a lo largo de los límites de las placas tectónicas|Les tremblements de terre se produisent le long des limites des plaques tectoniques|Els terratrèmols passen al llarg dels límits de les plaques tectòniques"),
+            Text.Of("Most earthquakes occur where tectonic plates meet and grind against each other.|La mayoría de los terremotos ocurren donde las placas tectónicas se encuentran y rozan entre sí.|La plupart des tremblements de terre se produisent là où les plaques tectoniques se rencontrent et frottent l'une contre l'autre.|La majoria de terratrèmols passen on les plaques tectòniques es troben i freguen entre si.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> EconomicsReorder =
+    [
+        new("economics.trade", 1, GenericReorderPrompt,
+            Text.Of("People trade goods and services for money|Las personas intercambian bienes y servicios por dinero|Les gens échangent des biens et des services contre de l'argent|Les persones intercanvien béns i serveis per diners"),
+            Text.Of("Trade exchanges something of value, usually goods or services, for money.|El comercio intercambia algo de valor, normalmente bienes o servicios, por dinero.|Le commerce échange quelque chose de valeur, généralement des biens ou des services, contre de l'argent.|El comerç intercanvia alguna cosa de valor, normalment béns o serveis, per diners.")),
+        new("economics.saving", 2, GenericReorderPrompt,
+            Text.Of("Saving money now can help pay for things later|Ahorrar dinero ahora puede ayudar a pagar cosas más tarde|Économiser de l'argent maintenant peut aider à payer des choses plus tard|Estalviar diners ara pot ajudar a pagar coses més tard"),
+            Text.Of("Saving sets money aside today for a need or goal in the future.|Ahorrar aparta dinero hoy para una necesidad u objetivo futuro.|Épargner met de côté de l'argent aujourd'hui pour un besoin ou un objectif futur.|Estalviar aparta diners avui per a una necessitat o objectiu futur.")),
+        new("economics.competition", 3, GenericReorderPrompt,
+            Text.Of("Competition between companies can lower prices|La competencia entre empresas puede bajar los precios|La concurrence entre entreprises peut faire baisser les prix|La competència entre empreses pot abaixar els preus"),
+            Text.Of("When companies compete for customers, they often lower prices to attract them.|Cuando las empresas compiten por clientes, suelen bajar los precios para atraerlos.|Quand les entreprises se font concurrence pour des clients, elles baissent souvent les prix pour les attirer.|Quan les empreses competeixen per clients, solen abaixar els preus per atreure'ls.")),
+    ];
+
+    private static readonly IReadOnlyList<ReorderItem> ProgrammingReorder =
+    [
+        new("programming.code", 1, GenericReorderPrompt,
+            Text.Of("Computers only understand instructions written in code|Los ordenadores solo entienden instrucciones escritas en código|Les ordinateurs ne comprennent que des instructions écrites en code|Els ordinadors només entenen instruccions escrites en codi"),
+            Text.Of("Code translates human intentions into instructions a computer can run.|El código traduce las intenciones humanas en instrucciones que un ordenador puede ejecutar.|Le code traduit les intentions humaines en instructions qu'un ordinateur peut exécuter.|El codi tradueix les intencions humanes en instruccions que un ordinador pot executar.")),
+        new("programming.testing", 2, GenericReorderPrompt,
+            Text.Of("Testing code helps find mistakes before they cause problems|Probar el código ayuda a encontrar errores antes de que causen problemas|Tester le code aide à trouver des erreurs avant qu'elles ne causent des problèmes|Provar el codi ajuda a trobar errors abans que causin problemes"),
+            Text.Of("Testing catches bugs early, before the program is actually used.|Probar detecta errores pronto, antes de que el programa se use de verdad.|Tester détecte les bugs tôt, avant que le programme ne soit vraiment utilisé.|Provar detecta errors aviat, abans que el programa s'utilitzi de veritat.")),
+        new("programming.functions", 3, GenericReorderPrompt,
+            Text.Of("A program can call the same function many times|Un programa puede llamar a la misma función muchas veces|Un programme peut appeler la même fonction plusieurs fois|Un programa pot cridar la mateixa funció moltes vegades"),
+            Text.Of("Reusing a function avoids rewriting the same code over and over.|Reutilizar una función evita reescribir el mismo código una y otra vez.|Réutiliser une fonction évite de réécrire le même code encore et encore.|Reutilitzar una funció evita reescriure el mateix codi una vegada i una altra.")),
+    ];
+
+    private static readonly Dictionary<Area, IReadOnlyList<ReorderItem>> ReorderBanks = new()
+    {
+        [Area.Mathematics] = MathReorder,
+        [Area.Physics] = PhysicsReorder,
+        [Area.Chemistry] = ChemistryReorder,
+        [Area.Biology] = BiologyReorder,
+        [Area.History] = HistoryReorder,
+        [Area.Geography] = GeographyReorder,
+        [Area.Economics] = EconomicsReorder,
+        [Area.Programming] = ProgrammingReorder,
+    };
+
+    public static PracticeExercise? Reorder(Area area, Level level, TeachLanguage language, int seed)
+    {
+        var difficulty = DifficultyFor(level);
+        if (ReorderBanks.TryGetValue(area, out var genericBank))
+        {
+            var genericPool = genericBank.Where(i => i.Difficulty == difficulty).ToList();
+            if (genericPool.Count == 0)
+            {
+                return null;
+            }
+
+            var genericItem = genericPool[new Random(seed).Next(genericPool.Count)];
+            var genericOrdered = TokensOf(genericItem.Sentence, language);
+            return new PracticeExercise(genericItem.Topic, genericItem.Difficulty, ExerciseKind.Reorder, genericItem.Prompt.In(language), genericItem.Explanation.In(language))
+            {
+                Tokens = Shuffled(genericOrdered, seed),
+                CorrectOrder = genericOrdered,
+            };
+        }
+
+        if (area == Area.Language)
+        {
+            var pool = LanguageReorder.Where(i => i.Difficulty == difficulty).ToList();
+            if (pool.Count == 0)
+            {
+                return null;
+            }
+
+            var item = pool[new Random(seed).Next(pool.Count)];
+            var ordered = TokensOf(item.Sentence, language);
+            return new PracticeExercise(item.Topic, item.Difficulty, ExerciseKind.Reorder, item.Prompt.In(language), item.Explanation.In(language))
+            {
+                Tokens = Shuffled(ordered, seed),
+                CorrectOrder = ordered,
+            };
+        }
+
+        if (area == Area.ForeignLanguage)
+        {
+            var pool = ForeignReorder.Where(i => i.Difficulty == difficulty).ToList();
+            if (pool.Count == 0)
+            {
+                return null;
+            }
+
+            var item = pool[new Random(seed).Next(pool.Count)];
+            var target = QuestionBanks.ForeignTarget(language);
+            var ordered = (target == TeachLanguage.English ? item.English : item.Spanish).ToList();
+            return new PracticeExercise(item.Topic, item.Difficulty, ExerciseKind.Reorder,
+                ForeignReorderPrompt.Format(language, TargetName(language)), item.Explanation.In(language))
+            {
+                Tokens = Shuffled(ordered, seed),
+                CorrectOrder = ordered,
+            };
+        }
+
+        return null;
+    }
+
+    private sealed record MatchItem(string Topic, int Difficulty, Text Prompt, (Text Left, Text Right)[] Pairs, Text Explanation);
+
+    private static readonly IReadOnlyList<MatchItem> LanguageMatch =
+    [
+        new("language.opposites", 1, Text.Of("Match each word with its opposite.|Relaciona cada palabra con su contrario.|Associe chaque mot à son contraire.|Relaciona cada paraula amb el seu contrari."),
+            [
+                (Text.Of("hot|caliente|chaud|calent"), Text.Of("cold|frío|froid|fred")),
+                (Text.Of("big|grande|grand|gran"), Text.Of("small|pequeño|petit|petit")),
+                (Text.Of("happy|feliz|heureux|feliç"), Text.Of("sad|triste|triste|trist")),
+            ],
+            Text.Of("Opposites: hot/cold, big/small, happy/sad.|Contrarios: caliente/frío, grande/pequeño, feliz/triste.|Contraires : chaud/froid, grand/petit, heureux/triste.|Contraris: calent/fred, gran/petit, feliç/trist.")),
+        new("language.parts_of_speech", 2, Text.Of("Match each word with its part of speech.|Relaciona cada palabra con su categoría gramatical.|Associe chaque mot à sa catégorie grammaticale.|Relaciona cada paraula amb la seva categoria gramatical."),
+            [
+                (Text.Of("run|correr|courir|córrer"), Text.Of("verb|verbo|verbe|verb")),
+                (Text.Of("blue|azul|bleu|blau"), Text.Of("adjective|adjetivo|adjectif|adjectiu")),
+                (Text.Of("quickly|rápidamente|rapidement|ràpidament"), Text.Of("adverb|adverbio|adverbe|adverbi")),
+            ],
+            Text.Of("\"Run\" is a verb, \"blue\" an adjective, \"quickly\" an adverb.|\"Correr\" es un verbo, \"azul\" un adjetivo, \"rápidamente\" un adverbio.|« Courir » est un verbe, « bleu » un adjectif, « rapidement » un adverbe.|\"Córrer\" és un verb, \"blau\" un adjectiu, \"ràpidament\" un adverbi.")),
+        new("language.literary_devices", 3, Text.Of("Match each device with its example.|Relaciona cada recurso con su ejemplo.|Associe chaque procédé à son exemple.|Relaciona cada recurs amb el seu exemple."),
+            [
+                (Text.Of("metaphor|metáfora|métaphore|metàfora"), Text.Of("Time is a thief.|El tiempo es un ladrón.|Le temps est un voleur.|El temps és un lladre.")),
+                (Text.Of("simile|símil|comparaison|símil"), Text.Of("As brave as a lion.|Tan valiente como un león.|Aussi courageux qu'un lion.|Tan valent com un lleó.")),
+                (Text.Of("personification|personificación|personnification|personificació"), Text.Of("The wind whispered.|El viento susurraba.|Le vent chuchotait.|El vent xiuxiuejava.")),
+            ],
+            Text.Of("A metaphor states one thing IS another; a simile compares with \"like\"/\"as\"; personification gives human traits to things.|Una metáfora dice que una cosa ES otra; un símil compara con \"como\"; la personificación da rasgos humanos a las cosas.|Une métaphore dit qu'une chose EST une autre ; une comparaison utilise « comme » ; la personnification donne des traits humains aux choses.|Una metàfora diu que una cosa ÉS una altra; un símil compara amb \"com\"; la personificació dona trets humans a les coses.")),
+    ];
+
+    private static readonly Dictionary<int, Text[]> ForeignMatchWords = new()
+    {
+        [1] = [Text.Of("cat|gato|chat|gat"), Text.Of("apple|manzana|pomme|poma"), Text.Of("sun|sol|soleil|sol")],
+        [2] = [Text.Of("water|agua|eau|aigua"), Text.Of("book|libro|livre|llibre"), Text.Of("car|coche|voiture|cotxe")],
+        [3] = [Text.Of("school|escuela|école|escola"), Text.Of("flower|flor|fleur|flor"), Text.Of("bread|pan|pain|pa")],
+    };
+
+    private static readonly Text ForeignMatchPrompt =
+        Text.Of("Match each word with its translation in {0}.|Relaciona cada palabra con su traducción en {0}.|Associe chaque mot à sa traduction en {0}.|Relaciona cada paraula amb la seva traducció en {0}.");
+
+    /// <summary>A matching-pairs drill, or null if the bank has none for this subject/level.</summary>
+    // ---- Match content for the other 8 subjects (task #73) ----
+
+    private static readonly Text TermMeaningPrompt =
+        Text.Of("Match each term with its meaning.|Relaciona cada término con su significado.|Associe chaque terme à sa signification.|Relaciona cada terme amb el seu significat.");
+
+    private static readonly IReadOnlyList<MatchItem> MathMatch =
+    [
+        new("math.shapes", 1,
+            Text.Of("Match each shape with its number of sides.|Relaciona cada figura con su número de lados.|Associe chaque forme à son nombre de côtés.|Relaciona cada figura amb el seu nombre de costats."),
+            [
+                (Text.Of("triangle|triángulo|triangle|triangle"), Text.Of("3 sides|3 lados|3 côtés|3 costats")),
+                (Text.Of("square|cuadrado|carré|quadrat"), Text.Of("4 sides|4 lados|4 côtés|4 costats")),
+                (Text.Of("pentagon|pentágono|pentagone|pentàgon"), Text.Of("5 sides|5 lados|5 côtés|5 costats")),
+            ],
+            Text.Of("A triangle has 3 sides, a square has 4, and a pentagon has 5.|Un triángulo tiene 3 lados, un cuadrado 4 y un pentágono 5.|Un triangle a 3 côtés, un carré 4 et un pentagone 5.|Un triangle té 3 costats, un quadrat 4 i un pentàgon 5.")),
+        new("math.operations", 2,
+            Text.Of("Match each operation with its symbol.|Relaciona cada operación con su símbolo.|Associe chaque opération à son symbole.|Relaciona cada operació amb el seu símbol."),
+            [
+                (Text.Of("addition|suma|addition|suma"), Text.Of("+")),
+                (Text.Of("subtraction|resta|soustraction|resta"), Text.Of("−")),
+                (Text.Of("multiplication|multiplicación|multiplication|multiplicació"), Text.Of("×")),
+            ],
+            Text.Of("+, − and × are the symbols for addition, subtraction and multiplication.|+, − y × son los símbolos de la suma, la resta y la multiplicación.|+, − et × sont les symboles de l'addition, de la soustraction et de la multiplication.|+, − i × són els símbols de la suma, la resta i la multiplicació.")),
+        new("math.terms", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("prime number|número primo|nombre premier|nombre primer"), Text.Of("only divisible by 1 and itself|solo divisible entre 1 y él mismo|seulement divisible par 1 et lui-même|només divisible per 1 i ell mateix")),
+                (Text.Of("even number|número par|nombre pair|nombre parell"), Text.Of("divisible by 2|divisible entre 2|divisible par 2|divisible per 2")),
+                (Text.Of("fraction|fracción|fraction|fracció"), Text.Of("part of a whole|parte de un todo|partie d'un tout|part d'un tot")),
+            ],
+            Text.Of("A prime number divides only by 1 and itself, an even number divides by 2, and a fraction is part of a whole.|Un número primo solo se divide entre 1 y él mismo, un número par se divide entre 2, y una fracción es parte de un todo.|Un nombre premier ne se divise que par 1 et lui-même, un nombre pair se divise par 2, et une fraction est une partie d'un tout.|Un nombre primer només es divideix per 1 i ell mateix, un nombre parell es divideix per 2, i una fracció és part d'un tot.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> PhysicsMatch =
+    [
+        new("physics.water_forms", 1,
+            Text.Of("Match each form of water with its description.|Relaciona cada forma del agua con su descripción.|Associe chaque forme de l'eau à sa description.|Relaciona cada forma de l'aigua amb la seva descripció."),
+            [
+                (Text.Of("ice|hielo|glace|gel"), Text.Of("frozen water|agua congelada|eau gelée|aigua congelada")),
+                (Text.Of("steam|vapor|vapeur|vapor"), Text.Of("water as a gas|agua en forma de gas|eau sous forme de gaz|aigua en forma de gas")),
+                (Text.Of("rain|lluvia|pluie|pluja"), Text.Of("water falling from clouds|agua que cae de las nubes|eau qui tombe des nuages|aigua que cau dels núvols")),
+            ],
+            Text.Of("Ice, steam and rain are all just water in different forms.|El hielo, el vapor y la lluvia son todos agua en diferentes formas.|La glace, la vapeur et la pluie sont toutes de l'eau sous différentes formes.|El gel, el vapor i la pluja són tots aigua en diferents formes.")),
+        new("physics.units", 2,
+            Text.Of("Match each unit with what it measures.|Relaciona cada unidad con lo que mide.|Associe chaque unité à ce qu'elle mesure.|Relaciona cada unitat amb el que mesura."),
+            [
+                (Text.Of("meter|metro|mètre|metre"), Text.Of("distance|distancia|distance|distància")),
+                (Text.Of("second|segundo|seconde|segon"), Text.Of("time|tiempo|temps|temps")),
+                (Text.Of("kilogram|kilogramo|kilogramme|quilogram"), Text.Of("mass|masa|masse|massa")),
+            ],
+            Text.Of("Meters measure distance, seconds measure time, and kilograms measure mass.|Los metros miden distancia, los segundos miden tiempo y los kilogramos miden masa.|Les mètres mesurent la distance, les secondes le temps et les kilogrammes la masse.|Els metres mesuren distància, els segons mesuren temps i els quilograms mesuren massa.")),
+        new("physics.states", 3,
+            Text.Of("Match each state of matter with its property.|Relaciona cada estado de la materia con su propiedad.|Associe chaque état de la matière à sa propriété.|Relaciona cada estat de la matèria amb la seva propietat."),
+            [
+                (Text.Of("solid|sólido|solide|sòlid"), Text.Of("has a fixed shape|tiene una forma fija|a une forme fixe|té una forma fixa")),
+                (Text.Of("liquid|líquido|liquide|líquid"), Text.Of("takes the shape of its container|toma la forma de su recipiente|prend la forme de son récipient|pren la forma del seu recipient")),
+                (Text.Of("gas|gas|gaz|gas"), Text.Of("spreads to fill any space|se expande para llenar cualquier espacio|se répand pour remplir n'importe quel espace|s'expandeix per omplir qualsevol espai")),
+            ],
+            Text.Of("Solids keep their shape, liquids take the shape of their container, and gases spread out to fill the space available.|Los sólidos mantienen su forma, los líquidos toman la forma de su recipiente y los gases se expanden para llenar el espacio disponible.|Les solides gardent leur forme, les liquides prennent la forme de leur récipient et les gaz se répandent pour remplir l'espace disponible.|Els sòlids mantenen la seva forma, els líquids prenen la forma del seu recipient i els gasos s'expandeixen per omplir l'espai disponible.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> ChemistryMatch =
+    [
+        new("chemistry.states", 1,
+            Text.Of("Match each substance with its state at room temperature.|Relaciona cada sustancia con su estado a temperatura ambiente.|Associe chaque substance à son état à température ambiante.|Relaciona cada substància amb el seu estat a temperatura ambient."),
+            [
+                (Text.Of("water|agua|eau|aigua"), Text.Of("liquid|líquido|liquide|líquid")),
+                (Text.Of("oxygen|oxígeno|oxygène|oxigen"), Text.Of("gas|gas|gaz|gas")),
+                (Text.Of("iron|hierro|fer|ferro"), Text.Of("solid|sólido|solide|sòlid")),
+            ],
+            Text.Of("At room temperature, water is liquid, oxygen is a gas, and iron is solid.|A temperatura ambiente, el agua es líquida, el oxígeno es gas y el hierro es sólido.|À température ambiante, l'eau est liquide, l'oxygène est un gaz et le fer est solide.|A temperatura ambient, l'aigua és líquida, l'oxigen és gas i el ferro és sòlid.")),
+        new("chemistry.symbols", 2,
+            Text.Of("Match each element with its chemical symbol.|Relaciona cada elemento con su símbolo químico.|Associe chaque élément à son symbole chimique.|Relaciona cada element amb el seu símbol químic."),
+            [
+                (Text.Of("hydrogen|hidrógeno|hydrogène|hidrogen"), Text.Of("H")),
+                (Text.Of("carbon|carbono|carbone|carboni"), Text.Of("C")),
+                (Text.Of("nitrogen|nitrógeno|azote|nitrogen"), Text.Of("N")),
+            ],
+            Text.Of("H is hydrogen, C is carbon, and N is nitrogen.|H es hidrógeno, C es carbono y N es nitrógeno.|H est l'hydrogène, C le carbone et N l'azote.|H és hidrogen, C és carboni i N és nitrogen.")),
+        new("chemistry.terms", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("mixture|mezcla|mélange|mescla"), Text.Of("substances not chemically bonded|sustancias no unidas químicamente|substances non liées chimiquement|substàncies no unides químicament")),
+                (Text.Of("compound|compuesto|composé|compost"), Text.Of("substances chemically bonded|sustancias unidas químicamente|substances liées chimiquement|substàncies unides químicament")),
+                (Text.Of("solution|disolución|solution|dissolució"), Text.Of("a mixture that looks uniform|una mezcla que parece uniforme|un mélange qui paraît uniforme|una mescla que sembla uniforme")),
+            ],
+            Text.Of("A mixture keeps its substances separate, a compound bonds them chemically, and a solution is a mixture that looks the same throughout.|Una mezcla mantiene sus sustancias separadas, un compuesto las une químicamente y una disolución es una mezcla que parece igual en todas partes.|Un mélange garde ses substances séparées, un composé les lie chimiquement, et une solution est un mélange qui paraît uniforme partout.|Una mescla manté les seves substàncies separades, un compost les uneix químicament, i una dissolució és una mescla que sembla igual arreu.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> BiologyMatch =
+    [
+        new("biology.classes", 1,
+            Text.Of("Match each animal with its group.|Relaciona cada animal con su grupo.|Associe chaque animal à son groupe.|Relaciona cada animal amb el seu grup."),
+            [
+                (Text.Of("dog|perro|chien|gos"), Text.Of("mammal|mamífero|mammifère|mamífer")),
+                (Text.Of("eagle|águila|aigle|àguila"), Text.Of("bird|ave|oiseau|ocell")),
+                (Text.Of("trout|trucha|truite|truita"), Text.Of("fish|pez|poisson|peix")),
+            ],
+            Text.Of("A dog is a mammal, an eagle is a bird, and a trout is a fish.|Un perro es un mamífero, un águila es un ave y una trucha es un pez.|Un chien est un mammifère, un aigle est un oiseau et une truite est un poisson.|Un gos és un mamífer, una àguila és un ocell i una truita és un peix.")),
+        new("biology.organs", 2,
+            Text.Of("Match each organ with its function.|Relaciona cada órgano con su función.|Associe chaque organe à sa fonction.|Relaciona cada òrgan amb la seva funció."),
+            [
+                (Text.Of("lungs|pulmones|poumons|pulmons"), Text.Of("breathing|respiración|respiration|respiració")),
+                (Text.Of("stomach|estómago|estomac|estómac"), Text.Of("digestion|digestión|digestion|digestió")),
+                (Text.Of("brain|cerebro|cerveau|cervell"), Text.Of("thinking|pensamiento|la pensée|pensament")),
+            ],
+            Text.Of("Lungs are for breathing, the stomach for digestion, and the brain for thinking.|Los pulmones son para respirar, el estómago para digerir y el cerebro para pensar.|Les poumons servent à respirer, l'estomac à digérer et le cerveau à penser.|Els pulmons són per respirar, l'estómac per digerir i el cervell per pensar.")),
+        new("biology.diets", 3,
+            Text.Of("Match each diet type with its description.|Relaciona cada tipo de dieta con su descripción.|Associe chaque type de régime à sa description.|Relaciona cada tipus de dieta amb la seva descripció."),
+            [
+                (Text.Of("herbivore|herbívoro|herbivore|herbívor"), Text.Of("eats only plants|come solo plantas|mange seulement des plantes|menja només plantes")),
+                (Text.Of("carnivore|carnívoro|carnivore|carnívor"), Text.Of("eats only meat|come solo carne|mange seulement de la viande|menja només carn")),
+                (Text.Of("omnivore|omnívoro|omnivore|omnívor"), Text.Of("eats both plants and meat|come tanto plantas como carne|mange à la fois des plantes et de la viande|menja tant plantes com carn")),
+            ],
+            Text.Of("Herbivores eat only plants, carnivores eat only meat, and omnivores eat both.|Los herbívoros comen solo plantas, los carnívoros solo carne, y los omnívoros ambas cosas.|Les herbivores mangent seulement des plantes, les carnivores seulement de la viande, et les omnivores les deux.|Els herbívors mengen només plantes, els carnívors només carn, i els omnívors totes dues coses.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> HistoryMatch =
+    [
+        new("history.landmarks", 1,
+            Text.Of("Match each place with what it's known for.|Relaciona cada lugar con aquello por lo que es conocido.|Associe chaque lieu à ce pour quoi il est connu.|Relaciona cada lloc amb allò pel qual és conegut."),
+            [
+                (Text.Of("Egypt|Egipto|Égypte|Egipte"), Text.Of("the pyramids|las pirámides|les pyramides|les piràmides")),
+                (Text.Of("Rome|Roma|Rome|Roma"), Text.Of("the Colosseum|el Coliseo|le Colisée|el Colosseu")),
+                (Text.Of("China|China|Chine|Xina"), Text.Of("the Great Wall|la Gran Muralla|la Grande Muraille|la Gran Muralla")),
+            ],
+            Text.Of("Egypt is known for the pyramids, Rome for the Colosseum, and China for the Great Wall.|Egipto es conocido por las pirámides, Roma por el Coliseo y China por la Gran Muralla.|L'Égypte est connue pour les pyramides, Rome pour le Colisée et la Chine pour la Grande Muraille.|Egipte és conegut per les piràmides, Roma pel Colosseu i la Xina per la Gran Muralla.")),
+        new("history.scientists", 2,
+            Text.Of("Match each scientist with what they're known for.|Relaciona cada científico con aquello por lo que es conocido.|Associe chaque scientifique à ce pour quoi il est connu.|Relaciona cada científic amb allò pel qual és conegut."),
+            [
+                (Text.Of("Einstein|Einstein|Einstein|Einstein"), Text.Of("the theory of relativity|la teoría de la relatividad|la théorie de la relativité|la teoria de la relativitat")),
+                (Text.Of("Newton|Newton|Newton|Newton"), Text.Of("the laws of motion|las leyes del movimiento|les lois du mouvement|les lleis del moviment")),
+                (Text.Of("Curie|Curie|Curie|Curie"), Text.Of("research on radioactivity|la investigación sobre la radiactividad|les recherches sur la radioactivité|la investigació sobre la radioactivitat")),
+            ],
+            Text.Of("Einstein is known for relativity, Newton for the laws of motion, and Curie for her research on radioactivity.|Einstein es conocido por la relatividad, Newton por las leyes del movimiento y Curie por su investigación sobre la radiactividad.|Einstein est connu pour la relativité, Newton pour les lois du mouvement et Curie pour ses recherches sur la radioactivité.|Einstein és conegut per la relativitat, Newton per les lleis del moviment i Curie per la seva investigació sobre la radioactivitat.")),
+        new("history.ages", 3,
+            Text.Of("Match each era with its tools.|Relaciona cada era con sus herramientas.|Associe chaque ère à ses outils.|Relaciona cada era amb les seves eines."),
+            [
+                (Text.Of("Stone Age|Edad de Piedra|âge de pierre|Edat de Pedra"), Text.Of("tools made of stone|herramientas hechas de piedra|outils en pierre|eines fetes de pedra")),
+                (Text.Of("Bronze Age|Edad de Bronce|âge du bronze|Edat del Bronze"), Text.Of("tools made of bronze|herramientas hechas de bronce|outils en bronze|eines fetes de bronze")),
+                (Text.Of("Iron Age|Edad de Hierro|âge du fer|Edat del Ferro"), Text.Of("tools made of iron|herramientas hechas de hierro|outils en fer|eines fetes de ferro")),
+            ],
+            Text.Of("Each era is named after the main material used for tools at the time.|Cada era recibe el nombre del material principal usado para las herramientas en esa época.|Chaque ère porte le nom du matériau principal utilisé pour les outils à cette époque.|Cada era rep el nom del material principal utilitzat per a les eines en aquella època.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> GeographyMatch =
+    [
+        new("geography.continents", 1,
+            Text.Of("Match each country with its continent.|Relaciona cada país con su continente.|Associe chaque pays à son continent.|Relaciona cada país amb el seu continent."),
+            [
+                (Text.Of("Brazil|Brasil|Brésil|Brasil"), Text.Of("South America|Sudamérica|Amérique du Sud|Sud-amèrica")),
+                (Text.Of("Japan|Japón|Japon|Japó"), Text.Of("Asia|Asia|Asie|Àsia")),
+                (Text.Of("Egypt|Egipto|Égypte|Egipte"), Text.Of("Africa|África|Afrique|Àfrica")),
+            ],
+            Text.Of("Brazil is in South America, Japan is in Asia, and Egypt is in Africa.|Brasil está en Sudamérica, Japón está en Asia y Egipto está en África.|Le Brésil est en Amérique du Sud, le Japon est en Asie et l'Égypte est en Afrique.|El Brasil és a Sud-amèrica, el Japó és a Àsia i Egipte és a l'Àfrica.")),
+        new("geography.landforms", 2,
+            Text.Of("Match each landform with its description.|Relaciona cada accidente geográfico con su descripción.|Associe chaque relief à sa description.|Relaciona cada accident geogràfic amb la seva descripció."),
+            [
+                (Text.Of("island|isla|île|illa"), Text.Of("land surrounded by water|tierra rodeada de agua|terre entourée d'eau|terra envoltada d'aigua")),
+                (Text.Of("peninsula|península|péninsule|península"), Text.Of("land surrounded by water on three sides|tierra rodeada de agua por tres lados|terre entourée d'eau sur trois côtés|terra envoltada d'aigua per tres costats")),
+                (Text.Of("valley|valle|vallée|vall"), Text.Of("low land between hills or mountains|tierra baja entre colinas o montañas|terre basse entre des collines ou des montagnes|terra baixa entre turons o muntanyes")),
+            ],
+            Text.Of("An island is surrounded by water, a peninsula by water on three sides, and a valley lies low between hills or mountains.|Una isla está rodeada de agua, una península por agua en tres lados, y un valle es una tierra baja entre colinas o montañas.|Une île est entourée d'eau, une péninsule par de l'eau sur trois côtés, et une vallée est une terre basse entre des collines ou des montagnes.|Una illa està envoltada d'aigua, una península per aigua en tres costats, i una vall és una terra baixa entre turons o muntanyes.")),
+        new("geography.climates", 3,
+            Text.Of("Match each climate with its description.|Relaciona cada clima con su descripción.|Associe chaque climat à sa description.|Relaciona cada clima amb la seva descripció."),
+            [
+                (Text.Of("tropical|tropical|tropical|tropical"), Text.Of("hot and humid all year|cálido y húmedo todo el año|chaud et humide toute l'année|càlid i humit tot l'any")),
+                (Text.Of("polar|polar|polaire|polar"), Text.Of("cold all year|frío todo el año|froid toute l'année|fred tot l'any")),
+                (Text.Of("temperate|templado|tempéré|temperat"), Text.Of("mild, with four seasons|templado, con cuatro estaciones|doux, avec quatre saisons|suau, amb quatre estacions")),
+            ],
+            Text.Of("Tropical climates are hot and humid, polar climates are cold all year, and temperate climates have four mild seasons.|Los climas tropicales son cálidos y húmedos, los polares son fríos todo el año, y los templados tienen cuatro estaciones suaves.|Les climats tropicaux sont chauds et humides, les climats polaires sont froids toute l'année, et les climats tempérés ont quatre saisons douces.|Els climes tropicals són càlids i humits, els polars són freds tot l'any, i els temperats tenen quatre estacions suaus.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> EconomicsMatch =
+    [
+        new("economics.terms", 1,
+            TermMeaningPrompt,
+            [
+                (Text.Of("buyer|comprador|acheteur|comprador"), Text.Of("pays for a product|paga por un producto|paie pour un produit|paga per un producte")),
+                (Text.Of("seller|vendedor|vendeur|venedor"), Text.Of("offers a product for sale|ofrece un producto a la venta|propose un produit à la vente|ofereix un producte a la venda")),
+                (Text.Of("price|precio|prix|preu"), Text.Of("the amount paid for something|la cantidad pagada por algo|le montant payé pour quelque chose|la quantitat pagada per alguna cosa")),
+            ],
+            Text.Of("A buyer pays, a seller offers something for sale, and the price is what's paid.|Un comprador paga, un vendedor ofrece algo a la venta y el precio es lo que se paga.|Un acheteur paie, un vendeur propose quelque chose à la vente, et le prix est ce qui est payé.|Un comprador paga, un venedor ofereix alguna cosa a la venda i el preu és el que es paga.")),
+        new("economics.market", 2,
+            TermMeaningPrompt,
+            [
+                (Text.Of("supply|oferta|offre|oferta"), Text.Of("how much of something is available|cuánto hay disponible de algo|la quantité disponible de quelque chose|quant hi ha disponible d'alguna cosa")),
+                (Text.Of("demand|demanda|demande|demanda"), Text.Of("how much people want something|cuánto quiere la gente algo|à quel point les gens veulent quelque chose|quant vol la gent alguna cosa")),
+                (Text.Of("trade|comercio|commerce|comerç"), Text.Of("exchanging goods or services|intercambiar bienes o servicios|échanger des biens ou des services|intercanviar béns o serveis")),
+            ],
+            Text.Of("Supply is what's available, demand is what people want, and trade is exchanging goods or services.|La oferta es lo que hay disponible, la demanda es lo que la gente quiere, y el comercio es intercambiar bienes o servicios.|L'offre est ce qui est disponible, la demande est ce que les gens veulent, et le commerce consiste à échanger des biens ou des services.|L'oferta és el que hi ha disponible, la demanda és el que la gent vol, i el comerç és intercanviar béns o serveis.")),
+        new("economics.finance", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("tax|impuesto|impôt|impost"), Text.Of("money paid to the government|dinero pagado al gobierno|argent payé au gouvernement|diners pagats al govern")),
+                (Text.Of("debt|deuda|dette|deute"), Text.Of("money that is owed|dinero que se debe|argent qui est dû|diners que es deuen")),
+                (Text.Of("investment|inversión|investissement|inversió"), Text.Of("money put in to earn more later|dinero invertido para ganar más después|argent investi pour en gagner plus tard|diners invertits per guanyar-ne més després")),
+            ],
+            Text.Of("A tax goes to the government, a debt is money owed, and an investment is money put in to grow.|Un impuesto va al gobierno, una deuda es dinero que se debe, y una inversión es dinero puesto para crecer.|Un impôt va au gouvernement, une dette est de l'argent dû, et un investissement est de l'argent placé pour qu'il fructifie.|Un impost va al govern, un deute és diners que es deuen, i una inversió és diners posats perquè creixin.")),
+    ];
+
+    private static readonly IReadOnlyList<MatchItem> ProgrammingMatch =
+    [
+        new("programming.terms", 1,
+            TermMeaningPrompt,
+            [
+                (Text.Of("variable|variable|variable|variable"), Text.Of("a named place that stores a value|un lugar con nombre que guarda un valor|un endroit nommé qui stocke une valeur|un lloc amb nom que guarda un valor")),
+                (Text.Of("loop|bucle|boucle|bucle"), Text.Of("code that repeats|código que se repite|du code qui se répète|codi que es repeteix")),
+                (Text.Of("function|función|fonction|funció"), Text.Of("a reusable block of code|un bloque de código reutilizable|un bloc de code réutilisable|un bloc de codi reutilitzable")),
+            ],
+            Text.Of("A variable stores a value, a loop repeats code, and a function is a reusable block of code.|Una variable guarda un valor, un bucle repite código y una función es un bloque de código reutilizable.|Une variable stocke une valeur, une boucle répète du code, et une fonction est un bloc de code réutilisable.|Una variable guarda un valor, un bucle repeteix codi i una funció és un bloc de codi reutilitzable.")),
+        new("programming.types", 2,
+            Text.Of("Match each data type with an example.|Relaciona cada tipo de dato con un ejemplo.|Associe chaque type de donnée à un exemple.|Relaciona cada tipus de dada amb un exemple."),
+            [
+                (Text.Of("text|texto|texte|text"), Text.Of("\"hello\"")),
+                (Text.Of("number|número|nombre|número"), Text.Of("42")),
+                (Text.Of("boolean|booleano|booléen|booleà"), Text.Of("true or false|verdadero o falso|vrai ou faux|cert o fals")),
+            ],
+            Text.Of("Text holds words, numbers hold digits, and a boolean is either true or false.|El texto guarda palabras, los números guardan cifras y un booleano es verdadero o falso.|Le texte contient des mots, les nombres des chiffres, et un booléen est vrai ou faux.|El text guarda paraules, els números guarden xifres i un booleà és cert o fals.")),
+        new("programming.terms2", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("debugging|depuración|débogage|depuració"), Text.Of("finding and fixing errors|encontrar y corregir errores|trouver et corriger des erreurs|trobar i corregir errors")),
+                (Text.Of("compiling|compilación|compilation|compilació"), Text.Of("translating code into a form a computer runs|traducir el código a una forma que un ordenador ejecuta|traduire le code dans une forme qu'un ordinateur exécute|traduir el codi a una forma que un ordinador executa")),
+                (Text.Of("syntax|sintaxis|syntaxe|sintaxi"), Text.Of("the rules for how code must be written|las reglas de cómo debe escribirse el código|les règles de la façon dont le code doit être écrit|les regles de com s'ha d'escriure el codi")),
+            ],
+            Text.Of("Debugging finds errors, compiling translates code to run it, and syntax is the rules for writing code correctly.|La depuración encuentra errores, la compilación traduce el código para ejecutarlo, y la sintaxis son las reglas para escribir código correctamente.|Le débogage trouve les erreurs, la compilation traduit le code pour l'exécuter, et la syntaxe est l'ensemble des règles pour écrire le code correctement.|La depuració troba errors, la compilació tradueix el codi per executar-lo, i la sintaxi són les regles per escriure codi correctament.")),
+    ];
+
+    private static readonly Dictionary<Area, IReadOnlyList<MatchItem>> MatchBanks = new()
+    {
+        [Area.Mathematics] = MathMatch,
+        [Area.Physics] = PhysicsMatch,
+        [Area.Chemistry] = ChemistryMatch,
+        [Area.Biology] = BiologyMatch,
+        [Area.History] = HistoryMatch,
+        [Area.Geography] = GeographyMatch,
+        [Area.Economics] = EconomicsMatch,
+        [Area.Programming] = ProgrammingMatch,
+    };
+
+    public static PracticeExercise? Match(Area area, Level level, TeachLanguage language, int seed)
+    {
+        var difficulty = DifficultyFor(level);
+        if (MatchBanks.TryGetValue(area, out var genericBank))
+        {
+            var genericPool = genericBank.Where(i => i.Difficulty == difficulty).ToList();
+            if (genericPool.Count == 0)
+            {
+                return null;
+            }
+
+            var genericItem = genericPool[new Random(seed).Next(genericPool.Count)];
+            return new PracticeExercise(genericItem.Topic, genericItem.Difficulty, ExerciseKind.Match, genericItem.Prompt.In(language), genericItem.Explanation.In(language))
+            {
+                Pairs = genericItem.Pairs.Select(p => new MatchPair(p.Left.In(language), p.Right.In(language))).ToList(),
+            };
+        }
+
+        if (area == Area.Language)
+        {
+            var pool = LanguageMatch.Where(i => i.Difficulty == difficulty).ToList();
+            if (pool.Count == 0)
+            {
+                return null;
+            }
+
+            var item = pool[new Random(seed).Next(pool.Count)];
+            return new PracticeExercise(item.Topic, item.Difficulty, ExerciseKind.Match, item.Prompt.In(language), item.Explanation.In(language))
+            {
+                Pairs = item.Pairs.Select(p => new MatchPair(p.Left.In(language), p.Right.In(language))).ToList(),
+            };
+        }
+
+        if (area == Area.ForeignLanguage)
+        {
+            if (!ForeignMatchWords.TryGetValue(difficulty, out var words))
+            {
+                return null;
+            }
+
+            var target = QuestionBanks.ForeignTarget(language);
+            var explanation = Text.Of("");
+            return new PracticeExercise("foreign.vocabulary", difficulty, ExerciseKind.Match,
+                ForeignMatchPrompt.Format(language, TargetName(language)), explanation.In(language))
+            {
+                Pairs = words.Select(w => new MatchPair(w.In(language), w.In(target))).ToList(),
+            };
+        }
+
+        return null;
+    }
+
+    /// <summary>Picks among fill-blank/reorder/match for Language/ForeignLanguage (the subjects without true/false
+    /// content — task #71); null for any other subject or if this difficulty tier has no content of any of the 3
+    /// kinds yet.</summary>
+    private static readonly int[] DrillKindOrder = [0, 1, 2];
+
+    public static PracticeExercise? LanguageDrill(Area area, Level level, TeachLanguage language, int seed)
+    {
+        if (area is not (Area.Language or Area.ForeignLanguage))
+        {
+            return null;
+        }
+
+        var rng = new Random(seed);
+        var order = DrillKindOrder.OrderBy(_ => rng.Next()).ToArray();
+        foreach (var pick in order)
+        {
+            var exercise = pick switch
+            {
+                0 => FillBlank(area, level, language, seed),
+                1 => Reorder(area, level, language, seed),
+                _ => Match(area, level, language, seed),
+            };
+            if (exercise is not null)
+            {
+                return exercise;
+            }
+        }
+
+        return null;
+    }
+
+    private static readonly int[] AnyDrillKindOrder = [0, 1, 2, 3];
+
+    /// <summary>Picks among true/false, fill-blank, reorder and match for any subject (task #73 extends
+    /// fill-blank/reorder/match, previously Language/ForeignLanguage only, to all 8 other subjects, so the live
+    /// Quiz flow now mixes all 4 kinds instead of always preferring true/false); null if none of the 4 kinds has
+    /// content for this area/level yet. <paramref name="allowTrueFalse"/> lets a caller exclude the 50/50-guessable
+    /// true/false kind (task #74: QuizStore excludes it specifically for Placement, where that guess rate would add
+    /// noise to the binary-search level calibration) while still mixing in the other 3.</summary>
+    public static PracticeExercise? AnyDrill(Area area, Level level, TeachLanguage language, int seed, bool allowTrueFalse = true)
+    {
+        var rng = new Random(seed);
+        var order = AnyDrillKindOrder.OrderBy(_ => rng.Next()).ToArray();
+        foreach (var pick in order)
+        {
+            if (pick == 0 && !allowTrueFalse)
+            {
+                continue;
+            }
+
+            var exercise = pick switch
+            {
+                0 => TrueFalse(area, level, language, seed),
+                1 => FillBlank(area, level, language, seed),
+                2 => Reorder(area, level, language, seed),
+                _ => Match(area, level, language, seed),
+            };
+            if (exercise is not null)
+            {
+                return exercise;
+            }
+        }
+
+        return null;
+    }
+}

@@ -105,14 +105,42 @@ public class AdventurePersistenceTests(Database database) : IClassFixture<Databa
         var bossTopics = new List<string>();
         for (var i = 0; i < Adventure.Doors + Adventure.BossHp; i++)
         {
-            var current = await CurrentAsync(db, q.AttemptId);
-            if (i >= Adventure.Doors)
+            // Adventure now mixes in Duolingo-style drills too (task #74), every 4th answer, so a door or boss hit
+            // can be a drill instead of a classic question; detect which and answer right via its own key either way.
+            var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
+            string topic;
+            int difficulty;
+            if (attempt.CurrentExerciseJson is { } exerciseJson)
             {
-                Assert.Equal(3, current.Difficulty);
-                bossTopics.Add(current.Topic);
+                var exercise = JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, Web)!;
+                (topic, difficulty) = (exercise.Topic, exercise.Difficulty);
+                if (i >= Adventure.Doors)
+                {
+                    Assert.Equal(3, difficulty);
+                    bossTopics.Add(topic);
+                }
+
+                r = await (exercise.Kind switch
+                {
+                    ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(sara, q.AttemptId, exercise.Answer!, 1, 0, TeachLanguage.English),
+                    ExerciseKind.Reorder => quizzes.AnswerReorderAsync(sara, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
+                    ExerciseKind.Match => quizzes.AnswerMatchAsync(sara, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
+                    _ => quizzes.AnswerTrueFalseAsync(sara, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.English),
+                });
+            }
+            else
+            {
+                var current = JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
+                (topic, difficulty) = (current.Topic, current.Difficulty);
+                if (i >= Adventure.Doors)
+                {
+                    Assert.Equal(3, difficulty);
+                    bossTopics.Add(topic);
+                }
+
+                r = await quizzes.AnswerAsync(sara, q.AttemptId, current.CorrectIndex, 1, TeachLanguage.English);
             }
 
-            r = await quizzes.AnswerAsync(sara, q.AttemptId, current.CorrectIndex, 1, TeachLanguage.English);
             if (i == Adventure.Doors - 1)
             {
                 Assert.True(r!.Next!.Adventure!.InBoss);

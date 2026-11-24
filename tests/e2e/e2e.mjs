@@ -31,6 +31,54 @@ async function noOverflow(page, label) {
     check(overflow <= 1, `${label}: no horizontal overflow (${overflow}px)`);
 }
 
+// A Practice-mode question is sometimes a Duolingo-style drill instead of the usual 4-option grid: true/false,
+// fill-blank, reorder or match, mixed in for every subject by ExerciseBank.AnyDrill (task #73 extends what was,
+// through task #72, true/false-only for Mathematics-like subjects and fill-blank/reorder/match-only for
+// Language/ForeignLanguage, into a mix of all 4 kinds for every subject). Waits for whichever of the 5 possible
+// renderings the page actually shows and answers it — a drill not necessarily correctly, since the point there is
+// that the UI works, not the score — and returns which kind it saw ("classic", "truefalse", "fillblank", "reorder"
+// or "match"). classicIndex picks the option on a classic question or true/false drill (wrapped to however many
+// buttons that rendering has); it's ignored for the other 3 drill kinds, which only ever need an answer submitted.
+async function answerQuizQuestion(page, classicIndex = 0) {
+    const options = page.locator("[data-testid=quiz-options] button:not([disabled])");
+    const trueFalse = page.locator("[data-testid=quiz-truefalse] button:not([disabled])");
+    const fillBlank = page.locator("[data-testid=quiz-fillblank]");
+    const reorder = page.locator("[data-testid=quiz-reorder]");
+    const match = page.locator("[data-testid=quiz-match]");
+    await Promise.race([options.first().waitFor(), trueFalse.first().waitFor(), fillBlank.first().waitFor(), reorder.first().waitFor(), match.first().waitFor()]);
+    if (await fillBlank.count()) {
+        await page.fill("#qz-fillblank-input", "test");
+        await page.click("#qz-fillblank-check");
+        return "fillblank";
+    }
+    if (await reorder.count()) {
+        const poolSelector = "#qz-reorder-pool [data-pos]:not([disabled])";
+        const total = await page.locator(poolSelector).count();
+        for (let k = 0; k < total; k++) {
+            await page.locator(poolSelector).first().click();
+        }
+        await page.click("#qz-reorder-check");
+        return "reorder";
+    }
+    if (await match.count()) {
+        const lefts = page.locator("#qz-match-left [data-left]");
+        const rights = page.locator("#qz-match-right [data-right]");
+        const n = await lefts.count();
+        for (let k = 0; k < n; k++) {
+            await lefts.nth(k).click();
+            await rights.nth(k).click();
+        }
+        await page.click("#qz-match-check");
+        return "match";
+    }
+    if (await trueFalse.count()) {
+        await trueFalse.nth(classicIndex % (await trueFalse.count())).click();
+        return "truefalse";
+    }
+    await options.nth(classicIndex % (await options.count())).click();
+    return "classic";
+}
+
 const homes = { student: "Student", kid: "Student", teacher: "Teacher", director: "Institution", tutor: "Tutor" };
 async function demo(page, role) {
     await page.goto(BASE + "/culture/en?returnUrl=/");
@@ -195,9 +243,12 @@ async function demo(page, role) {
     // The hands-free "oral exam" toggle is server-rendered hidden; quiz.js reveals it once the browser actually
     // offers both speech recognition and speech synthesis (true in this headless browser, so it should unhide).
     check(await page.locator("#qz-oral").isHidden() === false, "oral exam toggle revealed when the browser supports voice");
+    // Physics mixes in all 4 drill kinds (task #72's True/False, plus task #73's fill-blank/reorder/match): the
+    // 4th and 8th of these 10 questions can be one instead of the usual options grid (see answerQuizQuestion), and
+    // a drill doesn't log a review entry yet (task #69's documented limitation), so only 8 of the 10 questions
+    // below are expected back in the review list.
     for (let i = 0; i < 10; i++) {
-        await page.locator("[data-testid=quiz-options] button").first().waitFor();
-        await page.locator("[data-testid=quiz-options] button").nth(i % 4).click();
+        await answerQuizQuestion(page, i % 4);
         await page.locator("[data-testid=quiz-next]").waitFor();
         if (i === 1) {
             check(await page.locator("[data-state=right]").count() === 1, "the right option is shown after answering");
@@ -209,7 +260,7 @@ async function demo(page, role) {
     check(+(await page.locator("[data-testid=quiz-xp]").textContent()) >= 10, "XP won during the test");
     await page.click("[data-testid=quiz-review]");
     await page.locator("[data-testid=review]").waitFor();
-    check(await page.locator("[data-testid=review] > li").count() === 10, "the finished test is saved with its 10 questions for review");
+    check(await page.locator("[data-testid=review] > li").count() === 8, "the finished test is saved with its classic questions for review");
     await page.screenshot({ path: join(DOCS, "screenshot-history.png") });
     await page.goto(BASE + "/Student/History");
     check(await page.locator("[data-testid=history] li").count() >= 9, "list of tests done");
@@ -225,13 +276,15 @@ async function demo(page, role) {
     await page.click("[data-testid=apply-level] button");
     await page.waitForLoadState("networkidle");
 
-    // Placement test finds a level
+    // Placement test finds a level. Task #74 mixes drills into Placement too (never true/false — see
+    // ExerciseBank.AnyDrill's allowTrueFalse — but fill-blank/reorder/match can appear), so answer via the
+    // same generic helper the Practice-mode drills use instead of assuming the classic options grid.
     await page.goto(BASE + "/Student/Quiz?area=Mathematics&mode=Placement");
     for (let i = 0; i < 10; i++) {
         const done = page.locator("[data-testid=quiz-summary]");
         if (await done.count()) break;
-        await page.locator("[data-testid=quiz-options] button").first().waitFor();
-        await page.locator("[data-testid=quiz-options] button").first().click();
+        const kind = await answerQuizQuestion(page, 0);
+        check(kind !== "truefalse", "no true/false drill appears during a Placement test");
         await page.locator("[data-testid=quiz-next]").waitFor();
         await page.click("[data-testid=quiz-next]");
     }
@@ -255,9 +308,9 @@ async function demo(page, role) {
 
     await page.screenshot({ path: join(DOCS, "screenshot-arena.png") });
     await page.click("[data-testid=play-duel]");
+    // Task #74 mixes drills into a Duel too (any of the 4 kinds), so answer via the generic helper here as well.
     for (let i = 0; i < 5; i++) {
-        await page.locator("[data-testid=quiz-options] button").first().waitFor();
-        await page.locator("[data-testid=quiz-options] button").first().click();
+        await answerQuizQuestion(page, 0);
         await page.locator("[data-testid=quiz-next]").waitFor();
         await page.click("[data-testid=quiz-next]");
     }
@@ -315,10 +368,11 @@ async function demo(page, role) {
     check((await page.locator("[data-testid=hearts]").textContent()).includes("❤️"), "the adventure shows the map and the hearts");
     check((await page.locator("[data-testid=story-line]").textContent()).length > 10, "each door has a line of the story");
     await page.screenshot({ path: join(DOCS, "screenshot-adventure.png") });
+    // Task #74 mixes drills into Adventure too (any of the 4 kinds, forced to boss difficulty once InBoss), so
+    // answer via the generic helper rather than assuming the classic options grid on every door/boss turn.
     for (let i = 0; i < 20; i++) {
         if (await page.locator("[data-testid=quiz-summary]").count()) break;
-        await page.locator("[data-testid=quiz-options] button").first().waitFor();
-        await page.locator("[data-testid=quiz-options] button").first().click();
+        await answerQuizQuestion(page, 0);
         await page.locator("[data-testid=quiz-next]").waitFor();
         await page.click("[data-testid=quiz-next]");
     }
@@ -634,6 +688,98 @@ async function demo(page, role) {
     await context.close();
 }
 
+// ---------- Student: a true/false drill shows up inside a normal Mathematics practice, Duolingo-style ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    // Since task #73, each of the 2 drill slots in a 10-question Practice test (the 4th and 8th question) is one of
+    // 4 kinds (true/false, fill-blank, reorder, match) picked at random per attempt (ExerciseBank.AnyDrill), not
+    // always true/false as it was through task #72, so this retries fresh attempts until a true/false one turns up.
+    let sawDrill = false;
+    for (let t = 0; t < 20 && !sawDrill; t++) {
+        await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
+        await page.locator("[data-testid=quiz-options] button").first().waitFor();
+        for (let i = 0; i < 10 && !sawDrill; i++) {
+            if (await page.locator("[data-testid=quiz-truefalse]").count()) {
+                sawDrill = true;
+                check(await page.locator("[data-testid=quiz-truefalse] button").count() === 2, "the drill shows exactly two buttons (true/false), not the usual options grid");
+                check(await page.locator("[data-testid=hint]").count() === 0, "no hint button on a true/false drill");
+                await page.screenshot({ path: join(DOCS, "screenshot-truefalse.png") });
+                await page.locator("[data-testid=quiz-truefalse] button").nth(1).click();
+                await page.locator("[data-testid=quiz-next]").waitFor();
+                check((await page.locator("#qz-feedback").textContent()).length > 0, "the drill explains the answer like a classic question");
+                await page.click("[data-testid=quiz-next]");
+            } else {
+                await answerQuizQuestion(page);
+                await page.locator("[data-testid=quiz-next]").waitFor();
+                await page.click("[data-testid=quiz-next]");
+            }
+        }
+    }
+    check(sawDrill, "a true/false drill appears during a Mathematics practice test");
+    await context.close();
+}
+
+// ---------- Student: fill-blank, reorder and match drills inside a Language practice test (task #71) ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    await page.goto(BASE + "/Student/Quiz?area=Language&level=Primary3&mode=Practice");
+    const seenKinds = new Set();
+    for (let i = 0; i < 10; i++) {
+        const kind = await answerQuizQuestion(page);
+        seenKinds.add(kind);
+        await page.locator("[data-testid=quiz-next]").waitFor();
+        if (["fillblank", "reorder", "match"].includes(kind) && !seenKinds.has("screenshotted")) {
+            check((await page.locator("#qz-feedback").textContent()).length > 0, `the ${kind} drill explains the answer like a classic question`);
+            await page.screenshot({ path: join(DOCS, `screenshot-${kind}.png`) });
+            seenKinds.add("screenshotted");
+        }
+        await page.click("[data-testid=quiz-next]");
+    }
+    check(!seenKinds.has("truefalse"), "Language has no true/false content, so no true/false drill appears");
+    check(["fillblank", "reorder", "match"].some((k) => seenKinds.has(k)), "a fill-blank, reorder or match drill appears during a Language practice test");
+    await context.close();
+}
+
+// ---------- Student: fill-blank, reorder and match drills inside a ForeignLanguage practice test (task #71) ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    await page.goto(BASE + "/Student/Quiz?area=ForeignLanguage&level=Primary3&mode=Practice");
+    const seenKinds = new Set();
+    for (let i = 0; i < 10; i++) {
+        const kind = await answerQuizQuestion(page);
+        seenKinds.add(kind);
+        await page.locator("[data-testid=quiz-next]").waitFor();
+        await page.click("[data-testid=quiz-next]");
+    }
+    check(!seenKinds.has("truefalse"), "ForeignLanguage has no true/false content, so no true/false drill appears");
+    check(["fillblank", "reorder", "match"].some((k) => seenKinds.has(k)), "a fill-blank, reorder or match drill appears during a ForeignLanguage practice test");
+    await context.close();
+}
+
+// ---------- Student: fill-blank, reorder and match now also appear for a non-language subject (task #73) ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    // Programming had true/false drills only (task #72); task #73 adds its own fill-blank/reorder/match content and
+    // wires ExerciseBank.AnyDrill to mix all 4 kinds for every subject, so retry fresh attempts (2 drill slots each,
+    // 1-in-4 chance each of any one kind) until one of the 3 new kinds turns up here too.
+    const seenKinds = new Set();
+    for (let t = 0; t < 20 && !["fillblank", "reorder", "match"].some((k) => seenKinds.has(k)); t++) {
+        await page.goto(BASE + "/Student/Quiz?area=Programming&level=Primary3&mode=Practice");
+        for (let i = 0; i < 10; i++) {
+            const kind = await answerQuizQuestion(page);
+            seenKinds.add(kind);
+            await page.locator("[data-testid=quiz-next]").waitFor();
+            await page.click("[data-testid=quiz-next]");
+        }
+    }
+    check(["fillblank", "reorder", "match"].some((k) => seenKinds.has(k)), "a fill-blank, reorder or match drill appears during a Programming (non-language) practice test");
+    await context.close();
+}
+
 // ---------- Student: Socratic ladder, "tell me how you thought", "How I learn" ----------
 {
     const { context, page } = await session();
@@ -649,8 +795,7 @@ async function demo(page, role) {
     await page.locator("[data-testid=ladder]").screenshot({ path: join(DOCS, "screenshot-ladder.png") });
     let thought = false;
     for (let i = 0; i < 10 && !thought; i++) {
-        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().waitFor();
-        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().click();
+        await answerQuizQuestion(page);
         await page.locator("[data-testid=quiz-next]").waitFor();
         if (await page.locator("[data-testid=thinking]").count()) {
             thought = true;
@@ -729,8 +874,7 @@ async function demo(page, role) {
     for (let t = 0; t < 6 && !defended; t++) {
         await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
         for (let i = 0; !(await page.locator("[data-testid=quiz-summary]").count()) && i < 40; i++) {
-            await page.locator("[data-testid=quiz-options] button:not([disabled])").first().waitFor();
-            await page.locator("[data-testid=quiz-options] button:not([disabled])").nth(i % 2).click();
+            await answerQuizQuestion(page, i % 2);
             await page.locator("[data-testid=quiz-next]").waitFor();
             await page.click("[data-testid=quiz-next]");
         }

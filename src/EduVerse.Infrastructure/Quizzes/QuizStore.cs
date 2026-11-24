@@ -15,6 +15,18 @@ public sealed record QuestionView(string AttemptId, int Number, int Length, stri
     int Difficulty, string Topic, Level Level, Area Area, QuizMode Mode, bool Kids, string? Evo = null, string? EvoTask = null, int HintsUsed = 0)
 {
     public AdventureView? Adventure { get; init; }
+
+    /// <summary>Null for a classic multiple-choice question; set when this is a Duolingo-style drill (true/false, etc.) instead.</summary>
+    public ExerciseKind? ExerciseKind { get; init; }
+
+    /// <summary>Reorder drill only: the words to tap, shown already shuffled.</summary>
+    public IReadOnlyList<string>? Tokens { get; init; }
+
+    /// <summary>Match drill only: the left-column items, in a stable order.</summary>
+    public IReadOnlyList<string>? MatchLeft { get; init; }
+
+    /// <summary>Match drill only: the right-column items, shuffled per view (the student answers by pairing text, not position).</summary>
+    public IReadOnlyList<string>? MatchRight { get; init; }
 }
 
 /// <summary>What the adventure screen shows with a question: the map, the hearts, the boss and the line of the story.</summary>
@@ -137,7 +149,12 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     public async Task<QuestionView?> CurrentAsync(string userId, string attemptId, CancellationToken ct = default)
     {
         var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
-        return attempt is null || attempt.FinishedAt is not null ? null : View(attempt, Current(attempt));
+        if (attempt is null || attempt.FinishedAt is not null)
+        {
+            return null;
+        }
+
+        return attempt.CurrentExerciseJson is not null ? ViewOfExercise(attempt, CurrentExercise(attempt)) : View(attempt, Current(attempt));
     }
 
     /// <summary>Same question whatever the order of its options.</summary>
@@ -157,11 +174,94 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
 
     private static QuizQuestion Current(QuizAttempt attempt) => JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, JsonOptions)!;
 
+    private static PracticeExercise CurrentExercise(QuizAttempt attempt) => JsonSerializer.Deserialize<PracticeExercise>(attempt.CurrentExerciseJson!, JsonOptions)!;
+
     private static QuestionView View(QuizAttempt a, QuizQuestion q) =>
         new(a.Id, a.Answered + 1, a.Length, q.Prompt, q.Options, q.Visual, q.Code, q.Difficulty, q.Topic, a.Level, a.Area, a.Mode, Levels.IsKids(a.Level), q.Evo, q.EvoTask, a.CurrentHints)
         {
             Adventure = AdventureOf(a),
         };
+
+    /// <summary>The view of a Duolingo-style drill: no options to list (the kind tells the client how to render it), no hints or evo.
+    /// Carries the Adventure map/hearts/story line exactly like a classic question's view does (task #74), so a drill
+    /// landing mid-adventure doesn't make that chrome disappear for one question.</summary>
+    private static QuestionView ViewOfExercise(QuizAttempt a, PracticeExercise e) =>
+        new(a.Id, a.Answered + 1, a.Length, e.Prompt, [], e.Visual, null, e.Difficulty, e.Topic, a.Level, a.Area, a.Mode, Levels.IsKids(a.Level))
+        {
+            ExerciseKind = e.Kind,
+            Tokens = e.Kind == ExerciseKind.Reorder ? e.Tokens : null,
+            MatchLeft = e.Kind == ExerciseKind.Match ? e.Pairs!.Select(p => p.Left).ToList() : null,
+            MatchRight = e.Kind == ExerciseKind.Match ? e.Pairs!.Select(p => p.Right).OrderBy(_ => Random.Shared.Next()).ToList() : null,
+            Adventure = AdventureOf(a),
+        };
+
+    /// <summary>The modes a Duolingo-style drill can appear in: Practice (task #71–73) plus Adventure, Duel (Arena) and
+    /// Placement (task #74) — every 4th answered item, when the bank has content for this subject and level. True/false
+    /// is excluded from Placement specifically: its 50/50 guess rate would add noise to the binary-search level
+    /// calibration (2 decisive questions per level), where the other 3 kinds (free-text/reorder/match, each harder to
+    /// guess right than even a classic 4-option question) don't carry that risk. Evo/Topic/Interview/Review/Notebook
+    /// are deliberately left out — a drill has no Evo-specific adaptation and no meaning for a free/topic/reviewed set.</summary>
+    private static PracticeExercise? TryExerciseFor(QuizAttempt attempt, TeachLanguage language)
+    {
+        if (attempt.Mode is not (QuizMode.Practice or QuizMode.Adventure or QuizMode.Duel or QuizMode.Placement) || attempt.Answered % 4 != 3)
+        {
+            return null;
+        }
+
+        var seed = QuestionBanks.Seed(attempt.Seed, attempt.Answered, 5);
+        var exercise = ExerciseBank.AnyDrill(attempt.Area, attempt.Level, language, seed, allowTrueFalse: attempt.Mode != QuizMode.Placement);
+        if (exercise is not null && attempt.Mode == QuizMode.Adventure && JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson!, JsonOptions)!.InBoss)
+        {
+            // Boss fights force the hardest difficulty for classic questions too (see NextQuestion); keep a drill
+            // landing on a boss turn consistent, so skill tracking and the XP reward treat it the same way.
+            exercise = exercise with { Difficulty = 3 };
+        }
+
+        return exercise;
+    }
+
+    /// <summary>Applies the mode-specific progression for one answered item — Adventure's door/boss state, Placement's
+    /// binary-search level state, or Practice/Evo/Topic's adaptive difficulty — and returns whether the attempt is now
+    /// finished. Shared by the classic answer path and every drill-answer path (task #74), so a drill answered during
+    /// Adventure or Placement advances that mode's own state exactly like a classic answer does, instead of silently
+    /// leaving it frozen.</summary>
+    private static bool ApplyModeProgression(QuizAttempt attempt, bool correct)
+    {
+        var finished = attempt.Answered >= attempt.Length;
+        if (attempt.Mode == QuizMode.Adventure)
+        {
+            var state = Adventure.Answer(JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson!, JsonOptions)!, correct);
+            attempt.AdventureJson = JsonSerializer.Serialize(state, JsonOptions);
+            finished = state.Finished;
+            attempt.Won = state.Won;
+            attempt.Length = finished ? attempt.Answered : Math.Max(attempt.Length, attempt.Answered + (Adventure.Doors - state.Passed) + state.BossHp);
+            if (!finished && !state.InBoss)
+            {
+                attempt.Difficulty = AdaptiveQuiz.NextDifficulty(attempt.Difficulty, correct, attempt.Run);
+            }
+        }
+        else if (attempt.Mode == QuizMode.Placement)
+        {
+            var state = Placement.Answer(JsonSerializer.Deserialize<PlacementState>(attempt.PlacementJson!, JsonOptions)!, correct);
+            attempt.PlacementJson = JsonSerializer.Serialize(state, JsonOptions);
+            finished = state.Finished;
+            if (!finished)
+            {
+                attempt.Level = Placement.LevelToAsk(state);
+            }
+            else
+            {
+                attempt.Result = Placement.Result(state, attempt.Area);
+                attempt.Length = attempt.Answered;
+            }
+        }
+        else if (attempt.Mode is QuizMode.Practice or QuizMode.Evo or QuizMode.Topic)
+        {
+            attempt.Difficulty = AdaptiveQuiz.NextDifficulty(attempt.Difficulty, correct, attempt.Run);
+        }
+
+        return finished;
+    }
 
     private static AdventureView? AdventureOf(QuizAttempt a)
     {
@@ -296,7 +396,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     public async Task<AnswerResult?> AnswerAsync(string userId, string attemptId, int choice, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
     {
         var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
-        if (attempt is null || attempt.FinishedAt is not null || choice is < 0 or >= QuizQuestion.Choices)
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is not null || choice is < 0 or >= QuizQuestion.Choices)
         {
             return null;
         }
@@ -322,38 +422,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         });
         await UpdateSkillAsync(userId, attempt, question, correct, confidence, ct).ConfigureAwait(false);
 
-        var finished = attempt.Answered >= attempt.Length;
-        if (attempt.Mode == QuizMode.Adventure)
-        {
-            var state = Adventure.Answer(JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson!, JsonOptions)!, correct);
-            attempt.AdventureJson = JsonSerializer.Serialize(state, JsonOptions);
-            finished = state.Finished;
-            attempt.Won = state.Won;
-            attempt.Length = finished ? attempt.Answered : Math.Max(attempt.Length, attempt.Answered + (Adventure.Doors - state.Passed) + state.BossHp);
-            if (!finished && !state.InBoss)
-            {
-                attempt.Difficulty = AdaptiveQuiz.NextDifficulty(attempt.Difficulty, correct, attempt.Run);
-            }
-        }
-        else if (attempt.Mode == QuizMode.Placement)
-        {
-            var state = Placement.Answer(JsonSerializer.Deserialize<PlacementState>(attempt.PlacementJson!, JsonOptions)!, correct);
-            attempt.PlacementJson = JsonSerializer.Serialize(state, JsonOptions);
-            finished = state.Finished;
-            if (!finished)
-            {
-                attempt.Level = Placement.LevelToAsk(state);
-            }
-            else
-            {
-                attempt.Result = Placement.Result(state, attempt.Area);
-                attempt.Length = attempt.Answered;
-            }
-        }
-        else if (attempt.Mode is QuizMode.Practice or QuizMode.Evo or QuizMode.Topic)
-        {
-            attempt.Difficulty = AdaptiveQuiz.NextDifficulty(attempt.Difficulty, correct, attempt.Run);
-        }
+        var finished = ApplyModeProgression(attempt, correct);
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
         var reward = await game.AnswerAsync(userId, correct, question.Difficulty, attempt.Run, "answer", Math.Min(Hints.Max, hints + Ladder.HintCost(rungs)), confidence == Spaced.Sure, ct).ConfigureAwait(false);
@@ -368,9 +437,20 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
         else
         {
-            var nextQuestion = NextQuestion(attempt, language, await InterestsOfAsync(userId, ct).ConfigureAwait(false));
-            attempt.CurrentJson = JsonSerializer.Serialize(nextQuestion, JsonOptions);
-            next = View(attempt, nextQuestion);
+            var exercise = TryExerciseFor(attempt, language);
+            if (exercise is not null)
+            {
+                attempt.CurrentExerciseJson = JsonSerializer.Serialize(exercise, JsonOptions);
+                attempt.CurrentJson = "";
+                next = ViewOfExercise(attempt, exercise);
+            }
+            else
+            {
+                var nextQuestion = NextQuestion(attempt, language, await InterestsOfAsync(userId, ct).ConfigureAwait(false));
+                attempt.CurrentExerciseJson = null;
+                attempt.CurrentJson = JsonSerializer.Serialize(nextQuestion, JsonOptions);
+                next = View(attempt, nextQuestion);
+            }
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -385,21 +465,172 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Hints = hints, Confidence = confidence, Rungs = rungs, Pace = pace };
     }
 
-    private async Task UpdateSkillAsync(string userId, QuizAttempt attempt, QuizQuestion question, bool correct, int confidence, CancellationToken ct)
+    /// <summary>Answers the current true/false drill. Returns null when there is no such drill current (wrong endpoint for the current item).</summary>
+    public async Task<AnswerResult?> AnswerTrueFalseAsync(string userId, string attemptId, bool value, TeachLanguage language, CancellationToken ct = default) =>
+        await AnswerTrueFalseAsync(userId, attemptId, value, 1, 0, language, ct).ConfigureAwait(false);
+
+    /// <summary><paramref name="seconds"/>: time the question was on screen, as measured by the page (0 = unknown); only used for rhythm advice.</summary>
+    public async Task<AnswerResult?> AnswerTrueFalseAsync(string userId, string attemptId, bool value, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        var correct = exercise.CheckTrueFalse(value);
+        confidence = Math.Clamp(confidence, 0, Spaced.Sure);
+        attempt.Answered++;
+        attempt.Correct += correct ? 1 : 0;
+        attempt.Run = correct ? attempt.Run + 1 : 0;
+        attempt.BestRun = Math.Max(attempt.BestRun, attempt.Run);
+        await UpdateSkillAsync(userId, attempt, exercise.Topic, exercise.Difficulty, correct, confidence, ct).ConfigureAwait(false);
+
+        var finished = ApplyModeProgression(attempt, correct);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        var reward = await game.AnswerAsync(userId, correct, exercise.Difficulty, attempt.Run, "answer", 0, confidence == Spaced.Sure, ct).ConfigureAwait(false);
+        attempt.Xp += reward.Xp;
+
+        QuestionView? next = null;
+        QuizSummary? summary = null;
+        if (finished)
+        {
+            (summary, var finishReward) = await FinishAsync(attempt, ct).ConfigureAwait(false);
+            reward = reward.Plus(finishReward);
+        }
+        else
+        {
+            var nextExercise = TryExerciseFor(attempt, language);
+            if (nextExercise is not null)
+            {
+                attempt.CurrentExerciseJson = JsonSerializer.Serialize(nextExercise, JsonOptions);
+                attempt.CurrentJson = "";
+                next = ViewOfExercise(attempt, nextExercise);
+            }
+            else
+            {
+                var nextQuestion = NextQuestion(attempt, language, await InterestsOfAsync(userId, ct).ConfigureAwait(false));
+                attempt.CurrentExerciseJson = null;
+                attempt.CurrentJson = JsonSerializer.Serialize(nextQuestion, JsonOptions);
+                next = View(attempt, nextQuestion);
+            }
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return new AnswerResult(correct, exercise.CorrectBool!.Value ? 1 : 0, exercise.Explanation, reward.Xp, attempt.Run, next,
+            summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Confidence = confidence };
+    }
+
+    /// <summary>Answers the current fill-in-the-blank drill. Returns null when there is no such drill current.</summary>
+    public async Task<AnswerResult?> AnswerFillBlankAsync(string userId, string attemptId, string value, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        var correct = exercise.CheckFillBlank(value);
+        return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>Answers the current word-reorder drill. Returns null when there is no such drill current.</summary>
+    public async Task<AnswerResult?> AnswerReorderAsync(string userId, string attemptId, IReadOnlyList<string> order, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        var correct = exercise.CheckReorder(order);
+        return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>Answers the current matching-pairs drill. Returns null when there is no such drill current.</summary>
+    public async Task<AnswerResult?> AnswerMatchAsync(string userId, string attemptId, IReadOnlyDictionary<string, string> pairs, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        var correct = exercise.CheckMatch(pairs);
+        return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>Shared tail for the 4 drill-answer methods (true/false, fill-blank, reorder, match): scores the exercise,
+    /// updates skill/streak/xp, and queues the next item (another drill, a classic question, or the test summary).
+    /// Seconds (time on screen) is reserved for the same rhythm-advice path the classic flow uses.</summary>
+    private async Task<AnswerResult> FinishExerciseAnswerAsync(string userId, QuizAttempt attempt, PracticeExercise exercise, bool correct, int confidence, TeachLanguage language, CancellationToken ct)
+    {
+        confidence = Math.Clamp(confidence, 0, Spaced.Sure);
+        attempt.Answered++;
+        attempt.Correct += correct ? 1 : 0;
+        attempt.Run = correct ? attempt.Run + 1 : 0;
+        attempt.BestRun = Math.Max(attempt.BestRun, attempt.Run);
+        await UpdateSkillAsync(userId, attempt, exercise.Topic, exercise.Difficulty, correct, confidence, ct).ConfigureAwait(false);
+
+        var finished = ApplyModeProgression(attempt, correct);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        var reward = await game.AnswerAsync(userId, correct, exercise.Difficulty, attempt.Run, "answer", 0, confidence == Spaced.Sure, ct).ConfigureAwait(false);
+        attempt.Xp += reward.Xp;
+
+        QuestionView? next = null;
+        QuizSummary? summary = null;
+        if (finished)
+        {
+            (summary, var finishReward) = await FinishAsync(attempt, ct).ConfigureAwait(false);
+            reward = reward.Plus(finishReward);
+        }
+        else
+        {
+            var nextExercise = TryExerciseFor(attempt, language);
+            if (nextExercise is not null)
+            {
+                attempt.CurrentExerciseJson = JsonSerializer.Serialize(nextExercise, JsonOptions);
+                attempt.CurrentJson = "";
+                next = ViewOfExercise(attempt, nextExercise);
+            }
+            else
+            {
+                var nextQuestion = NextQuestion(attempt, language, await InterestsOfAsync(userId, ct).ConfigureAwait(false));
+                attempt.CurrentExerciseJson = null;
+                attempt.CurrentJson = JsonSerializer.Serialize(nextQuestion, JsonOptions);
+                next = View(attempt, nextQuestion);
+            }
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return new AnswerResult(correct, 0, exercise.Explanation, reward.Xp, attempt.Run, next,
+            summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Confidence = confidence };
+    }
+
+    private Task UpdateSkillAsync(string userId, QuizAttempt attempt, QuizQuestion question, bool correct, int confidence, CancellationToken ct) =>
+        UpdateSkillAsync(userId, attempt, question.Topic, question.Difficulty, correct, confidence, ct);
+
+    private async Task UpdateSkillAsync(string userId, QuizAttempt attempt, string topic, int difficulty, bool correct, int confidence, CancellationToken ct)
     {
         if (attempt.Mode is QuizMode.Topic or QuizMode.Interview)
         {
             return;
         }
 
-        var skill = await db.TopicSkills.FirstOrDefaultAsync(s => s.UserId == userId && s.Area == attempt.Area && s.Level == attempt.Level && s.Topic == question.Topic, ct).ConfigureAwait(false);
+        var skill = await db.TopicSkills.FirstOrDefaultAsync(s => s.UserId == userId && s.Area == attempt.Area && s.Level == attempt.Level && s.Topic == topic, ct).ConfigureAwait(false);
         if (skill is null)
         {
-            skill = new TopicSkill { UserId = userId, Area = attempt.Area, Level = attempt.Level, Topic = question.Topic, PKnown = BktParameters.DefaultPrior };
+            skill = new TopicSkill { UserId = userId, Area = attempt.Area, Level = attempt.Level, Topic = topic, PKnown = BktParameters.DefaultPrior };
             db.TopicSkills.Add(skill);
         }
 
-        skill.PKnown = Bkt.Update(skill.PKnown, correct, BktParameters.ForDifficulty(question.Difficulty));
+        skill.PKnown = Bkt.Update(skill.PKnown, correct, BktParameters.ForDifficulty(difficulty));
         skill.Attempts++;
         skill.Correct += correct ? 1 : 0;
         skill.LastAt = Now;

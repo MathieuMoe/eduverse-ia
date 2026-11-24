@@ -302,6 +302,10 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
 .kids .quiz-visual { font-size: 3rem; line-height: 1.2; }
 .quiz-option[data-state="removed"] { opacity: .35; text-decoration: line-through; }
 
+/* Fill-blank/reorder/match drills (task #71) */
+.quiz-token, .quiz-match-item { transition: transform .12s ease, background-color .15s ease, border-color .15s ease, opacity .15s ease; }
+.quiz-token:hover:not(:disabled), .quiz-match-item:hover:not(:disabled) { transform: translateY(-1px); }
+
 /* Preline's own tooltip markup needs this before it initializes on hover: without it, the invisible
    .hs-tooltip-content still sits in the flow (position: static) and pads out every sidebar nav item. */
 .hs-tooltip-content { position: absolute; }

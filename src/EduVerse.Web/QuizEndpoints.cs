@@ -11,6 +11,14 @@ public sealed record QuizStartRequest(Area Area, Level Level, QuizMode Mode, str
 
 public sealed record QuizAnswerRequest(int Choice, int? Confidence = null, int? Seconds = null);
 
+public sealed record QuizTrueFalseRequest(bool Value, int? Confidence = null, int? Seconds = null);
+
+public sealed record QuizFillBlankRequest(string Value, int? Confidence = null, int? Seconds = null);
+
+public sealed record QuizReorderRequest(IReadOnlyList<string> Order, int? Confidence = null, int? Seconds = null);
+
+public sealed record QuizMatchRequest(IReadOnlyDictionary<string, string> Pairs, int? Confidence = null, int? Seconds = null);
+
 public sealed record AdventureRequest(Area Area, Level Level, Theme Theme);
 
 /// <summary>
@@ -118,42 +126,67 @@ public static class QuizEndpoints
         api.MapPost("/{attemptId}/answer", async (string attemptId, QuizAnswerRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
         {
             var result = request is null ? null : await store.AnswerAsync(context.User.Id(), attemptId, request.Choice, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
-            if (result is null)
-            {
-                return Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest);
-            }
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
 
-            return Results.Ok(new
-            {
-                correct = result.Correct,
-                correctIndex = result.CorrectIndex,
-                hints = result.Hints,
-                rungs = result.Rungs,
-                confidence = result.Confidence,
-                pace = result.Pace == EduVerse.Core.Tutor.PaceSignal.None ? null : new { kind = result.Pace.ToString(), text = EduVerse.Core.Tutor.Pace.Advice(result.Pace, Localization.LanguageForCurrentCulture()) },
-                explanation = result.Explanation,
-                run = result.Run,
-                next = result.Next is { } n ? QuestionPayload(n, l) : null,
-                summary = result.Summary is { } s ? new
-                {
-                    s.Correct,
-                    s.Length,
-                    s.Stars,
-                    s.Xp,
-                    placed = s.Placed is { } p ? new { level = p.ToString(), name = l[$"Level_{p}"].Value } : null,
-                    topics = s.Topics.Select(t => new { name = TopicName(t.Topic, l), t.Correct, t.Total }),
-                    duel = s.DuelOutcome,
-                    won = s.Won,
-                    hearts = s.Hearts,
-                    ending = s.Ending,
-                } : null,
-                reward = RewardView(result.Reward, l),
-            });
+        api.MapPost("/{attemptId}/truefalse", async (string attemptId, QuizTrueFalseRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var result = request is null ? null : await store.AnswerTrueFalseAsync(context.User.Id(), attemptId, request.Value, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
+
+        api.MapPost("/{attemptId}/fillblank", async (string attemptId, QuizFillBlankRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var result = request is null || string.IsNullOrWhiteSpace(request.Value) ? null : await store.AnswerFillBlankAsync(context.User.Id(), attemptId, request.Value, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
+
+        api.MapPost("/{attemptId}/reorder", async (string attemptId, QuizReorderRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var result = request is null || request.Order is null or { Count: 0 } ? null : await store.AnswerReorderAsync(context.User.Id(), attemptId, request.Order, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
+
+        api.MapPost("/{attemptId}/match", async (string attemptId, QuizMatchRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var result = request is null || request.Pairs is null or { Count: 0 } ? null : await store.AnswerMatchAsync(context.User.Id(), attemptId, request.Pairs, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
         })
         .RequireRateLimiting("quiz");
 
         return app;
     }
+
+    private static object AnswerPayload(AnswerResult result, IStringLocalizer<SharedResource> l) => new
+    {
+        correct = result.Correct,
+        correctIndex = result.CorrectIndex,
+        hints = result.Hints,
+        rungs = result.Rungs,
+        confidence = result.Confidence,
+        pace = result.Pace == EduVerse.Core.Tutor.PaceSignal.None ? null : new { kind = result.Pace.ToString(), text = EduVerse.Core.Tutor.Pace.Advice(result.Pace, Localization.LanguageForCurrentCulture()) },
+        explanation = result.Explanation,
+        run = result.Run,
+        next = result.Next is { } n ? QuestionPayload(n, l) : null,
+        summary = result.Summary is { } s ? new
+        {
+            s.Correct,
+            s.Length,
+            s.Stars,
+            s.Xp,
+            placed = s.Placed is { } p ? new { level = p.ToString(), name = l[$"Level_{p}"].Value } : null,
+            topics = s.Topics.Select(t => new { name = TopicName(t.Topic, l), t.Correct, t.Total }),
+            duel = s.DuelOutcome,
+            won = s.Won,
+            hearts = s.Hearts,
+            ending = s.Ending,
+        } : null,
+        reward = RewardView(result.Reward, l),
+    };
 
     public static string TopicName(string topic, IStringLocalizer l)
     {
@@ -190,6 +223,10 @@ public static class QuizEndpoints
         areaName = l[$"Area_{q.Area}"].Value,
         mode = q.Mode.ToString(),
         kids = q.Kids,
+        exerciseKind = q.ExerciseKind?.ToString(),
+        tokens = q.Tokens,
+        matchLeft = q.MatchLeft,
+        matchRight = q.MatchRight,
         evo = q.Evo,
         evoTask = q.EvoTask,
         hintsUsed = q.HintsUsed,

@@ -14,6 +14,19 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
 {
     private static readonly System.Text.Json.JsonSerializerOptions Web = new(System.Text.Json.JsonSerializerDefaults.Web);
 
+    /// <summary>Builds a Match drill answer: the real pairs if <paramref name="right"/>, or every left matched to
+    /// the next pair's right otherwise (always wrong for 2+ pairs, since CheckMatch requires every pair to line up).</summary>
+    private static Dictionary<string, string> MatchAnswer(IReadOnlyList<MatchPair> pairs, bool right)
+    {
+        if (right)
+        {
+            return pairs.ToDictionary(p => p.Left, p => p.Right);
+        }
+
+        var ordered = pairs.ToList();
+        return ordered.ToDictionary(p => p.Left, p => ordered[(ordered.IndexOf(p) + 1) % ordered.Count].Right);
+    }
+
     [Fact]
     public async Task A_practice_test_grades_on_the_server_gives_xp_and_tracks_topics()
     {
@@ -32,9 +45,29 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
         for (var i = 0; i < AdaptiveQuiz.Length; i++)
         {
             var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
-            var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
-            Assert.True(prompts.Add(current.Prompt + string.Concat(current.Options)), "no repeated question in a test");
-            last = await quizzes.AnswerAsync(nora, q.AttemptId, current.CorrectIndex, TeachLanguage.Spanish);
+            // Chemistry now mixes in all 4 drill kinds (task #72's True/False, plus task #73's fill-blank/reorder/
+            // match): every 4th Practice question can be one instead of a classic question, so detect the kind and
+            // always answer it right, via its own stored answer key, to keep this test's "perfect score" asserts.
+            // Drills aren't deduplicated within an attempt the way classic questions are (no "already seen" tracking
+            // yet), so — unlike the classic branch below — a drill's prompt isn't checked for repeats here.
+            if (attempt.CurrentExerciseJson is { } exerciseJson)
+            {
+                var exercise = System.Text.Json.JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, Web)!;
+                last = await (exercise.Kind switch
+                {
+                    ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(nora, q.AttemptId, exercise.Answer!, 1, 0, TeachLanguage.Spanish),
+                    ExerciseKind.Reorder => quizzes.AnswerReorderAsync(nora, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.Spanish),
+                    ExerciseKind.Match => quizzes.AnswerMatchAsync(nora, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.Spanish),
+                    _ => quizzes.AnswerTrueFalseAsync(nora, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.Spanish),
+                });
+            }
+            else
+            {
+                var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
+                Assert.True(prompts.Add(current.Prompt + string.Concat(current.Options)), "no repeated question in a test");
+                last = await quizzes.AnswerAsync(nora, q.AttemptId, current.CorrectIndex, TeachLanguage.Spanish);
+            }
+
             Assert.NotNull(last);
             Assert.True(last.Correct);
             if (last.Next is { } next)
@@ -128,15 +161,31 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
         var alex = await database.UserIdAsync("alex@eduverse.demo");
         var q = await quizzes.StartAsync(alex, Area.Economics, Level.EarlyYears, QuizMode.Placement, TeachLanguage.French);
         Assert.True(q.Level >= Level.Secondary2);
+
         AnswerResult? r;
-        var options = Web;
         do
         {
             var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
-            var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, options)!;
             // knows everything up to the bachelor level
             var right = attempt.Level <= Level.HighSchool;
-            r = await quizzes.AnswerAsync(alex, q.AttemptId, right ? current.CorrectIndex : (current.CorrectIndex + 1) % 4, TeachLanguage.French);
+            // Placement now mixes in drills too (task #74), but never True/False (PerLevel's binary search can't
+            // absorb a 50%-guess coin-flip on a decisive question), so only FillBlank/Reorder/Match can appear here.
+            if (attempt.CurrentExerciseJson is { } exerciseJson)
+            {
+                var exercise = System.Text.Json.JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, Web)!;
+                Assert.NotEqual(ExerciseKind.TrueFalse, exercise.Kind);
+                r = await (exercise.Kind switch
+                {
+                    ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(alex, q.AttemptId, right ? exercise.Answer! : exercise.Answer + "-wrong", 1, 0, TeachLanguage.French),
+                    ExerciseKind.Reorder => quizzes.AnswerReorderAsync(alex, q.AttemptId, right ? exercise.CorrectOrder! : exercise.CorrectOrder!.Reverse().ToList(), 1, 0, TeachLanguage.French),
+                    _ => quizzes.AnswerMatchAsync(alex, q.AttemptId, MatchAnswer(exercise.Pairs!, right), 1, 0, TeachLanguage.French),
+                });
+            }
+            else
+            {
+                var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
+                r = await quizzes.AnswerAsync(alex, q.AttemptId, right ? current.CorrectIndex : (current.CorrectIndex + 1) % 4, TeachLanguage.French);
+            }
         }
         while (r!.Summary is null);
 
@@ -231,9 +280,27 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
             for (var i = 0; i < AdaptiveQuiz.DuelLength; i++)
             {
                 var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
-                var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, options)!;
-                prompts.Add(current.Prompt);
-                await quizzes.AnswerAsync(userId, q.AttemptId, i < right ? current.CorrectIndex : (current.CorrectIndex + 1) % 4, TeachLanguage.English);
+                var wantsRight = i < right;
+                // Duel also mixes in drills now (task #74): same seed for both duelists means the same drill (or
+                // classic question) lands at the same index for each, so the fairness check below still holds.
+                if (attempt.CurrentExerciseJson is { } exerciseJson)
+                {
+                    var exercise = System.Text.Json.JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, options)!;
+                    prompts.Add(exercise.Prompt);
+                    await (exercise.Kind switch
+                    {
+                        ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(userId, q.AttemptId, wantsRight ? exercise.Answer! : exercise.Answer + "-wrong", 1, 0, TeachLanguage.English),
+                        ExerciseKind.Reorder => quizzes.AnswerReorderAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectOrder! : exercise.CorrectOrder!.Reverse().ToList(), 1, 0, TeachLanguage.English),
+                        ExerciseKind.Match => quizzes.AnswerMatchAsync(userId, q.AttemptId, MatchAnswer(exercise.Pairs!, wantsRight), 1, 0, TeachLanguage.English),
+                        _ => quizzes.AnswerTrueFalseAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectBool!.Value : !exercise.CorrectBool!.Value, TeachLanguage.English),
+                    });
+                }
+                else
+                {
+                    var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, options)!;
+                    prompts.Add(current.Prompt);
+                    await quizzes.AnswerAsync(userId, q.AttemptId, wantsRight ? current.CorrectIndex : (current.CorrectIndex + 1) % 4, TeachLanguage.English);
+                }
             }
 
             return prompts;
@@ -258,19 +325,40 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
         var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
         var iker = await database.UserIdAsync("iker@eduverse.demo");
 
-        async Task<(string Id, List<string> Keys)> PlayAsync()
+        // Physics now mixes in all 4 drill kinds (task #72's True/False, plus task #73's fill-blank/reorder/match):
+        // every 4th Practice question can be one instead of a classic question. A drill doesn't log a QuizAnswer
+        // history row yet (documented limitation from task #69), so it's skipped here for the "no repeat"/"review"
+        // checks below, which are specifically about the classic question bank — the drill is still answered
+        // (correctly, via its own stored answer key), so the quiz keeps progressing normally through it.
+        async Task<(string Id, List<string> Keys, List<int> Numbers)> PlayAsync()
         {
             var q = await quizzes.StartAsync(iker, Area.Physics, Level.Secondary2, QuizMode.Practice, TeachLanguage.English);
             var keys = new List<string>();
+            var numbers = new List<int>();
             for (var i = 0; i < AdaptiveQuiz.Length; i++)
             {
                 var attempt = await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == q.AttemptId);
-                var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
-                keys.Add(QuizStore.KeyOf(current));
-                await quizzes.AnswerAsync(iker, q.AttemptId, i % 4, TeachLanguage.English);
+                if (attempt.CurrentExerciseJson is { } exerciseJson)
+                {
+                    var exercise = System.Text.Json.JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, Web)!;
+                    await (exercise.Kind switch
+                    {
+                        ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(iker, q.AttemptId, exercise.Answer!, 1, 0, TeachLanguage.English),
+                        ExerciseKind.Reorder => quizzes.AnswerReorderAsync(iker, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
+                        ExerciseKind.Match => quizzes.AnswerMatchAsync(iker, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
+                        _ => quizzes.AnswerTrueFalseAsync(iker, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.English),
+                    });
+                }
+                else
+                {
+                    var current = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(attempt.CurrentJson, Web)!;
+                    keys.Add(QuizStore.KeyOf(current));
+                    numbers.Add(i + 1); // attempt.Answered counts drills too, so a classic answer's own Number is just its 1-based position
+                    await quizzes.AnswerAsync(iker, q.AttemptId, i % 4, TeachLanguage.English);
+                }
             }
 
-            return (q.AttemptId, keys);
+            return (q.AttemptId, keys, numbers);
         }
 
         var first = await PlayAsync();
@@ -281,8 +369,8 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
         Assert.Equal([second.Id, first.Id], history.Take(2).Select(h => h.Id));
         var review = await quizzes.ReviewAsync(iker, first.Id);
         Assert.NotNull(review);
-        Assert.Equal(AdaptiveQuiz.Length, review.Value.Answers.Count);
-        Assert.Equal(Enumerable.Range(1, AdaptiveQuiz.Length), review.Value.Answers.Select(a => a.Number));
+        Assert.Equal(first.Numbers.Count, review.Value.Answers.Count);
+        Assert.Equal(first.Numbers, review.Value.Answers.Select(a => a.Number));
         Assert.All(review.Value.Answers, a =>
         {
             Assert.Equal(4, QuizStore.Options(a).Count);
