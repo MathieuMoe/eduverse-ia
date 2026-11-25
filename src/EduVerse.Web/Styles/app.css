@@ -328,3 +328,83 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
   [data-avatar] .av-eyes, [data-avatar].is-talking .av-head { animation: none; }
 }
 #iv-root[data-busy="true"] #iv-suggestions, #iv-root[data-busy="true"] #iv-form button[type=submit] { opacity: .55; pointer-events: none; }
+
+/* Interview avatar moods (fun-up pass): CSS-only reactions layered over the existing hand-drawn figures, so every
+   figure gets an expression without redrawing 12 custom SVGs. .is-happy after a normal answer, .is-surprised at a
+   milestone (100% curiosity, a right riddle answer). */
+[data-avatar].is-happy .av-head { animation: av-happy .6s ease; }
+[data-avatar].is-surprised .av-eyes { animation: av-surprised .5s ease; }
+[data-avatar].is-happy::after, [data-avatar].is-surprised::after {
+  content: ""; position: absolute; top: -2px; right: 6%; font-size: 1.4rem; line-height: 1; pointer-events: none;
+  animation: av-pop .8s ease forwards;
+}
+[data-avatar].is-happy::after { content: "✨"; }
+[data-avatar].is-surprised::after { content: "❗"; }
+@keyframes av-happy { 0% { transform: scale(1) rotate(0); } 35% { transform: scale(1.05) rotate(-2deg); } 65% { transform: scale(1.03) rotate(2deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes av-surprised { 0%, 100% { transform: scaleY(1); } 40% { transform: scaleY(1.4); } }
+@keyframes av-pop { 0% { opacity: 0; transform: translateY(6px) scale(.6); } 30% { opacity: 1; transform: translateY(-4px) scale(1.15); } 100% { opacity: 0; transform: translateY(-16px) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-avatar].is-happy .av-head, [data-avatar].is-surprised .av-eyes, [data-avatar].is-happy::after, [data-avatar].is-surprised::after { animation: none; }
+}
+
+/* Interview: a themed backdrop per figure's era/field, from Figure.Area — no new content, just a mood per card. */
+aside[data-theme] { position: relative; overflow: hidden; isolation: isolate; }
+aside[data-theme]::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .6; }
+aside[data-theme="mathematics"]::before { background: radial-gradient(circle at 25% 15%, #e3d9fb, transparent 60%), linear-gradient(160deg, #f3effe, transparent); }
+aside[data-theme="physics"]::before { background: radial-gradient(circle at 75% 10%, #cfe0fb, transparent 55%), linear-gradient(165deg, #eaf1fd, transparent); }
+aside[data-theme="chemistry"]::before { background: radial-gradient(circle at 30% 20%, #bdf0d4, transparent 60%), linear-gradient(160deg, #eafaf1, transparent); }
+aside[data-theme="biology"]::before { background: radial-gradient(circle at 70% 25%, #d8f0bd, transparent 60%), linear-gradient(160deg, #f3f9e9, transparent); }
+aside[data-theme="language"]::before { background: radial-gradient(circle at 30% 15%, #f5e3c4, transparent 60%), linear-gradient(160deg, #fbf3e4, transparent); }
+aside[data-theme="history"]::before { background: radial-gradient(circle at 70% 20%, #ecd3b0, transparent 60%), linear-gradient(160deg, #f8edda, transparent); }
+aside[data-theme="geography"]::before { background: radial-gradient(circle at 30% 20%, #bfe6e0, transparent 60%), linear-gradient(160deg, #eaf7f5, transparent); }
+aside[data-theme="economics"]::before { background: radial-gradient(circle at 70% 15%, #f5e5a8, transparent 60%), linear-gradient(160deg, #faf4df, transparent); }
+aside[data-theme="programming"]::before { background: radial-gradient(circle at 30% 20%, #d6cdfa, transparent 55%), linear-gradient(160deg, #f0edfd, transparent); }
+.dark aside[data-theme]::before { opacity: .22; filter: saturate(1.3); }
+
+/* Interview: curiosity meter (a visual bar on top of the existing "X of Y" text progress). */
+#iv-meter { height: .4rem; border-radius: 999px; background: var(--layer-line, #ece9f3); overflow: hidden; }
+#iv-meter-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--primary, #7a6cf0), #b3a9fa); transition: width .4s ease; width: 0%; }
+@media (prefers-reduced-motion: reduce) { #iv-meter-fill { transition: none; } }
+
+/* Interview v3: a short themed flourish before the greeting, one icon per Figure.Area, purely decorative
+   (interview.js's playIntro skips it outright under prefers-reduced-motion, rather than just stripping the
+   motion, since it carries no information). */
+.iv-intro-icon { display: inline-block; font-size: 3.5rem; line-height: 1; animation: iv-intro-pop .5s ease both; }
+@keyframes iv-intro-pop { 0% { opacity: 0; transform: scale(.4); } 100% { opacity: 1; transform: scale(1); } }
+#iv-root[data-area="mathematics"] .iv-intro-icon { animation: iv-intro-pop .5s ease both, iv-intro-wiggle .6s ease .5s; }
+#iv-root[data-area="physics"] .iv-intro-icon { animation: iv-intro-fall .6s ease both; }
+#iv-root[data-area="chemistry"] .iv-intro-icon { animation: iv-intro-pop .5s ease both, iv-intro-fizz .6s ease .5s; }
+#iv-root[data-area="biology"] .iv-intro-icon { animation: iv-intro-grow .6s ease both; transform-origin: bottom center; }
+#iv-root[data-area="language"] .iv-intro-icon { animation: iv-intro-pop .5s ease both, iv-intro-wiggle .6s ease .5s; }
+#iv-root[data-area="history"] .iv-intro-icon { animation: iv-intro-unroll .6s ease both; transform-origin: left center; }
+#iv-root[data-area="geography"] .iv-intro-icon { animation: iv-intro-spin .6s ease both; }
+#iv-root[data-area="economics"] .iv-intro-icon { animation: iv-intro-rise .6s ease both; }
+#iv-root[data-area="programming"] .iv-intro-icon { animation: iv-intro-pop .5s ease both, iv-intro-blink .6s steps(1) .5s; }
+@keyframes iv-intro-wiggle { 0%, 100% { rotate: 0deg; } 30% { rotate: -12deg; } 60% { rotate: 12deg; } }
+@keyframes iv-intro-fall { 0% { opacity: 0; translate: 0 -1.2rem; } 60% { opacity: 1; translate: 0 .3rem; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes iv-intro-fizz { 0%, 100% { scale: 1; } 40% { scale: 1.18; } 70% { scale: .95; } }
+@keyframes iv-intro-grow { 0% { opacity: 0; scale: 1 .2; } 100% { opacity: 1; scale: 1 1; } }
+@keyframes iv-intro-unroll { 0% { opacity: 0; scale: .15 1; } 100% { opacity: 1; scale: 1 1; } }
+@keyframes iv-intro-spin { 0% { opacity: 0; rotate: -40deg; } 100% { opacity: 1; rotate: 0deg; } }
+@keyframes iv-intro-rise { 0% { opacity: 0; translate: 0 .8rem; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes iv-intro-blink { 0% { opacity: 1; } 50% { opacity: .25; } 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .iv-intro-icon { animation: none; } }
+
+/* Interview: progressive life-path — a row of milestone dots alongside the curiosity bar, one per suggested
+   question, lighting up and ticking off as each is discovered (interview.js's progress()). */
+.iv-path-dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.4rem; height: 1.4rem; border-radius: 999px;
+  background: var(--surface); color: var(--muted-foreground);
+  font-size: .65rem; font-weight: 600;
+  border: 1px solid var(--layer-line);
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease, transform .25s ease;
+}
+.iv-path-dot.is-lit {
+  background: linear-gradient(135deg, var(--primary, #7a6cf0), #b3a9fa);
+  color: var(--primary-foreground, #fff);
+  border-color: transparent;
+  animation: iv-path-lit .4s ease;
+}
+@keyframes iv-path-lit { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .iv-path-dot.is-lit { animation: none; } }

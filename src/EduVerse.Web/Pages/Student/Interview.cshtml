@@ -9,10 +9,10 @@
 {
     var voice = Interviews.Voice(f);
     EduVerse.Web.Breadcrumb.Set(ViewData, f.Name, ("/Student/Interview", L["Nav_Interview"]));
-    <div id="iv-root" class="w-full space-y-4" data-figure="@f.Key" data-level="@Model.Level" data-name="@f.Name"
+    <div id="iv-root" class="w-full space-y-4" data-figure="@f.Key" data-level="@Model.Level" data-name="@f.Name" data-emoji="@f.Emoji" data-years="@f.Years" data-area="@f.Area.ToString().ToLowerInvariant()"
          data-female="@(voice.Female ? "true" : "false")" data-pitch="@voice.Pitch.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-rate="@voice.Rate.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-voice-index="@Interviews.VoiceIndex(f)">
         <div class="grid lg:grid-cols-[18rem_1fr] gap-4 items-start">
-            <aside class="@Ui.Card p-5 lg:sticky lg:top-20 flex lg:flex-col items-center gap-4 text-center">
+            <aside class="@Ui.Card p-5 lg:sticky lg:top-20 flex lg:flex-col items-center gap-4 text-center" data-theme="@f.Area.ToString().ToLowerInvariant()">
                 <div id="iv-avatar" class="relative w-28 sm:w-36 lg:w-56 shrink-0" data-avatar="@f.Key" data-mouth="closed" data-testid="iv-avatar">
                 </div>
                 <div class="min-w-0 flex-1 lg:flex-none text-start lg:text-center">
@@ -23,7 +23,16 @@
                         <button type="button" id="iv-voice-next" class="@Ui.BtnLight tip" data-tip="@L["Interview_NextVoice"]">🎚️ <span class="max-lg:sr-only">@L["Interview_NextVoice"]</span></button>
                     </div>
                     <p class="mt-1 text-[11px] text-muted-foreground-1" id="iv-voice-name" aria-live="polite"></p>
-                    <p class="mt-3 text-xs text-muted-foreground-1" id="iv-progress" aria-live="polite"></p>
+                    <div class="mt-3" data-testid="iv-meter-wrap">
+                        <p class="text-xs text-muted-foreground-1" id="iv-meter-label" aria-live="polite"></p>
+                        <div id="iv-meter" class="mt-1" role="progressbar" aria-labelledby="iv-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-testid="iv-meter">
+                            <div id="iv-meter-fill"></div>
+                        </div>
+                        <p class="mt-1.5 text-xs text-muted-foreground-1" id="iv-progress" aria-live="polite"></p>
+                    </div>
+                    <div class="mt-3" data-testid="iv-path-wrap">
+                        <div id="iv-path" class="flex flex-wrap gap-1.5 justify-center" role="list" aria-label="@L["Interview_Journey"]" data-testid="iv-path"></div>
+                    </div>
                 </div>
             </aside>
             <div class="space-y-4 min-w-0">
@@ -38,18 +47,27 @@
                 <p class="p-3 rounded-2xl tone-sun text-sm text-foreground" data-testid="simulation-notice">🎭 @L["Interview_Simulation"]</p>
                 <section class="@Ui.Card p-5 sm:p-6 space-y-4 relative" aria-live="polite">
                     <div id="iv-start" class="absolute inset-0 z-10 rounded-[inherit] bg-layer/85 backdrop-blur-sm grid place-items-center p-6 text-center">
-                        <div>
+                        <div id="iv-start-hint">
                             <p class="text-foreground font-medium">@string.Format(System.Globalization.CultureInfo.CurrentCulture, L["Interview_StartHint"], f.Name)</p>
                             <button type="button" id="iv-start-btn" class="@Ui.BtnPrimary mt-4" data-testid="iv-start">▶ @L["Interview_Start"]</button>
                         </div>
+                        <div id="iv-intro" class="hidden" aria-hidden="true"><span id="iv-intro-icon" class="iv-intro-icon"></span></div>
                     </div>
                     <div id="iv-chat" class="space-y-3 min-h-40">
                     </div>
                     <template id="iv-greeting">@f.Greeting.In(language)</template>
-                    <div class="flex flex-wrap gap-2" id="iv-suggestions" aria-label="@L["Interview_Suggestions"]">
-                        @foreach (var a in f.Answers)
+                    <div class="space-y-2.5" id="iv-suggestions" aria-label="@L["Interview_Suggestions"]">
+                        @foreach (var group in Enum.GetValues<InterviewTopic>().Select(topic => (topic, answers: f.Answers.Where(a => Interviews.Topic(a) == topic).ToList())).Where(g => g.answers.Count > 0))
                         {
-                            <button type="button" class="py-1.5 px-3 rounded-full border border-layer-line text-sm text-foreground hover:bg-layer-hover disabled:opacity-40" data-question="@a.Question.In(language)">💬 @a.Question.In(language)</button>
+                            <div>
+                                <p class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground-1 mb-1">@L[$"Js_InterviewTopic{group.topic}"]</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var a in group.answers)
+                                    {
+                                        <button type="button" class="py-1.5 px-3 rounded-full border border-layer-line text-sm text-foreground hover:bg-layer-hover disabled:opacity-40" data-question="@a.Question.In(language)">💬 @a.Question.In(language)</button>
+                                    }
+                                </div>
+                            </div>
                         }
                     </div>
                     <form id="iv-form" class="flex gap-2">

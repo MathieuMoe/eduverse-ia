@@ -1074,6 +1074,8 @@
   <data name="Js_NewAdventure" xml:space="preserve"><value>Nova aventura</value></data>
   <data name="Nav_Teach" xml:space="preserve"><value>Explica-ho al Tutor</value></data>
   <data name="Nav_Interview" xml:space="preserve"><value>Entrevistes</value></data>
+  <data name="Nav_Album" xml:space="preserve"><value>Àlbum</value></data>
+  <data name="Nav_Timeline" xml:space="preserve"><value>Línia del temps</value></data>
   <data name="Teach_Title" xml:space="preserve"><value>Explica-ho al Tutor</value></data>
   <data name="Teach_Subtitle" xml:space="preserve"><value>El Tutor fa d'alumne: tu ets el profe. Explica un concepte amb les teves paraules (o parlant); el Tutor pregunta pel que falta. Explicar és la millor manera d'entendre-ho de debò.</value></data>
   <data name="Teach_Card" xml:space="preserve"><value>Tu ets el profe: explica un concepte</value></data>
@@ -1089,9 +1091,25 @@
   <data name="Voice_Dictate" xml:space="preserve"><value>Dictar</value></data>
   <data name="Interview_Title" xml:space="preserve"><value>Entrevista un personatge històric</value></data>
   <data name="Interview_Subtitle" xml:space="preserve"><value>Pregunta a 12 personatges de la ciència, les lletres, l'economia i els viatges (Marie Curie, Galileu, Darwin, Cervantes, Ibn Battuta…) per la seva vida i els seus descobriments, escrivint o parlant. Al final, comprova el que has après.</value></data>
+  <data name="Album_Title" xml:space="preserve"><value>Àlbum de personatges</value></data>
+  <data name="Album_Subtitle" xml:space="preserve"><value>{0} de {1} personatges completats: acaba una entrevista i el seu enigma per desbloquejar una targeta.</value></data>
+  <data name="Album_Completed" xml:space="preserve"><value>Completat</value></data>
+  <data name="Album_Locked" xml:space="preserve"><value>Bloquejat</value></data>
+  <data name="Album_Connections_Title" xml:space="preserve"><value>Connexions entre personatges</value></data>
+  <data name="Album_Connections_Subtitle" xml:space="preserve"><value>{0} de {1} connexions descobertes: completa els dos personatges d’una parella per revelar què els uneix.</value></data>
+  <data name="Album_Connections_Locked" xml:space="preserve"><value>Completa els dos personatges per revelar aquesta connexió.</value></data>
+  <data name="Timeline_Title" xml:space="preserve"><value>Repte de la línia del temps</value></data>
+  <data name="Timeline_Subtitle" xml:space="preserve"><value>Posa en ordre els personatges que ja coneixes, del més antic al més recent.</value></data>
+  <data name="Timeline_NeedMore" xml:space="preserve"><value>Completa almenys dues entrevistes per jugar al repte de la línia del temps.</value></data>
+  <data name="Timeline_GoInterview" xml:space="preserve"><value>Anar a les entrevistes</value></data>
+  <data name="Timeline_Instructions" xml:space="preserve"><value>Fes clic als personatges en ordre, començant pel que va néixer primer.</value></data>
+  <data name="Timeline_YourOrder" xml:space="preserve"><value>El teu ordre</value></data>
+  <data name="Timeline_Check" xml:space="preserve"><value>Comprovar el meu ordre</value></data>
+  <data name="Timeline_PlayAgain" xml:space="preserve"><value>Tornar a jugar</value></data>
   <data name="Interview_Card" xml:space="preserve"><value>Pregunta a Marie Curie, Galileu, Cervantes…</value></data>
   <data name="Interview_Simulation" xml:space="preserve"><value>Simulació educativa: les respostes s'escriuen a partir de fets històrics documentats; no són cites reals de la persona.</value></data>
   <data name="Interview_Suggestions" xml:space="preserve"><value>Preguntes suggerides</value></data>
+  <data name="Interview_Journey" xml:space="preserve"><value>El teu recorregut</value></data>
   <data name="Interview_YourQuestion" xml:space="preserve"><value>La teva pregunta…</value></data>
   <data name="Interview_Ask" xml:space="preserve"><value>Preguntar</value></data>
   <data name="Interview_CheckHint" xml:space="preserve"><value>A punt? Comprova el que has après amb 3 preguntes.</value></data>
@@ -1126,6 +1144,25 @@
   <data name="Js_Thinking" xml:space="preserve"><value>Pensant…</value></data>
   <data name="Js_InterviewProgress" xml:space="preserve"><value>Preguntes fetes: {0} de {1} per desbloquejar la comprovació</value></data>
   <data name="Js_InterviewReady" xml:space="preserve"><value>Comprovació desbloquejada! Pots continuar preguntant o comprovar el que has après.</value></data>
+  <data name="Js_InterviewDiscovered" xml:space="preserve"><value>{0} de {1} dades descobertes</value></data>
+  <data name="Js_InterviewAllDiscovered" xml:space="preserve"><value>Has descobert tot sobre {0}!</value></data>
+  <data name="Js_InterviewRiddleIntro" xml:space="preserve"><value>Ara et toca a tu: et faré una pregunta...</value></data>
+  <data name="Js_InterviewRiddleCorrect" xml:space="preserve"><value>Això mateix!</value></data>
+  <data name="Js_InterviewRiddleWrong" xml:space="preserve"><value>No era això — la resposta era: {0}</value></data>
+  <data name="Js_InterviewPostcardTitle" xml:space="preserve"><value>Record de {0}</value></data>
+  <data name="Js_InterviewPostcardDownload" xml:space="preserve"><value>Descarregar postal</value></data>
+  <data name="Js_InterviewMythIntro" xml:space="preserve"><value>Una cosa més: veritat o fals?</value></data>
+  <data name="Js_InterviewMythTrue" xml:space="preserve"><value>Veritat</value></data>
+  <data name="Js_InterviewMythFalse" xml:space="preserve"><value>Fals</value></data>
+  <data name="Js_InterviewMythCorrect" xml:space="preserve"><value>Correcte!</value></data>
+  <data name="Js_InterviewMythWrong" xml:space="preserve"><value>No exactament.</value></data>
+  <data name="Js_InterviewMythDone" xml:space="preserve"><value>Això és tot per avui, fins a la propera!</value></data>
+  <data name="Js_TimelinePerfect" xml:space="preserve"><value>Perfecte! Has encertat tot l'ordre.</value></data>
+  <data name="Js_TimelinePartial" xml:space="preserve"><value>{0} de {1} al lloc correcte. Torna-ho a provar!</value></data>
+  <data name="Js_InterviewTopicLife" xml:space="preserve"><value>Vida</value></data>
+  <data name="Js_InterviewTopicDiscovery" xml:space="preserve"><value>Descobriments</value></data>
+  <data name="Js_InterviewTopicTrivia" xml:space="preserve"><value>Curiositats</value></data>
+  <data name="Js_InterviewTopicLegacy" xml:space="preserve"><value>Llegat</value></data>
   <data name="Topic_math_clock" xml:space="preserve"><value>Llegir l'hora</value></data>
   <data name="Companion_Button" xml:space="preserve"><value>Tutor</value></data>
   <data name="Companion_Open" xml:space="preserve"><value>El teu Tutor: pregunta-li el que vulguis des de qualsevol pàgina</value></data>

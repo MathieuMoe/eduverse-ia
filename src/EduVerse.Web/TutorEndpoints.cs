@@ -11,6 +11,10 @@ public sealed record TeachRequest(string Text, string? SessionId);
 
 public sealed record InterviewRequest(string Question, IReadOnlyList<InterviewTurn>? History);
 
+public sealed record InterviewRiddleCheckRequest(int CheckIndex, string Answer);
+
+public sealed record InterviewMythCheckRequest(int Index, bool Answer);
+
 public sealed record CompanionRequest(string Message, string? Page, string? Title, string? Style = null);
 
 /// <summary>
@@ -86,6 +90,73 @@ public static class TutorEndpoints
                     });
                 return Results.Ok(new { answer = run.Result.Answer, matched = run.Result.Matched, engine = run.Engine, fallback = run.Fallback });
             });
+        })
+        .RequireRateLimiting("tutor");
+
+        // The figure poses one checked fact back as a riddle once the student has discovered everything; the correct
+        // option is picked server-side only (see Interviews.Riddle / RiddleCorrect), so the answer key never reaches the client.
+        api.MapGet("/interview/{figure}/riddle", (string figure) =>
+        {
+            var f = Interviews.Find(figure);
+            if (f is null)
+            {
+                return Results.BadRequest();
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var (checkIndex, question, options) = Interviews.Riddle(f, language);
+            return Results.Ok(new { checkIndex, question = question.In(language), options });
+        })
+        .RequireRateLimiting("tutor");
+
+        api.MapPost("/interview/{figure}/riddle/check", async (string figure, InterviewRiddleCheckRequest request, HttpContext context, FigureDiscoveryStore discoveries) =>
+        {
+            var f = Interviews.Find(figure);
+            if (f is null || request is null)
+            {
+                return Results.BadRequest();
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var correct = Interviews.RiddleCorrect(f, request.CheckIndex, request.Answer, language);
+            var answer = request.CheckIndex >= 0 && request.CheckIndex < f.Checks.Count ? f.Checks[request.CheckIndex].Answer.In(language) : "";
+            // Reaching the riddle already means every suggested question was discovered (the client only poses it
+            // once the curiosity meter hits 100%), and there is no retry once it is answered either way: that is
+            // what "completing" a figure means for the album, the timeline and the connections bonus, right or wrong.
+            await discoveries.MarkCompletedAsync(context.User.Id(), f.Key, context.RequestAborted).ConfigureAwait(false);
+            return Results.Ok(new { correct, answer });
+        })
+        .RequireRateLimiting("tutor");
+
+        // The myth-busting round shown after the postcard: a couple of true-or-false claims about the figure. The
+        // answer key (IsTrue) never reaches the client until /myths/check is called (see Interviews.Myths).
+        api.MapGet("/interview/{figure}/myths", (string figure) =>
+        {
+            var f = Interviews.Find(figure);
+            if (f is null)
+            {
+                return Results.BadRequest();
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var items = Interviews.Myths(f).Select((m, i) => new { index = i, statement = m.Statement.In(language) });
+            return Results.Ok(new { items });
+        })
+        .RequireRateLimiting("tutor");
+
+        api.MapPost("/interview/{figure}/myths/check", (string figure, InterviewMythCheckRequest request) =>
+        {
+            var f = Interviews.Find(figure);
+            var myths = f is null ? [] : Interviews.Myths(f);
+            if (f is null || request is null || request.Index < 0 || request.Index >= myths.Count)
+            {
+                return Results.BadRequest();
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var myth = myths[request.Index];
+            var correct = request.Answer == myth.IsTrue;
+            return Results.Ok(new { correct, isTrue = myth.IsTrue, explanation = myth.Explanation.In(language) });
         })
         .RequireRateLimiting("tutor");
 

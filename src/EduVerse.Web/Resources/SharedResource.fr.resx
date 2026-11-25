@@ -1074,6 +1074,8 @@
   <data name="Js_NewAdventure" xml:space="preserve"><value>Nouvelle aventure</value></data>
   <data name="Nav_Teach" xml:space="preserve"><value>Explique au Tuteur</value></data>
   <data name="Nav_Interview" xml:space="preserve"><value>Interviews</value></data>
+  <data name="Nav_Album" xml:space="preserve"><value>Album</value></data>
+  <data name="Nav_Timeline" xml:space="preserve"><value>Chronologie</value></data>
   <data name="Teach_Title" xml:space="preserve"><value>Explique-le au Tuteur</value></data>
   <data name="Teach_Subtitle" xml:space="preserve"><value>Le Tuteur joue l'élève : c'est toi le prof. Explique une notion avec tes mots (ou à voix haute) ; le Tuteur pose des questions sur ce qui manque. Expliquer, c'est la meilleure façon de vraiment comprendre.</value></data>
   <data name="Teach_Card" xml:space="preserve"><value>C'est toi le prof : explique une notion</value></data>
@@ -1089,9 +1091,25 @@
   <data name="Voice_Dictate" xml:space="preserve"><value>Dicter</value></data>
   <data name="Interview_Title" xml:space="preserve"><value>Interviewe un personnage historique</value></data>
   <data name="Interview_Subtitle" xml:space="preserve"><value>Pose des questions à 12 personnages des sciences, des lettres, de l'économie et des voyages (Marie Curie, Galilée, Darwin, Cervantes, Ibn Battuta…) sur leur vie et leurs découvertes, à l'écrit ou à voix haute. À la fin, vérifie ce que tu as appris.</value></data>
+  <data name="Album_Title" xml:space="preserve"><value>Album des personnages</value></data>
+  <data name="Album_Subtitle" xml:space="preserve"><value>{0} personnages sur {1} complétés : termine une interview et son énigme pour débloquer une carte.</value></data>
+  <data name="Album_Completed" xml:space="preserve"><value>Complété</value></data>
+  <data name="Album_Locked" xml:space="preserve"><value>Verrouillé</value></data>
+  <data name="Album_Connections_Title" xml:space="preserve"><value>Connexions entre personnages</value></data>
+  <data name="Album_Connections_Subtitle" xml:space="preserve"><value>{0} connexion(s) découverte(s) sur {1} : terminez les deux personnages d’une paire pour révéler ce qui les relie.</value></data>
+  <data name="Album_Connections_Locked" xml:space="preserve"><value>Terminez les deux personnages pour révéler cette connexion.</value></data>
+  <data name="Timeline_Title" xml:space="preserve"><value>Défi de la chronologie</value></data>
+  <data name="Timeline_Subtitle" xml:space="preserve"><value>Mets dans l'ordre les personnages que tu connais déjà, du plus ancien au plus récent.</value></data>
+  <data name="Timeline_NeedMore" xml:space="preserve"><value>Termine au moins deux interviews pour jouer au défi de la chronologie.</value></data>
+  <data name="Timeline_GoInterview" xml:space="preserve"><value>Aller aux interviews</value></data>
+  <data name="Timeline_Instructions" xml:space="preserve"><value>Clique sur les personnages dans l'ordre, en commençant par celui né en premier.</value></data>
+  <data name="Timeline_YourOrder" xml:space="preserve"><value>Ton ordre</value></data>
+  <data name="Timeline_Check" xml:space="preserve"><value>Vérifier mon ordre</value></data>
+  <data name="Timeline_PlayAgain" xml:space="preserve"><value>Rejouer</value></data>
   <data name="Interview_Card" xml:space="preserve"><value>Questionne Marie Curie, Galilée, Cervantes…</value></data>
   <data name="Interview_Simulation" xml:space="preserve"><value>Simulation éducative : les réponses sont écrites à partir de faits historiques documentés ; ce ne sont pas de vraies citations.</value></data>
   <data name="Interview_Suggestions" xml:space="preserve"><value>Questions suggérées</value></data>
+  <data name="Interview_Journey" xml:space="preserve"><value>Ton parcours</value></data>
   <data name="Interview_YourQuestion" xml:space="preserve"><value>Ta question…</value></data>
   <data name="Interview_Ask" xml:space="preserve"><value>Demander</value></data>
   <data name="Interview_CheckHint" xml:space="preserve"><value>Prêt ? Vérifie ce que tu as appris avec 3 questions.</value></data>
@@ -1126,6 +1144,25 @@
   <data name="Js_Thinking" xml:space="preserve"><value>Réfléchit…</value></data>
   <data name="Js_InterviewProgress" xml:space="preserve"><value>Questions posées : {0} sur {1} pour débloquer la vérification</value></data>
   <data name="Js_InterviewReady" xml:space="preserve"><value>Vérification débloquée ! Continue à poser des questions ou teste ce que tu as appris.</value></data>
+  <data name="Js_InterviewDiscovered" xml:space="preserve"><value>{0} sur {1} faits découverts</value></data>
+  <data name="Js_InterviewAllDiscovered" xml:space="preserve"><value>Tu as tout découvert sur {0} !</value></data>
+  <data name="Js_InterviewRiddleIntro" xml:space="preserve"><value>À ton tour : je vais te poser une question...</value></data>
+  <data name="Js_InterviewRiddleCorrect" xml:space="preserve"><value>C'est exact !</value></data>
+  <data name="Js_InterviewRiddleWrong" xml:space="preserve"><value>Pas tout à fait — la réponse était : {0}</value></data>
+  <data name="Js_InterviewPostcardTitle" xml:space="preserve"><value>Souvenir de {0}</value></data>
+  <data name="Js_InterviewPostcardDownload" xml:space="preserve"><value>Télécharger la carte postale</value></data>
+  <data name="Js_InterviewMythIntro" xml:space="preserve"><value>Encore une chose : vrai ou faux ?</value></data>
+  <data name="Js_InterviewMythTrue" xml:space="preserve"><value>Vrai</value></data>
+  <data name="Js_InterviewMythFalse" xml:space="preserve"><value>Faux</value></data>
+  <data name="Js_InterviewMythCorrect" xml:space="preserve"><value>Exact !</value></data>
+  <data name="Js_InterviewMythWrong" xml:space="preserve"><value>Pas tout à fait.</value></data>
+  <data name="Js_InterviewMythDone" xml:space="preserve"><value>C'est tout pour aujourd'hui, à bientôt !</value></data>
+  <data name="Js_TimelinePerfect" xml:space="preserve"><value>Parfait ! Tu as trouvé l'ordre complet.</value></data>
+  <data name="Js_TimelinePartial" xml:space="preserve"><value>{0} sur {1} à la bonne place : réessaie !</value></data>
+  <data name="Js_InterviewTopicLife" xml:space="preserve"><value>Vie</value></data>
+  <data name="Js_InterviewTopicDiscovery" xml:space="preserve"><value>Découvertes</value></data>
+  <data name="Js_InterviewTopicTrivia" xml:space="preserve"><value>Anecdotes</value></data>
+  <data name="Js_InterviewTopicLegacy" xml:space="preserve"><value>Héritage</value></data>
   <data name="Topic_math_clock" xml:space="preserve"><value>Lire l'heure</value></data>
   <data name="Companion_Button" xml:space="preserve"><value>Tuteur</value></data>
   <data name="Companion_Open" xml:space="preserve"><value>Ton Tuteur : pose une question depuis n'importe quelle page</value></data>

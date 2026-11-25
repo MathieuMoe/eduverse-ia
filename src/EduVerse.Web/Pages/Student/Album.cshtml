@@ -1,0 +1,74 @@
+@page
+@model EduVerse.Web.Pages.Student.AlbumModel
+@using EduVerse.Core.Tutor
+@{
+    ViewData["Title"] = L["Nav_Album"];
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Album_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@string.Format(culture, L["Album_Subtitle"], Model.Completed.Count, Interviews.All.Count)</p>
+    </div>
+</div>
+<div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4" data-testid="album-grid">
+    @foreach (var fig in Interviews.All)
+    {
+        var done = Model.Completed.Contains(fig.Key);
+        <a href="/Student/Interview?figure=@fig.Key" class="@Ui.Card p-5 text-center @(done ? "hover:-translate-y-0.5 transition-transform" : "opacity-70 hover:opacity-100 transition-opacity")" data-testid="album-card-@fig.Key" data-done="@(done ? "1" : "0")">
+            @if (done)
+            {
+                <span class="block w-24 mx-auto" data-avatar="@fig.Key" data-mouth="closed" aria-hidden="true"></span>
+                <span class="mt-3 block text-lg font-semibold text-foreground">@fig.Name</span>
+                <span class="block text-xs text-muted-foreground-1">@fig.Years · @fig.Field.In(language)</span>
+                <span class="mt-3 inline-flex items-center gap-1 py-1 px-2.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">✓ @L["Album_Completed"]</span>
+            }
+            else
+            {
+                <span class="flex w-24 h-24 mx-auto items-center justify-center rounded-full bg-surface text-3xl grayscale" aria-hidden="true">🔒</span>
+                <span class="mt-3 block text-lg font-semibold text-muted-foreground-1">???</span>
+                <span class="mt-3 inline-flex items-center gap-1 py-1 px-2.5 rounded-full border border-layer-line text-muted-foreground-1 text-xs font-medium">@L["Album_Locked"]</span>
+            }
+        </a>
+    }
+</div>
+
+<div class="mt-8">
+    <h2 class="text-xl font-semibold tracking-tight text-foreground">@L["Album_Connections_Title"]</h2>
+    <p class="mt-1 text-sm text-muted-foreground-1">@string.Format(culture, L["Album_Connections_Subtitle"], Model.Connections.Count(c => c.Unlocked), Model.Connections.Count)</p>
+    <div class="mt-3 grid sm:grid-cols-2 gap-4" data-testid="album-connections">
+        @foreach (var (conn, a, b, unlocked) in Model.Connections)
+        {
+            <div class="@Ui.Card p-4" data-testid="connection-@(a.Key)-@(b.Key)" data-unlocked="@(unlocked ? "1" : "0")">
+                @if (unlocked)
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="w-10 h-10" data-avatar="@a.Key" data-mouth="closed" aria-hidden="true"></span>
+                        <span class="text-sm font-medium text-foreground">@a.Name</span>
+                        <span aria-hidden="true">🔗</span>
+                        <span class="w-10 h-10" data-avatar="@b.Key" data-mouth="closed" aria-hidden="true"></span>
+                        <span class="text-sm font-medium text-foreground">@b.Name</span>
+                    </div>
+                    <p class="mt-2 text-sm text-muted-foreground-1">@conn.Insight.In(language)</p>
+                }
+                else
+                {
+                    <div class="flex items-center gap-2 opacity-70">
+                        <span class="flex w-10 h-10 items-center justify-center rounded-full bg-surface text-lg grayscale" aria-hidden="true">🔒</span>
+                        <span class="text-sm font-medium text-muted-foreground-1">???</span>
+                        <span aria-hidden="true">🔗</span>
+                        <span class="flex w-10 h-10 items-center justify-center rounded-full bg-surface text-lg grayscale" aria-hidden="true">🔒</span>
+                        <span class="text-sm font-medium text-muted-foreground-1">???</span>
+                    </div>
+                    <p class="mt-2 text-sm text-muted-foreground-1">@L["Album_Connections_Locked"]</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/avatars.js" asp-append-version="true"></script>
+}

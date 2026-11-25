@@ -1,0 +1,47 @@
+@page
+@model EduVerse.Web.Pages.Student.TimelineModel
+@using EduVerse.Core.Tutor
+@{
+    ViewData["Title"] = L["Nav_Timeline"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">@L["Timeline_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["Timeline_Subtitle"]</p>
+    </div>
+</div>
+@if (Model.Figures.Count < 2)
+{
+    <div class="@Ui.Card p-6 text-center space-y-3" data-testid="timeline-empty">
+        <p class="text-foreground font-medium">@L["Timeline_NeedMore"]</p>
+        <a href="/Student/Interview" class="@Ui.BtnPrimary inline-flex">@L["Timeline_GoInterview"]</a>
+    </div>
+}
+else
+{
+    <div id="tl-root" class="@Ui.Card p-5 sm:p-6 space-y-4" data-testid="timeline-game">
+        <p class="text-sm text-muted-foreground-1" id="tl-instructions">@L["Timeline_Instructions"]</p>
+        <div class="flex flex-wrap gap-2" id="tl-pool">
+            @foreach (var f in Model.Figures)
+            {
+                <button type="button" class="py-2 px-3.5 rounded-xl border border-layer-line text-sm font-medium text-foreground hover:bg-layer-hover disabled:opacity-40 flex items-center gap-2" data-name="@f.Name" data-emoji="@f.Emoji" data-sort-year="@Interviews.SortYear(f)" data-years="@f.Years" data-testid="tl-figure">
+                    <span aria-hidden="true">@f.Emoji</span> @f.Name
+                </button>
+            }
+        </div>
+        <ol class="flex flex-wrap gap-2 min-h-14" id="tl-slots" data-testid="tl-slots" aria-label="@L["Timeline_YourOrder"]"></ol>
+        <button type="button" id="tl-check" class="@Ui.BtnPrimary hidden" data-testid="tl-check">@L["Timeline_Check"]</button>
+        <div id="tl-result" class="hidden space-y-2" data-testid="tl-result">
+            <p id="tl-score" class="font-medium text-foreground" aria-live="polite"></p>
+            <a href="/Student/Timeline" class="@Ui.BtnLight inline-flex">@L["Timeline_PlayAgain"]</a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @if (Model.Figures.Count >= 2)
+    {
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/timeline.js" asp-append-version="true"></script>
+    }
+}

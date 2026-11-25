@@ -10,8 +10,15 @@ namespace EduVerse.Core.Tutor;
 /// <summary>A prepared question of an interview: keywords to recognise it ("en|es|fr|ca" lists separated by ";") and the answer.</summary>
 public sealed record InterviewAnswer(Txt Question, string Keywords, Txt Answer);
 
+/// <summary>A loose topic grouping for a figure's suggested questions, so the student sees them organised rather than as a flat list.</summary>
+public enum InterviewTopic { Life, Discovery, Legacy, Trivia }
+
 /// <summary>A comprehension question at the end of the interview: the answer and three wrong options.</summary>
 public sealed record InterviewCheck(Txt Question, Txt Answer, Txt[] Wrong);
+
+/// <summary>A true-or-false claim about a figure, posed in a myth-busting round after the riddle, with the explanation
+/// revealed once the student answers. IsTrue is the answer key and stays server-side, like a <see cref="InterviewCheck"/>'s.</summary>
+public sealed record InterviewMyth(Txt Statement, bool IsTrue, Txt Explanation);
 
 /// <summary>How the browser voice of a figure sounds: a female or male voice when there is one, its pitch and speed.</summary>
 public sealed record FigureVoice(bool Female, double Pitch, double Rate);
@@ -32,6 +39,8 @@ public static partial class Interviews
     private static InterviewAnswer A(string question, string keywords, string answer) => new(Txt.Of(question), keywords, Txt.Of(answer));
 
     private static InterviewCheck C(string question, string answer, params string[] wrong) => new(Txt.Of(question), Txt.Of(answer), wrong.Select(Txt.Of).ToArray());
+
+    private static InterviewMyth M(string statement, bool isTrue, string explanation) => new(Txt.Of(statement), isTrue, Txt.Of(explanation));
 
     public static IReadOnlyList<Figure> All => Registry.List;
 
@@ -159,6 +168,21 @@ public static partial class Interviews
             .Where(x => x.Score > 0).OrderByDescending(x => x.Score).Select(x => x.Answer).FirstOrDefault();
     }
 
+    static readonly string[] LifeWords = ["born", "family", "father", "mother", "child", "childhood", "prisoner", "captive", "judge", "trial", "prison", "soldier", "battle", "pilgrimage", "mecca", "leave", "left", "professor", "teacher", "philosopher", "allowed", "woman", "women", "voyage", "beagle", "lepanto", "algiers", "why"];
+    static readonly string[] LegacyWords = ["nobel", "prize", "famous", "book", "write", "wrote", "published", "wealth", "rihla", "origin", "principia"];
+    static readonly string[] DiscoveryWords = ["discover", "invent", "machine", "law", "theorem", "telescope", "evolution", "selection", "dna", "photo", "rosetta", "decipher", "algebra", "division", "labour", "labor", "invisible", "paint", "gravity", "light", "program", "earth", "sun", "fall", "pendulum", "galapagos", "babbage"];
+
+    /// <summary>Loose topic for a suggested question, guessed from its (language-independent) English keywords, to group the suggestion chips.</summary>
+    public static InterviewTopic Topic(InterviewAnswer answer)
+    {
+        ArgumentNullException.ThrowIfNull(answer);
+        var words = Txt.Of(answer.Keywords).In(TeachLanguage.English).Split(';', StringSplitOptions.RemoveEmptyEntries).Select(w => w.Trim().ToLowerInvariant()).ToHashSet();
+        if (words.Overlaps(LifeWords)) return InterviewTopic.Life;
+        if (words.Overlaps(LegacyWords)) return InterviewTopic.Legacy;
+        if (words.Overlaps(DiscoveryWords)) return InterviewTopic.Discovery;
+        return InterviewTopic.Trivia;
+    }
+
     /// <summary>The comprehension test of the end of the interview (3 questions, checked facts).</summary>
     public static IReadOnlyList<QuizQuestion> Check(Figure figure, int seed, TeachLanguage language)
     {
@@ -166,6 +190,56 @@ public static partial class Interviews
         var q = new Mc(new Random(seed), language, Level.Primary3, 2);
         return figure.Checks.Select(c => q.Choice("interview:" + figure.Key, c.Question.In(language), c.Answer.In(language), c.Wrong.Select(w => w.In(language)),
             Txt.Of("{0} told you in the interview: {1}.|{0} te lo contó en la entrevista: {1}.|{0} te l'a raconté pendant l'interview : {1}.|{0} t'ho va explicar a l'entrevista: {1}.").Format(language, figure.Name, c.Answer.In(language)))).ToList();
+    }
+
+    /// <summary>A playful riddle the figure poses once the student has discovered everything: one checked fact as a
+    /// question with its options shuffled. The correct option is not flagged here; the answer key stays on the server
+    /// (see <see cref="RiddleCorrect"/>) so the client cannot read it off the response.</summary>
+    public static (int CheckIndex, Txt Question, IReadOnlyList<string> Options) Riddle(Figure figure, TeachLanguage language)
+    {
+        ArgumentNullException.ThrowIfNull(figure);
+        var index = Random.Shared.Next(figure.Checks.Count);
+        var check = figure.Checks[index];
+        var options = new List<string> { check.Answer.In(language) };
+        options.AddRange(check.Wrong.Select(w => w.In(language)));
+        for (var i = options.Count - 1; i > 0; i--)
+        {
+            var j = Random.Shared.Next(i + 1);
+            (options[i], options[j]) = (options[j], options[i]);
+        }
+
+        return (index, check.Question, options);
+    }
+
+    /// <summary>Whether a submitted riddle answer matches the checked fact's correct answer.</summary>
+    public static bool RiddleCorrect(Figure figure, int checkIndex, string? answer, TeachLanguage language)
+    {
+        ArgumentNullException.ThrowIfNull(figure);
+        if (checkIndex < 0 || checkIndex >= figure.Checks.Count)
+        {
+            return false;
+        }
+
+        return string.Equals(figure.Checks[checkIndex].Answer.In(language).Trim(), (answer ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>The myth-busting round for a figure: a couple of true-or-false claims, some real and some common
+    /// misconceptions, each with an explanation. Shown after the riddle's postcard, once everything is discovered.
+    /// Data lives in <see cref="InterviewMyths"/> (a separate partial file, one entry per figure key).</summary>
+    public static IReadOnlyList<InterviewMyth> Myths(Figure figure)
+    {
+        ArgumentNullException.ThrowIfNull(figure);
+        return MythsByFigure.TryGetValue(figure.Key, out var list) ? list : [];
+    }
+
+    /// <summary>The figure's birth year, parsed from the leading digits of <see cref="Figure.Years"/> ("1867–1934" → 1867),
+    /// for sorting figures chronologically in the timeline mini-game. The years are already shown to the student
+    /// elsewhere (the dossier, the greeting), so this is not hidden information.</summary>
+    public static int SortYear(Figure figure)
+    {
+        ArgumentNullException.ThrowIfNull(figure);
+        var digits = new string(figure.Years.TakeWhile(char.IsAsciiDigit).ToArray());
+        return int.TryParse(digits, out var year) ? year : 0;
     }
 }
 

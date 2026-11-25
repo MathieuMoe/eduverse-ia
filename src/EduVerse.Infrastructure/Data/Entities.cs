@@ -1008,3 +1008,16 @@ public sealed class CuriosityQuestion
 
     public DateTimeOffset? ResolvedAt { get; set; }
 }
+
+/// <summary>Records that a student has "completed" an interview figure: discovered every suggested question and
+/// solved the closing riddle. Foundation for the figure album, the timeline game and the figure-connections bonus.</summary>
+public sealed class FigureDiscovery
+{
+    public int Id { get; set; }
+
+    public string UserId { get; set; } = "";
+
+    public string FigureKey { get; set; } = "";
+
+    public DateTimeOffset CompletedAt { get; set; }
+}

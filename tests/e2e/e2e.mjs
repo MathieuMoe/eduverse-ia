@@ -507,20 +507,39 @@ async function demo(page, role) {
     await page.click("[data-testid=figure-curie]");
     check(await page.locator("[data-testid=simulation-notice]").isVisible(), "the interview says it is a simulation");
     check(await page.locator("[data-testid=iv-avatar] svg .av-mouth-open").count() === 1, "the illustrated figure has a mouth that can open");
+    check(await page.locator("aside[data-theme=chemistry]").count() === 1, "Marie Curie's card has the chemistry-era backdrop");
+    check(await page.locator("#iv-root").getAttribute("data-area") === "chemistry", "the figure's area is exposed to JS for the themed intro flourish");
     await page.click("[data-testid=iv-voice]"); // no audio in the headless browser
     await page.click("[data-testid=iv-start]");
     await page.locator("[data-testid=iv-answer]").first().waitFor();
     const mouths = new Set();
     for (let i = 0; i < 6; i++) { mouths.add(await page.locator("[data-testid=iv-avatar]").getAttribute("data-mouth")); await page.waitForTimeout(60); }
     check(mouths.size > 1, "the lips move while the figure speaks");
-    for (const [i, b] of (await page.locator("#iv-suggestions [data-question]").all()).slice(0, 3).entries()) {
+    const suggestionCount = await page.locator("#iv-suggestions [data-question]").count();
+    check(await page.locator("#iv-suggestions p.uppercase").count() >= 2, "the suggested questions are grouped under category headers");
+    for (const [i, b] of (await page.locator("#iv-suggestions [data-question]").all()).entries()) {
         await page.locator("#iv-root[data-busy=false]").waitFor();
         await b.click();
         await page.waitForFunction((n) => document.querySelectorAll("[data-testid=iv-answer]").length >= n, i + 2);
     }
     await page.locator("#iv-root[data-busy=false]").waitFor();
     await page.locator("[data-testid=iv-check]").waitFor();
-    check(await page.locator("[data-testid=iv-answer]").count() === 4, "the figure greets and answers the suggested questions offline");
+    check(await page.locator("[data-testid=iv-answer]").count() === suggestionCount + 1, "the figure greets and answers the suggested questions offline");
+    check(await page.locator("#iv-meter-fill").evaluate((el) => el.style.width) === "100%", "the curiosity meter fills up once every suggested question is asked");
+    check(await page.locator("#iv-meter").getAttribute("aria-valuenow") === "100", "the curiosity meter reports 100% once complete");
+    check(await page.locator(".iv-path-dot.is-lit").count() === suggestionCount, "every milestone on the life-path lights up alongside the curiosity meter");
+    await page.locator("[data-testid=iv-riddle-option]").first().waitFor();
+    check(await page.locator("[data-testid=iv-riddle-option]").count() >= 2, "the figure poses a riddle with several options once everything is discovered");
+    await page.locator("[data-testid=iv-riddle-option]").first().click();
+    await page.locator("[data-testid=iv-postcard]").waitFor();
+    check(await page.locator("[data-testid=iv-postcard]").isVisible(), "a collectible postcard caps the interview once the riddle is answered");
+    check(await page.locator("[data-testid=iv-postcard-download]").isVisible(), "the postcard offers a download button");
+    for (let i = 0; i < 2; i++) {
+        await page.locator("[data-testid=iv-myth-option]:not([disabled])").first().waitFor();
+        await page.locator("[data-testid=iv-myth-option]:not([disabled])").first().click();
+    }
+    check(await page.locator("[data-testid=iv-myth-option]").count() === 4, "the interview ends with a two-item true-or-false myth-busting round");
+    check(await page.locator("[data-testid=iv-myth-option]:not([disabled])").count() === 0, "every myth claim gets answered and locked in");
     await page.screenshot({ path: join(DOCS, "screenshot-interview.png") });
     await page.click("[data-testid=iv-tab-dossier]");
     await page.locator("#iv-panel-dossier [data-discovery] svg").waitFor();
@@ -534,7 +553,48 @@ async function demo(page, role) {
         await page.click("[data-testid=quiz-next]");
     }
     await page.locator("[data-testid=quiz-summary]").waitFor();
-    check(true, "interview check finished");
+    check(await page.locator("[data-testid=quiz-summary]").isVisible(), "the interview comprehension check ends on a summary screen");
+
+    await page.goto(BASE + "/Student/Album");
+    check(await page.locator("[data-testid=album-card-curie][data-done='1']").count() === 1, "completing a figure's riddle unlocks its card in the album");
+    check(await page.locator("[data-testid=album-grid] [data-done='0']").count() >= 1, "other figures stay locked in the album until their own interview is completed");
+    await page.screenshot({ path: join(DOCS, "screenshot-album.png") });
+
+    await page.goto(BASE + "/Student/Timeline");
+    check(await page.locator("[data-testid=timeline-empty]").isVisible(), "the timeline challenge asks for at least two completed figures before it unlocks");
+
+    // Complete a second figure (Newton) so the timeline challenge has enough figures to actually play.
+    await page.goto(BASE + "/Student/Interview?figure=newton");
+    await page.click("[data-testid=iv-start]");
+    await page.locator("[data-testid=iv-answer]").first().waitFor();
+    for (const b of await page.locator("#iv-suggestions [data-question]").all()) {
+        await page.locator("#iv-root[data-busy=false]").waitFor();
+        await b.click();
+        await page.locator("#iv-root[data-busy=false]").waitFor();
+    }
+    await page.locator("[data-testid=iv-riddle-option]").first().waitFor();
+    await page.locator("[data-testid=iv-riddle-option]").first().click();
+    await page.locator("[data-testid=iv-postcard]").waitFor();
+    for (let i = 0; i < 2; i++) {
+        await page.locator("[data-testid=iv-myth-option]:not([disabled])").first().waitFor();
+        await page.locator("[data-testid=iv-myth-option]:not([disabled])").first().click();
+    }
+
+    await page.goto(BASE + "/Student/Timeline");
+    check(await page.locator("[data-testid=timeline-game]").isVisible(), "the timeline challenge unlocks once two figures are completed");
+    const tlCount = await page.locator("[data-testid=tl-figure]").count();
+    check(tlCount === 2, "the timeline challenge lists exactly the completed figures");
+    for (let i = 0; i < tlCount; i++) {
+        await page.locator("[data-testid=tl-figure]:not([disabled])").first().click();
+    }
+    await page.click("[data-testid=tl-check]");
+    check(await page.locator("[data-testid=tl-result]").isVisible(), "checking the timeline order shows a result");
+    check(await page.locator("[data-testid=tl-slot][data-state]").count() === tlCount, "every placed figure is marked right or wrong against the real chronology");
+    await page.screenshot({ path: join(DOCS, "screenshot-timeline.png") });
+
+    await page.goto(BASE + "/Student/Album");
+    check(await page.locator("[data-testid='connection-curie-newton'][data-unlocked='1']").count() === 1, "a curated connection unlocks once both of its figures are completed");
+    check(await page.locator("[data-testid=album-connections] [data-unlocked='0']").count() >= 1, "connections involving an uncompleted figure stay locked");
 
     await page.goto(BASE + "/Student/Achievements");
     check(await page.locator("[data-testid=badges] li").count() === 28, "all badges with their progress");
@@ -1081,7 +1141,7 @@ for (const dark of [false, true]) {
         await noOverflow(page, `mobile${dark ? " dark" : ""} /`);
         await demo(page, role);
         const pages = {
-            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
+            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
             teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Course?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary", "/Moderation/Ideas"],
             director: ["/Institution", "/Institution/Risk", "/Institution/Quality"],
             tutor: ["/Tutor", "/Tutor/Profile", "/Marketplace"],

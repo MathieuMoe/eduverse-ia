@@ -76,6 +76,62 @@ public class TeachInterviewRuleTests
     }
 
     [Fact]
+    public void Every_figure_has_a_myth_busting_round_with_both_a_true_and_a_false_claim()
+    {
+        foreach (var figure in Interviews.All)
+        {
+            var myths = Interviews.Myths(figure);
+            Assert.True(myths.Count >= 2, $"{figure.Key} has only {myths.Count} myths");
+            Assert.Contains(myths, m => m.IsTrue);
+            Assert.Contains(myths, m => !m.IsTrue);
+            foreach (var language in Enum.GetValues<TeachLanguage>())
+            {
+                foreach (var m in myths)
+                {
+                    Assert.False(string.IsNullOrWhiteSpace(m.Statement.In(language)));
+                    Assert.False(string.IsNullOrWhiteSpace(m.Explanation.In(language)));
+                }
+            }
+        }
+
+        Assert.Empty(Interviews.Myths(Interviews.All[0] with { Key = "unknown-figure" }));
+    }
+
+    [Fact]
+    public void Every_figure_has_a_birth_year_that_sorts_them_chronologically()
+    {
+        Assert.Equal(1867, Interviews.SortYear(Interviews.Find("curie")!));
+        Assert.Equal(1452, Interviews.SortYear(Interviews.Find("leonardo")!));
+        Assert.All(Interviews.All, f => Assert.True(Interviews.SortYear(f) > 0, $"{f.Key} has no parseable birth year in \"{f.Years}\""));
+        var byYear = Interviews.All.OrderBy(Interviews.SortYear).Select(f => f.Key).ToList();
+        Assert.Equal("ibnbattuta", byYear[0]); // 1304, the earliest of the twelve
+        Assert.Equal("franklin", byYear[^1]); // 1920, the most recent
+    }
+
+    [Fact]
+    public void Every_figure_connection_links_two_real_distinct_figures_with_an_insight_in_every_language()
+    {
+        var connections = Interviews.Connections();
+        Assert.NotEmpty(connections);
+        Assert.All(connections, c =>
+        {
+            Assert.NotNull(Interviews.Find(c.FigureA));
+            Assert.NotNull(Interviews.Find(c.FigureB));
+            Assert.NotEqual(c.FigureA, c.FigureB);
+            Assert.False(string.IsNullOrWhiteSpace(c.Insight.In(TeachLanguage.English)));
+            Assert.False(string.IsNullOrWhiteSpace(c.Insight.In(TeachLanguage.Spanish)));
+            Assert.False(string.IsNullOrWhiteSpace(c.Insight.In(TeachLanguage.French)));
+            Assert.False(string.IsNullOrWhiteSpace(c.Insight.In(TeachLanguage.Catalan)));
+        });
+
+        // No duplicate or reversed-duplicate pairs, and every figure takes part in at least one connection.
+        var pairs = connections.Select(c => string.CompareOrdinal(c.FigureA, c.FigureB) < 0 ? (c.FigureA, c.FigureB) : (c.FigureB, c.FigureA)).ToList();
+        Assert.Equal(pairs.Count, pairs.Distinct().Count());
+        var figuresInConnections = connections.SelectMany(c => new[] { c.FigureA, c.FigureB }).ToHashSet(StringComparer.Ordinal);
+        Assert.All(Interviews.All, f => Assert.Contains(f.Key, figuresInConnections));
+    }
+
+    [Fact]
     public void Interview_prompt_is_a_simulation_of_documented_facts()
     {
         var newton = Interviews.Find("newton")!;
@@ -112,6 +168,22 @@ public class TeachPersistenceTests(Database database) : IClassFixture<Database>
 
         var best = await store.BestAsync(leo);
         Assert.Equal(3, best["photosynthesis"]);
+    }
+
+    [Fact]
+    public async Task A_figure_is_marked_completed_only_once_and_only_for_its_own_student()
+    {
+        using var scope = database.Services.CreateScope();
+        var store = scope.ServiceProvider.GetRequiredService<FigureDiscoveryStore>();
+        var leo = await database.UserIdAsync("leo@eduverse.demo");
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        Assert.Empty(await store.CompletedAsync(leo));
+        Assert.True(await store.MarkCompletedAsync(leo, "curie"));
+        Assert.False(await store.MarkCompletedAsync(leo, "curie")); // second time: already recorded
+        Assert.True(await store.MarkCompletedAsync(leo, "newton"));
+        Assert.Equal(["curie", "newton"], (await store.CompletedAsync(leo)).Order());
+        Assert.Empty(await store.CompletedAsync(sara));
     }
 
     [Fact]

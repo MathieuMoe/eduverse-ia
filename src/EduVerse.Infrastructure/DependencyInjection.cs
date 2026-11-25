@@ -83,6 +83,7 @@ public static class DependencyInjection
         services.AddScoped<Tutor.WritingStore>();
         services.AddScoped<Tutor.AssignmentStore>();
         services.AddScoped<Tutor.DefenceStore>();
+        services.AddScoped<Tutor.FigureDiscoveryStore>();
         services.AddSingleton<Core.Institutions.DemoFamilyWriter>();
         services.AddOptions<MarketplaceOptions>().Bind(configuration.GetSection(MarketplaceOptions.SectionName));
         return services;

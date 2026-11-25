@@ -91,8 +91,10 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
 
     public DbSet<CuriosityQuestion> CuriosityQuestions => Set<CuriosityQuestion>();
 
+    public DbSet<FigureDiscovery> FigureDiscoveries => Set<FigureDiscovery>();
+
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 21;
+    public const int DatabaseVersion = 22;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -266,6 +268,11 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
         {
             e.Property(c => c.Text).HasMaxLength(200);
             e.HasIndex(c => new { c.UserId, c.Status, c.CreatedAt });
+        });
+        builder.Entity<FigureDiscovery>(e =>
+        {
+            e.Property(f => f.FigureKey).HasMaxLength(40);
+            e.HasIndex(f => new { f.UserId, f.FigureKey }).IsUnique();
         });
     }
 }
