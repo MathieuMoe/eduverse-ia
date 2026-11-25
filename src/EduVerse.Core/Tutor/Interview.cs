@@ -147,6 +147,10 @@ public static partial class Interviews
         "galileo" => new(false, 0.96, 1.0),
         "cervantes" => new(false, 1.04, 0.97),
         "champollion" => new(false, 1.14, 1.14),
+        "goodall" => new(true, 1.05, 1.0),
+        "einstein" => new(false, 0.78, 0.9),
+        "shakespeare" => new(false, 1.08, 1.02),
+        "mansamusa" => new(false, 0.84, 1.08),
         _ => new(false, 0.92, 0.95),
     };
 
@@ -170,7 +174,7 @@ public static partial class Interviews
 
     static readonly string[] LifeWords = ["born", "family", "father", "mother", "child", "childhood", "prisoner", "captive", "judge", "trial", "prison", "soldier", "battle", "pilgrimage", "mecca", "leave", "left", "professor", "teacher", "philosopher", "allowed", "woman", "women", "voyage", "beagle", "lepanto", "algiers", "why"];
     static readonly string[] LegacyWords = ["nobel", "prize", "famous", "book", "write", "wrote", "published", "wealth", "rihla", "origin", "principia"];
-    static readonly string[] DiscoveryWords = ["discover", "invent", "machine", "law", "theorem", "telescope", "evolution", "selection", "dna", "photo", "rosetta", "decipher", "algebra", "division", "labour", "labor", "invisible", "paint", "gravity", "light", "program", "earth", "sun", "fall", "pendulum", "galapagos", "babbage"];
+    static readonly string[] DiscoveryWords = ["discover", "invent", "machine", "law", "theorem", "telescope", "evolution", "selection", "dna", "photo", "rosetta", "decipher", "algebra", "division", "labour", "labor", "invisible", "paint", "gravity", "light", "program", "earth", "sun", "fall", "pendulum", "galapagos", "babbage", "energy", "tool", "relativity"];
 
     /// <summary>Loose topic for a suggested question, guessed from its (language-independent) English keywords, to group the suggestion chips.</summary>
     public static InterviewTopic Topic(InterviewAnswer answer)

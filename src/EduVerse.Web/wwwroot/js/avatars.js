@@ -2,7 +2,7 @@
 // The container gets data-mouth="closed|mid|open" while the figure speaks; the CSS in app.css shows the right mouth.
 (() => {
     "use strict";
-    const SKIN = { curie: "#f3d6c1", leonardo: "#e9c3a3", newton: "#f1d0b7", lovelace: "#f6dccb", galileo: "#ecc7a8", darwin: "#efcdb3", cervantes: "#e8c09f", franklin: "#f4d8c4", ibnbattuta: "#c99a72", smith: "#f2d2bc", noether: "#f1d4bf", champollion: "#f0cfb5" };
+    const SKIN = { curie: "#f3d6c1", leonardo: "#e9c3a3", newton: "#f1d0b7", lovelace: "#f6dccb", galileo: "#ecc7a8", darwin: "#efcdb3", cervantes: "#e8c09f", franklin: "#f4d8c4", ibnbattuta: "#c99a72", smith: "#f2d2bc", noether: "#f1d4bf", champollion: "#f0cfb5", einstein: "#f0d3b8", shakespeare: "#ecc8a8", goodall: "#f2d6bf", mansamusa: "#7a4a2a" };
 
     const mouths = (x, y, lip = "#a4505a") => `
         <g class="av-mouth av-mouth-closed"><path d="M${x - 9} ${y} q9 5 18 0" fill="none" stroke="${lip}" stroke-width="2.6" stroke-linecap="round"/></g>
@@ -174,6 +174,51 @@
             <path d="M73 92 q8 -5 17 -2 M110 90 q9 -3 17 2" fill="none" stroke="#2a1f1a" stroke-width="2.6" stroke-linecap="round"/>
             ${mouths(100, 133)}
             <g transform="translate(150 140)"><rect x="0" y="0" width="28" height="48" rx="14" fill="#f3e2b0" stroke="#a57a1c" stroke-width="2.5"/><circle cx="14" cy="12" r="4" fill="#a57a1c"/><path d="M8 22 h12 M14 22 v8 M8 36 q6 -6 12 0" stroke="#a57a1c" stroke-width="2" fill="none"/></g>`,
+        einstein: () => `
+            <circle cx="100" cy="110" r="100" fill="#e6e6ec"/>
+            <path d="M36 220 q4 -54 64 -62 q60 8 64 62 Z" fill="#6b6b73"/>
+            <path d="M86 158 q14 10 28 0 l-4 14 q-10 6 -20 0 Z" fill="#fff"/>
+            ${face("einstein")}
+            <g fill="#e2ded5"><ellipse cx="100" cy="56" rx="46" ry="25"/><ellipse cx="70" cy="64" rx="17" ry="23" transform="rotate(-12 70 64)"/><ellipse cx="130" cy="64" rx="17" ry="23" transform="rotate(12 130 64)"/><ellipse cx="58" cy="84" rx="13" ry="18" transform="rotate(-30 58 84)"/><ellipse cx="142" cy="84" rx="13" ry="18" transform="rotate(30 142 84)"/><ellipse cx="48" cy="102" rx="11" ry="15" transform="rotate(-42 48 102)"/><ellipse cx="152" cy="102" rx="11" ry="15" transform="rotate(42 152 102)"/></g>
+            ${eyes(106)}
+            <path d="M72 94 q9 -5 17 -1 M111 93 q8 -4 17 1" fill="none" stroke="#9a968d" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M78 125 q22 10 44 0 q-2 11 -22 13 q-20 -2 -22 -13 Z" fill="#e2ded5"/>
+            ${mouths(100, 142)}
+            <g transform="translate(144 148)" fill="none" stroke="#4a5a7a" stroke-width="2"><path d="M0 8 q16 -12 32 0 M0 18 q16 -9 32 0 M0 28 q16 -6 32 0"/><circle cx="16" cy="16" r="5" fill="#2c3a5a" stroke="none"/></g>`,
+        shakespeare: () => `
+            <circle cx="100" cy="110" r="100" fill="#e8dcc8"/>
+            <path d="M36 220 q4 -54 64 -62 q60 8 64 62 Z" fill="#2e2a2c"/>
+            <g fill="#faf7f0" stroke="#d9d2c4" stroke-width="1.5"><ellipse cx="100" cy="172" rx="54" ry="15"/><path d="M50 170 q8 10 16 0 q8 10 16 0 q8 10 16 0 q8 10 16 0 q8 10 16 0 q8 10 16 0" fill="none"/></g>
+            ${face("shakespeare")}
+            <path d="M60 102 q-6 -14 0 -26 q6 8 4 16 Z M140 102 q6 -14 0 -26 q-6 8 -4 16 Z" fill="#3a2a1f"/>
+            ${eyes(104)}
+            <path d="M73 92 q8 -4 17 -1 M110 91 q9 -3 17 1" fill="none" stroke="#3a2a1f" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M78 126 q10 -6 22 -2 q12 -4 22 2 q-11 4 -22 0 q-11 4 -22 -2 Z" fill="#3a2a1f"/>
+            ${mouths(100, 133)}
+            <path d="M88 142 q12 16 24 0 q-12 6 -24 0 Z" fill="#3a2a1f"/>
+            <g transform="translate(148 146)"><rect x="0" y="22" width="18" height="16" rx="3" fill="#6b4a2a" stroke="#3a2a1f" stroke-width="2"/><path d="M26 0 q10 14 -4 28 q-2 -14 4 -28 Z" fill="#f2efe6" stroke="#9a8f80" stroke-width="1.5"/><path d="M22 28 l8 8" stroke="#3a2a1f" stroke-width="2" stroke-linecap="round"/></g>`,
+        goodall: () => `
+            <circle cx="100" cy="110" r="100" fill="#dcead6"/>
+            <path d="M36 220 q4 -54 64 -62 q60 8 64 62 Z" fill="#8a9a6b"/>
+            <path d="M86 158 h28 l-14 20 Z" fill="#fff"/><path d="M82 164 q18 12 36 0 l-4 16 q-14 6 -28 0 Z" fill="#f4f1ea"/>
+            ${face("goodall")}
+            <path d="M60 100 q-4 -50 40 -52 q44 2 40 52 q-8 -26 -40 -28 q-32 2 -40 28 Z" fill="#c9b896"/>
+            <path d="M150 88 q14 4 10 24 q-10 -6 -10 -24 Z" fill="#c9b896"/>
+            ${eyes(104)}
+            <path d="M73 92 q8 -4 17 -1 M110 91 q9 -3 17 1" fill="none" stroke="#a89f8a" stroke-width="2.6" stroke-linecap="round"/>
+            ${mouths(100, 133)}
+            <g transform="translate(144 150)" fill="none" stroke="#3a3a3a" stroke-width="2.5"><circle cx="10" cy="14" r="10" fill="#2c2c2c" stroke="none"/><circle cx="30" cy="14" r="10" fill="#2c2c2c" stroke="none"/><path d="M10 4 l6 -6 M30 4 l-6 -6"/></g>`,
+        mansamusa: () => `
+            <circle cx="100" cy="110" r="100" fill="#f5e6c8"/>
+            <path d="M36 220 q4 -54 64 -62 q60 8 64 62 Z" fill="#3a2c6b"/>
+            <path d="M78 160 h44 l-6 20 h-32 Z" fill="#e8b84a"/>
+            ${face("mansamusa")}
+            <path d="M58 70 q42 -28 84 0 l-6 20 q-36 -16 -72 0 Z" fill="#e8b84a" stroke="#a57a1c" stroke-width="2.5"/>
+            <circle cx="100" cy="56" r="8" fill="#e8b84a" stroke="#a57a1c" stroke-width="2"/>
+            ${eyes(104)}
+            <path d="M73 92 q8 -4 17 -1 M110 91 q9 -3 17 1" fill="none" stroke="#2a1f1a" stroke-width="2.6" stroke-linecap="round"/>
+            ${mouths(100, 133)}
+            <g transform="translate(150 150)"><circle cx="16" cy="16" r="15" fill="#f0c955" stroke="#a57a1c" stroke-width="2.5"/><circle cx="12" cy="12" r="4" fill="#fdf0c0" opacity=".8"/></g>`,
     };
 
     /** SVG of a figure, "" for an unknown key. */

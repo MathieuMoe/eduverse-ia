@@ -440,3 +440,58 @@ Mathieu's follow-up on the earlier Duolingo-style feature (tasks #69-75 above): 
 - `tests/e2e/e2e.mjs`: `answerQuizQuestion` gained a `multiSelect` branch (clicks the first option, then the Check button); a new dedicated block drives fresh Practice attempts until a MultiSelect drill appears, then specifically checks the Check button starts hidden, appears after picking one option, and hides again after unpicking it (the check that surfaced the CSS bug above) before submitting every option; the Programming non-language drill-variety test now includes `"multiselect"` in its expected kind list; the Physics 10-question frequency test updated from "4th and 8th" to "4th, 7th and 10th" to match the new every-3rd cadence. Also fixed an unrelated, pre-existing race in an older check while verifying this phase's run (`a student proposes the next adventure and sees it waiting for an adult`, in the Adventure-ideas block): `ideas.js` stamps the submit status *before* reloading the list, so the test's `waitFor` on the status outcome could resolve before the list re-render landed; now waits for the list item itself too.
 - Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 664/664 (up from 640; re-ran 3 times back to back, no flakiness), full `e2e.mjs` suite green end-to-end on a clean server/DB restart (desktop + mobile × light/dark × 4 languages), after one run surfaced and fixed the CSS bug above and another surfaced and fixed the Adventure-ideas race above — both confirmed fixed on a subsequent clean run with 0 failures. TLS workaround applied only for each run and reverted immediately after every time.
 - Not yet started: task #97 (content-pool expansion, see above); README screenshot of the new MultiSelect UI (captured as `docs/screenshot-multiselect.png` during this phase's own e2e run, not yet added to the README gallery).
+
+## 4 more interview figures: Einstein, Shakespeare, Goodall, Mansa Musa (tasks #99-108)
+Mathieu asked to add 4 more historical figures to the interview feature (12 → 16). Picked to fill a gap and connect to existing
+figures: **Einstein** (Physics, iconic), **Shakespeare** (the only unused Area, `ForeignLanguage` — connects to Cervantes via
+their shared 1616 death date), **Jane Goodall** (Biology — connects to Darwin), **Mansa Musa** (Economics — connects to Ibn
+Battuta). Same 7-file pattern as the 12-figure phase above, done fully rather than left partial:
+`InterviewFigures.cs` (4 Q&A + 3 checks, 4 languages each), `Interview.cs`'s `Voice` switch (unique pitch/rate per gender group)
+and `DiscoveryWords` (added "energy", "tool", "relativity" for suggestion-chip categorisation), `InterviewMyths.cs` (2 myths
+each, ≥1 true/≥1 false), `FigureConnections.cs` (1 curated connection each, all real and specific — not "both were scientists"),
+`Dossiers.cs` (life-in-dates timeline + 3 paragraphs + real `https://` sources, verified by web search rather than invented:
+NobelPrize.org, the Royal Society, the Bodleian's digitised First Folio, Goodall's 1964 *Nature* paper, the Jane Goodall
+Institute, and the BnF's Gallica digitisation of the 1375 Catalan Atlas), `avatars.js` (hand-drawn SVG portrait per figure:
+Einstein's wild hair + spacetime-curvature prop, Shakespeare's ruff collar + quill, Goodall's khaki shirt + binoculars, Mansa
+Musa's crown + golden orb) and `discoveries.js` (a second SVG per figure: the 1919 eclipse / E=mc², the Globe Theatre, a
+chimpanzee using a termite-fishing twig, a gold caravan crossing the Sahara). `Companion.FigureFor(Area.ForeignLanguage)`
+switched from the `champollion` fallback to `shakespeare`, now that the Area has a dedicated figure.
+- **Real bugs the new content exposed in `Interviews.Match`'s offline keyword matching** (not new code — pre-existing matching
+  logic, just never exercised by content with these particular shapes before), each found by the existing
+  `Every_prepared_question_of_an_interview_finds_its_answer_offline` test failing after adding the real content, fixed one at a
+  time by rerunning:
+  - A literal superscript `²` in "What is E=mc²?" does not normalise to the digit `2` (`TeachConcepts.Normalize` only
+    lowercases and strips accents, not sub/superscript variants), so a keyword written as `e=mc2` never matched the question's
+    own `e=mc²`. Fixed by using the literal `²` in the keyword too.
+  - A generic shared keyword root ("write" / `escrib` / `ecri` / `escri`) present in two different answers' canned questions
+    for the same figure (Shakespeare's "What plays did you **write**?" and "Did you also **write** poems?") produces a score
+    tie in `Match`, and ties resolve to whichever answer comes first in the list — so the poems question matched the plays
+    answer instead of its own. Fixed by dropping the ambiguous verb root from the first answer's keywords, since its own
+    noun keyword (`play`/`obra`/`piece`) was already sufficient on its own.
+  - Catalan and Spanish verb conjugations don't share a prefix with their keyword root the way the other languages' do:
+    `poema` is not a substring of `poemes` ("vas escriure **poemes**?"), `morir` is not a substring of `moriste` ("¿Cómo
+    **moriste**?"), `eina` is not a substring of `eines` ("sobre les **eines**?") — all fixed by shortening the keyword to the
+    common root (`poem`, `mori`, `ein`) so the substring match succeeds either way.
+  - Two Jane Goodall answers ("How did you do after your research?" / fr/es/ca equivalents) had no keyword at all matching
+    their own ES/FR/CA question text (the question's only distinguishing word is "after"/`después`/`après`/`després`, absent
+    from the keyword list, which only covered the *answer's* vocabulary) — fixed by adding that word to each language's
+    keyword set.
+  - `tests/EduVerse.Tests/WebTests.cs`'s `Teach_evo_and_interviews_work_offline` asserted `BadRequest` for
+    `POST /api/interview/einstein` as its example of a **non-existent** figure key — now that `einstein` is real, that assert
+    started returning `OK` instead. Fixed by pointing the assertion at a key that is still made up (`unknownfigure`).
+- `TeachInterviewTests.cs`'s `Every_figure_has_a_birth_year_that_sorts_them_chronologically` hardcoded the extremes of the
+  12-figure set (`ibnbattuta` 1304 earliest, `franklin` 1920 most recent); updated to the 16-figure set's new extremes
+  (`mansamusa` 1280 earliest, `goodall` 1934 most recent — Goodall's death year of 2025 doesn't change this, the sort is by
+  birth year).
+- The Einstein dossier's timeline initially had 7 events (`Every_figure_has_a_complete_dossier_with_dates_in_its_life_and_https_sources`
+  requires 5-6); trimmed by dropping the standalone 1915 general-relativity entry, since 1905 (relativity + E=mc²) and 1919
+  (the eclipse that confirmed it) already carry that part of the story in the timeline, and general relativity is still
+  mentioned in the Discovery paragraph's prose.
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 664/664, full `e2e.mjs` suite run twice on a clean
+  server/DB restart each time — every interview/dossier/album/timeline/connections test for the new figures passed cleanly
+  both times; a few unrelated, pre-existing tests elsewhere in the suite (placement-test diagnostic, multi-select quiz,
+  a disabled-button check) timed out once each, a **different** one each run, which is this sandboxed container being slow
+  under Playwright rather than a regression — `dotnet test`'s 664/664 is deterministic and unaffected. TLS workaround applied
+  only for each e2e run and reverted immediately after every time.
+- Not yet started: no new screenshots captured for the new figures (same album/interview/dossier UI, just more cards); the
+  one open item is cosmetic, not functional.

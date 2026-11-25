@@ -142,7 +142,7 @@ public static class Companion
         Area.Language => "cervantes",
         Area.Geography => "ibnbattuta",
         Area.Economics => "smith",
-        Area.ForeignLanguage => "champollion",
+        Area.ForeignLanguage => "shakespeare",
         _ => "leonardo",
     };
 

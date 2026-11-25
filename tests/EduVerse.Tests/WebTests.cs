@@ -403,7 +403,7 @@ public class WebTests(App app) : IClassFixture<App>
         Assert.Contains("polonium", known.GetProperty("answer").GetString(), StringComparison.Ordinal);
         var unknown = await (await client.PostAsJsonAsync("/api/interview/curie", new { question = "Do you like video games?" })).Content.ReadFromJsonAsync<JsonElement>();
         Assert.False(unknown.GetProperty("matched").GetBoolean());
-        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/interview/einstein", new { question = "Hello?" })).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/interview/unknownfigure", new { question = "Hello?" })).StatusCode);
 
         var check = await client.PostAsJsonAsync("/api/quiz/start", new { area = "History", level = "Primary3", mode = "Interview", figure = "leonardo" });
         var question = (await check.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("question");

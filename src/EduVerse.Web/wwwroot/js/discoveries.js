@@ -91,6 +91,40 @@
             <rect x="48" y="76" width="224" height="46" fill="#77757b"/>${Array.from({ length: 3 }, (_, i) => `<path d="M60 ${88 + i * 12} q40 -6 80 0 t80 0 t40 0" stroke="#e9e5da" fill="none"/>`).join("")}
             <rect x="44" y="128" width="232" height="54" fill="#727076"/>${t(160, 145, "ΠΤΟΛΕΜΑΙΟΣ", 'fill="#f2efe6" font-size="14" letter-spacing="2"')}${t(160, 166, "ΒΑΣΙΛΕΥΟΝΤΟΣ ΤΟΥ ΝΕΟΥ", 'fill="#e9e5da" font-size="10"')}
             <rect x="214" y="34" width="46" height="32" rx="16" fill="none" stroke="#f3e2b0" stroke-width="2.5"/>`),
+        einstein: () => svg(`
+            <rect x="0" y="0" width="320" height="200" fill="#0d1026"/>
+            ${Array.from({ length: 40 }, (_, i) => `<circle cx="${(i * 53 + 17) % 320}" cy="${(i * 37 + 11) % 200}" r="${(i % 3) + 1}" fill="#fff" fill-opacity="${(0.4 + (i % 5) * 0.12).toFixed(2)}"/>`).join("")}
+            <circle cx="160" cy="100" r="30" fill="#2a2a1a" stroke="#f2d7a6" stroke-width="3"/>
+            ${Array.from({ length: 10 }, (_, i) => { const a = (i * Math.PI) / 5; return `<path d="M${(160 + 34 * Math.cos(a)).toFixed(1)} ${(100 + 34 * Math.sin(a)).toFixed(1)} L${(160 + 48 * Math.cos(a)).toFixed(1)} ${(100 + 48 * Math.sin(a)).toFixed(1)}" stroke="#f2d7a6" stroke-width="3"/>`; }).join("")}
+            <path d="M30 100 Q100 70 160 100" fill="none" stroke="#9fd3ff" stroke-width="2.5"/>
+            <path d="M30 100 Q100 130 160 100" fill="none" stroke="#9fd3ff" stroke-width="2.5" stroke-dasharray="4 5"/>
+            <circle cx="30" cy="100" r="4" fill="#9fd3ff"/>${t(30, 82, "star", 'fill="#9fd3ff" font-size="10"')}
+            ${t(252, 48, "E = mc²", 'fill="#fff" font-size="22" font-weight="700"')}
+            ${t(160, 186, "Eclipse, 1919", 'fill="#9aa3c7" font-size="11"')}`),
+        shakespeare: () => svg(`
+            <rect x="0" y="0" width="320" height="200" fill="#3a2a2a"/>
+            <path d="M0 0 L40 0 L60 200 L0 200 Z" fill="#6b1f24"/><path d="M320 0 L280 0 L260 200 L320 200 Z" fill="#6b1f24"/>
+            <rect x="60" y="20" width="200" height="140" fill="#caa86a"/><rect x="60" y="150" width="200" height="30" fill="#8a6a3a"/>
+            <g transform="translate(120 70)"><circle cx="0" cy="20" r="22" fill="#f2efe6" stroke="#2a2a2a" stroke-width="2"/><path d="M-14 28 q14 14 28 0" fill="none" stroke="#2a2a2a" stroke-width="2.5"/><circle cx="-7" cy="14" r="2" fill="#2a2a2a"/><circle cx="7" cy="14" r="2" fill="#2a2a2a"/></g>
+            <g transform="translate(180 70)"><circle cx="0" cy="20" r="22" fill="#f2efe6" stroke="#2a2a2a" stroke-width="2"/><path d="M-14 36 q14 -14 28 0" fill="none" stroke="#2a2a2a" stroke-width="2.5"/><circle cx="-7" cy="14" r="2" fill="#2a2a2a"/><circle cx="7" cy="14" r="2" fill="#2a2a2a"/></g>
+            ${t(160, 40, "THE GLOBE", 'fill="#4a2a1a" font-size="14" font-weight="700" letter-spacing="2"')}
+            ${t(160, 186, "1599", 'fill="#e8dcc8" font-size="12"')}`),
+        goodall: () => svg(`
+            <rect x="0" y="0" width="320" height="200" fill="#dcead6"/>
+            <path d="M0 160 Q160 140 320 160 V200 H0 Z" fill="#7a9a5a"/>
+            <path d="M250 60 Q260 170 260 180 h30 Q288 100 270 60 Z" fill="#8a6a3a"/>
+            ${Array.from({ length: 14 }, (_, i) => `<circle cx="${254 + (i % 4) * 6}" cy="${170 - i * 8}" r="3" fill="#6b4a2a"/>`).join("")}
+            <g transform="translate(120 90)"><ellipse cx="20" cy="40" rx="26" ry="20" fill="#3a2e28"/><circle cx="14" cy="20" r="16" fill="#3a2e28"/><circle cx="8" cy="18" r="2.2" fill="#fff"/><circle cx="20" cy="18" r="2.2" fill="#fff"/><ellipse cx="14" cy="27" rx="5" ry="3" fill="#6b5244"/>
+              <path d="M44 42 L96 30" stroke="#8a6a3a" stroke-width="4" stroke-linecap="round"/>
+              <ellipse cx="-4" cy="54" rx="10" ry="16" fill="#3a2e28"/><ellipse cx="34" cy="56" rx="10" ry="16" fill="#3a2e28"/></g>
+            ${t(160, 186, "Gombe, 1960", 'fill="#3a4a2a" font-size="11"')}`),
+        mansamusa: () => svg(`
+            <rect x="0" y="0" width="320" height="200" fill="#e8c97a"/>
+            <path d="M0 150 Q80 130 160 150 T320 150 V200 H0 Z" fill="#d9ae5a"/>
+            <g transform="translate(220 70)"><rect x="-10" y="60" width="20" height="60" fill="#8a6a3a"/><path d="M-18 60 L0 10 L18 60 Z" fill="#c9915a" stroke="#6b4a2a" stroke-width="2"/><rect x="-6" y="-6" width="12" height="20" fill="#8a6a3a"/></g>
+            ${[60, 130].map((x) => `<g transform="translate(${x} 110)"><ellipse cx="0" cy="40" rx="26" ry="14" fill="#c9915a"/><path d="M-20 10 Q-10 -20 10 10" fill="none" stroke="#6b4a2a" stroke-width="5" stroke-linecap="round"/><ellipse cx="-20" cy="6" rx="8" ry="10" fill="#6b4a2a"/><rect x="-6" y="18" width="12" height="14" rx="3" fill="#e8b84a"/></g>`).join("")}
+            ${Array.from({ length: 8 }, (_, i) => `<circle cx="${90 + i * 9}" cy="${150 - (i % 3) * 3}" r="4" fill="#f0c955" stroke="#a57a1c"/>`).join("")}
+            ${t(160, 186, "Cairo, 1324", 'fill="#5a3a1a" font-size="12" font-weight="600"')}`),
     };
 
     function hydrate(root = document) {

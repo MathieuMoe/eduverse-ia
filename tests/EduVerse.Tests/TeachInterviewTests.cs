@@ -104,8 +104,8 @@ public class TeachInterviewRuleTests
         Assert.Equal(1452, Interviews.SortYear(Interviews.Find("leonardo")!));
         Assert.All(Interviews.All, f => Assert.True(Interviews.SortYear(f) > 0, $"{f.Key} has no parseable birth year in \"{f.Years}\""));
         var byYear = Interviews.All.OrderBy(Interviews.SortYear).Select(f => f.Key).ToList();
-        Assert.Equal("ibnbattuta", byYear[0]); // 1304, the earliest of the twelve
-        Assert.Equal("franklin", byYear[^1]); // 1920, the most recent
+        Assert.Equal("mansamusa", byYear[0]); // 1280, the earliest of the sixteen
+        Assert.Equal("goodall", byYear[^1]); // 1934, the most recent
     }
 
     [Fact]
