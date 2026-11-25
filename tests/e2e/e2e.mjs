@@ -32,20 +32,22 @@ async function noOverflow(page, label) {
 }
 
 // A Practice-mode question is sometimes a Duolingo-style drill instead of the usual 4-option grid: true/false,
-// fill-blank, reorder or match, mixed in for every subject by ExerciseBank.AnyDrill (task #73 extends what was,
-// through task #72, true/false-only for Mathematics-like subjects and fill-blank/reorder/match-only for
-// Language/ForeignLanguage, into a mix of all 4 kinds for every subject). Waits for whichever of the 5 possible
-// renderings the page actually shows and answers it — a drill not necessarily correctly, since the point there is
-// that the UI works, not the score — and returns which kind it saw ("classic", "truefalse", "fillblank", "reorder"
-// or "match"). classicIndex picks the option on a classic question or true/false drill (wrapped to however many
-// buttons that rendering has); it's ignored for the other 3 drill kinds, which only ever need an answer submitted.
+// fill-blank, reorder, match or multi-select, mixed in for every subject by ExerciseBank.AnyDrill (task #73 extends
+// what was, through task #72, true/false-only for Mathematics-like subjects and fill-blank/reorder/match-only for
+// Language/ForeignLanguage, into a mix of all kinds for every subject; task #96 adds multi-select as a 5th). Waits
+// for whichever of the 6 possible renderings the page actually shows and answers it — a drill not necessarily
+// correctly, since the point there is that the UI works, not the score — and returns which kind it saw ("classic",
+// "truefalse", "fillblank", "reorder", "match" or "multiselect"). classicIndex picks the option on a classic
+// question or true/false drill (wrapped to however many buttons that rendering has); it's ignored for the other
+// drill kinds, which only ever need an answer submitted.
 async function answerQuizQuestion(page, classicIndex = 0) {
     const options = page.locator("[data-testid=quiz-options] button:not([disabled])");
     const trueFalse = page.locator("[data-testid=quiz-truefalse] button:not([disabled])");
     const fillBlank = page.locator("[data-testid=quiz-fillblank]");
     const reorder = page.locator("[data-testid=quiz-reorder]");
     const match = page.locator("[data-testid=quiz-match]");
-    await Promise.race([options.first().waitFor(), trueFalse.first().waitFor(), fillBlank.first().waitFor(), reorder.first().waitFor(), match.first().waitFor()]);
+    const multiSelect = page.locator("[data-testid=quiz-multiselect]");
+    await Promise.race([options.first().waitFor(), trueFalse.first().waitFor(), fillBlank.first().waitFor(), reorder.first().waitFor(), match.first().waitFor(), multiSelect.first().waitFor()]);
     if (await fillBlank.count()) {
         await page.fill("#qz-fillblank-input", "test");
         await page.click("#qz-fillblank-check");
@@ -70,6 +72,11 @@ async function answerQuizQuestion(page, classicIndex = 0) {
         }
         await page.click("#qz-match-check");
         return "match";
+    }
+    if (await multiSelect.count()) {
+        await page.locator("[data-ms-index]").first().click();
+        await page.click("#qz-multiselect-check");
+        return "multiselect";
     }
     if (await trueFalse.count()) {
         await trueFalse.nth(classicIndex % (await trueFalse.count())).click();
@@ -243,10 +250,11 @@ async function demo(page, role) {
     // The hands-free "oral exam" toggle is server-rendered hidden; quiz.js reveals it once the browser actually
     // offers both speech recognition and speech synthesis (true in this headless browser, so it should unhide).
     check(await page.locator("#qz-oral").isHidden() === false, "oral exam toggle revealed when the browser supports voice");
-    // Physics mixes in all 4 drill kinds (task #72's True/False, plus task #73's fill-blank/reorder/match): the
-    // 4th and 8th of these 10 questions can be one instead of the usual options grid (see answerQuizQuestion), and
-    // a drill doesn't log a review entry yet (task #69's documented limitation), so only 8 of the 10 questions
-    // below are expected back in the review list.
+    // Physics mixes in all 5 drill kinds (task #72's True/False, task #73's fill-blank/reorder/match, task #96's
+    // multi-select): the 4th, 7th and 10th of these 10 questions can be one instead of the usual options grid (see
+    // answerQuizQuestion — task #95 tightened the frequency from every 4th answered item to every 3rd), and a drill
+    // doesn't log a review entry yet (task #69's documented limitation), so only 7 of the 10 questions below are
+    // expected back in the review list.
     for (let i = 0; i < 10; i++) {
         await answerQuizQuestion(page, i % 4);
         await page.locator("[data-testid=quiz-next]").waitFor();
@@ -260,7 +268,7 @@ async function demo(page, role) {
     check(+(await page.locator("[data-testid=quiz-xp]").textContent()) >= 10, "XP won during the test");
     await page.click("[data-testid=quiz-review]");
     await page.locator("[data-testid=review]").waitFor();
-    check(await page.locator("[data-testid=review] > li").count() === 8, "the finished test is saved with its classic questions for review");
+    check(await page.locator("[data-testid=review] > li").count() === 7, "the finished test is saved with its classic questions for review");
     await page.screenshot({ path: join(DOCS, "screenshot-history.png") });
     await page.goto(BASE + "/Student/History");
     check(await page.locator("[data-testid=history] li").count() >= 9, "list of tests done");
@@ -308,7 +316,7 @@ async function demo(page, role) {
 
     await page.screenshot({ path: join(DOCS, "screenshot-arena.png") });
     await page.click("[data-testid=play-duel]");
-    // Task #74 mixes drills into a Duel too (any of the 4 kinds), so answer via the generic helper here as well.
+    // Task #74 mixes drills into a Duel too (any of the 5 kinds), so answer via the generic helper here as well.
     for (let i = 0; i < 5; i++) {
         await answerQuizQuestion(page, 0);
         await page.locator("[data-testid=quiz-next]").waitFor();
@@ -368,7 +376,7 @@ async function demo(page, role) {
     check((await page.locator("[data-testid=hearts]").textContent()).includes("❤️"), "the adventure shows the map and the hearts");
     check((await page.locator("[data-testid=story-line]").textContent()).length > 10, "each door has a line of the story");
     await page.screenshot({ path: join(DOCS, "screenshot-adventure.png") });
-    // Task #74 mixes drills into Adventure too (any of the 4 kinds, forced to boss difficulty once InBoss), so
+    // Task #74 mixes drills into Adventure too (any of the 5 kinds, forced to boss difficulty once InBoss), so
     // answer via the generic helper rather than assuming the classic options grid on every door/boss turn.
     for (let i = 0; i < 20; i++) {
         if (await page.locator("[data-testid=quiz-summary]").count()) break;
@@ -392,6 +400,9 @@ async function demo(page, role) {
     await page.fill("[data-testid=idea-text-Adventure]", "Volcanes");
     await page.click("[data-testid=idea-send-Adventure]");
     await page.locator("[data-ideas=Adventure] [data-idea-status][data-outcome=Created]").waitFor();
+    // The status text is stamped before the list is reloaded (see ideas.js), so wait for the
+    // list item itself rather than racing the reload right after the status appears.
+    await page.locator("[data-testid=idea-list-Adventure] li:has-text('Volcanes')").waitFor();
     check(await page.locator("[data-testid=idea-list-Adventure] li:has-text('Volcanes')").count() === 1, "a student proposes the next adventure and sees it waiting for an adult");
     const pirates = page.locator("[data-testid=idea-list-Adventure] li:has-text('Piratas') [data-vote]");
     const votes = parseInt((await pirates.textContent()).replace(/\D/g, ""), 10);
@@ -752,9 +763,10 @@ async function demo(page, role) {
 {
     const { context, page } = await session();
     await demo(page, "student");
-    // Since task #73, each of the 2 drill slots in a 10-question Practice test (the 4th and 8th question) is one of
-    // 4 kinds (true/false, fill-blank, reorder, match) picked at random per attempt (ExerciseBank.AnyDrill), not
-    // always true/false as it was through task #72, so this retries fresh attempts until a true/false one turns up.
+    // Since task #73 (and task #96's multi-select), each of the 3 drill slots in a 10-question Practice test (the
+    // 4th, 7th and 10th question, task #95's tighter frequency) is one of 5 kinds (true/false, fill-blank, reorder,
+    // match, multi-select) picked at random per attempt (ExerciseBank.AnyDrill), not always true/false as it was
+    // through task #72, so this retries fresh attempts until a true/false one turns up.
     let sawDrill = false;
     for (let t = 0; t < 20 && !sawDrill; t++) {
         await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
@@ -777,6 +789,48 @@ async function demo(page, role) {
         }
     }
     check(sawDrill, "a true/false drill appears during a Mathematics practice test");
+    await context.close();
+}
+
+// ---------- Student: a multi-select ("select all that apply") drill shows up, Duolingo-style (task #96) ----------
+{
+    const { context, page } = await session();
+    await demo(page, "student");
+    let sawMultiSelect = false;
+    for (let t = 0; t < 20 && !sawMultiSelect; t++) {
+        await page.goto(BASE + "/Student/Quiz?area=Mathematics&level=Primary3&mode=Practice");
+        await page.locator("[data-testid=quiz-options] button").first().waitFor();
+        for (let i = 0; i < 10 && !sawMultiSelect; i++) {
+            if (await page.locator("[data-testid=quiz-multiselect]").count()) {
+                sawMultiSelect = true;
+                const checkBtn = page.locator("#qz-multiselect-check");
+                check(await checkBtn.isHidden(), "the Check button stays hidden until at least one option is picked");
+                const opts = page.locator("[data-ms-index]");
+                const n = await opts.count();
+                check(n >= 3, "a multi-select drill offers at least 3 options to choose among");
+                await opts.first().click();
+                check(await opts.first().getAttribute("aria-pressed") === "true", "picking an option marks it pressed");
+                check(await checkBtn.isVisible(), "the Check button appears once an option is picked");
+                await opts.first().click();
+                check(await checkBtn.isHidden(), "unpicking the only selected option hides the Check button again");
+                // Pick every option to guarantee the full correct set is included, whichever indices they are —
+                // this checks the UI wires through correctly, not whether the student "wins" the drill.
+                for (let k = 0; k < n; k++) {
+                    await opts.nth(k).click();
+                }
+                await page.screenshot({ path: join(DOCS, "screenshot-multiselect.png") });
+                await checkBtn.click();
+                await page.locator("[data-testid=quiz-next]").waitFor();
+                check((await page.locator("#qz-feedback").textContent()).length > 0, "the multi-select drill explains the answer like a classic question");
+                await page.click("[data-testid=quiz-next]");
+            } else {
+                await answerQuizQuestion(page);
+                await page.locator("[data-testid=quiz-next]").waitFor();
+                await page.click("[data-testid=quiz-next]");
+            }
+        }
+    }
+    check(sawMultiSelect, "a multi-select drill appears during a Mathematics practice test");
     await context.close();
 }
 
@@ -823,11 +877,11 @@ async function demo(page, role) {
 {
     const { context, page } = await session();
     await demo(page, "student");
-    // Programming had true/false drills only (task #72); task #73 adds its own fill-blank/reorder/match content and
-    // wires ExerciseBank.AnyDrill to mix all 4 kinds for every subject, so retry fresh attempts (2 drill slots each,
-    // 1-in-4 chance each of any one kind) until one of the 3 new kinds turns up here too.
+    // Programming had true/false drills only (task #72); task #73 adds its own fill-blank/reorder/match content,
+    // and task #96 adds multi-select, wiring ExerciseBank.AnyDrill to mix all 5 kinds for every subject, so retry
+    // fresh attempts (3 drill slots each now, task #95's tighter frequency) until one of the 4 new kinds turns up.
     const seenKinds = new Set();
-    for (let t = 0; t < 20 && !["fillblank", "reorder", "match"].some((k) => seenKinds.has(k)); t++) {
+    for (let t = 0; t < 20 && !["fillblank", "reorder", "match", "multiselect"].some((k) => seenKinds.has(k)); t++) {
         await page.goto(BASE + "/Student/Quiz?area=Programming&level=Primary3&mode=Practice");
         for (let i = 0; i < 10; i++) {
             const kind = await answerQuizQuestion(page);
@@ -836,7 +890,7 @@ async function demo(page, role) {
             await page.click("[data-testid=quiz-next]");
         }
     }
-    check(["fillblank", "reorder", "match"].some((k) => seenKinds.has(k)), "a fill-blank, reorder or match drill appears during a Programming (non-language) practice test");
+    check(["fillblank", "reorder", "match", "multiselect"].some((k) => seenKinds.has(k)), "a fill-blank, reorder, match or multi-select drill appears during a Programming (non-language) practice test");
     await context.close();
 }
 

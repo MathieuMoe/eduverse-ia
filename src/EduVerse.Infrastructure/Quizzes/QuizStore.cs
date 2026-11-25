@@ -186,7 +186,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     /// Carries the Adventure map/hearts/story line exactly like a classic question's view does (task #74), so a drill
     /// landing mid-adventure doesn't make that chrome disappear for one question.</summary>
     private static QuestionView ViewOfExercise(QuizAttempt a, PracticeExercise e) =>
-        new(a.Id, a.Answered + 1, a.Length, e.Prompt, [], e.Visual, null, e.Difficulty, e.Topic, a.Level, a.Area, a.Mode, Levels.IsKids(a.Level))
+        new(a.Id, a.Answered + 1, a.Length, e.Prompt, e.Kind == ExerciseKind.MultiSelect ? e.Options! : [], e.Visual, null, e.Difficulty, e.Topic, a.Level, a.Area, a.Mode, Levels.IsKids(a.Level))
         {
             ExerciseKind = e.Kind,
             Tokens = e.Kind == ExerciseKind.Reorder ? e.Tokens : null,
@@ -195,26 +195,50 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             Adventure = AdventureOf(a),
         };
 
-    /// <summary>The modes a Duolingo-style drill can appear in: Practice (task #71–73) plus Adventure, Duel (Arena) and
-    /// Placement (task #74) — every 4th answered item, when the bank has content for this subject and level. True/false
-    /// is excluded from Placement specifically: its 50/50 guess rate would add noise to the binary-search level
-    /// calibration (2 decisive questions per level), where the other 3 kinds (free-text/reorder/match, each harder to
-    /// guess right than even a classic 4-option question) don't carry that risk. Evo/Topic/Interview/Review/Notebook
-    /// are deliberately left out — a drill has no Evo-specific adaptation and no meaning for a free/topic/reviewed set.</summary>
+    /// <summary>The key a drill is remembered under in <see cref="QuizAttempt.UsedJson"/> — the same list the classic
+    /// path already stores question keys in (task #95), so one no-repeat mechanism covers both. Distinct in shape
+    /// from a classic key (a full prompt/options string), so a collision between the two is not a practical concern.</summary>
+    private static string KeyOf(PracticeExercise e) => $"{e.Kind}|{e.Topic}";
+
+    /// <summary>The modes a Duolingo-style drill can appear in: Practice (task #71–73), Adventure, Duel (Arena) and
+    /// Placement (task #74) — every 3rd answered item (task #95 tightened this from every 4th: Mathieu's
+    /// "visiblemente no aparece mucho" was partly a raw-frequency problem), when the bank has content for this
+    /// subject and level. Review and Focus were considered too (task #95) but dropped: both pin every question to
+    /// one specific topic (the item being reviewed, or the plan's chosen study topic) and a drill from
+    /// <see cref="ExerciseBank.AnyDrill"/> can land on any topic in the subject, so inserting one there would
+    /// silently break out of the single-topic session those modes exist for. True/false is excluded from Placement
+    /// specifically: its 50/50 guess rate would add noise to the binary-search level calibration (2 decisive
+    /// questions per level), where the other kinds (free-text/reorder/match/multi-select, each harder to guess right
+    /// than even a classic 4-option question) don't carry that risk. The residue (0 mod 3, not 2) is chosen to miss
+    /// Practice's own interest-word-problem swap, which already claims Answered % 3 == 2 just below (the "due" check
+    /// in <see cref="NextQuestion"/>) — landing on the same residue would mean a drill always wins that slot and the
+    /// swap would never fire.
+    /// Evo/Topic/Interview/Notebook are deliberately left out — a drill has no Evo-specific adaptation, and no
+    /// meaning for a free-topic, fixed-pool or interview-script set.</summary>
     private static PracticeExercise? TryExerciseFor(QuizAttempt attempt, TeachLanguage language)
     {
-        if (attempt.Mode is not (QuizMode.Practice or QuizMode.Adventure or QuizMode.Duel or QuizMode.Placement) || attempt.Answered % 4 != 3)
+        if (attempt.Mode is not (QuizMode.Practice or QuizMode.Adventure or QuizMode.Duel or QuizMode.Placement) || attempt.Answered % 3 != 0)
         {
             return null;
         }
 
         var seed = QuestionBanks.Seed(attempt.Seed, attempt.Answered, 5);
-        var exercise = ExerciseBank.AnyDrill(attempt.Area, attempt.Level, language, seed, allowTrueFalse: attempt.Mode != QuizMode.Placement);
+        var exclude = JsonSerializer.Deserialize<List<string>>(attempt.UsedJson, JsonOptions) is { Count: > 0 } used ? used.ToHashSet() : null;
+        var exercise = ExerciseBank.AnyDrill(attempt.Area, attempt.Level, language, seed, allowTrueFalse: attempt.Mode != QuizMode.Placement, exclude: exclude);
         if (exercise is not null && attempt.Mode == QuizMode.Adventure && JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson!, JsonOptions)!.InBoss)
         {
             // Boss fights force the hardest difficulty for classic questions too (see NextQuestion); keep a drill
             // landing on a boss turn consistent, so skill tracking and the XP reward treat it the same way.
             exercise = exercise with { Difficulty = 3 };
+        }
+
+        if (exercise is not null)
+        {
+            // Remembered right away, not only once answered: a drill the student never finishes (navigates away,
+            // or it's the attempt's last item) still shouldn't come back up again the moment they resume.
+            var updated = exclude?.ToList() ?? [];
+            updated.Add(KeyOf(exercise));
+            attempt.UsedJson = JsonSerializer.Serialize(updated, JsonOptions);
         }
 
         return exercise;
@@ -565,6 +589,20 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
     }
 
+    /// <summary>Answers the current "select all that apply" drill (task #96). Returns null when there is no such drill current.</summary>
+    public async Task<AnswerResult?> AnswerMultiSelectAsync(string userId, string attemptId, IReadOnlyList<int> indices, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        var correct = exercise.CheckMultiSelect(indices);
+        return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
+    }
+
     /// <summary>Checks a single left/right pairing of the current Match drill, Duolingo-style — a live green/red
     /// border as the student taps, instead of waiting for the final "Check". Read-only: no attempt state changes,
     /// no XP, no "answered" count, so the student can retry a wrong pairing freely; the final <see cref="AnswerMatchAsync"/>
@@ -588,9 +626,9 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         return pair is null ? null : pair.Right == right;
     }
 
-    /// <summary>Shared tail for the 4 drill-answer methods (true/false, fill-blank, reorder, match): scores the exercise,
-    /// updates skill/streak/xp, and queues the next item (another drill, a classic question, or the test summary).
-    /// Seconds (time on screen) is reserved for the same rhythm-advice path the classic flow uses.</summary>
+    /// <summary>Shared tail for the 5 drill-answer methods (true/false, fill-blank, reorder, match, multi-select):
+    /// scores the exercise, updates skill/streak/xp, and queues the next item (another drill, a classic question, or
+    /// the test summary). Seconds (time on screen) is reserved for the same rhythm-advice path the classic flow uses.</summary>
     private async Task<AnswerResult> FinishExerciseAnswerAsync(string userId, QuizAttempt attempt, PracticeExercise exercise, bool correct, int confidence, TeachLanguage language, CancellationToken ct)
     {
         confidence = Math.Clamp(confidence, 0, Spaced.Sure);

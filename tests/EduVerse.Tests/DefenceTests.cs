@@ -73,7 +73,7 @@ public class DefenceStoreTests(Database database) : IClassFixture<Database>
         var unfinished = await quizzes.StartAsync(omar, Area.Mathematics, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
         Assert.Empty(await defences.StartAsync(omar, unfinished.AttemptId, TeachLanguage.English));
 
-        // Answer a whole test with the right options (the test knows them; any of the 4 drill kinds the quiz
+        // Answer a whole test with the right options (the test knows them; any of the 5 drill kinds the quiz
         // happens to serve — task #73 mixes all of them in now, not just true/false — is answered right too via
         // its own stored answer key).
         var attempt = unfinished.AttemptId;
@@ -90,6 +90,7 @@ public class DefenceStoreTests(Database database) : IClassFixture<Database>
                     ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(omar, attempt, exercise.Answer!, 1, 0, TeachLanguage.English),
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(omar, attempt, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
                     ExerciseKind.Match => quizzes.AnswerMatchAsync(omar, attempt, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
+                    ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(omar, attempt, exercise.CorrectIndices!, 1, 0, TeachLanguage.English),
                     _ => quizzes.AnswerTrueFalseAsync(omar, attempt, exercise.CorrectBool!.Value, 1, 0, TeachLanguage.English),
                 }))!;
             }
@@ -159,7 +160,7 @@ public class DefenceWebTests(App app) : IClassFixture<App>
             for (var i = 0; i < 10; i++)
             {
                 // A drill (no options) is answered on its own endpoint, exactly as the real quiz page does; which of
-                // the 4 drill kinds shows up is now mixed for every subject (task #73), not just true/false.
+                // the 5 drill kinds shows up is now mixed for every subject (task #73), not just true/false.
                 var isDrill = current.TryGetProperty("exerciseKind", out var kind) && kind.ValueKind != JsonValueKind.Null;
                 var (url, body) = isDrill
                     ? kind.GetString() switch
@@ -173,6 +174,8 @@ public class DefenceWebTests(App app) : IClassFixture<App>
                                 .ToDictionary(p => p.First, p => p.Second),
                             confidence = 1,
                         }),
+                        // task #96: "select all that apply" — just pick the first option; this loop never checks correctness for a drill anyway.
+                        "MultiSelect" => ($"/api/quiz/{candidate}/multiselect", (object)new { indices = new[] { 0 }, confidence = 1 }),
                         _ => ($"/api/quiz/{candidate}/truefalse", new { value = true, confidence = 1 }),
                     }
                     : ($"/api/quiz/{candidate}/answer", new { choice = i % 4, confidence = 1 });

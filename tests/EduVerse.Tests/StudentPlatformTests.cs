@@ -58,6 +58,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                     ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(nora, q.AttemptId, exercise.Answer!, 1, 0, TeachLanguage.Spanish),
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(nora, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.Spanish),
                     ExerciseKind.Match => quizzes.AnswerMatchAsync(nora, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.Spanish),
+                    ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(nora, q.AttemptId, exercise.CorrectIndices!, 1, 0, TeachLanguage.Spanish),
                     _ => quizzes.AnswerTrueFalseAsync(nora, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.Spanish),
                 });
             }
@@ -169,7 +170,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
             // knows everything up to the bachelor level
             var right = attempt.Level <= Level.HighSchool;
             // Placement now mixes in drills too (task #74), but never True/False (PerLevel's binary search can't
-            // absorb a 50%-guess coin-flip on a decisive question), so only FillBlank/Reorder/Match can appear here.
+            // absorb a 50%-guess coin-flip on a decisive question), so only FillBlank/Reorder/Match/MultiSelect can appear here.
             if (attempt.CurrentExerciseJson is { } exerciseJson)
             {
                 var exercise = System.Text.Json.JsonSerializer.Deserialize<PracticeExercise>(exerciseJson, Web)!;
@@ -178,6 +179,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                 {
                     ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(alex, q.AttemptId, right ? exercise.Answer! : exercise.Answer + "-wrong", 1, 0, TeachLanguage.French),
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(alex, q.AttemptId, right ? exercise.CorrectOrder! : exercise.CorrectOrder!.Reverse().ToList(), 1, 0, TeachLanguage.French),
+                    ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(alex, q.AttemptId, right ? exercise.CorrectIndices! : exercise.CorrectIndices!.Skip(1).ToList(), 1, 0, TeachLanguage.French),
                     _ => quizzes.AnswerMatchAsync(alex, q.AttemptId, MatchAnswer(exercise.Pairs!, right), 1, 0, TeachLanguage.French),
                 });
             }
@@ -292,6 +294,8 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                         ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(userId, q.AttemptId, wantsRight ? exercise.Answer! : exercise.Answer + "-wrong", 1, 0, TeachLanguage.English),
                         ExerciseKind.Reorder => quizzes.AnswerReorderAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectOrder! : exercise.CorrectOrder!.Reverse().ToList(), 1, 0, TeachLanguage.English),
                         ExerciseKind.Match => quizzes.AnswerMatchAsync(userId, q.AttemptId, MatchAnswer(exercise.Pairs!, wantsRight), 1, 0, TeachLanguage.English),
+                        // task #96: "select all that apply" — the right answer picks exactly the correct set, a wrong one drops one of them.
+                        ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectIndices! : exercise.CorrectIndices!.Skip(1).ToList(), 1, 0, TeachLanguage.English),
                         _ => quizzes.AnswerTrueFalseAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectBool!.Value : !exercise.CorrectBool!.Value, TeachLanguage.English),
                     });
                 }
@@ -346,6 +350,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                         ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(iker, q.AttemptId, exercise.Answer!, 1, 0, TeachLanguage.English),
                         ExerciseKind.Reorder => quizzes.AnswerReorderAsync(iker, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
                         ExerciseKind.Match => quizzes.AnswerMatchAsync(iker, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
+                        ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(iker, q.AttemptId, exercise.CorrectIndices!, 1, 0, TeachLanguage.English),
                         _ => quizzes.AnswerTrueFalseAsync(iker, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.English),
                     });
                 }

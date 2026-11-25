@@ -18,6 +18,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 ![Duolingo-style drill: fill in the blank](docs/screenshot-fillblank.png)
 ![Duolingo-style drill: reorder the words](docs/screenshot-reorder.png)
 ![Duolingo-style drill: match the pairs](docs/screenshot-match.png)
+![Duolingo-style drill: select every correct option](docs/screenshot-multiselect.png)
 ![Arena: weekly ranking with nicknames, teams, class challenge, duels](docs/screenshot-arena.png)
 ![Achievements: titles, badges and their progress](docs/screenshot-achievements.png)
 ![Review of a finished test](docs/screenshot-history.png)
@@ -84,7 +85,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 - 📚 **10 subjects × 10 levels**: mathematics, physics, chemistry, biology, language, a foreign language, history, geography, economics and programming, from early years (5–6) through primary, secondary, high school, degree, master and **doctorate**
 - 🧮 **Offline question banks checked in code**: numeric questions are generated *and solved* by the code (arithmetic to eigenvalues, kinematics to Lorentz factors, pH, Punnett squares, compound interest, Python programs whose output is computed…); fact questions come from a checked table in 4 languages, wrong options are typical mistakes. A test checks thousands of generated questions (4 distinct options, one right)
 - 🎯 **Adaptive tests**: 2 right answers in a row → harder, a wrong one → easier; **every new test avoids the questions already seen** (last 300 of the subject and level); knowledge per topic tracked with Bayesian Knowledge Tracing; topics to review shown in the catalog
-- 🦜 **Duolingo-style exercise variety**: every 4th question of a test can be a true/false, fill-in-the-blank, word-reorder or match-the-pairs drill instead of the usual 4-option grid, for all 10 subjects, in 4 languages, with the same instant feedback and XP as a classic question. They mix into **practice tests, adventures, duels and placement tests** alike — a drill answered mid-adventure still opens the next door, one answered mid-placement still narrows the level search, and both duelists always get the identical drill. Placement leaves out true/false specifically (a 50 % guess could corrupt the 2-right-or-wrong-decides-the-level binary search it runs); every drill is generated and checked in code, nothing left to the AI
+- 🦜 **Duolingo-style exercise variety**: every 3rd question of a test can be a true/false, fill-in-the-blank, word-reorder, match-the-pairs or select-every-correct-option drill instead of the usual 4-option grid, for all 10 subjects, in 4 languages, with the same instant feedback and XP as a classic question, and never the same drill twice within one attempt while another is available. They mix into **practice tests, adventures, duels and placement tests** alike — a drill answered mid-adventure still opens the next door, one answered mid-placement still narrows the level search, and both duelists always get the identical drill. Placement leaves out true/false specifically (a 50 % guess could corrupt the 2-right-or-wrong-decides-the-level binary search it runs); every drill is generated and checked in code, nothing left to the AI
 - 💬 **Why, right or wrong**: the feedback after each answer always says why — a miss now also names the correct answer out loud — worded for the student's stage (shorter and warmer in primary, the reasoning spelled out from high school up); the Tutor's own chat and explanations also know the student's most recent quiz misses
 - 📝 **Tests done** saved with every question, the answer given and the right one: list per subject and **review** of each test
 - 🎚️ **One level of study for all subjects**: changing it (dashboard or catalog) applies it to every subject; a placement test can then refine one subject
@@ -323,7 +324,7 @@ Rate limits per IP: 10 AI calls per minute (explanations, chat, subjects, packs,
 ## Tests
 
 ```bash
-dotnet test                                   # 640 xUnit tests: rules, question banks, parsers, demos, SQLite, web integration
+dotnet test                                   # 664 xUnit tests: rules, question banks, parsers, demos, SQLite, web integration
 
 # End-to-end (the app running on a fresh database, see Getting started)
 cd tests/e2e

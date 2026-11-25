@@ -125,6 +125,7 @@ public class AdventurePersistenceTests(Database database) : IClassFixture<Databa
                     ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(sara, q.AttemptId, exercise.Answer!, 1, 0, TeachLanguage.English),
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(sara, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
                     ExerciseKind.Match => quizzes.AnswerMatchAsync(sara, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
+                    ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(sara, q.AttemptId, exercise.CorrectIndices!, 1, 0, TeachLanguage.English),
                     _ => quizzes.AnswerTrueFalseAsync(sara, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.English),
                 });
             }

@@ -12,6 +12,10 @@ public enum ExerciseKind
     FillBlank,
     Reorder,
     Match,
+
+    /// <summary>"Select all that apply": 2 or more of a short list of options are correct, picked by toggling rather
+    /// than a single tap — a 5th answer shape, distinct from every kind above (task #96).</summary>
+    MultiSelect,
 }
 
 /// <summary>One left/right pair for a <see cref="ExerciseKind.Match"/> exercise (e.g. word ↔ translation,
@@ -43,7 +47,10 @@ public sealed record PracticeExercise(
     IReadOnlyList<string>? CorrectOrder = null,
     // Match
     IReadOnlyList<MatchPair>? Pairs = null,
-    string? Visual = null)
+    string? Visual = null,
+    // MultiSelect — Options are the candidates (reusing the same field MultipleChoice uses); CorrectIndices are the
+    // ones that must all be picked, and only those, for a correct answer.
+    IReadOnlyList<int>? CorrectIndices = null)
 {
     /// <summary>Wraps an existing multiple-choice question as a <see cref="PracticeExercise"/>, unchanged.</summary>
     public static PracticeExercise FromQuizQuestion(QuizQuestion q) => new(
@@ -108,5 +115,16 @@ public sealed record PracticeExercise(
         }
 
         return given == CorrectBool;
+    }
+
+    /// <summary>Exact match required: every correct option picked, and no incorrect one — order doesn't matter.</summary>
+    public bool CheckMultiSelect(IReadOnlyList<int> given)
+    {
+        if (Kind != ExerciseKind.MultiSelect || CorrectIndices is null)
+        {
+            throw new InvalidOperationException($"{nameof(CheckMultiSelect)} needs a {ExerciseKind.MultiSelect} exercise.");
+        }
+
+        return given is not null && given.ToHashSet().SetEquals(CorrectIndices);
     }
 }

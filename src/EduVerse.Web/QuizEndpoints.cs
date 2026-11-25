@@ -19,6 +19,8 @@ public sealed record QuizReorderRequest(IReadOnlyList<string> Order, int? Confid
 
 public sealed record QuizMatchRequest(IReadOnlyDictionary<string, string> Pairs, int? Confidence = null, int? Seconds = null);
 
+public sealed record QuizMultiSelectRequest(IReadOnlyList<int> Indices, int? Confidence = null, int? Seconds = null);
+
 public sealed record QuizMatchPairRequest(string Left, string Right);
 
 public sealed record AdventureRequest(Area Area, Level Level, Theme Theme);
@@ -156,6 +158,13 @@ public static class QuizEndpoints
         api.MapPost("/{attemptId}/match", async (string attemptId, QuizMatchRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
         {
             var result = request is null || request.Pairs is null or { Count: 0 } ? null : await store.AnswerMatchAsync(context.User.Id(), attemptId, request.Pairs, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
+
+        api.MapPost("/{attemptId}/multiselect", async (string attemptId, QuizMultiSelectRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var result = request is null || request.Indices is null or { Count: 0 } ? null : await store.AnswerMultiSelectAsync(context.User.Id(), attemptId, request.Indices, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
             return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
         })
         .RequireRateLimiting("quiz");

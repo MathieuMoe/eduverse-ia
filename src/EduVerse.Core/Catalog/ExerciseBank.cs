@@ -224,16 +224,31 @@ public static class ExerciseBank
         _ => 3,
     };
 
+    /// <summary>Drops items already shown this attempt (keyed "<paramref name="kind"/>|Topic", built by the caller
+    /// from <c>QuizAttempt.UsedJson</c> — task #95/#97's fix for a drill repeating too soon within one test, which
+    /// bit hardest exactly where a tier's pool is still thin). Falls back to the full pool once every item in it
+    /// has been seen, rather than ever returning nothing — a repeat late in a long session beats no drill at all.</summary>
+    private static IReadOnlyList<T> Unseen<T>(IReadOnlyList<T> pool, Func<T, string> topicOf, string kind, IReadOnlySet<string>? exclude)
+    {
+        if (exclude is not { Count: > 0 } || pool.Count == 0)
+        {
+            return pool;
+        }
+
+        var unseen = pool.Where(i => !exclude.Contains($"{kind}|{topicOf(i)}")).ToList();
+        return unseen.Count > 0 ? unseen : pool;
+    }
+
     /// <summary>A true/false drill for the given subject and level, or null if the bank has none yet
     /// (today: Language and ForeignLanguage, where fill-blank/reorder/match fit more naturally — task #71).</summary>
-    public static PracticeExercise? TrueFalse(Area area, Level level, TeachLanguage language, int seed)
+    public static PracticeExercise? TrueFalse(Area area, Level level, TeachLanguage language, int seed, IReadOnlySet<string>? exclude = null)
     {
         if (!Banks.TryGetValue(area, out var bank))
         {
             return null;
         }
 
-        var pool = bank.Where(i => i.Difficulty == DifficultyFor(level)).ToList();
+        var pool = Unseen(bank.Where(i => i.Difficulty == DifficultyFor(level)).ToList(), i => i.Topic, "TrueFalse", exclude);
         if (pool.Count == 0)
         {
             return null;
@@ -443,12 +458,12 @@ public static class ExerciseBank
     };
 
     /// <summary>A fill-in-the-blank drill, or null if the bank has none for this subject/level.</summary>
-    public static PracticeExercise? FillBlank(Area area, Level level, TeachLanguage language, int seed)
+    public static PracticeExercise? FillBlank(Area area, Level level, TeachLanguage language, int seed, IReadOnlySet<string>? exclude = null)
     {
         var difficulty = DifficultyFor(level);
         if (FillBlankBanks.TryGetValue(area, out var genericBank))
         {
-            var genericPool = genericBank.Where(i => i.Difficulty == difficulty).ToList();
+            var genericPool = Unseen(genericBank.Where(i => i.Difficulty == difficulty).ToList(), i => i.Topic, "FillBlank", exclude);
             if (genericPool.Count == 0)
             {
                 return null;
@@ -463,7 +478,7 @@ public static class ExerciseBank
 
         if (area == Area.Language)
         {
-            var pool = LanguageFillBlank.Where(i => i.Difficulty == difficulty).ToList();
+            var pool = Unseen(LanguageFillBlank.Where(i => i.Difficulty == difficulty).ToList(), i => i.Topic, "FillBlank", exclude);
             if (pool.Count == 0)
             {
                 return null;
@@ -655,12 +670,12 @@ public static class ExerciseBank
         [Area.Programming] = ProgrammingReorder,
     };
 
-    public static PracticeExercise? Reorder(Area area, Level level, TeachLanguage language, int seed)
+    public static PracticeExercise? Reorder(Area area, Level level, TeachLanguage language, int seed, IReadOnlySet<string>? exclude = null)
     {
         var difficulty = DifficultyFor(level);
         if (ReorderBanks.TryGetValue(area, out var genericBank))
         {
-            var genericPool = genericBank.Where(i => i.Difficulty == difficulty).ToList();
+            var genericPool = Unseen(genericBank.Where(i => i.Difficulty == difficulty).ToList(), i => i.Topic, "Reorder", exclude);
             if (genericPool.Count == 0)
             {
                 return null;
@@ -677,7 +692,7 @@ public static class ExerciseBank
 
         if (area == Area.Language)
         {
-            var pool = LanguageReorder.Where(i => i.Difficulty == difficulty).ToList();
+            var pool = Unseen(LanguageReorder.Where(i => i.Difficulty == difficulty).ToList(), i => i.Topic, "Reorder", exclude);
             if (pool.Count == 0)
             {
                 return null;
@@ -993,12 +1008,12 @@ public static class ExerciseBank
         [Area.Programming] = ProgrammingMatch,
     };
 
-    public static PracticeExercise? Match(Area area, Level level, TeachLanguage language, int seed)
+    public static PracticeExercise? Match(Area area, Level level, TeachLanguage language, int seed, IReadOnlySet<string>? exclude = null)
     {
         var difficulty = DifficultyFor(level);
         if (MatchBanks.TryGetValue(area, out var genericBank))
         {
-            var genericPool = genericBank.Where(i => i.Difficulty == difficulty).ToList();
+            var genericPool = Unseen(genericBank.Where(i => i.Difficulty == difficulty).ToList(), i => i.Topic, "Match", exclude);
             if (genericPool.Count == 0)
             {
                 return null;
@@ -1013,7 +1028,7 @@ public static class ExerciseBank
 
         if (area == Area.Language)
         {
-            var pool = LanguageMatch.Where(i => i.Difficulty == difficulty).ToList();
+            var pool = Unseen(LanguageMatch.Where(i => i.Difficulty == difficulty).ToList(), i => i.Topic, "Match", exclude);
             if (pool.Count == 0)
             {
                 return null;
@@ -1076,15 +1091,185 @@ public static class ExerciseBank
         return null;
     }
 
-    private static readonly int[] AnyDrillKindOrder = [0, 1, 2, 3];
+    // ---- MultiSelect: "select all that apply" (task #96), all 8 non-language subjects ----
 
-    /// <summary>Picks among true/false, fill-blank, reorder and match for any subject (task #73 extends
-    /// fill-blank/reorder/match, previously Language/ForeignLanguage only, to all 8 other subjects, so the live
-    /// Quiz flow now mixes all 4 kinds instead of always preferring true/false); null if none of the 4 kinds has
-    /// content for this area/level yet. <paramref name="allowTrueFalse"/> lets a caller exclude the 50/50-guessable
-    /// true/false kind (task #74: QuizStore excludes it specifically for Placement, where that guess rate would add
-    /// noise to the binary-search level calibration) while still mixing in the other 3.</summary>
-    public static PracticeExercise? AnyDrill(Area area, Level level, TeachLanguage language, int seed, bool allowTrueFalse = true)
+    private sealed record MultiSelectItem(string Topic, int Difficulty, Text Prompt, IReadOnlyList<Text> Options, IReadOnlyList<int> Correct, Text Explanation);
+
+    private static readonly IReadOnlyList<MultiSelectItem> MathMultiSelect =
+    [
+        new("math.multiselect.even", 1,
+            Text.Of("Select all the even numbers.|Selecciona todos los números pares.|Sélectionne tous les nombres pairs.|Selecciona tots els nombres parells."),
+            [Text.Of("2|2|2|2"), Text.Of("3|3|3|3"), Text.Of("4|4|4|4"), Text.Of("7|7|7|7")], [0, 2],
+            Text.Of("2 and 4 are even (divisible by 2); 3 and 7 are odd.|2 y 4 son pares (divisibles entre 2); 3 y 7 son impares.|2 et 4 sont pairs (divisibles par 2) ; 3 et 7 sont impairs.|2 i 4 són parells (divisibles per 2); 3 i 7 són senars.")),
+        new("math.multiselect.fractions_half", 2,
+            Text.Of("Select all the fractions equal to one half.|Selecciona todas las fracciones iguales a un medio.|Sélectionne toutes les fractions égales à un demi.|Selecciona totes les fraccions iguals a un mig."),
+            [Text.Of("2/4|2/4|2/4|2/4"), Text.Of("3/6|3/6|3/6|3/6"), Text.Of("1/3|1/3|1/3|1/3"), Text.Of("2/5|2/5|2/5|2/5")], [0, 1],
+            Text.Of("2/4 and 3/6 both simplify to 1/2; 1/3 and 2/5 don't.|2/4 y 3/6 se simplifican a 1/2; 1/3 y 2/5 no.|2/4 et 3/6 se simplifient tous deux en 1/2 ; 1/3 et 2/5 non.|2/4 i 3/6 es simplifiquen a 1/2; 1/3 i 2/5 no.")),
+        new("math.multiselect.primes", 3,
+            Text.Of("Select all the prime numbers.|Selecciona todos los números primos.|Sélectionne tous les nombres premiers.|Selecciona tots els nombres primers."),
+            [Text.Of("9|9|9|9"), Text.Of("11|11|11|11"), Text.Of("15|15|15|15"), Text.Of("17|17|17|17")], [1, 3],
+            Text.Of("11 and 17 have no divisors other than 1 and themselves; 9 = 3×3 and 15 = 3×5 don't.|11 y 17 no tienen más divisores que 1 y ellos mismos; 9 = 3×3 y 15 = 3×5 sí.|11 et 17 n'ont pas d'autres diviseurs qu'eux-mêmes et 1 ; 9 = 3×3 et 15 = 3×5 en ont.|11 i 17 no tenen més divisors que 1 i ells mateixos; 9 = 3×3 i 15 = 3×5 sí.")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> PhysicsMultiSelect =
+    [
+        new("physics.multiselect.energy_sources", 1,
+            Text.Of("Select all the sources of light.|Selecciona todas las fuentes de luz.|Sélectionne toutes les sources de lumière.|Selecciona totes les fonts de llum."),
+            [Text.Of("The Sun|El Sol|Le Soleil|El Sol"), Text.Of("A rock|Una piedra|Une pierre|Una pedra"), Text.Of("A light bulb|Una bombilla|Une ampoule|Una bombeta"), Text.Of("A chair|Una silla|Une chaise|Una cadira")], [0, 2],
+            Text.Of("The Sun and a light bulb give off their own light; a rock and a chair don't.|El Sol y una bombilla emiten luz propia; una piedra y una silla no.|Le Soleil et une ampoule émettent leur propre lumière ; une pierre et une chaise non.|El Sol i una bombeta emeten llum pròpia; una pedra i una cadira no.")),
+        new("physics.multiselect.states", 2,
+            Text.Of("Select all the states of matter water can be in.|Selecciona todos los estados en los que puede estar el agua.|Sélectionne tous les états dans lesquels l'eau peut se trouver.|Selecciona tots els estats en què pot estar l'aigua."),
+            [Text.Of("Solid (ice)|Sólido (hielo)|Solide (glace)|Sòlid (gel)"), Text.Of("Plasma|Plasma|Plasma|Plasma"), Text.Of("Liquid|Líquido|Liquide|Líquid"), Text.Of("Gas (vapour)|Gas (vapor)|Gaz (vapeur)|Gas (vapor)")], [0, 2, 3],
+            Text.Of("Water is commonly solid, liquid or gas; it only becomes plasma at extremely high temperatures, far beyond everyday conditions.|El agua suele ser sólida, líquida o gaseosa; solo se vuelve plasma a temperaturas extremadamente altas, muy por encima de lo habitual.|L'eau est généralement solide, liquide ou gazeuse ; elle ne devient plasma qu'à des températures extrêmement élevées, bien au-delà du quotidien.|L'aigua sol ser sòlida, líquida o gasosa; només es torna plasma a temperatures extremadament altes, molt per sobre de l'habitual.")),
+        new("physics.multiselect.forces", 3,
+            Text.Of("Select all the examples of a force.|Selecciona todos los ejemplos de una fuerza.|Sélectionne tous les exemples de force.|Selecciona tots els exemples d'una força."),
+            [Text.Of("The colour of a wall|El color de una pared|La couleur d'un mur|El color d'una paret"), Text.Of("Gravity pulling an apple down|La gravedad tirando de una manzana hacia abajo|La gravité qui attire une pomme vers le bas|La gravetat estirant una poma cap avall"), Text.Of("A magnet pulling a nail|Un imán atrayendo un clavo|Un aimant attirant un clou|Un imant atraient un clau"), Text.Of("The name of a shape|El nombre de una forma|Le nom d'une forme|El nom d'una forma")], [1, 2],
+            Text.Of("Gravity and magnetism are forces — pushes or pulls between objects; colour and names aren't.|La gravedad y el magnetismo son fuerzas, empujones o tirones entre objetos; el color y los nombres no.|La gravité et le magnétisme sont des forces, des poussées ou des tractions entre objets ; la couleur et les noms n'en sont pas.|La gravetat i el magnetisme són forces, empentes o estirades entre objectes; el color i els noms no.")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> ChemistryMultiSelect =
+    [
+        new("chemistry.multiselect.elements", 1,
+            Text.Of("Select all the chemical elements.|Selecciona todos los elementos químicos.|Sélectionne tous les éléments chimiques.|Selecciona tots els elements químics."),
+            [Text.Of("Oxygen|Oxígeno|Oxygène|Oxigen"), Text.Of("Water|Agua|Eau|Aigua"), Text.Of("Gold|Oro|Or|Or"), Text.Of("Salt|Sal|Sel|Sal")], [0, 2],
+            Text.Of("Oxygen and gold are elements (one kind of atom); water and salt are compounds made of several elements.|El oxígeno y el oro son elementos (un solo tipo de átomo); el agua y la sal son compuestos de varios elementos.|L'oxygène et l'or sont des éléments (un seul type d'atome) ; l'eau et le sel sont des composés de plusieurs éléments.|L'oxigen i l'or són elements (un sol tipus d'àtom); l'aigua i la sal són compostos de diversos elements.")),
+        new("chemistry.multiselect.acids", 2,
+            Text.Of("Select all the substances that are acidic (pH below 7).|Selecciona todas las sustancias ácidas (pH por debajo de 7).|Sélectionne toutes les substances acides (pH inférieur à 7).|Selecciona totes les substàncies àcides (pH per sota de 7)."),
+            [Text.Of("Lemon juice|Zumo de limón|Jus de citron|Suc de llimona"), Text.Of("Vinegar|Vinagre|Vinaigre|Vinagre"), Text.Of("Soap|Jabón|Savon|Sabó"), Text.Of("Baking soda|Bicarbonato|Bicarbonate|Bicarbonat")], [0, 1],
+            Text.Of("Lemon juice and vinegar are acidic; soap and baking soda are basic (pH above 7).|El zumo de limón y el vinagre son ácidos; el jabón y el bicarbonato son básicos (pH por encima de 7).|Le jus de citron et le vinaigre sont acides ; le savon et le bicarbonate sont basiques (pH supérieur à 7).|El suc de llimona i el vinagre són àcids; el sabó i el bicarbonat són bàsics (pH per sobre de 7).")),
+        new("chemistry.multiselect.mixtures", 3,
+            Text.Of("Select all the examples of a mixture (not chemically bonded together).|Selecciona todos los ejemplos de una mezcla (no unidos químicamente).|Sélectionne tous les exemples de mélange (non liés chimiquement).|Selecciona tots els exemples d'una mescla (no units químicament)."),
+            [Text.Of("Table salt (NaCl)|Sal de mesa (NaCl)|Sel de table (NaCl)|Sal de taula (NaCl)"), Text.Of("Salt water|Agua con sal|Eau salée|Aigua amb sal"), Text.Of("Sand and gravel|Arena y grava|Sable et gravier|Sorra i grava"), Text.Of("Carbon dioxide (CO₂)|Dióxido de carbono (CO₂)|Dioxyde de carbone (CO₂)|Diòxid de carboni (CO₂)")], [1, 2],
+            Text.Of("Salt water and sand-and-gravel are mixtures, easy to separate again; table salt and CO₂ are compounds, chemically bonded.|El agua con sal y la mezcla de arena y grava son mezclas, fáciles de separar; la sal de mesa y el CO₂ son compuestos, unidos químicamente.|L'eau salée et le mélange sable-gravier sont des mélanges, faciles à séparer ; le sel de table et le CO₂ sont des composés, liés chimiquement.|L'aigua amb sal i la mescla de sorra i grava són mescles, fàcils de separar; la sal de taula i el CO₂ són compostos, units químicament.")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> BiologyMultiSelect =
+    [
+        new("biology.multiselect.mammals", 1,
+            Text.Of("Select all the mammals.|Selecciona todos los mamíferos.|Sélectionne tous les mammifères.|Selecciona tots els mamífers."),
+            [Text.Of("Dog|Perro|Chien|Gos"), Text.Of("Frog|Rana|Grenouille|Granota"), Text.Of("Whale|Ballena|Baleine|Balena"), Text.Of("Lizard|Lagarto|Lézard|Llangardaix")], [0, 2],
+            Text.Of("Dogs and whales are mammals (they nurse their young with milk); frogs and lizards aren't.|El perro y la ballena son mamíferos (amamantan a sus crías); la rana y el lagarto no.|Le chien et la baleine sont des mammifères (ils allaitent leurs petits) ; la grenouille et le lézard non.|El gos i la balena són mamífers (alleten les seves cries); la granota i el llangardaix no.")),
+        new("biology.multiselect.photosynthesis", 2,
+            Text.Of("Select all the things a plant needs for photosynthesis.|Selecciona todo lo que una planta necesita para la fotosíntesis.|Sélectionne tout ce dont une plante a besoin pour la photosynthèse.|Selecciona tot el que una planta necessita per a la fotosíntesi."),
+            [Text.Of("Sunlight|Luz del sol|Lumière du soleil|Llum del sol"), Text.Of("Moonlight|Luz de la luna|Lumière de la lune|Llum de la lluna"), Text.Of("Water|Agua|Eau|Aigua"), Text.Of("Carbon dioxide|Dióxido de carbono|Dioxyde de carbone|Diòxid de carboni")], [0, 2, 3],
+            Text.Of("A plant uses sunlight, water and carbon dioxide to make its own food; moonlight is far too weak for that.|Una planta usa luz solar, agua y dióxido de carbono para fabricar su propio alimento; la luz de la luna es demasiado débil para eso.|Une plante utilise la lumière du soleil, l'eau et le dioxyde de carbone pour fabriquer sa propre nourriture ; la lumière de la lune est bien trop faible pour cela.|Una planta fa servir llum solar, aigua i diòxid de carboni per fabricar el seu propi aliment; la llum de la lluna és massa feble per a això.")),
+        new("biology.multiselect.vertebrates", 3,
+            Text.Of("Select all the animals with a backbone (vertebrates).|Selecciona todos los animales con columna vertebral (vertebrados).|Sélectionne tous les animaux à colonne vertébrale (vertébrés).|Selecciona tots els animals amb columna vertebral (vertebrats)."),
+            [Text.Of("Jellyfish|Medusa|Méduse|Medusa"), Text.Of("Shark|Tiburón|Requin|Tauró"), Text.Of("Eagle|Águila|Aigle|Àguila"), Text.Of("Worm|Gusano|Ver de terre|Cuc")], [1, 2],
+            Text.Of("Sharks and eagles have a backbone; jellyfish and worms are invertebrates, with no backbone at all.|El tiburón y el águila tienen columna vertebral; la medusa y el gusano son invertebrados, sin columna.|Le requin et l'aigle ont une colonne vertébrale ; la méduse et le ver de terre sont des invertébrés, sans colonne.|El tauró i l'àguila tenen columna vertebral; la medusa i el cuc són invertebrats, sense columna.")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> HistoryMultiSelect =
+    [
+        new("history.multiselect.ancient_civilizations", 1,
+            Text.Of("Select all the ancient civilizations.|Selecciona todas las civilizaciones antiguas.|Sélectionne toutes les civilisations antiques.|Selecciona totes les civilitzacions antigues."),
+            [Text.Of("Ancient Egypt|El antiguo Egipto|L'Égypte antique|L'antic Egipte"), Text.Of("The internet|Internet|Internet|Internet"), Text.Of("Ancient Rome|La antigua Roma|La Rome antique|L'antiga Roma"), Text.Of("Smartphones|Los móviles|Les smartphones|Els mòbils")], [0, 2],
+            Text.Of("Ancient Egypt and Ancient Rome existed thousands of years ago; the internet and smartphones are modern inventions.|El antiguo Egipto y la antigua Roma existieron hace miles de años; internet y los móviles son inventos modernos.|L'Égypte antique et la Rome antique existaient il y a des milliers d'années ; Internet et les smartphones sont des inventions modernes.|L'antic Egipte i l'antiga Roma van existir fa milers d'anys; internet i els mòbils són invents moderns.")),
+        new("history.multiselect.ww2_allies", 2,
+            Text.Of("Select all the countries that were Allied powers in World War II.|Selecciona todos los países que fueron potencias aliadas en la Segunda Guerra Mundial.|Sélectionne tous les pays qui faisaient partie des Alliés durant la Seconde Guerre mondiale.|Selecciona tots els països que van ser potències aliades a la Segona Guerra Mundial."),
+            [Text.Of("The United States|Estados Unidos|Les États-Unis|Els Estats Units"), Text.Of("The United Kingdom|El Reino Unido|Le Royaume-Uni|El Regne Unit"), Text.Of("Germany|Alemania|L'Allemagne|Alemanya"), Text.Of("Japan|Japón|Le Japon|El Japó")], [0, 1],
+            Text.Of("The United States and the United Kingdom were Allied powers; Germany and Japan were Axis powers, on the other side.|Estados Unidos y el Reino Unido fueron potencias aliadas; Alemania y Japón fueron potencias del Eje, en el otro bando.|Les États-Unis et le Royaume-Uni faisaient partie des Alliés ; l'Allemagne et le Japon faisaient partie de l'Axe, dans l'autre camp.|Els Estats Units i el Regne Unit van ser potències aliades; Alemanya i el Japó van ser potències de l'Eix, a l'altre bàndol.")),
+        new("history.multiselect.renaissance", 3,
+            Text.Of("Select all the figures of the Renaissance.|Selecciona todas las figuras del Renacimiento.|Sélectionne toutes les figures de la Renaissance.|Selecciona totes les figures del Renaixement."),
+            [Text.Of("Napoleon Bonaparte|Napoleón Bonaparte|Napoléon Bonaparte|Napoleó Bonaparte"), Text.Of("Leonardo da Vinci|Leonardo da Vinci|Léonard de Vinci|Leonardo da Vinci"), Text.Of("Michelangelo|Miguel Ángel|Michel-Ange|Miquel Àngel"), Text.Of("Albert Einstein|Albert Einstein|Albert Einstein|Albert Einstein")], [1, 2],
+            Text.Of("Leonardo da Vinci and Michelangelo were Renaissance artists (15th-16th century); Napoleon and Einstein lived centuries later.|Leonardo da Vinci y Miguel Ángel fueron artistas del Renacimiento (siglos XV-XVI); Napoleón y Einstein vivieron siglos después.|Léonard de Vinci et Michel-Ange étaient des artistes de la Renaissance (XVe-XVIe siècle) ; Napoléon et Einstein ont vécu des siècles plus tard.|Leonardo da Vinci i Miquel Àngel van ser artistes del Renaixement (segles XV-XVI); Napoleó i Einstein van viure segles després.")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> GeographyMultiSelect =
+    [
+        new("geography.multiselect.continents", 1,
+            Text.Of("Select all the continents.|Selecciona todos los continentes.|Sélectionne tous les continents.|Selecciona tots els continents."),
+            [Text.Of("Africa|África|Afrique|Àfrica"), Text.Of("Paris|París|Paris|París"), Text.Of("Asia|Asia|Asie|Àsia"), Text.Of("The Nile|El Nilo|Le Nil|El Nil")], [0, 2],
+            Text.Of("Africa and Asia are continents; Paris is a city and the Nile is a river.|África y Asia son continentes; París es una ciudad y el Nilo es un río.|L'Afrique et l'Asie sont des continents ; Paris est une ville et le Nil est un fleuve.|Àfrica i Àsia són continents; París és una ciutat i el Nil és un riu.")),
+        new("geography.multiselect.oceans", 2,
+            Text.Of("Select all the oceans.|Selecciona todos los océanos.|Sélectionne tous les océans.|Selecciona tots els oceans."),
+            [Text.Of("The Pacific|El Pacífico|Le Pacifique|El Pacífic"), Text.Of("The Atlantic|El Atlántico|L'Atlantique|L'Atlàntic"), Text.Of("The Amazon|El Amazonas|L'Amazone|L'Amazones"), Text.Of("The Sahara|El Sáhara|Le Sahara|El Sàhara")], [0, 1],
+            Text.Of("The Pacific and the Atlantic are oceans; the Amazon is a river and the Sahara is a desert.|El Pacífico y el Atlántico son océanos; el Amazonas es un río y el Sáhara es un desierto.|Le Pacifique et l'Atlantique sont des océans ; l'Amazone est un fleuve et le Sahara est un désert.|El Pacífic i l'Atlàntic són oceans; l'Amazones és un riu i el Sàhara és un desert.")),
+        new("geography.multiselect.capitals", 3,
+            Text.Of("Select all the correct country-capital pairs.|Selecciona todos los pares país-capital correctos.|Sélectionne toutes les paires pays-capitale correctes.|Selecciona tots els parells país-capital correctes."),
+            [Text.Of("Spain — Lisbon|España — Lisboa|Espagne — Lisbonne|Espanya — Lisboa"), Text.Of("France — Paris|Francia — París|France — Paris|França — París"), Text.Of("Japan — Tokyo|Japón — Tokio|Japon — Tokyo|Japó — Tòquio"), Text.Of("Italy — Berlin|Italia — Berlín|Italie — Berlin|Itàlia — Berlín")], [1, 2],
+            Text.Of("Paris is the capital of France and Tokyo of Japan; Spain's capital is Madrid (not Lisbon) and Italy's is Rome (not Berlin).|París es la capital de Francia y Tokio de Japón; la capital de España es Madrid (no Lisboa) y la de Italia es Roma (no Berlín).|Paris est la capitale de la France et Tokyo celle du Japon ; la capitale de l'Espagne est Madrid (pas Lisbonne) et celle de l'Italie est Rome (pas Berlin).|París és la capital de França i Tòquio del Japó; la capital d'Espanya és Madrid (no Lisboa) i la d'Itàlia és Roma (no Berlín).")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> EconomicsMultiSelect =
+    [
+        new("economics.multiselect.needs", 1,
+            Text.Of("Select all the basic needs.|Selecciona todas las necesidades básicas.|Sélectionne tous les besoins de base.|Selecciona totes les necessitats bàsiques."),
+            [Text.Of("Food|Comida|Nourriture|Menjar"), Text.Of("A video game console|Una consola de videojuegos|Une console de jeux vidéo|Una consola de videojocs"), Text.Of("Shelter|Vivienda|Un logement|Un habitatge"), Text.Of("A luxury car|Un coche de lujo|Une voiture de luxe|Un cotxe de luxe")], [0, 2],
+            Text.Of("Food and shelter are basic needs everyone requires; a game console and a luxury car are wants, nice to have but not essential.|La comida y la vivienda son necesidades básicas de todos; una consola y un coche de lujo son deseos, agradables pero no esenciales.|La nourriture et le logement sont des besoins de base pour tous ; une console et une voiture de luxe sont des envies, agréables mais pas essentielles.|El menjar i l'habitatge són necessitats bàsiques de tothom; una consola i un cotxe de luxe són desitjos, agradables però no essencials.")),
+        new("economics.multiselect.income", 2,
+            Text.Of("Select all the examples of income.|Selecciona todos los ejemplos de ingresos.|Sélectionne tous les exemples de revenu.|Selecciona tots els exemples d'ingressos."),
+            [Text.Of("A salary from a job|Un salario del trabajo|Un salaire d'un emploi|Un salari de la feina"), Text.Of("Money from selling vegetables you grew|Dinero por vender verduras que cultivaste|L'argent de la vente de légumes que tu as cultivés|Diners per vendre verdures que has cultivat"), Text.Of("Paying rent|Pagar el alquiler|Payer un loyer|Pagar el lloguer"), Text.Of("Buying groceries|Comprar comida|Faire les courses|Comprar menjar")], [0, 1],
+            Text.Of("A salary and money from selling something are income, money coming in; rent and groceries are expenses, money going out.|Un salario y el dinero por vender algo son ingresos, dinero que entra; el alquiler y la compra de comida son gastos, dinero que sale.|Un salaire et l'argent d'une vente sont des revenus, de l'argent qui entre ; le loyer et les courses sont des dépenses, de l'argent qui sort.|Un salari i els diners per vendre alguna cosa són ingressos, diners que entren; el lloguer i la compra de menjar són despeses, diners que surten.")),
+        new("economics.multiselect.supply_demand", 3,
+            Text.Of("Select all the situations that would make a product's price go up.|Selecciona todas las situaciones que harían subir el precio de un producto.|Sélectionne toutes les situations qui feraient augmenter le prix d'un produit.|Selecciona totes les situacions que farien pujar el preu d'un producte."),
+            [Text.Of("A new factory floods the market with it|Una nueva fábrica inunda el mercado con él|Une nouvelle usine en inonde le marché|Una nova fàbrica n'inunda el mercat"), Text.Of("Demand rises while supply stays the same|La demanda sube y la oferta se mantiene|La demande augmente et l'offre reste la même|La demanda puja i l'oferta es manté"), Text.Of("A shortage reduces how much is available|Una escasez reduce cuánto hay disponible|Une pénurie réduit la quantité disponible|Una escassetat redueix la quantitat disponible"), Text.Of("Nobody wants to buy it anymore|Ya nadie quiere comprarlo|Plus personne ne veut l'acheter|Ja ningú el vol comprar")], [1, 2],
+            Text.Of("Rising demand or a shrinking supply both push the price up; flooding the market or losing all buyers push it down instead.|Más demanda o menos oferta suben el precio; inundar el mercado o perder a todos los compradores lo bajan.|Une demande en hausse ou une offre réduite font monter le prix ; inonder le marché ou perdre tous les acheteurs le font baisser.|Més demanda o menys oferta pugen el preu; inundar el mercat o perdre tots els compradors el fan baixar.")),
+    ];
+
+    private static readonly IReadOnlyList<MultiSelectItem> ProgrammingMultiSelect =
+    [
+        new("programming.multiselect.data_types", 1,
+            Text.Of("Select all the examples of a number.|Selecciona todos los ejemplos de un número.|Sélectionne tous les exemples de nombre.|Selecciona tots els exemples d'un nombre."),
+            [Text.Of("42|42|42|42"), Text.Of("\"hello\"|\"hola\"|« bonjour »|\"hola\""), Text.Of("7|7|7|7"), Text.Of("true|true|true|true")], [0, 2],
+            Text.Of("42 and 7 are numbers; \"hello\" is text and true is a boolean (yes/no) value.|42 y 7 son números; \"hola\" es texto y true es un valor booleano (sí/no).|42 et 7 sont des nombres ; « bonjour » est du texte et true est une valeur booléenne (oui/non).|42 i 7 són nombres; \"hola\" és text i true és un valor booleà (sí/no).")),
+        new("programming.multiselect.loops", 2,
+            Text.Of("Select all the situations where a loop is useful.|Selecciona todas las situaciones donde un bucle es útil.|Sélectionne toutes les situations où une boucle est utile.|Selecciona totes les situacions on un bucle és útil."),
+            [Text.Of("Printing the numbers 1 to 100|Imprimir los números del 1 al 100|Afficher les nombres de 1 à 100|Imprimir els números de l'1 al 100"), Text.Of("Checking every item in a long list|Revisar cada elemento de una lista larga|Vérifier chaque élément d'une longue liste|Revisar cada element d'una llista larga"), Text.Of("Saying your name once|Decir tu nombre una vez|Dire ton nom une fois|Dir el teu nom una vegada"), Text.Of("Adding two fixed numbers together|Sumar dos números fijos|Additionner deux nombres fixes|Sumar dos números fixos")], [0, 1],
+            Text.Of("A loop repeats an action, so it fits printing 100 numbers or checking many items; saying your name once or a single addition needs no repetition.|Un bucle repite una acción, así que sirve para imprimir 100 números o revisar muchos elementos; decir tu nombre una vez o una sola suma no necesita repetición.|Une boucle répète une action, donc elle convient pour afficher 100 nombres ou vérifier plusieurs éléments ; dire son nom une fois ou une seule addition n'a pas besoin de répétition.|Un bucle repeteix una acció, així que serveix per imprimir 100 números o revisar molts elements; dir el teu nom una vegada o una sola suma no necessita repetició.")),
+        new("programming.multiselect.bugs", 3,
+            Text.Of("Select all the things that can cause a bug in a program.|Selecciona todo lo que puede causar un error (bug) en un programa.|Sélectionne tout ce qui peut causer un bogue dans un programme.|Selecciona tot el que pot causar un error (bug) en un programa."),
+            [Text.Of("A well-tested function|Una función bien probada|Une fonction bien testée|Una funció ben provada"), Text.Of("A misspelled variable name|Un nombre de variable mal escrito|Un nom de variable mal orthographié|Un nom de variable mal escrit"), Text.Of("Dividing a number by zero|Dividir un número entre cero|Diviser un nombre par zéro|Dividir un número entre zero"), Text.Of("A clear comment explaining the code|Un comentario claro que explica el código|Un commentaire clair expliquant le code|Un comentari clar que explica el codi")], [1, 2],
+            Text.Of("A misspelled name or dividing by zero can crash or break a program; a well-tested function and a clear comment help prevent bugs instead.|Un nombre mal escrito o dividir entre cero pueden romper un programa; una función bien probada y un comentario claro ayudan a evitar errores.|Un nom mal orthographié ou une division par zéro peuvent faire planter un programme ; une fonction bien testée et un commentaire clair aident à éviter les bogues.|Un nom mal escrit o dividir entre zero poden trencar un programa; una funció ben provada i un comentari clar ajuden a evitar errors.")),
+    ];
+
+    private static readonly Dictionary<Area, IReadOnlyList<MultiSelectItem>> MultiSelectBanks = new()
+    {
+        [Area.Mathematics] = MathMultiSelect,
+        [Area.Physics] = PhysicsMultiSelect,
+        [Area.Chemistry] = ChemistryMultiSelect,
+        [Area.Biology] = BiologyMultiSelect,
+        [Area.History] = HistoryMultiSelect,
+        [Area.Geography] = GeographyMultiSelect,
+        [Area.Economics] = EconomicsMultiSelect,
+        [Area.Programming] = ProgrammingMultiSelect,
+    };
+
+    /// <summary>A "select all that apply" drill, or null if the bank has none for this subject/level
+    /// (today: Language and ForeignLanguage, same gap as <see cref="TrueFalse"/> — this kind doesn't fit a
+    /// translation/grammar exercise as naturally as fill-blank/reorder/match already do there).</summary>
+    public static PracticeExercise? MultiSelect(Area area, Level level, TeachLanguage language, int seed, IReadOnlySet<string>? exclude = null)
+    {
+        if (!MultiSelectBanks.TryGetValue(area, out var bank))
+        {
+            return null;
+        }
+
+        var pool = Unseen(bank.Where(i => i.Difficulty == DifficultyFor(level)).ToList(), i => i.Topic, "MultiSelect", exclude);
+        if (pool.Count == 0)
+        {
+            return null;
+        }
+
+        var item = pool[new Random(seed).Next(pool.Count)];
+        return new PracticeExercise(item.Topic, item.Difficulty, ExerciseKind.MultiSelect, item.Prompt.In(language), item.Explanation.In(language))
+        {
+            Options = item.Options.Select(o => o.In(language)).ToList(),
+            CorrectIndices = item.Correct,
+        };
+    }
+
+    private static readonly int[] AnyDrillKindOrder = [0, 1, 2, 3, 4];
+
+    /// <summary>Picks among true/false, fill-blank, reorder, match and multi-select for any subject (task #96 adds
+    /// multi-select, a genuinely different way of answering — several toggled picks, not one tap — to the mix built
+    /// up by tasks #71-74); null if none of the 5 kinds has content for this area/level yet.
+    /// <paramref name="allowTrueFalse"/> lets a caller exclude the 50/50-guessable true/false kind (task #74:
+    /// QuizStore excludes it specifically for Placement, where that guess rate would add noise to the binary-search
+    /// level calibration) while still mixing in the rest. <paramref name="exclude"/> (task #95/#97) is the set of
+    /// "Kind|Topic" keys already shown this attempt (from <c>QuizAttempt.UsedJson</c>): every picker below drops an
+    /// item already seen, as long as its tier still has another one left.</summary>
+    public static PracticeExercise? AnyDrill(Area area, Level level, TeachLanguage language, int seed, bool allowTrueFalse = true, IReadOnlySet<string>? exclude = null)
     {
         var rng = new Random(seed);
         var order = AnyDrillKindOrder.OrderBy(_ => rng.Next()).ToArray();
@@ -1097,10 +1282,11 @@ public static class ExerciseBank
 
             var exercise = pick switch
             {
-                0 => TrueFalse(area, level, language, seed),
-                1 => FillBlank(area, level, language, seed),
-                2 => Reorder(area, level, language, seed),
-                _ => Match(area, level, language, seed),
+                0 => TrueFalse(area, level, language, seed, exclude),
+                1 => FillBlank(area, level, language, seed, exclude),
+                2 => Reorder(area, level, language, seed, exclude),
+                3 => Match(area, level, language, seed, exclude),
+                _ => MultiSelect(area, level, language, seed, exclude),
             };
             if (exercise is not null)
             {

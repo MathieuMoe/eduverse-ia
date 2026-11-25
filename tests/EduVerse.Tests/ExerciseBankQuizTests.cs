@@ -229,6 +229,92 @@ public class ExerciseBankTests
             }
         }
     }
+
+    [Theory]
+    [InlineData(Area.Mathematics)]
+    [InlineData(Area.Physics)]
+    [InlineData(Area.Chemistry)]
+    [InlineData(Area.Biology)]
+    [InlineData(Area.History)]
+    [InlineData(Area.Geography)]
+    [InlineData(Area.Economics)]
+    [InlineData(Area.Programming)]
+    public void Every_non_language_subject_has_a_multiselect_drill_at_every_level_bucket(Area area)
+    {
+        // task #96: a genuinely new answer-interaction kind (pick several, not one) alongside the 4 already built.
+        foreach (var level in new[] { Level.EarlyYears, Level.Primary3, Level.HighSchool })
+        {
+            var exercise = ExerciseBank.MultiSelect(area, level, TeachLanguage.Spanish, 3);
+            Assert.NotNull(exercise);
+            Assert.Equal(ExerciseKind.MultiSelect, exercise!.Kind);
+            Assert.NotNull(exercise.Options);
+            Assert.True(exercise.Options!.Count >= 3);
+            Assert.NotNull(exercise.CorrectIndices);
+            Assert.NotEmpty(exercise.CorrectIndices!);
+            Assert.True(exercise.CorrectIndices!.Count < exercise.Options.Count, "at least one option must be incorrect, or it isn't really a 'select all that apply' choice");
+            Assert.False(string.IsNullOrWhiteSpace(exercise.Prompt));
+            Assert.False(string.IsNullOrWhiteSpace(exercise.Explanation));
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(LanguageAreas))]
+    public void No_multiselect_content_yet_for_language_subjects(Area area)
+    {
+        // Same gap as true/false (task #71): a "select all that apply" pick doesn't fit a translation/grammar item
+        // as naturally as fill-blank/reorder/match already do there.
+        Assert.Null(ExerciseBank.MultiSelect(area, Level.Primary3, TeachLanguage.English, 1));
+    }
+
+    [Theory]
+    [MemberData(nameof(NonLanguageAreas))]
+    public void AnyDrill_now_mixes_in_multiselect_for_a_non_language_subject(Area area)
+    {
+        var kinds = Enumerable.Range(0, 60)
+            .Select(seed => ExerciseBank.AnyDrill(area, Level.Primary3, TeachLanguage.English, seed)!.Kind)
+            .Distinct()
+            .ToList();
+        Assert.Contains(ExerciseKind.MultiSelect, kinds);
+    }
+
+    [Fact]
+    public void CheckMultiSelect_requires_every_correct_option_and_no_incorrect_one()
+    {
+        var exercise = ExerciseBank.MultiSelect(Area.Mathematics, Level.Primary3, TeachLanguage.English, 3)!;
+        var correct = exercise.CorrectIndices!;
+        Assert.True(exercise.CheckMultiSelect(correct));
+        Assert.True(exercise.CheckMultiSelect(correct.Reverse().ToList())); // order doesn't matter
+        Assert.False(exercise.CheckMultiSelect(correct.Take(correct.Count - 1).ToList())); // missing one correct option
+        var wrongIndex = Enumerable.Range(0, exercise.Options!.Count).First(i => !correct.Contains(i));
+        Assert.False(exercise.CheckMultiSelect([.. correct, wrongIndex])); // one incorrect option included
+    }
+
+    [Fact]
+    public void A_drill_already_seen_this_attempt_is_not_picked_again_while_another_is_available()
+    {
+        // task #95/#97: the no-repeat-within-attempt fix, keyed "Kind|Topic" from attempt.UsedJson. Mathematics has
+        // two tier-1 TrueFalse items ("math.compare" and "math.add"); excluding one must never return it again as
+        // long as the other is still there to pick instead.
+        var exclude = new HashSet<string> { $"{ExerciseKind.TrueFalse}|math.compare" };
+        for (var seed = 0; seed < 40; seed++)
+        {
+            var exercise = ExerciseBank.TrueFalse(Area.Mathematics, Level.EarlyYears, TeachLanguage.English, seed, exclude);
+            Assert.NotNull(exercise);
+            Assert.NotEqual("math.compare", exercise!.Topic);
+        }
+    }
+
+    [Fact]
+    public void Excluding_the_only_item_in_a_tier_falls_back_to_it_instead_of_returning_nothing()
+    {
+        // Mathematics has exactly one MultiSelect item at the EarlyYears tier ("math.multiselect.even"). Excluding
+        // it leaves nothing unseen, so Unseen must fall back to the full (1-item) pool rather than returning null —
+        // a repeat late in a long session beats no drill at all.
+        var exclude = new HashSet<string> { $"{ExerciseKind.MultiSelect}|math.multiselect.even" };
+        var exercise = ExerciseBank.MultiSelect(Area.Mathematics, Level.EarlyYears, TeachLanguage.English, 7, exclude);
+        Assert.NotNull(exercise);
+        Assert.Equal("math.multiselect.even", exercise!.Topic);
+    }
 }
 
 /// <summary>
@@ -493,5 +579,86 @@ public class PracticeExerciseQuizTests(Database database) : IClassFixture<Databa
         var after = System.Text.Json.JsonSerializer.Deserialize<PlacementState>((await db.QuizAttempts.AsNoTracking().SingleAsync(a => a.Id == started.AttemptId)).PlacementJson!, Web)!;
         Assert.Equal(before.Right + 1, after.Right); // the right answer actually counted toward the level search
         Assert.Equal(before.Total + 1, after.Total);
+    }
+
+    [Fact]
+    public async Task A_multiselect_drill_can_be_checked_right_and_wrong()
+    {
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        var started = await quizzes.StartAsync(sara, Area.Mathematics, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
+        var exercise = ExerciseBank.MultiSelect(Area.Mathematics, Level.Primary3, TeachLanguage.English, 3)!;
+        var attempt = await db.QuizAttempts.SingleAsync(a => a.Id == started.AttemptId);
+        attempt.CurrentExerciseJson = System.Text.Json.JsonSerializer.Serialize(exercise);
+        await db.SaveChangesAsync();
+
+        var current = await quizzes.CurrentAsync(sara, started.AttemptId);
+        Assert.Equal(ExerciseKind.MultiSelect, current!.ExerciseKind);
+        Assert.Equal(exercise.Options!.Count, current.Options.Count); // task #96: Options is shared with MultipleChoice
+
+        var wrong = await quizzes.AnswerMultiSelectAsync(sara, started.AttemptId, [exercise.CorrectIndices![0]], 1, 0, TeachLanguage.English);
+        Assert.NotNull(wrong);
+        Assert.False(wrong!.Correct); // missing a correct option
+
+        // The drill is still current (answering wrong doesn't advance it) — AnswerMatchAsync-style drills score and
+        // advance on every call, right or wrong, same as the other 4 kinds; fetch a fresh one to check the right case.
+        var attempt2 = await db.QuizAttempts.SingleAsync(a => a.Id == started.AttemptId);
+        attempt2.CurrentExerciseJson = System.Text.Json.JsonSerializer.Serialize(exercise);
+        await db.SaveChangesAsync();
+        var right = await quizzes.AnswerMultiSelectAsync(sara, started.AttemptId, exercise.CorrectIndices, 1, 0, TeachLanguage.English);
+        Assert.NotNull(right);
+        Assert.True(right!.Correct);
+        Assert.NotNull(right.Next);
+    }
+
+    [Fact]
+    public async Task A_drill_now_appears_every_third_answered_item_instead_of_every_fourth()
+    {
+        // task #95: Mathieu's "visiblemente no aparece mucho" was partly a raw-frequency problem — tightened from
+        // every 4th answered item to every 3rd.
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        var started = await quizzes.StartAsync(sara, Area.Mathematics, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
+        Assert.Null(started.ExerciseKind);
+
+        var afterFirst = await quizzes.AnswerAsync(sara, started.AttemptId, 0, TeachLanguage.English);
+        Assert.NotNull(afterFirst);
+        Assert.Null(afterFirst!.Next!.ExerciseKind); // 1st answered item: no drill yet
+
+        var afterSecond = await quizzes.AnswerAsync(sara, started.AttemptId, 0, TeachLanguage.English);
+        Assert.NotNull(afterSecond);
+        Assert.Null(afterSecond!.Next!.ExerciseKind); // 2nd answered item: still no drill
+
+        var afterThird = await quizzes.AnswerAsync(sara, started.AttemptId, 0, TeachLanguage.English);
+        Assert.NotNull(afterThird);
+        Assert.NotNull(afterThird!.Next!.ExerciseKind); // 3rd answered item (Answered % 3 == 0): a drill now
+    }
+
+    [Fact]
+    public async Task A_drill_already_seen_this_attempt_does_not_repeat_while_another_item_remains()
+    {
+        // task #95: the exclude set threads from attempt.UsedJson into AnyDrill, and the drill that gets picked is
+        // itself recorded back into UsedJson right away (even before it's answered), so the next drill in the same
+        // attempt can't be the exact same item.
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        var started = await quizzes.StartAsync(sara, Area.Mathematics, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
+        await quizzes.AnswerAsync(sara, started.AttemptId, 0, TeachLanguage.English);
+        await quizzes.AnswerAsync(sara, started.AttemptId, 0, TeachLanguage.English);
+        var afterThird = await quizzes.AnswerAsync(sara, started.AttemptId, 0, TeachLanguage.English);
+        var firstDrill = afterThird!.Next!;
+        Assert.NotNull(firstDrill.ExerciseKind);
+
+        var attempt = await db.QuizAttempts.SingleAsync(a => a.Id == started.AttemptId);
+        var usedAfterFirstDrill = System.Text.Json.JsonSerializer.Deserialize<List<string>>(attempt.UsedJson, Web)!;
+        Assert.Contains($"{firstDrill.ExerciseKind}|{firstDrill.Topic}", usedAfterFirstDrill);
     }
 }

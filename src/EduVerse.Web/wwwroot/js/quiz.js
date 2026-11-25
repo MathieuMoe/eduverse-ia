@@ -187,13 +187,19 @@
                 <div id="qz-reorder-pool" class="flex flex-wrap gap-2" role="group" aria-labelledby="qz-prompt">
                     ${q.tokens.map((tok, i) => `<button type="button" class="quiz-token py-2 px-3.5 rounded-xl border border-layer-line bg-layer text-foreground text-sm font-medium hover:bg-layer-hover" data-pos="${i}">${esc(tok)}</button>`).join("")}
                 </div>
-                <button type="button" id="qz-reorder-check" class="${primary} mt-3 w-full justify-center hidden" data-testid="quiz-check">${esc(t("Check"))}</button>
+                <button type="button" id="qz-reorder-check" class="${primary} mt-3 w-full justify-center" style="display:none" data-testid="quiz-check">${esc(t("Check"))}</button>
             </div>` : q.exerciseKind === "Match" ? `<div class="mt-6" data-testid="quiz-match">
                 <div class="grid grid-cols-2 gap-3">
                     <div class="space-y-2" id="qz-match-left">${q.matchLeft.map((l, i) => `<button type="button" class="quiz-match-item w-full text-left py-2.5 px-3.5 rounded-xl border border-layer-line bg-layer text-foreground text-sm font-medium hover:bg-layer-hover" data-left="${i}">${esc(l)}</button>`).join("")}</div>
                     <div class="space-y-2" id="qz-match-right">${q.matchRight.map((r, i) => `<button type="button" class="quiz-match-item w-full text-left py-2.5 px-3.5 rounded-xl border border-layer-line bg-layer text-foreground text-sm font-medium hover:bg-layer-hover" data-right="${i}">${esc(r)}</button>`).join("")}</div>
                 </div>
-                <button type="button" id="qz-match-check" class="${primary} mt-3 w-full justify-center hidden" data-testid="quiz-check">${esc(t("Check"))}</button>
+                <button type="button" id="qz-match-check" class="${primary} mt-3 w-full justify-center" style="display:none" data-testid="quiz-check">${esc(t("Check"))}</button>
+            </div>` : q.exerciseKind === "MultiSelect" ? `<div class="mt-6" data-testid="quiz-multiselect">
+                <div class="grid sm:grid-cols-2 gap-3" role="group" aria-labelledby="qz-prompt">
+                    ${q.options.map((o, i) => `<button type="button" class="quiz-ms-option flex items-center gap-3 w-full text-left p-4 rounded-2xl border border-layer-line bg-layer text-foreground text-base font-medium hover:bg-layer-hover" aria-pressed="false" data-ms-index="${i}">
+                        <span class="size-5 shrink-0 rounded-md border-2 border-layer-line grid place-items-center text-xs" aria-hidden="true" data-ms-check></span><span>${esc(o)}</span></button>`).join("")}
+                </div>
+                <button type="button" id="qz-multiselect-check" class="${primary} mt-3 w-full justify-center" style="display:none" data-testid="quiz-check">${esc(t("Check"))}</button>
             </div>` : `<div class="mt-6 grid sm:grid-cols-2 ${q.options.every((o) => String(o).length < 40) && !q.code ? "2xl:grid-cols-4" : ""} gap-3" role="group" aria-labelledby="qz-prompt" data-testid="quiz-options">
                 ${q.options.map((o, i) => `<button type="button" class="quiz-option flex items-center gap-3 w-full text-left p-4 rounded-2xl border border-layer-line bg-layer text-foreground text-base font-medium hover:bg-layer-hover disabled:cursor-default" data-index="${i}">
                     <span class="size-7 shrink-0 rounded-full bg-surface grid place-items-center text-xs font-bold" aria-hidden="true">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}
@@ -241,6 +247,7 @@
         $("qz-fillblank-input")?.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkFillBlank(); } });
         if (q.exerciseKind === "Reorder") wireReorder(q.tokens);
         if (q.exerciseKind === "Match") wireMatch(q.matchLeft, q.matchRight);
+        if (q.exerciseKind === "MultiSelect") wireMultiSelect();
         stage.querySelector("[data-index]")?.focus();
         $("qz-fillblank-input")?.focus();
         const spokenOptions = q.exerciseKind === "TrueFalse" ? [t("False"), t("True")].join(", ") : q.options.join(", ");
@@ -453,7 +460,7 @@
                 poolButtons[pos].classList.remove("opacity-30");
                 renderBuilt();
             }));
-            checkBtn.classList.toggle("hidden", order.length !== tokens.length);
+            checkBtn.style.display = order.length !== tokens.length ? "none" : "";
         }
         poolButtons.forEach((b) => b.addEventListener("click", () => {
             if (b.disabled) return;
@@ -491,7 +498,7 @@
             leftEl.classList.remove("border-primary", "bg-primary/10");
             el.disabled = true;
             selectedLeft = null;
-            checkBtn.classList.toggle("hidden", Object.keys(pairs).length !== lefts.length);
+            checkBtn.style.display = Object.keys(pairs).length !== lefts.length ? "none" : "";
             // Duolingo-style instant feedback: color the pair green/red as soon as it's made, rather than waiting
             // for the final Check. Read-only server check (CheckMatchPairAsync) — doesn't score or advance the attempt.
             api(`/api/quiz/${encodeURIComponent(question.id)}/match/pair`, { json: { left: leftText, right: rightText } })
@@ -508,6 +515,30 @@
         checkBtn.addEventListener("click", () => {
             checkBtn.disabled = true;
             submitDrill("match", { pairs }, () => { checkBtn.disabled = false; });
+        });
+    }
+
+    // MultiSelect ("select all that apply", task #96): a toggle per option instead of one tap, so the Check button
+    // only appears once at least one is picked — unlike Reorder/Match there's no fixed count to wait for.
+    function wireMultiSelect() {
+        const optionEls = [...stage.querySelectorAll("[data-ms-index]")];
+        const checkBtn = $("qz-multiselect-check");
+        const picked = new Set();
+        optionEls.forEach((el) => el.addEventListener("click", () => {
+            if (el.disabled) return;
+            const i = +el.dataset.msIndex;
+            const on = !picked.has(i);
+            if (on) picked.add(i); else picked.delete(i);
+            el.setAttribute("aria-pressed", String(on));
+            el.classList.toggle("border-primary", on);
+            el.classList.toggle("bg-primary/10", on);
+            el.querySelector("[data-ms-check]").textContent = on ? "✓" : "";
+            checkBtn.style.display = picked.size === 0 ? "none" : "";
+        }));
+        checkBtn.addEventListener("click", () => {
+            checkBtn.disabled = true;
+            optionEls.forEach((el) => { el.disabled = true; });
+            submitDrill("multiselect", { indices: [...picked] }, () => { checkBtn.disabled = false; optionEls.forEach((el) => { el.disabled = false; }); });
         });
     }
 
