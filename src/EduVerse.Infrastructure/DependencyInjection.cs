@@ -73,8 +73,11 @@ public static class DependencyInjection
         services.AddScoped<Tutor.PlanStore>();
         services.AddScoped<Tutor.OpeningStore>();
         services.AddScoped<Tutor.LetterStore>();
+        services.AddScoped<Tutor.FamilyStore>();
+        services.AddScoped<Tutor.FutureSelfStore>();
         services.AddScoped<Tutor.TeacherNoteStore>();
         services.AddScoped<Tutor.PipStore>();
+        services.AddScoped<Tutor.PipClaimsStore>();
         services.AddScoped<Tutor.DetectiveStore>();
         services.AddScoped<Tutor.JourneyStore>();
         services.AddScoped<Tutor.CuriosityStore>();

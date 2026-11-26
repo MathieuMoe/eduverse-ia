@@ -1,0 +1,39 @@
+@page
+@model EduVerse.Web.Pages.Student.FamilyModel
+@{
+    ViewData["Title"] = L["Nav_TeachFamily"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3 print:hidden">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🧑‍🏫 @L["Nav_TeachFamily"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["TeachFamily_Subtitle"]</p>
+    </div>
+    @if (Model.Script is not null)
+    {
+        <button type="button" class="@Ui.BtnPrimary" onclick="window.print()" data-testid="family-print">🖨️ @L["Letter_Print"]</button>
+    }
+</div>
+
+@if (Model.Script is not { } script)
+{
+    <section class="@Ui.Card p-5" data-testid="family-empty"><p class="text-sm text-muted-foreground-1">@L["TeachFamily_Empty"]</p></section>
+}
+else
+{
+    <article class="@Ui.Card p-6 sm:p-8 max-w-2xl tone-sun print:shadow-none print:border-0" data-testid="family">
+        <h2 class="text-xl font-semibold text-foreground">@script.Title</h2>
+        <p class="mt-4 text-sm text-foreground">@script.Intro</p>
+        <p class="mt-4 text-sm text-foreground bg-muted-1 rounded-lg p-3" data-testid="family-explain">@script.Explain</p>
+        <h3 class="mt-5 text-sm font-semibold text-foreground">@L["TeachFamily_Checks"]</h3>
+        <ol class="mt-2 space-y-2 list-decimal list-inside">
+            @foreach (var check in script.Checks)
+            {
+                <li class="text-sm text-foreground" data-testid="family-check">
+                    <span>@check.Question</span>
+                    <span class="block ml-5 text-xs text-muted-foreground-1">✅ @check.Answer</span>
+                </li>
+            }
+        </ol>
+        <p class="mt-5 text-xs text-foreground/70">🦉 @script.Closing</p>
+    </article>
+}

@@ -495,3 +495,42 @@ switched from the `champollion` fallback to `shakespeare`, now that the Area has
   only for each e2e run and reverted immediately after every time.
 - Not yet started: no new screenshots captured for the new figures (same album/interview/dossier UI, just more cards); the
   one open item is cosmetic, not functional.
+
+## 4 new Tutor features: bridges, teach your family, AI critical literacy, future-self letter (tasks #109-112)
+Mathieu picked 4 of 5 proposed ideas to extend the Tutor ("1, 3, 4 y 5 ( El 5 basandose en lo que el alumno quiere aprender,
+que la IA da un paso adelante )"). All 4 reuse existing data/plumbing rather than adding new content-authoring burden or new
+tables where one already fit.
+- **Cross-subject bridges** (`CrossSubjectBridges.cs`): a curated list of 12 `TopicBridge` pairs across the existing
+  `TopicSkill.Topic` dotted-key taxonomy (proportion↔percentages, density↔matter, probability↔genetics, etc.), each with a
+  localized insight. `Companion.Suggest` now surfaces a "🌉 You already know this from {subject}" action when a student is
+  weak on one side of a bridge and already knows (`PKnown >= 0.8`) the other side — turning the platform's unified
+  cross-subject mastery tracking into something the student actually sees.
+- **Teach your family** (`/Student/Family`, `TeachFamily.cs` + `FamilyStore.cs`): flips `WeeklyLetter`'s direction — instead
+  of a report *to* parents, it is a script *for* the student to teach a parent or sibling what they just mastered (protégé
+  effect), with 2 real check-questions pulled from `QuestionBanks.ForTopic` (same question bank the quizzes use, so no new
+  content). Triggers on a topic crossing the same 0.8 `PKnown` mastery bar while still fresh (`Attempts <= 8`), a stateless
+  heuristic — no new "seen" tracking table, consistent with how `Weak`/`GuessedTopics` already work. Entirely code-written
+  (no AI), like `WeeklyLetter` and `Opening`.
+- **PipClaims — "don't trust AI blindly"** (`/Student/PipClaims`, `PipClaims.cs` + `PipClaimsStore.cs`): extends `Pip`'s
+  "correct the AI's mistake" mechanic from step-by-step numeric problems to one-line conceptual true/false claims — 16
+  curated claims across 7 subjects, explicitly framed as AI critical literacy rather than subject mastery. Fully static
+  content (stable string IDs, no seed-based regeneration needed), and reuses the existing generic `XpEvents` table (filtered
+  by `Reason == "pipclaims"`) for the 6-per-day reward cap instead of a new entity/migration, keeping the data-layer
+  footprint minimal.
+- **Future-self letter** (`/Student/FutureLetter`, `FutureSelf.cs` + `FutureSelfStore.cs`): a one-off milestone letter (not
+  weekly, unlike `WeeklyLetter`) from the student's own future self, triggered by round numbers of *total* topics mastered
+  across every subject (5, 10, 15, … 100, with a window of 2 so it stays visible a few days past the exact threshold) —
+  deliberately a different, non-overlapping trigger from Teach-your-family's per-topic one. Per Mathieu's explicit
+  refinement ("que la IA da un paso adelante"), the letter also looks forward: it pulls the student's oldest open question
+  from the existing Curiosity feature (`CuriosityStore.OldestOpenAsync`, new read-only method) and proposes it as the next
+  concrete step, linking straight to `/Student/NewSubject?topic=...` (the same explore flow Curiosity's own UI uses).
+  Same code-only, no-AI pattern as the other letter-style features.
+- All 4 features got nav entries, full 4-language resx coverage (client-side `Js_` keys for PipClaims' JS), and DI
+  registration for their stores.
+- Verified: `dotnet build` 0 warnings, `dotnet test` 697/697 (up from 664 before this phase; includes 12 new tests for
+  `PipClaims`/`PipClaimsStore` plus tests from the bridges/family/future-self phases), full `e2e.mjs` suite green on a clean
+  server/DB restart (desktop + mobile × light/dark × 4 languages), TLS workaround applied only for the run and reverted
+  immediately after.
+- Not yet done: no e2e scenarios specific to the 4 new pages (`/Student/Family`, `/Student/FutureLetter`,
+  `/Student/PipClaims`, or the bridge suggestion in Companion) were added to `e2e.mjs` — coverage for them currently comes
+  from the Core/Infrastructure xUnit suite only, and no new README screenshots were captured for the 4 pages.

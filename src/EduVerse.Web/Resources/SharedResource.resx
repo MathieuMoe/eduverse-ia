@@ -1474,6 +1474,29 @@
   <data name="Letter_Subtitle" xml:space="preserve"><value>The week as a short letter you can print and share. The Tutor writes it from what was measured: nothing is sent anywhere.</value></data>
   <data name="Letter_Print" xml:space="preserve"><value>Print</value></data>
   <data name="Letter_Empty" xml:space="preserve"><value>Answer a few questions this week and your letter will be ready.</value></data>
+  <data name="Nav_TeachFamily" xml:space="preserve"><value>Teach your family</value></data>
+  <data name="TeachFamily_Subtitle" xml:space="preserve"><value>A short script to teach what you just mastered to someone at home, with questions they can ask you — built by code from a real exercise, nothing is sent anywhere.</value></data>
+  <data name="TeachFamily_Empty" xml:space="preserve"><value>Master a topic and a script to teach it at home will be ready.</value></data>
+  <data name="TeachFamily_Checks" xml:space="preserve"><value>Questions they can ask you</value></data>
+  <data name="Nav_FutureLetter" xml:space="preserve"><value>Letter from your future self</value></data>
+  <data name="FutureLetter_Subtitle" xml:space="preserve"><value>A one-off letter from a year ahead, when you reach a new round number of topics mastered — built by code from what was measured, nothing is sent anywhere.</value></data>
+  <data name="FutureLetter_Empty" xml:space="preserve"><value>Keep mastering topics: when you reach the next round number, your letter will be ready.</value></data>
+  <data name="FutureLetter_GoNow" xml:space="preserve"><value>Take the first step now</value></data>
+  <data name="Nav_PipClaims" xml:space="preserve"><value>Don't trust the AI blindly</value></data>
+  <data name="PipClaims_Title" xml:space="preserve"><value>Don't trust the AI blindly</value></data>
+  <data name="PipClaims_Subtitle" xml:space="preserve"><value>An AI can sound confident and still be wrong. Judge each statement yourself, true or false — the answer is always decided by code, never by an AI.</value></data>
+  <data name="PipClaims_Start" xml:space="preserve"><value>Start a round</value></data>
+  <data name="PipClaims_Footer" xml:space="preserve"><value>This is about not trusting an AI's words blindly, not just about the subject — the same habit matters everywhere you use one.</value></data>
+  <data name="Js_PipClaimsLoading" xml:space="preserve"><value>Loading a claim…</value></data>
+  <data name="Js_PipClaimsTrue" xml:space="preserve"><value>True</value></data>
+  <data name="Js_PipClaimsFalse" xml:space="preserve"><value>False</value></data>
+  <data name="Js_PipClaimsCorrect" xml:space="preserve"><value>Correct!</value></data>
+  <data name="Js_PipClaimsWrong" xml:space="preserve"><value>Not quite.</value></data>
+  <data name="Js_PipClaimsWasTrue" xml:space="preserve"><value>This statement was true.</value></data>
+  <data name="Js_PipClaimsWasFalse" xml:space="preserve"><value>This statement was false.</value></data>
+  <data name="Js_PipClaimsNext" xml:space="preserve"><value>Next claim</value></data>
+  <data name="Js_PipClaimsDone" xml:space="preserve"><value>Round done! Start another one whenever you like.</value></data>
+  <data name="Js_PipClaimsAgain" xml:space="preserve"><value>Another round</value></data>
   <data name="TNote_Title" xml:space="preserve"><value>Note for this student</value></data>
   <data name="TNote_Hint" xml:space="preserve"><value>The student reads it and the Tutor takes it into account (up to 3 notes, 160 characters).</value></data>
   <data name="TNote_Placeholder" xml:space="preserve"><value>E.g. Praise the effort; fractions need more time</value></data>

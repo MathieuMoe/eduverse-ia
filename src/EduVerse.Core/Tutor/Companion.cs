@@ -16,6 +16,11 @@ public sealed record WeakTopic(Area Area, Level Level, string Topic, string Name
 /// correct answers were the student's own "not sure" — a string of lucky guesses, not confirmed understanding.</summary>
 public sealed record GuessedTopic(Area Area, Level Level, string Topic, string Name, string AreaName, int GuessPercent);
 
+/// <summary>A topic the student already masters well, with names already in the student's language — used to look up
+/// <see cref="CrossSubjectBridges"/> to a topic the student is currently weak on, and (when <see cref="Attempts"/> is
+/// still low, i.e. mastery was reached recently) to offer a <see cref="TeachFamily"/> script.</summary>
+public sealed record MasteredTopic(Area Area, Level Level, string Topic, string Name, string AreaName, int Attempts);
+
 /// <summary>A finished test, with names already in the language of the student. <see cref="Topic"/> is the free topic
 /// the student typed or explored (a "What I wonder about" question, a document title...), null for a regular catalog test.</summary>
 public sealed record RecentTest(string AreaName, string ModeName, int Correct, int Length, DateOnly Day, string? Topic = null)
@@ -37,7 +42,7 @@ public sealed record Evolution(int Answers, int Accuracy, int PreviousAnswers, i
 /// <summary>Everything the Tutor knows about the student when answering: computed from the database, never written by the AI.</summary>
 public sealed record StudentSnapshot(
     string Name, Level Level, int XpLevel, string Rank, int Streak, bool PlayedToday, int DueReviews, int Misconceptions, int Tests,
-    IReadOnlyList<WeakTopic> Weak, IReadOnlyList<RecentTest> Recent, IReadOnlyList<string> Taught, int Interviews, string Page, string PageTitle, Evolution? Trend = null, IReadOnlyList<IdeaNews>? News = null, LearnerStats? Learner = null, PlanBrief? Plan = null, IReadOnlyList<string>? Overcome = null, IReadOnlyList<GuessedTopic>? Guessed = null)
+    IReadOnlyList<WeakTopic> Weak, IReadOnlyList<RecentTest> Recent, IReadOnlyList<string> Taught, int Interviews, string Page, string PageTitle, Evolution? Trend = null, IReadOnlyList<IdeaNews>? News = null, LearnerStats? Learner = null, PlanBrief? Plan = null, IReadOnlyList<string>? Overcome = null, IReadOnlyList<GuessedTopic>? Guessed = null, IReadOnlyList<MasteredTopic>? Mastered = null)
 {
     public Evolution Evolution => Trend ?? Evolution.None;
 
@@ -49,6 +54,10 @@ public sealed record StudentSnapshot(
 
     /// <summary>Topics that look mastered but were mostly lucky guesses, not confirmed knowledge (self-reported confidence, not raw accuracy).</summary>
     public IReadOnlyList<GuessedTopic> GuessedTopics => Guessed ?? [];
+
+    /// <summary>Topics the student already masters well, across every subject — used to find <see cref="CrossSubjectBridges"/>
+    /// to a topic the student is currently weak on.</summary>
+    public IReadOnlyList<MasteredTopic> MasteredTopics => Mastered ?? [];
 
     public bool Kids => Levels.IsKids(Level);
 
@@ -68,6 +77,7 @@ public enum CompanionActionKind
     Idea,
     Plan,
     Confirm,
+    Bridge,
 }
 
 /// <summary>A narrative skin the student picked for the explanation ("explain it to me your way"): the facts stay the
@@ -177,6 +187,17 @@ public static class Companion
             var w = s.Weak[0];
             list.Add(new("practice", CompanionActionKind.Practice, $"/Student/Quiz?area={w.Area}&level={w.Level}",
                 F("Practise {0} ({1})|Practicar {0} ({1})|M'entraîner : {0} ({1})|Practicar {0} ({1})", w.Name, w.AreaName), "🎯"));
+
+            var masteredKeys = s.MasteredTopics.Select(x => x.Topic).ToList();
+            var bridge = s.Weak.Select(x => (Weak: x, Match: CrossSubjectBridges.FindFor(x.Area, x.Topic, masteredKeys)))
+                .FirstOrDefault(x => x.Match is not null);
+            if (bridge.Match is { } m)
+            {
+                var known = s.MasteredTopics.First(x => x.Area == m.KnownArea && x.Topic == m.KnownTopic);
+                list.Add(new("bridge", CompanionActionKind.Bridge, $"/Student/Quiz?area={bridge.Weak.Area}&level={bridge.Weak.Level}",
+                    F("You already know this from {0}|Ya sabes esto por {0}|Tu connais déjà ça grâce à {0}|Ja saps això per {0}", known.Name), "🌉"));
+            }
+
             var concept = s.Weak.Select(x => TeachForTopic.TryGetValue(x.Topic, out var k) ? k : null)
                 .Concat(s.Weak.SelectMany(x => TeachConcepts.All.Where(c => c.Area == x.Area).Select(c => c.Key)))
                 .FirstOrDefault(k => k is not null && !s.Taught.Contains(k));

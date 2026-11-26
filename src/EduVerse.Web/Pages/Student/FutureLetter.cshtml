@@ -1,0 +1,39 @@
+@page
+@model EduVerse.Web.Pages.Student.FutureLetterModel
+@{
+    ViewData["Title"] = L["Nav_FutureLetter"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3 print:hidden">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🔮 @L["Nav_FutureLetter"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["FutureLetter_Subtitle"]</p>
+    </div>
+    @if (Model.Letter is not null)
+    {
+        <button type="button" class="@Ui.BtnPrimary" onclick="window.print()" data-testid="future-letter-print">🖨️ @L["Letter_Print"]</button>
+    }
+</div>
+
+@if (Model.Letter is not { } letter)
+{
+    <section class="@Ui.Card p-5" data-testid="future-letter-empty"><p class="text-sm text-muted-foreground-1">@L["FutureLetter_Empty"]</p></section>
+}
+else
+{
+    <article class="@Ui.Card p-6 sm:p-8 max-w-2xl tone-sun print:shadow-none print:border-0" data-testid="future-letter">
+        <h2 class="text-xl font-semibold text-foreground">@letter.Title</h2>
+        <p class="mt-4 text-sm text-foreground">@letter.Opening</p>
+        @foreach (var line in letter.Body)
+        {
+            <p class="mt-3 text-sm text-foreground" data-testid="future-letter-part">@line</p>
+        }
+        <p class="mt-4 text-sm text-foreground bg-muted-1 rounded-lg p-3" data-testid="future-letter-next">
+            @letter.NextStep
+            @if (letter.NextStepUrl is { } url)
+            {
+                <a href="@url" class="block mt-2 font-semibold text-foreground underline" data-testid="future-letter-next-link">@L["FutureLetter_GoNow"]</a>
+            }
+        </p>
+        <p class="mt-5 text-xs text-foreground/70">🦉 @letter.Closing</p>
+    </article>
+}

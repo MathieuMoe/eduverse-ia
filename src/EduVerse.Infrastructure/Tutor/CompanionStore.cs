@@ -31,6 +31,8 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
             .Select(g => new GuessedTopic(g.Area, g.Level, g.Topic, names.Topic(g.Topic), names.Area(g.Area), g.GuessPercent)).ToList();
         var weak = await db.TopicSkills.AsNoTracking().Where(s => s.UserId == userId && s.Attempts >= 2 && s.PKnown < 0.6)
             .OrderBy(s => s.PKnown).Take(3).ToListAsync(ct).ConfigureAwait(false);
+        var mastered = await db.TopicSkills.AsNoTracking().Where(s => s.UserId == userId && s.Attempts >= 2 && s.PKnown >= Core.Tutor.CrossSubjectBridges.KnownThreshold)
+            .ToListAsync(ct).ConfigureAwait(false);
         var recent = await db.QuizAttempts.AsNoTracking().Where(a => a.UserId == userId && a.FinishedAt != null)
             .OrderByDescending(a => a.FinishedAt).Take(5).ToListAsync(ct).ConfigureAwait(false);
         var tests = await db.QuizAttempts.CountAsync(a => a.UserId == userId && a.FinishedAt != null, ct).ConfigureAwait(false);
@@ -60,7 +62,8 @@ public sealed class CompanionStore(EduVerseDb db, QuizStore quizzes, Gamificatio
             displayName, profile.Level, summary.Level, names.Rank(summary.Rank), summary.Streak, summary.PlayedToday, due, misconceptions, tests,
             weak.Select(w => new WeakTopic(w.Area, w.Level, w.Topic, names.Topic(w.Topic), names.Area(w.Area), (int)Math.Round(100 * w.PKnown))).ToList(),
             recent.Select(r => new RecentTest(names.Area(r.Area), names.Mode(r.Mode), r.Correct, r.Length, DateOnly.FromDateTime(r.FinishedAt!.Value.UtcDateTime), r.Topic is { } rt ? names.Topic(rt) : null)).ToList(),
-            taught, interviews, page ?? "", title ?? "", evolution, await ideas.NewsAsync(userId, ct).ConfigureAwait(false), await learner.StatsAsync(userId, ct).ConfigureAwait(false), await PlanBriefAsync(userId, names, ct).ConfigureAwait(false), overcome, guessed);
+            taught, interviews, page ?? "", title ?? "", evolution, await ideas.NewsAsync(userId, ct).ConfigureAwait(false), await learner.StatsAsync(userId, ct).ConfigureAwait(false), await PlanBriefAsync(userId, names, ct).ConfigureAwait(false), overcome, guessed,
+            mastered.Select(m => new MasteredTopic(m.Area, m.Level, m.Topic, names.Topic(m.Topic), names.Area(m.Area), m.Attempts)).ToList());
     }
 
     private async Task<PlanBrief?> PlanBriefAsync(string userId, CompanionNames names, CancellationToken ct)

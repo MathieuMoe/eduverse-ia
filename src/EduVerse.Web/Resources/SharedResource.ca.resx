@@ -1474,6 +1474,29 @@
   <data name="Letter_Subtitle" xml:space="preserve"><value>La setmana en una carta curta que pots imprimir i compartir. El Tutor l'escriu amb el que s'ha mesurat: no s'envia res.</value></data>
   <data name="Letter_Print" xml:space="preserve"><value>Imprimir</value></data>
   <data name="Letter_Empty" xml:space="preserve"><value>Respon unes preguntes aquesta setmana i la teva carta estarà llesta.</value></data>
+  <data name="Nav_TeachFamily" xml:space="preserve"><value>Explica-ho a la teva família</value></data>
+  <data name="TeachFamily_Subtitle" xml:space="preserve"><value>Un guió curt per explicar el que acabes de dominar a algú de casa, amb preguntes que et pot fer — creat pel codi a partir d'un exercici real, no s'envia res.</value></data>
+  <data name="TeachFamily_Empty" xml:space="preserve"><value>Domina un tema i tindràs llest un guió per explicar-lo a casa.</value></data>
+  <data name="TeachFamily_Checks" xml:space="preserve"><value>Preguntes que et pot fer</value></data>
+  <data name="Nav_FutureLetter" xml:space="preserve"><value>Carta del teu jo del futur</value></data>
+  <data name="FutureLetter_Subtitle" xml:space="preserve"><value>Una carta única d'aquí a un any, quan arribes a una nova xifra rodona de temes dominats — creada pel codi amb el que s'ha mesurat, no s'envia res.</value></data>
+  <data name="FutureLetter_Empty" xml:space="preserve"><value>Continua dominant temes: quan arribis a la propera xifra rodona, la teva carta estarà llesta.</value></data>
+  <data name="FutureLetter_GoNow" xml:space="preserve"><value>Fes el primer pas ara</value></data>
+  <data name="Nav_PipClaims" xml:space="preserve"><value>No et refiïs cegament de la IA</value></data>
+  <data name="PipClaims_Title" xml:space="preserve"><value>No et refiïs cegament de la IA</value></data>
+  <data name="PipClaims_Subtitle" xml:space="preserve"><value>Una IA pot sonar molt segura i estar equivocada. Jutja tu cada afirmació, veritable o falsa; la resposta sempre la decideix el codi, mai una IA.</value></data>
+  <data name="PipClaims_Start" xml:space="preserve"><value>Començar una ronda</value></data>
+  <data name="PipClaims_Footer" xml:space="preserve"><value>Això va de no refiar-te cegament de les paraules d'una IA, no només del tema: el mateix hàbit importa a qualsevol lloc on en facis servir una.</value></data>
+  <data name="Js_PipClaimsLoading" xml:space="preserve"><value>Carregant una afirmació…</value></data>
+  <data name="Js_PipClaimsTrue" xml:space="preserve"><value>Veritat</value></data>
+  <data name="Js_PipClaimsFalse" xml:space="preserve"><value>Fals</value></data>
+  <data name="Js_PipClaimsCorrect" xml:space="preserve"><value>Correcte!</value></data>
+  <data name="Js_PipClaimsWrong" xml:space="preserve"><value>No exactament.</value></data>
+  <data name="Js_PipClaimsWasTrue" xml:space="preserve"><value>Aquesta afirmació era veritable.</value></data>
+  <data name="Js_PipClaimsWasFalse" xml:space="preserve"><value>Aquesta afirmació era falsa.</value></data>
+  <data name="Js_PipClaimsNext" xml:space="preserve"><value>Afirmació següent</value></data>
+  <data name="Js_PipClaimsDone" xml:space="preserve"><value>Ronda acabada! Comença'n una altra quan vulguis.</value></data>
+  <data name="Js_PipClaimsAgain" xml:space="preserve"><value>Una altra ronda</value></data>
   <data name="TNote_Title" xml:space="preserve"><value>Nota per a aquest alumne</value></data>
   <data name="TNote_Hint" xml:space="preserve"><value>L'alumne la llegeix i el Tutor en té compte (fins a 3 notes, 160 caràcters).</value></data>
   <data name="TNote_Placeholder" xml:space="preserve"><value>Ex.: valora l'esforç; les fraccions necessiten més temps</value></data>

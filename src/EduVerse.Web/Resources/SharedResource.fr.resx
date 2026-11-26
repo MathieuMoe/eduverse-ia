@@ -1474,6 +1474,29 @@
   <data name="Letter_Subtitle" xml:space="preserve"><value>La semaine en une courte lettre à imprimer et partager. Le Tuteur l'écrit à partir de ce qui a été mesuré : rien n'est envoyé.</value></data>
   <data name="Letter_Print" xml:space="preserve"><value>Imprimer</value></data>
   <data name="Letter_Empty" xml:space="preserve"><value>Réponds à quelques questions cette semaine et ta lettre sera prête.</value></data>
+  <data name="Nav_TeachFamily" xml:space="preserve"><value>Explique à ta famille</value></data>
+  <data name="TeachFamily_Subtitle" xml:space="preserve"><value>Un court script pour expliquer ce que tu viens de maîtriser à quelqu'un à la maison, avec des questions qu'on peut te poser — créé par le code à partir d'un exercice réel, rien n'est envoyé.</value></data>
+  <data name="TeachFamily_Empty" xml:space="preserve"><value>Maîtrise un sujet et un script pour l'expliquer à la maison sera prêt.</value></data>
+  <data name="TeachFamily_Checks" xml:space="preserve"><value>Questions qu'on peut te poser</value></data>
+  <data name="Nav_FutureLetter" xml:space="preserve"><value>Lettre de ton futur toi</value></data>
+  <data name="FutureLetter_Subtitle" xml:space="preserve"><value>Une lettre unique venue d'un an plus tard, quand tu atteins un nouveau chiffre rond de sujets maîtrisés — créée par le code à partir de ce qui a été mesuré, rien n'est envoyé.</value></data>
+  <data name="FutureLetter_Empty" xml:space="preserve"><value>Continue à maîtriser des sujets : en atteignant le prochain chiffre rond, ta lettre sera prête.</value></data>
+  <data name="FutureLetter_GoNow" xml:space="preserve"><value>Fais le premier pas maintenant</value></data>
+  <data name="Nav_PipClaims" xml:space="preserve"><value>Ne fais pas aveuglément confiance à l'IA</value></data>
+  <data name="PipClaims_Title" xml:space="preserve"><value>Ne fais pas aveuglément confiance à l'IA</value></data>
+  <data name="PipClaims_Subtitle" xml:space="preserve"><value>Une IA peut sembler très sûre d'elle et se tromper. Juge toi-même chaque affirmation, vraie ou fausse ; la réponse est toujours décidée par le code, jamais par une IA.</value></data>
+  <data name="PipClaims_Start" xml:space="preserve"><value>Commencer une manche</value></data>
+  <data name="PipClaims_Footer" xml:space="preserve"><value>Il s'agit de ne pas faire aveuglément confiance aux mots d'une IA, pas seulement du sujet : la même habitude compte partout où tu en utilises une.</value></data>
+  <data name="Js_PipClaimsLoading" xml:space="preserve"><value>Chargement d'une affirmation…</value></data>
+  <data name="Js_PipClaimsTrue" xml:space="preserve"><value>Vrai</value></data>
+  <data name="Js_PipClaimsFalse" xml:space="preserve"><value>Faux</value></data>
+  <data name="Js_PipClaimsCorrect" xml:space="preserve"><value>Correct !</value></data>
+  <data name="Js_PipClaimsWrong" xml:space="preserve"><value>Pas tout à fait.</value></data>
+  <data name="Js_PipClaimsWasTrue" xml:space="preserve"><value>Cette affirmation était vraie.</value></data>
+  <data name="Js_PipClaimsWasFalse" xml:space="preserve"><value>Cette affirmation était fausse.</value></data>
+  <data name="Js_PipClaimsNext" xml:space="preserve"><value>Affirmation suivante</value></data>
+  <data name="Js_PipClaimsDone" xml:space="preserve"><value>Manche terminée ! Recommence-en une quand tu veux.</value></data>
+  <data name="Js_PipClaimsAgain" xml:space="preserve"><value>Une autre manche</value></data>
   <data name="TNote_Title" xml:space="preserve"><value>Note pour cet élève</value></data>
   <data name="TNote_Hint" xml:space="preserve"><value>L'élève la lit et le Tuteur en tient compte (3 notes maximum, 160 caractères).</value></data>
   <data name="TNote_Placeholder" xml:space="preserve"><value>Ex. : valorise l'effort ; les fractions demandent plus de temps</value></data>

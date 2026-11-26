@@ -71,6 +71,12 @@ public sealed class CuriosityStore(EduVerseDb db, TimeProvider clock)
         return picked.OrderBy(q => q.CreatedAt).Select(q => new CuriosityView(q.Id, q.Text, q.CreatedAt)).ToList();
     }
 
+    /// <summary>The open question that has waited longest, read-only (unlike <see cref="ForWidgetAsync"/>, this does not mark it
+    /// surfaced): used where showing it is incidental to something else, such as the future-self letter.</summary>
+    public Task<CuriosityView?> OldestOpenAsync(string userId, CancellationToken ct = default) =>
+        db.CuriosityQuestions.Where(q => q.UserId == userId && q.Status == CuriosityStatus.Open)
+            .OrderBy(q => q.CreatedAt).Select(q => new CuriosityView(q.Id, q.Text, q.CreatedAt)).FirstOrDefaultAsync(ct);
+
     /// <summary>Marks the question explored and returns its text, so the caller can send the student straight to exploring it.
     /// Null when the question is not theirs, or already resolved.</summary>
     public async Task<string?> ExploreAsync(string userId, int id, CancellationToken ct = default)

@@ -1474,6 +1474,29 @@
   <data name="Letter_Subtitle" xml:space="preserve"><value>La semana en una carta corta que puedes imprimir y compartir. El Tutor la escribe con lo medido: no se envía nada.</value></data>
   <data name="Letter_Print" xml:space="preserve"><value>Imprimir</value></data>
   <data name="Letter_Empty" xml:space="preserve"><value>Responde unas preguntas esta semana y tu carta estará lista.</value></data>
+  <data name="Nav_TeachFamily" xml:space="preserve"><value>Enseña a tu familia</value></data>
+  <data name="TeachFamily_Subtitle" xml:space="preserve"><value>Un guion corto para enseñar lo que acabas de dominar a alguien en casa, con preguntas que te puede hacer — creado por código a partir de un ejercicio real, no se envía nada.</value></data>
+  <data name="TeachFamily_Empty" xml:space="preserve"><value>Domina un tema y tendrás listo un guion para enseñarlo en casa.</value></data>
+  <data name="TeachFamily_Checks" xml:space="preserve"><value>Preguntas que te puede hacer</value></data>
+  <data name="Nav_FutureLetter" xml:space="preserve"><value>Carta de tu yo del futuro</value></data>
+  <data name="FutureLetter_Subtitle" xml:space="preserve"><value>Una carta única de dentro de un año, cuando llegas a una nueva cifra redonda de temas dominados — creada por código con lo medido, no se envía nada.</value></data>
+  <data name="FutureLetter_Empty" xml:space="preserve"><value>Sigue dominando temas: cuando llegues a la próxima cifra redonda, tu carta estará lista.</value></data>
+  <data name="FutureLetter_GoNow" xml:space="preserve"><value>Da el primer paso ahora</value></data>
+  <data name="Nav_PipClaims" xml:space="preserve"><value>No te fíes ciegamente de la IA</value></data>
+  <data name="PipClaims_Title" xml:space="preserve"><value>No te fíes ciegamente de la IA</value></data>
+  <data name="PipClaims_Subtitle" xml:space="preserve"><value>Una IA puede sonar muy segura y estar equivocada. Juzga tú cada afirmación, verdadera o falsa; la respuesta siempre la decide el código, nunca una IA.</value></data>
+  <data name="PipClaims_Start" xml:space="preserve"><value>Empezar una ronda</value></data>
+  <data name="PipClaims_Footer" xml:space="preserve"><value>Esto va de no fiarte ciegamente de las palabras de una IA, no solo del tema: el mismo hábito importa en cualquier sitio donde uses una.</value></data>
+  <data name="Js_PipClaimsLoading" xml:space="preserve"><value>Cargando una afirmación…</value></data>
+  <data name="Js_PipClaimsTrue" xml:space="preserve"><value>Verdadero</value></data>
+  <data name="Js_PipClaimsFalse" xml:space="preserve"><value>Falso</value></data>
+  <data name="Js_PipClaimsCorrect" xml:space="preserve"><value>¡Correcto!</value></data>
+  <data name="Js_PipClaimsWrong" xml:space="preserve"><value>No exactamente.</value></data>
+  <data name="Js_PipClaimsWasTrue" xml:space="preserve"><value>Esta afirmación era verdadera.</value></data>
+  <data name="Js_PipClaimsWasFalse" xml:space="preserve"><value>Esta afirmación era falsa.</value></data>
+  <data name="Js_PipClaimsNext" xml:space="preserve"><value>Siguiente afirmación</value></data>
+  <data name="Js_PipClaimsDone" xml:space="preserve"><value>¡Ronda terminada! Empieza otra cuando quieras.</value></data>
+  <data name="Js_PipClaimsAgain" xml:space="preserve"><value>Otra ronda</value></data>
   <data name="TNote_Title" xml:space="preserve"><value>Nota para este alumno</value></data>
   <data name="TNote_Hint" xml:space="preserve"><value>El alumno la lee y el Tutor la tiene en cuenta (hasta 3 notas, 160 caracteres).</value></data>
   <data name="TNote_Placeholder" xml:space="preserve"><value>Ej.: valora el esfuerzo; las fracciones necesitan más tiempo</value></data>

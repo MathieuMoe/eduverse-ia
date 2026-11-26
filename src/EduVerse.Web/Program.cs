@@ -138,6 +138,7 @@ app.MapPlan();
 app.MapHomework();
 app.MapDefence();
 app.MapPip();
+app.MapPipClaims();
 app.MapFading();
 app.MapMaterials();
 app.MapContent();

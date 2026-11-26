@@ -16,10 +16,11 @@ namespace EduVerse.Tests;
 
 public class CompanionRuleTests
 {
-    private static StudentSnapshot Snapshot(string page = "/Student", int due = 2, bool weak = true, int interviews = 0, IReadOnlyList<string>? taught = null) => new(
+    private static StudentSnapshot Snapshot(string page = "/Student", int due = 2, bool weak = true, int interviews = 0, IReadOnlyList<string>? taught = null, IReadOnlyList<MasteredTopic>? mastered = null) => new(
         "Sara", Level.Secondary1, 4, "Explorer", 7, true, due, 1, 8,
         weak ? [new WeakTopic(Area.Mathematics, Level.Primary3, "math.fraction", "Fractions", "Mathematics", 35)] : [],
-        [new RecentTest("Mathematics", "Practice", 7, 10, new DateOnly(2026, 11, 15))], taught ?? [], interviews, page, "Home");
+        [new RecentTest("Mathematics", "Practice", 7, 10, new DateOnly(2026, 11, 15))], taught ?? [], interviews, page, "Home",
+        Mastered: mastered);
 
     [Fact]
     public void Suggestions_are_computed_from_the_progress_most_useful_first()
@@ -35,6 +36,19 @@ public class CompanionRuleTests
         Assert.Equal(["practice", "notebook", "interview"], later.Select(a => a.Id));
         Assert.Equal("/Student/Interview?figure=noether", later[2].Url);
         Assert.Equal(["notebook", "interview", "explore"], Companion.Suggest(Snapshot(due: 0, weak: false), TeachLanguage.French).Select(a => a.Id));
+    }
+
+    [Fact]
+    public void Suggests_a_cross_subject_bridge_when_the_student_already_knows_the_other_side()
+    {
+        var mastered = new[] { new MasteredTopic(Area.Economics, Level.Secondary1, "economics.percentages", "Percentages", "Economics", 5) };
+        var actions = Companion.Suggest(Snapshot(due: 0, mastered: mastered), TeachLanguage.English);
+        Assert.Equal(["practice", "bridge", "teach"], actions.Select(a => a.Id));
+        Assert.Equal("/Student/Quiz?area=Mathematics&level=Primary3", actions[1].Url);
+        Assert.Contains("Percentages", actions[1].Label, StringComparison.Ordinal);
+
+        // No mastered topic bridges to the weak one: no bridge action.
+        Assert.DoesNotContain("bridge", Companion.Suggest(Snapshot(due: 0), TeachLanguage.English).Select(a => a.Id));
     }
 
     [Theory]

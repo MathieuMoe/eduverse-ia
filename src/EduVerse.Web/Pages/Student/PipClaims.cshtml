@@ -1,0 +1,22 @@
+@page
+@model EduVerse.Web.Pages.Student.PipClaimsModel
+@{
+    ViewData["Title"] = L["PipClaims_Title"];
+}
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div class="min-w-0">
+        <h1 class="text-3xl font-semibold tracking-tight text-foreground">🕵️ @L["PipClaims_Title"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1 max-w-3xl">@L["PipClaims_Subtitle"]</p>
+    </div>
+</div>
+
+<section class="@Ui.Card p-5 space-y-4" id="pc-card" aria-live="polite" data-testid="pipclaims-card">
+    <p class="text-sm text-foreground">@L["PipClaims_Start"]</p>
+    <button type="button" class="@Ui.BtnPrimary" id="pc-start" data-testid="pipclaims-start">🔎 @L["PipClaims_Start"]</button>
+</section>
+<p class="text-xs text-muted-foreground-1 max-w-3xl">ℹ️ @L["PipClaims_Footer"]</p>
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/pipclaims.js" asp-append-version="true"></script>
+}
