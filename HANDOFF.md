@@ -774,3 +774,21 @@ historia general, como un camino temporal." DatabaseVersion 27 → **28** (2 new
   screenshot `docs/screenshot-countries.png`.
 - With the demo engine selected the "another country" form is disabled and says why (no failing request).
 - Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 807/807, full `e2e.mjs` green on a clean DB (329 checks).
+
+## History trips, round 2: 8 countries, timeline challenge (gold stamps), Globetrotter badge
+Mathieu: "sigue". No schema change (DatabaseVersion stays 28).
+- **4 more countries** in `Countries.All` (now 8): Italy, United Kingdom, Egypt, China — 6 eras each, 4 languages, same
+  format (years, story, 1–3 figures with emoji avatars, a strange-but-true fact). More interview links: Leonardo and
+  Galileo (Italy); Shakespeare, Newton, Darwin, Lovelace and Rosalind Franklin (UK); Champollion (Egypt, Rosetta Stone).
+  Eras can leave gaps between them (Egypt jumps from the Ptolemies to 641): the timeline only needs to be in order.
+- **Timeline challenge** (`CountryOrder`): once a country is stamped, its page shows the eras shuffled (never already in
+  order); the student puts them back in order with ↑/↓ buttons (keyboard friendly) and `POST /api/countries/{key}/order
+  {order: [eraKeys]}` checks it in code (`RightPlaces`). First win: the stamp turns gold 🥇 (+15 gems, `GemEvent
+  "gold:{country}"`), replayable without pay; before the stamp → 409 `order_locked`. Attempts are stored as
+  `CountryCheck` rows with `Era = "order"` (excluded from era progress), so no new table.
+- **Badge `Globetrotter` 🧳**: 2 passport stamps (`BadgeStats.Stamps` = `GemEvent "stamp:*"` count). Now 31 badges.
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 808/808, full `e2e.mjs` green twice on a clean DB (332 checks).
+- Tests: `CountryTests.cs` (8 countries in order and in every language, challenge shuffle/scoring, store: locked before
+  the stamp, a wrong order doesn't pay, the right one pays once and turns gold, the stamp counts for the badge).
+  e2e: walks all 6 eras of Spain by reading the cards, wins the timeline challenge with the arrows, checks the passport;
+  screenshot `docs/screenshot-country-order.png`.

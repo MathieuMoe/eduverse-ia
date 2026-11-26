@@ -31,7 +31,7 @@
             <ul class="ms-auto flex flex-wrap gap-2">
                 @foreach (var c in stamps)
                 {
-                    <li class="size-12 rounded-full border-2 border-dashed border-primary grid place-items-center text-2xl -rotate-6 tip tip-b" data-tip="@c.Name.In(language)" data-testid="passport-stamp"><span aria-hidden="true">@c.Flag</span><span class="sr-only">@c.Name.In(language)</span></li>
+                    <li class="size-12 rounded-full border-2 @(Model.Gold.Contains(c.Key) ? "border-solid border-amber-400 tone-sun" : "border-dashed border-primary") grid place-items-center text-2xl -rotate-6 tip tip-b" data-tip="@c.Name.In(language)@(Model.Gold.Contains(c.Key) ? " · 🥇" : "")" data-testid="passport-stamp"><span aria-hidden="true">@c.Flag</span><span class="sr-only">@c.Name.In(language)</span></li>
                 }
                 @if (stamps.Count == 0)
                 {
@@ -94,8 +94,33 @@ else
             <h2 class="text-lg font-semibold text-foreground">@c.Name.In(language)@(view.Stamped ? " 🛂" : "")</h2>
             <p class="text-sm text-muted-foreground-1">@L["Countries_TimelineHint"]</p>
         </div>
+        @if (view.Gold)
+        {
+            <span class="@Ui.Pill tone-sun text-foreground text-sm!" data-testid="country-gold">🥇 @L["Countries_Gold"]</span>
+        }
         <span class="@Ui.Pill tone-mint text-foreground text-sm!" data-testid="country-done">@view.Done / @c.Eras.Count</span>
     </section>
+
+    @if (view.Stamped)
+    {
+        <section class="@Ui.Card p-5" aria-labelledby="order-title" id="country-order" data-testid="country-order">
+            <h2 id="order-title" class="text-base font-semibold text-foreground">⏳ @L["Countries_OrderTitle"]</h2>
+            <p class="mt-1 text-sm text-muted-foreground-1">@string.Format(culture, L["Countries_OrderHint"], CountryOrder.GoldGems)</p>
+            <ol class="mt-3 space-y-2" id="order-list">
+                @foreach (var era in Model.Shuffled)
+                {
+                    <li class="flex items-center gap-2 p-2.5 rounded-2xl bg-surface" data-key="@era.Key" data-testid="order-item">
+                        <span class="text-xl" aria-hidden="true">@era.Emoji</span>
+                        <span class="grow min-w-0 text-sm font-medium text-foreground">@era.Title.In(language)</span>
+                        <button type="button" class="@Ui.IconBtn size-8!" data-move="-1" aria-label="@L["Countries_OrderUp"]">↑</button>
+                        <button type="button" class="@Ui.IconBtn size-8!" data-move="1" aria-label="@L["Countries_OrderDown"]">↓</button>
+                    </li>
+                }
+            </ol>
+            <button type="button" class="mt-3 self-start @Ui.BtnPrimary" id="order-check" data-testid="order-check">@L["Countries_OrderCheck"]</button>
+            <p class="mt-2 text-sm" id="order-status" role="status" data-testid="order-status"></p>
+        </section>
+    }
 
     <ol class="relative ms-5 border-s-2 border-dashed border-layer-line space-y-6" data-testid="country-timeline">
         @for (var i = 0; i < c.Eras.Count; i++)

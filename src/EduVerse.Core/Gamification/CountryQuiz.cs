@@ -92,6 +92,40 @@ public static class CountryQuiz
 }
 
 /// <summary>
+/// The timeline challenge of a stamped country: put its eras back in order of time (checked in code). Winning it the
+/// first time turns the passport stamp gold.
+/// </summary>
+public static class CountryOrder
+{
+    /// <summary>The era key of the challenge's attempts (stored with the checks of the eras).</summary>
+    public const string Key = "order";
+
+    public const int GoldGems = 15;
+
+    /// <summary>The eras shuffled (never already in order).</summary>
+    public static IReadOnlyList<HistoryEra> Shuffle(CountryHistory country, int seed)
+    {
+        ArgumentNullException.ThrowIfNull(country);
+        var random = new Random(seed);
+        var eras = country.Eras.OrderBy(_ => random.Next()).ToList();
+        if (eras.Select(e => e.Key).SequenceEqual(country.Eras.Select(e => e.Key)))
+        {
+            (eras[0], eras[^1]) = (eras[^1], eras[0]);
+        }
+
+        return eras;
+    }
+
+    /// <summary>How many eras are in their right place (all of them wins).</summary>
+    public static int RightPlaces(CountryHistory country, IReadOnlyList<string> keys)
+    {
+        ArgumentNullException.ThrowIfNull(country);
+        ArgumentNullException.ThrowIfNull(keys);
+        return country.Eras.Where((e, i) => i < keys.Count && keys[i] == e.Key).Count();
+    }
+}
+
+/// <summary>
 /// The AI writes the timeline of any other country (in the student's language). The code checks it: 5 to 7 eras in
 /// order of time, each with years, a story, a weird fact and one to three people, before it can be walked.
 /// </summary>

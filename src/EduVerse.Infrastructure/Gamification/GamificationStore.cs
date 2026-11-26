@@ -549,7 +549,8 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
             await db.IdeaVotes.CountAsync(v => v.UserId == userId && v.Proposed && db.Ideas.Any(i => i.Id == v.IdeaId && i.Status == EduVerse.Core.Ideas.IdeaStatus.Available), ct).ConfigureAwait(false),
             await db.ThinkingNotes.CountAsync(t => t.UserId == userId, ct).ConfigureAwait(false),
             tests.Count(t => t.Mode == QuizMode.Adventure && t.Won && LearningPath.IsLegend(t.Topic)),
-            await db.RoleplaySessions.Where(r => r.UserId == userId && r.Completed).Select(r => r.Scenario).Distinct().CountAsync(ct).ConfigureAwait(false));
+            await db.RoleplaySessions.Where(r => r.UserId == userId && r.Completed).Select(r => r.Scenario).Distinct().CountAsync(ct).ConfigureAwait(false),
+            await db.GemEvents.CountAsync(g => g.UserId == userId && g.Reason.StartsWith("stamp:"), ct).ConfigureAwait(false));
     }
 
     public async Task<int> TotalXpAsync(string userId, CancellationToken ct = default) =>

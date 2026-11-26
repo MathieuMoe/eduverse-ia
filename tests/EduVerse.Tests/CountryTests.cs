@@ -15,7 +15,7 @@ public class CountryContentTests
     [Fact]
     public void Every_country_is_a_timeline_in_order_written_in_every_language()
     {
-        Assert.True(Countries.All.Count >= 4);
+        Assert.True(Countries.All.Count >= 8);
         Assert.Equal(Countries.All.Count, Countries.All.Select(c => c.Key).Distinct().Count());
         foreach (var c in Countries.All)
         {
@@ -100,6 +100,25 @@ public class CountryContentTests
     }
 
     [Fact]
+    public void The_timeline_challenge_starts_shuffled_and_only_the_right_order_wins()
+    {
+        foreach (var c in Countries.All)
+        {
+            for (var seed = 0; seed < 20; seed++)
+            {
+                var shuffled = CountryOrder.Shuffle(c, seed);
+                Assert.Equal(c.Eras.Select(e => e.Key).Order(), shuffled.Select(e => e.Key).Order());
+                Assert.NotEqual(c.Eras.Select(e => e.Key), shuffled.Select(e => e.Key));
+                Assert.True(CountryOrder.RightPlaces(c, [.. shuffled.Select(e => e.Key)]) < c.Eras.Count);
+            }
+
+            Assert.Equal(c.Eras.Count, CountryOrder.RightPlaces(c, [.. c.Eras.Select(e => e.Key)]));
+        }
+
+        Assert.Contains(Badges.All, b => b.Key == "Globetrotter");
+    }
+
+    [Fact]
     public void A_timeline_written_by_the_ai_is_checked_before_it_is_walked()
     {
         static string Era(int from, int to, string person) =>
@@ -146,6 +165,7 @@ public class CountryStoreTests(Database database) : IClassFixture<Database>
         Assert.Equal(0, wrong.Reward.Xp);
         Assert.Null(await store.AnswerCheckAsync(student, failed.Id, [0, 0, 0])); // answered once
 
+        Assert.Null(await store.OrderAsync(student, "japan", [.. japan.Eras.Select(e => e.Key)])); // not stamped yet
         var gemsBefore = await game.GemsAsync(student);
         for (var era = 0; era < japan.Eras.Count; era++)
         {
@@ -159,6 +179,21 @@ public class CountryStoreTests(Database database) : IClassFixture<Database>
         view = await store.ViewAsync(student, japan);
         Assert.True(view.Stamped);
         Assert.Equal(japan.Eras.Count, (await store.ProgressAsync(student))["japan"]);
+
+        Assert.Equal(1, (await game.BadgeStatsAsync(student)).Stamps);
+
+        // The timeline challenge: a wrong order is only a try, the right one turns the stamp gold once
+        var keys = japan.Eras.Select(e => e.Key).ToList();
+        var miss = await store.OrderAsync(student, "japan", [.. keys.AsEnumerable().Reverse()]);
+        Assert.False(miss!.Won);
+        Assert.False((await store.ViewAsync(student, japan)).Gold);
+        var win = await store.OrderAsync(student, "japan", keys);
+        Assert.True(win!.Won);
+        Assert.Equal(CountryOrder.GoldGems, win.Gems);
+        Assert.Equal(0, (await store.OrderAsync(student, "japan", keys))!.Gems);
+        Assert.True((await store.ViewAsync(student, japan)).Gold);
+        Assert.Contains("japan", await store.GoldAsync(student));
+        Assert.Equal(japan.Eras.Count, (await store.ProgressAsync(student))["japan"]); // the challenge is not an era
 
         // Passing an era again is allowed but pays nothing
         var again = await PassAsync(db, store, student, 0);

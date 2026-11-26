@@ -314,24 +314,59 @@ async function demo(page, role) {
         "a new country needs an AI engine (offline the page says so)");
     await page.click("[data-testid=country-spain]");
     check(await page.locator("[data-testid=country-era][data-state=Open]").count() === 1, "only the first era of the timeline is open");
-    const era = page.locator("[data-testid=country-era][data-state=Open]");
-    const eraText = await era.locator("details").innerText();
-    await era.locator("[data-testid=country-check]").click();
-    await page.locator("[data-testid=country-quiz]").waitFor();
-    for (const set of await page.locator("[data-testid=country-quiz] fieldset").all()) {
-        // Every right answer is a fact written on the era's card (its figures, years, weird fact or title)
-        const options = await set.locator("label").all();
-        let picked = options[0];
-        for (const o of options) if (eraText.includes((await o.innerText()).trim())) picked = o;
-        await picked.click();
+    // Walk Spain's whole timeline: every right answer is a fact written on the era's card (or, for "what came
+    // first", the era that comes first on the timeline)
+    for (let step = 0; step < 6; step++) {
+        const era = page.locator("[data-testid=country-era][data-state=Open]");
+        const eraText = await era.textContent();
+        const timelineText = await page.locator("[data-testid=country-timeline]").textContent();
+        await era.locator("[data-testid=country-check]").click();
+        await page.locator("[data-testid=country-quiz]").waitFor();
+        for (const set of await page.locator("[data-testid=country-quiz] fieldset").all()) {
+            const legend = await set.locator("legend").textContent();
+            const options = await set.locator("label").all();
+            const texts = await Promise.all(options.map(async (o) => (await o.textContent()).trim()));
+            let pick = 0;
+            const who = legend.match(/What is (.+) remembered for\?/);
+            if (legend.includes("came first")) {
+                pick = texts.map((x) => timelineText.indexOf(x)).reduce((best, at, i, all) => (at >= 0 && (all[best] < 0 || at < all[best]) ? i : best), 0);
+            } else if (who) {
+                const card = await era.locator("li", { hasText: who[1] }).first().textContent();
+                pick = Math.max(0, texts.findIndex((x) => card.includes(x)));
+            } else {
+                pick = Math.max(0, texts.findIndex((x) => eraText.includes(x)));
+            }
+            await options[pick].click();
+        }
+        await page.click("[data-testid=country-submit]");
+        await page.locator("[data-testid=country-result]").waitFor();
+        if (step === 0) {
+            check(await page.locator("[data-testid=country-result]").getAttribute("data-passed") === "1", "reading the era is enough to pass its check");
+            await page.screenshot({ path: join(DOCS, "screenshot-countries.png"), fullPage: true });
+        }
+        await page.click("[data-testid=country-continue]");
+        await page.locator("[data-testid=country-timeline]").waitFor();
+        if (step === 0) {
+            check(await page.locator("[data-testid=country-era][data-state=Done]").count() === 1 && await page.locator("[data-testid=country-era][data-state=Open]").count() === 1, "passing an era opens the next one");
+        }
     }
-    await page.click("[data-testid=country-submit]");
-    await page.locator("[data-testid=country-result]").waitFor();
-    check(await page.locator("[data-testid=country-result]").getAttribute("data-passed") === "1", "reading the era is enough to pass its check");
-    await page.screenshot({ path: join(DOCS, "screenshot-countries.png"), fullPage: true });
-    await page.click("[data-testid=country-continue]");
-    await page.locator("[data-testid=country-timeline]").waitFor();
-    check(await page.locator("[data-testid=country-era][data-state=Done]").count() === 1 && await page.locator("[data-testid=country-era][data-state=Open]").count() === 1, "passing an era opens the next one");
+    check(await page.locator("[data-testid=country-era][data-state=Done]").count() === 6, "every era of Spain passed by reading the timeline");
+    // Timeline challenge: put the shuffled eras back in order with the arrows → gold stamp
+    const titles = await page.locator("[data-testid=country-era] h3").allTextContents();
+    for (let i = 0; i < titles.length; i++) {
+        const wanted = titles[i].replace("✅", "").trim();
+        for (let guard = 0; guard < 8; guard++) {
+            const now = (await page.locator("[data-testid=order-item]").allTextContents()).findIndex((x) => x.includes(wanted));
+            if (now <= i) break;
+            await page.locator("[data-testid=order-item]").nth(now).locator("button[data-move='-1']").click();
+        }
+    }
+    await page.click("[data-testid=order-check]");
+    await page.locator("[data-testid=order-status][data-won]").waitFor();
+    check(await page.locator("[data-testid=order-status]").getAttribute("data-won") === "1", "the timeline challenge is won with the eras in order");
+    await page.locator("[data-testid=country-order]").screenshot({ path: join(DOCS, "screenshot-country-order.png") });
+    await page.goto(BASE + "/Student/Countries");
+    check(await page.locator("[data-testid=passport-stamp]").count() === 1, "Spain's stamp is in the passport");
     // Learning path (phase 4): units of lesson → lesson → chest → lesson → boss; the first lesson is open
     await page.goto(BASE + "/Student/Path?area=History&level=Primary3");
     check(await page.locator("[data-testid=path-unit]").count() >= 3, "the history path has several units");
@@ -742,7 +777,7 @@ async function demo(page, role) {
     check(await page.locator("[data-testid=album-connections] [data-unlocked='0']").count() >= 1, "connections involving an uncompleted figure stay locked");
 
     await page.goto(BASE + "/Student/Achievements");
-    check(await page.locator("[data-testid=badges] li").count() === 30, "all badges with their progress");
+    check(await page.locator("[data-testid=badges] li").count() === 31, "all badges with their progress");
     await page.screenshot({ path: join(DOCS, "screenshot-achievements.png"), fullPage: true });
     await page.goto(BASE + "/Student");
     check((await page.locator("[data-testid=curiosity]").count()) === 1, "what I want to know widget is on the dashboard");

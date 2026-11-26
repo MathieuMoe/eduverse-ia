@@ -10,6 +10,8 @@ public sealed record CountryCheckRequest(IReadOnlyList<int>? Answers);
 
 public sealed record CountryCreateRequest(string? Name);
 
+public sealed record CountryOrderRequest(IReadOnlyList<string>? Order);
+
 /// <summary>
 /// Trips through the history of a country. The checks of the eras are written and marked by the code; the AI only
 /// writes the timeline of a country that is not in the catalog (offline that needs a real engine).
@@ -47,6 +49,20 @@ public static class CountryEndpoints
                     results = result.Questions.Select((q, i) => new { right = i < answers.Count && answers[i] == q.Correct, correct = q.Correct, explanation = q.Explanation }),
                     reward = QuizEndpoints.RewardView(result.Reward, l),
                 });
+        })
+        .RequireRateLimiting("quiz");
+
+        api.MapPost("/{key}/order", async (string key, CountryOrderRequest? request, HttpContext context, CountryStore store) =>
+        {
+            if (request?.Order is not { Count: > 0 and <= CountryHistoryPrompt.MaxEras } order)
+            {
+                return Results.BadRequest();
+            }
+
+            var result = await store.OrderAsync(context.User.Id(), key, order, context.RequestAborted);
+            return result is null
+                ? Results.Json(new { code = "order_locked" }, statusCode: StatusCodes.Status409Conflict)
+                : Results.Ok(new { right = result.Right, total = result.Total, won = result.Won, gems = result.Gems });
         })
         .RequireRateLimiting("quiz");
 

@@ -1871,4 +1871,15 @@
   <data name="Js_CountryWriting" xml:space="preserve"><value>L'IA prépare la frise…</value></data>
   <data name="Js_CountryNeedsAi" xml:space="preserve"><value>Écrire un nouveau pays nécessite un moteur d'IA. Choisis-en un dans l'en-tête, ou voyage dans les pays ci-dessus : ils marchent hors ligne.</value></data>
   <data name="Js_Err_era_locked" xml:space="preserve"><value>Cette époque est encore verrouillée : réussis d'abord la précédente.</value></data>
+  <data name="Countries_OrderTitle" xml:space="preserve"><value>Défi de la frise</value></data>
+  <data name="Countries_OrderHint" xml:space="preserve"><value>Remets les époques dans l'ordre, de la plus ancienne à aujourd'hui. Réussis pour que ton tampon devienne doré (+{0} gemmes).</value></data>
+  <data name="Countries_OrderUp" xml:space="preserve"><value>Monter</value></data>
+  <data name="Countries_OrderDown" xml:space="preserve"><value>Descendre</value></data>
+  <data name="Countries_OrderCheck" xml:space="preserve"><value>Vérifier l'ordre</value></data>
+  <data name="Countries_Gold" xml:space="preserve"><value>Tampon doré</value></data>
+  <data name="Js_CountryOrderWon" xml:space="preserve"><value>Frise parfaite : ton tampon est doré !</value></data>
+  <data name="Js_CountryOrderTry" xml:space="preserve"><value>{0} époques sur {1} à la bonne place. Réessaie !</value></data>
+  <data name="Js_Err_order_locked" xml:space="preserve"><value>Réussis d'abord toutes les époques du pays.</value></data>
+  <data name="Badge_Globetrotter" xml:space="preserve"><value>Globe-trotteur</value></data>
+  <data name="BadgeHint_Globetrotter" xml:space="preserve"><value>Obtiens {0} tampons dans ton passeport d'histoire</value></data>
 </root>

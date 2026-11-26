@@ -15,6 +15,9 @@ public enum EraState
 
 public sealed record CountryView(CountryHistory Country, IReadOnlyList<EraState> Eras)
 {
+    /// <summary>The timeline challenge is won: the stamp is gold.</summary>
+    public bool Gold { get; init; }
+
     public int Done => Eras.Count(e => e == EraState.Done);
 
     public bool Stamped => Done == Eras.Count;
@@ -23,6 +26,11 @@ public sealed record CountryView(CountryHistory Country, IReadOnlyList<EraState>
 public sealed record CheckQuestion(string Prompt, IReadOnlyList<string> Options);
 
 public sealed record CheckView(string Id, IReadOnlyList<CheckQuestion> Questions);
+
+public sealed record OrderResult(int Right, int Total, int Gems)
+{
+    public bool Won => Right == Total;
+}
 
 public sealed record CheckResult(int Score, bool Passed, IReadOnlyList<HistoryQuestion> Questions, bool Stamp, Reward Reward);
 
@@ -73,7 +81,7 @@ public sealed class CountryStore(EduVerseDb db, GamificationStore game)
 
     /// <summary>Eras passed per country (for the passport).</summary>
     public async Task<IReadOnlyDictionary<string, int>> ProgressAsync(string userId, CancellationToken ct = default) =>
-        (await db.CountryChecks.AsNoTracking().Where(c => c.UserId == userId && c.Passed).Select(c => new { c.Country, c.Era }).Distinct().ToListAsync(ct).ConfigureAwait(false))
+        (await db.CountryChecks.AsNoTracking().Where(c => c.UserId == userId && c.Passed && c.Era != CountryOrder.Key).Select(c => new { c.Country, c.Era }).Distinct().ToListAsync(ct).ConfigureAwait(false))
         .GroupBy(c => c.Country).ToDictionary(g => g.Key, g => g.Count());
 
     public async Task<CountryView> ViewAsync(string userId, CountryHistory country, CancellationToken ct = default)
@@ -89,11 +97,12 @@ public sealed class CountryStore(EduVerseDb db, GamificationStore game)
             states.Add(state);
         }
 
-        return new CountryView(country, states);
+        var gold = await db.CountryChecks.AnyAsync(c => c.UserId == userId && c.Country == country.Key && c.Era == CountryOrder.Key && c.Passed, ct).ConfigureAwait(false);
+        return new CountryView(country, states) { Gold = gold };
     }
 
     private async Task<HashSet<string>> PassedAsync(string userId, string country, CancellationToken ct) =>
-        (await db.CountryChecks.Where(c => c.UserId == userId && c.Country == country && c.Passed).Select(c => c.Era).ToListAsync(ct).ConfigureAwait(false)).ToHashSet();
+        (await db.CountryChecks.Where(c => c.UserId == userId && c.Country == country && c.Passed && c.Era != CountryOrder.Key).Select(c => c.Era).ToListAsync(ct).ConfigureAwait(false)).ToHashSet();
 
     /// <summary>A new check of an era that is open or done (null when the era is locked or does not exist).</summary>
     public async Task<CheckView?> StartCheckAsync(string userId, string key, int era, TeachLanguage language, CancellationToken ct = default)
@@ -161,5 +170,45 @@ public sealed class CountryStore(EduVerseDb db, GamificationStore game)
         }
 
         return new CheckResult(check.Correct, check.Passed, questions, stamp, reward);
+    }
+
+    /// <summary>Countries whose timeline challenge is won (gold stamps).</summary>
+    public async Task<IReadOnlySet<string>> GoldAsync(string userId, CancellationToken ct = default) =>
+        (await db.CountryChecks.Where(c => c.UserId == userId && c.Era == CountryOrder.Key && c.Passed).Select(c => c.Country).Distinct().ToListAsync(ct).ConfigureAwait(false)).ToHashSet();
+
+    /// <summary>
+    /// The timeline challenge of a stamped country (null while the country is not stamped). The first win pays gems
+    /// and turns the stamp gold; it can be replayed.
+    /// </summary>
+    public async Task<OrderResult?> OrderAsync(string userId, string key, IReadOnlyList<string> keys, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(keys);
+        var country = await FindAsync(userId, key, ct).ConfigureAwait(false);
+        if (country is null)
+        {
+            return null;
+        }
+
+        var view = await ViewAsync(userId, country, ct).ConfigureAwait(false);
+        if (!view.Stamped)
+        {
+            return null;
+        }
+
+        var right = CountryOrder.RightPlaces(country, keys);
+        var won = right == country.Eras.Count;
+        var gems = won && !view.Gold ? CountryOrder.GoldGems : 0;
+        db.CountryChecks.Add(new CountryCheck
+        {
+            Id = Guid.NewGuid().ToString("N"), UserId = userId, Country = country.Key, Era = CountryOrder.Key, Correct = right, Passed = won,
+            StartedAt = game.Now, FinishedAt = game.Now,
+        });
+        if (gems > 0)
+        {
+            db.GemEvents.Add(new GemEvent { UserId = userId, Amount = gems, Reason = "gold:" + country.Key, At = game.Now });
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return new OrderResult(right, country.Eras.Count, gems);
     }
 }

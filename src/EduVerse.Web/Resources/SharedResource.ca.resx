@@ -1871,4 +1871,15 @@
   <data name="Js_CountryWriting" xml:space="preserve"><value>La IA està preparant la línia del temps…</value></data>
   <data name="Js_CountryNeedsAi" xml:space="preserve"><value>Escriure un país nou necessita un motor d'IA. Tria'n un a la capçalera o viatja pels països de dalt: funcionen sense connexió.</value></data>
   <data name="Js_Err_era_locked" xml:space="preserve"><value>Aquesta època encara està bloquejada: supera abans l'anterior.</value></data>
+  <data name="Countries_OrderTitle" xml:space="preserve"><value>Repte de la línia del temps</value></data>
+  <data name="Countries_OrderHint" xml:space="preserve"><value>Torna a posar les èpoques en ordre, de la més antiga a avui. Encerta-ho i el teu segell serà d'or (+{0} gemmes).</value></data>
+  <data name="Countries_OrderUp" xml:space="preserve"><value>Pujar</value></data>
+  <data name="Countries_OrderDown" xml:space="preserve"><value>Baixar</value></data>
+  <data name="Countries_OrderCheck" xml:space="preserve"><value>Comprovar l'ordre</value></data>
+  <data name="Countries_Gold" xml:space="preserve"><value>Segell d'or</value></data>
+  <data name="Js_CountryOrderWon" xml:space="preserve"><value>Línia del temps perfecta: el teu segell és d'or!</value></data>
+  <data name="Js_CountryOrderTry" xml:space="preserve"><value>{0} de {1} èpoques al seu lloc. Torna-ho a provar!</value></data>
+  <data name="Js_Err_order_locked" xml:space="preserve"><value>Supera abans totes les èpoques del país.</value></data>
+  <data name="Badge_Globetrotter" xml:space="preserve"><value>Rodamón</value></data>
+  <data name="BadgeHint_Globetrotter" xml:space="preserve"><value>Aconsegueix {0} segells al teu passaport d'història</value></data>
 </root>

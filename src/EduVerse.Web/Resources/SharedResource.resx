@@ -1871,4 +1871,15 @@
   <data name="Js_CountryWriting" xml:space="preserve"><value>The AI is preparing the timeline…</value></data>
   <data name="Js_CountryNeedsAi" xml:space="preserve"><value>Writing a new country needs an AI engine. Choose one in the header, or travel through the countries above: they work offline.</value></data>
   <data name="Js_Err_era_locked" xml:space="preserve"><value>This era is still locked: pass the one before first.</value></data>
+  <data name="Countries_OrderTitle" xml:space="preserve"><value>Timeline challenge</value></data>
+  <data name="Countries_OrderHint" xml:space="preserve"><value>Put the eras back in order, from the oldest to today. Get it right to turn your stamp gold (+{0} gems).</value></data>
+  <data name="Countries_OrderUp" xml:space="preserve"><value>Move up</value></data>
+  <data name="Countries_OrderDown" xml:space="preserve"><value>Move down</value></data>
+  <data name="Countries_OrderCheck" xml:space="preserve"><value>Check the order</value></data>
+  <data name="Countries_Gold" xml:space="preserve"><value>Gold stamp</value></data>
+  <data name="Js_CountryOrderWon" xml:space="preserve"><value>Perfect timeline: your stamp is gold!</value></data>
+  <data name="Js_CountryOrderTry" xml:space="preserve"><value>{0} of {1} eras in the right place. Try again!</value></data>
+  <data name="Js_Err_order_locked" xml:space="preserve"><value>Pass every era of the country first.</value></data>
+  <data name="Badge_Globetrotter" xml:space="preserve"><value>Globetrotter</value></data>
+  <data name="BadgeHint_Globetrotter" xml:space="preserve"><value>Get {0} stamps in your history passport</value></data>
 </root>

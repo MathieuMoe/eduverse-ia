@@ -76,5 +76,29 @@
     document.addEventListener("click", (e) => {
         const button = e.target.closest("button[data-check]");
         if (button) check(button);
+        // Timeline challenge: move an era up or down
+        const move = e.target.closest("button[data-move]");
+        if (move) {
+            const item = move.closest("li");
+            const sibling = +move.dataset.move < 0 ? item.previousElementSibling : item.nextElementSibling;
+            if (sibling) {
+                if (+move.dataset.move < 0) sibling.before(item); else sibling.after(item);
+                move.focus();
+            }
+        }
+    });
+
+    const orderCheck = document.getElementById("order-check");
+    orderCheck?.addEventListener("click", async () => {
+        const status = document.getElementById("order-status");
+        const order = [...document.querySelectorAll("#order-list > li")].map((li) => li.dataset.key);
+        orderCheck.disabled = true;
+        try {
+            const r = await api(`/api/countries/${encodeURIComponent(country)}/order`, { json: { order } });
+            status.className = `mt-2 p-3 rounded-xl text-sm text-foreground ${r.won ? "tone-mint" : "tone-sun"}`;
+            status.dataset.won = r.won ? "1" : "0";
+            status.textContent = r.won ? `🥇 ${t("CountryOrderWon")}${r.gems ? ` · 💎 ${r.gems}` : ""}` : fmt(t("CountryOrderTry"), r.right, r.total);
+        } catch (err) { status.textContent = err.message; }
+        orderCheck.disabled = false;
     });
 })();

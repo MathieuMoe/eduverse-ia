@@ -1871,4 +1871,15 @@
   <data name="Js_CountryWriting" xml:space="preserve"><value>La IA está preparando la línea del tiempo…</value></data>
   <data name="Js_CountryNeedsAi" xml:space="preserve"><value>Escribir un país nuevo necesita un motor de IA. Elige uno en la cabecera o viaja por los países de arriba: funcionan sin conexión.</value></data>
   <data name="Js_Err_era_locked" xml:space="preserve"><value>Esta época aún está bloqueada: supera antes la anterior.</value></data>
+  <data name="Countries_OrderTitle" xml:space="preserve"><value>Reto de la línea del tiempo</value></data>
+  <data name="Countries_OrderHint" xml:space="preserve"><value>Vuelve a poner las épocas en orden, de la más antigua a hoy. Acierta y tu sello será de oro (+{0} gemas).</value></data>
+  <data name="Countries_OrderUp" xml:space="preserve"><value>Subir</value></data>
+  <data name="Countries_OrderDown" xml:space="preserve"><value>Bajar</value></data>
+  <data name="Countries_OrderCheck" xml:space="preserve"><value>Comprobar el orden</value></data>
+  <data name="Countries_Gold" xml:space="preserve"><value>Sello de oro</value></data>
+  <data name="Js_CountryOrderWon" xml:space="preserve"><value>Línea del tiempo perfecta: ¡tu sello es de oro!</value></data>
+  <data name="Js_CountryOrderTry" xml:space="preserve"><value>{0} de {1} épocas en su sitio. ¡Inténtalo otra vez!</value></data>
+  <data name="Js_Err_order_locked" xml:space="preserve"><value>Supera antes todas las épocas del país.</value></data>
+  <data name="Badge_Globetrotter" xml:space="preserve"><value>Trotamundos</value></data>
+  <data name="BadgeHint_Globetrotter" xml:space="preserve"><value>Consigue {0} sellos en tu pasaporte de historia</value></data>
 </root>

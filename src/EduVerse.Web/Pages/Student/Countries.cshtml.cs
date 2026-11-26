@@ -17,6 +17,11 @@ public sealed class CountriesModel(CountryStore store, AiEngines engines) : Page
 
     public CountryView? Chosen { get; private set; }
 
+    public IReadOnlySet<string> Gold { get; private set; } = new HashSet<string>();
+
+    /// <summary>The eras of the chosen country shuffled for the timeline challenge.</summary>
+    public IReadOnlyList<HistoryEra> Shuffled { get; private set; } = [];
+
     public bool Missing { get; private set; }
 
     public async Task OnGetAsync(string? country)
@@ -25,11 +30,13 @@ public sealed class CountriesModel(CountryStore store, AiEngines engines) : Page
         Offline = EngineSelection.Current(HttpContext, engines).IsDemo;
         Progress = await store.ProgressAsync(userId, HttpContext.RequestAborted);
         Custom = await store.CustomAsync(userId, HttpContext.RequestAborted);
+        Gold = await store.GoldAsync(userId, HttpContext.RequestAborted);
         if (!string.IsNullOrEmpty(country))
         {
             var found = await store.FindAsync(userId, country, HttpContext.RequestAborted);
             Chosen = found is null ? null : await store.ViewAsync(userId, found, HttpContext.RequestAborted);
             Missing = found is null;
+            Shuffled = found is null ? [] : CountryOrder.Shuffle(found, Random.Shared.Next());
         }
     }
 
