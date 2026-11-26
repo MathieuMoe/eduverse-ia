@@ -32,14 +32,15 @@ async function noOverflow(page, label) {
 }
 
 // A Practice-mode question is sometimes a Duolingo-style drill instead of the usual 4-option grid: true/false,
-// fill-blank, reorder, match or multi-select, mixed in for every subject by ExerciseBank.AnyDrill (task #73 extends
-// what was, through task #72, true/false-only for Mathematics-like subjects and fill-blank/reorder/match-only for
-// Language/ForeignLanguage, into a mix of all kinds for every subject; task #96 adds multi-select as a 5th). Waits
-// for whichever of the 6 possible renderings the page actually shows and answers it — a drill not necessarily
-// correctly, since the point there is that the UI works, not the score — and returns which kind it saw ("classic",
-// "truefalse", "fillblank", "reorder", "match" or "multiselect"). classicIndex picks the option on a classic
-// question or true/false drill (wrapped to however many buttons that rendering has); it's ignored for the other
-// drill kinds, which only ever need an answer submitted.
+// fill-blank, reorder, match, multi-select or listen, mixed in for every subject by ExerciseBank.AnyDrill (task #73
+// extends what was, through task #72, true/false-only for Mathematics-like subjects and fill-blank/reorder/match-only
+// for Language/ForeignLanguage, into a mix of all kinds for every subject; task #96 adds multi-select as a 5th, task
+// #114 adds listen as a 6th — it renders with the same options grid a classic question uses, just with the prompt
+// spoken instead of shown). Waits for whichever of the 7 possible renderings the page actually shows and answers it
+// — a drill not necessarily correctly, since the point there is that the UI works, not the score — and returns which
+// kind it saw ("classic", "truefalse", "fillblank", "reorder", "match", "multiselect" or "listen"). classicIndex
+// picks the option on a classic question, true/false or listen drill (wrapped to however many buttons that
+// rendering has); it's ignored for the other drill kinds, which only ever need an answer submitted.
 async function answerQuizQuestion(page, classicIndex = 0) {
     const options = page.locator("[data-testid=quiz-options] button:not([disabled])");
     const trueFalse = page.locator("[data-testid=quiz-truefalse] button:not([disabled])");
@@ -47,7 +48,13 @@ async function answerQuizQuestion(page, classicIndex = 0) {
     const reorder = page.locator("[data-testid=quiz-reorder]");
     const match = page.locator("[data-testid=quiz-match]");
     const multiSelect = page.locator("[data-testid=quiz-multiselect]");
-    await Promise.race([options.first().waitFor(), trueFalse.first().waitFor(), fillBlank.first().waitFor(), reorder.first().waitFor(), match.first().waitFor(), multiSelect.first().waitFor()]);
+    const listen = page.locator("[data-testid=quiz-listen]");
+    await Promise.race([options.first().waitFor(), trueFalse.first().waitFor(), fillBlank.first().waitFor(), reorder.first().waitFor(), match.first().waitFor(), multiSelect.first().waitFor(), listen.first().waitFor()]);
+    if (await listen.count()) {
+        await page.click("#qz-listen-replay");
+        await options.nth(classicIndex % (await options.count())).click();
+        return "listen";
+    }
     if (await fillBlank.count()) {
         await page.fill("#qz-fillblank-input", "test");
         await page.click("#qz-fillblank-check");

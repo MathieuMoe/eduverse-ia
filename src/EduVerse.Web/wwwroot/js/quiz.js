@@ -32,8 +32,10 @@
     const voices = { en: "en-GB", es: "es-ES", fr: "fr-FR", ca: "ca-ES" };
 
     // onend fires even when speak is off (no-op synthesis) so an oral-mode caller can always chain the next step.
-    function say(text, onend) {
-        if (!speak || !("speechSynthesis" in window)) { onend?.(); return; }
+    // force bypasses the speak toggle: a "Listen and answer" drill (task #114) has nothing to read if speech is off,
+    // so its prompt must be heard regardless of whether the student has the speaker icon enabled.
+    function say(text, onend, force) {
+        if ((!speak && !force) || !("speechSynthesis" in window)) { onend?.(); return; }
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = voices[lang.slice(0, 2)] || "en-GB";
@@ -130,6 +132,35 @@
         setTimeout(() => pop.remove(), 1200);
     }
 
+    // Replays a CSS animation class even if the element already carries it (e.g. two correct answers in a row).
+    function pulse(el, cls, ms) {
+        if (!el) return;
+        el.classList.remove(cls);
+        void el.offsetWidth; // force a reflow so the browser treats the next add as a fresh animation start
+        el.classList.add(cls);
+        setTimeout(() => el.classList.remove(cls), ms);
+    }
+
+    // A small confetti burst (Duolingo-style streak milestone) — a handful of coloured squares fanning outward
+    // and fading, built with CSS custom properties per dot so no JS animation loop or extra library is needed.
+    function confettiBurst(target) {
+        const colors = ["#f6c85f", "#6fcf97", "#56ccf2", "#bb6bd9", "#f2994a"];
+        const burst = document.createElement("span");
+        burst.className = "qz-confetti";
+        for (let i = 0; i < 14; i++) {
+            const dot = document.createElement("span");
+            const angle = (Math.PI * 2 * i) / 14 + Math.random() * 0.4;
+            const dist = 40 + Math.random() * 30;
+            dot.style.setProperty("--qz-confetti-end", `translate(${Math.round(Math.cos(angle) * dist)}px, ${Math.round(Math.sin(angle) * dist - 20)}px)`);
+            dot.style.setProperty("--qz-confetti-rot", `${Math.round(Math.random() * 360)}deg`);
+            dot.style.background = colors[i % colors.length];
+            dot.style.animationDelay = `${Math.round(Math.random() * 60)}ms`;
+            burst.appendChild(dot);
+        }
+        target.appendChild(burst);
+        setTimeout(() => burst.remove(), 1000);
+    }
+
     function adventureHtml(a) {
         if (!a) return "";
         $("qz-title").textContent = a.title;
@@ -165,7 +196,11 @@
                 <span class="inline-flex items-center gap-2"><span class="inline-flex items-center py-0.5 px-2 rounded-full bg-surface text-foreground">${esc(q.topic)}</span><span class="inline-flex gap-1 tip" data-tip="${esc(t("Difficulty"))}" aria-label="${esc(fmt(t("DifficultyN"), q.difficulty))}">${dots}</span></span>
             </div>
             ${q.visual?.startsWith("dg:") ? `<div class="quiz-diagram mt-5 flex justify-center" data-testid="quiz-diagram">${window.Edu.diagram(q.visual)}</div>` : q.visual ? `<p class="quiz-visual mt-5 text-4xl text-center leading-snug" aria-hidden="true">${esc(q.visual)}</p>` : ""}
-            <h2 class="quiz-prompt mt-4 text-xl font-semibold text-foreground text-center" id="qz-prompt">${esc(q.prompt)}</h2>
+            ${q.exerciseKind === "Listen" && "speechSynthesis" in window ? `<h2 class="quiz-prompt mt-4 text-xl font-semibold text-foreground text-center sr-only" id="qz-prompt">${esc(q.prompt)}</h2>
+            <div class="mt-4 flex flex-col items-center gap-2" data-testid="quiz-listen">
+                <button type="button" id="qz-listen-replay" class="size-16 rounded-full bg-primary text-primary-foreground text-2xl grid place-items-center hover:bg-primary-hover" aria-label="${esc(t("ListenReplay"))}">🔊</button>
+                <p class="text-sm text-muted-foreground-1">${esc(t("ListenHint"))}</p>
+            </div>` : `<h2 class="quiz-prompt mt-4 text-xl font-semibold text-foreground text-center" id="qz-prompt">${esc(q.prompt)}</h2>`}
             ${q.code ? `<pre class="mt-4 p-4 rounded-2xl bg-[#2b2230] text-[#f3eefe] text-sm overflow-x-auto"><code>${esc(q.code)}</code></pre>` : ""}
             ${q.evo ? `<div class="mt-5 flex items-start gap-3 justify-center" data-testid="evo-answer">
                 <span class="size-11 shrink-0 rounded-full tone-lavender grid place-items-center text-2xl" aria-hidden="true">🦉</span>
@@ -248,11 +283,18 @@
         if (q.exerciseKind === "Reorder") wireReorder(q.tokens);
         if (q.exerciseKind === "Match") wireMatch(q.matchLeft, q.matchRight);
         if (q.exerciseKind === "MultiSelect") wireMultiSelect();
+        $("qz-listen-replay")?.addEventListener("click", () => say(q.prompt, null, true));
         stage.querySelector("[data-index]")?.focus();
         $("qz-fillblank-input")?.focus();
-        const spokenOptions = q.exerciseKind === "TrueFalse" ? [t("False"), t("True")].join(", ") : q.options.join(", ");
-        say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + spokenOptions),
-            () => { if (oral) autoListen(); });
+        if (q.exerciseKind === "Listen") {
+            // The prompt itself is the thing to hear, not a lead-in to read options aloud — speak it alone, and force
+            // it regardless of the speak toggle, since a muted "Listen and answer" drill would have nothing to answer.
+            say(q.prompt, () => { if (oral) autoListen(); }, true);
+        } else {
+            const spokenOptions = q.exerciseKind === "TrueFalse" ? [t("False"), t("True")].join(", ") : q.options.join(", ");
+            say((q.adventure ? (q.adventure.intro ? q.adventure.intro + " " : "") + q.adventure.line + " " : "") + q.prompt + (q.visual && !q.visual.startsWith("dg:") ? "" : ". " + spokenOptions),
+                () => { if (oral) autoListen(); });
+        }
     }
 
     function updateHint() {
@@ -370,8 +412,16 @@
         $("qz-run").textContent = String(res.run);
         addXp(res.reward?.xp);
         toast(res.reward);
+        if (res.correct) {
+            pulse($("qz-run").parentElement, "qz-streak-pop", 500);
+            if ((res.run || 0) > 0 && res.run % 5 === 0) confettiBurst(stage);
+        } else {
+            pulse(stage, "qz-shake", 400);
+        }
         const fb = $("qz-feedback");
         fb.className = `mt-5 p-4 rounded-2xl ${res.correct ? "tone-mint" : "tone-pink"}`;
+        void fb.offsetWidth;
+        fb.classList.add("qz-pop-in");
         const notes = [];
         if (res.confidence === 2 && res.correct) notes.push("😎 " + t("SureRight"));
         if (res.confidence === 2 && !res.correct) notes.push("🔁 " + t("SureWrong"));
@@ -402,12 +452,14 @@
         $("qz-ladder-form")?.querySelectorAll("input, button").forEach((x) => { x.disabled = true; });
         const answered = { id: question.id, number: question.number };
         const seconds = shownAt ? Math.max(1, Math.round((Date.now() - shownAt) / 1000)) : 0;
-        const isDrill = question.exerciseKind === "TrueFalse";
+        const isDrill = question.exerciseKind === "TrueFalse" || question.exerciseKind === "Listen";
         let res;
         try {
-            res = isDrill
+            res = question.exerciseKind === "TrueFalse"
                 ? await api(`/api/quiz/${encodeURIComponent(question.id)}/truefalse`, { json: { value: index === 1, confidence, seconds } })
-                : await api(`/api/quiz/${encodeURIComponent(question.id)}/answer`, { json: { choice: index, confidence, seconds } });
+                : question.exerciseKind === "Listen"
+                    ? await api(`/api/quiz/${encodeURIComponent(question.id)}/listen`, { json: { choice: index, confidence, seconds } })
+                    : await api(`/api/quiz/${encodeURIComponent(question.id)}/answer`, { json: { choice: index, confidence, seconds } });
         } catch (e) {
             buttons.forEach((b) => { b.disabled = b.dataset.state === "removed"; });
             $("qz-ladder-form")?.querySelectorAll("input, button").forEach((x) => { x.disabled = false; });

@@ -315,6 +315,60 @@ public class ExerciseBankTests
         Assert.NotNull(exercise);
         Assert.Equal("math.multiselect.even", exercise!.Topic);
     }
+
+    [Theory]
+    [InlineData(Area.Mathematics)]
+    [InlineData(Area.Physics)]
+    [InlineData(Area.Chemistry)]
+    [InlineData(Area.Biology)]
+    [InlineData(Area.History)]
+    [InlineData(Area.Geography)]
+    [InlineData(Area.Economics)]
+    [InlineData(Area.Programming)]
+    [InlineData(Area.Language)]
+    [InlineData(Area.ForeignLanguage)]
+    public void Listen_has_content_for_every_subject_at_every_level_bucket(Area area)
+    {
+        // task #114: unlike every other drill kind, Listen wraps the classic question generator directly, so it
+        // never has the "no content for this subject yet" gaps TrueFalse/MultiSelect have for Language subjects.
+        foreach (var level in new[] { Level.EarlyYears, Level.Primary3, Level.HighSchool })
+        {
+            var exercise = ExerciseBank.Listen(area, level, TeachLanguage.Spanish, 3);
+            Assert.Equal(ExerciseKind.Listen, exercise.Kind);
+            Assert.NotNull(exercise.Options);
+            Assert.True(exercise.Options!.Count >= 2);
+            Assert.NotNull(exercise.CorrectIndex);
+            Assert.InRange(exercise.CorrectIndex!.Value, 0, exercise.Options.Count - 1);
+            Assert.False(string.IsNullOrWhiteSpace(exercise.Prompt));
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(NonLanguageAreas))]
+    public void AnyDrill_now_mixes_in_listen_for_a_non_language_subject(Area area)
+    {
+        var kinds = Enumerable.Range(0, 60)
+            .Select(seed => ExerciseBank.AnyDrill(area, Level.Primary3, TeachLanguage.English, seed)!.Kind)
+            .Distinct()
+            .ToList();
+        Assert.Contains(ExerciseKind.Listen, kinds);
+    }
+
+    [Fact]
+    public void CheckListen_matches_the_classic_multiple_choice_shape()
+    {
+        var exercise = ExerciseBank.Listen(Area.Mathematics, Level.Primary3, TeachLanguage.English, 3);
+        Assert.True(exercise.CheckListen(exercise.CorrectIndex!.Value));
+        var wrongIndex = Enumerable.Range(0, exercise.Options!.Count).First(i => i != exercise.CorrectIndex);
+        Assert.False(exercise.CheckListen(wrongIndex));
+    }
+
+    [Fact]
+    public void CheckListen_throws_when_called_on_a_different_kind()
+    {
+        var exercise = ExerciseBank.MultiSelect(Area.Mathematics, Level.Primary3, TeachLanguage.English, 3)!;
+        Assert.Throws<InvalidOperationException>(() => exercise.CheckListen(0));
+    }
 }
 
 /// <summary>
@@ -612,6 +666,42 @@ public class PracticeExerciseQuizTests(Database database) : IClassFixture<Databa
         Assert.NotNull(right);
         Assert.True(right!.Correct);
         Assert.NotNull(right.Next);
+    }
+
+    [Fact]
+    public async Task A_listen_drill_can_be_checked_right_and_wrong_and_sends_its_options_to_the_client()
+    {
+        // task #114: Listen shares the classic MultipleChoice Options/CorrectIndex shape, so the client gets real
+        // options to show as answer buttons (ViewOfExercise must expose them for Listen, same as it already does
+        // for MultiSelect — the bug this test guards against is Options silently coming back empty).
+        using var scope = database.Services.CreateScope();
+        var quizzes = scope.ServiceProvider.GetRequiredService<QuizStore>();
+        var db = scope.ServiceProvider.GetRequiredService<EduVerseDb>();
+        var sara = await database.UserIdAsync("sara@eduverse.demo");
+
+        var started = await quizzes.StartAsync(sara, Area.Mathematics, Level.Primary3, QuizMode.Practice, TeachLanguage.English);
+        var exercise = ExerciseBank.Listen(Area.Mathematics, Level.Primary3, TeachLanguage.English, 3);
+        var attempt = await db.QuizAttempts.SingleAsync(a => a.Id == started.AttemptId);
+        attempt.CurrentExerciseJson = System.Text.Json.JsonSerializer.Serialize(exercise);
+        await db.SaveChangesAsync();
+
+        var current = await quizzes.CurrentAsync(sara, started.AttemptId);
+        Assert.Equal(ExerciseKind.Listen, current!.ExerciseKind);
+        Assert.Equal(exercise.Options!.Count, current.Options.Count);
+
+        var wrongIndex = Enumerable.Range(0, exercise.Options.Count).First(i => i != exercise.CorrectIndex);
+        var wrong = await quizzes.AnswerListenAsync(sara, started.AttemptId, wrongIndex, 1, 0, TeachLanguage.English);
+        Assert.NotNull(wrong);
+        Assert.False(wrong!.Correct);
+        Assert.NotNull(wrong.Next);
+
+        var attempt2 = await db.QuizAttempts.SingleAsync(a => a.Id == started.AttemptId);
+        attempt2.CurrentExerciseJson = System.Text.Json.JsonSerializer.Serialize(exercise);
+        await db.SaveChangesAsync();
+        var right = await quizzes.AnswerListenAsync(sara, started.AttemptId, exercise.CorrectIndex!.Value, 1, 0, TeachLanguage.English);
+        Assert.NotNull(right);
+        Assert.True(right!.Correct);
+        Assert.Equal(exercise.CorrectIndex, right.CorrectIndex); // the shared answer tail's `?? 0` fallback must not mask Listen's real index
     }
 
     [Fact]

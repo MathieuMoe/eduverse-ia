@@ -1027,6 +1027,8 @@
   <data name="Js_HintN" xml:space="preserve"><value>Pista {0} de {1}</value></data>
   <data name="Js_NoMoreHints" xml:space="preserve"><value>No queden pistes</value></data>
   <data name="Js_HintCost" xml:space="preserve"><value>Cada pista: −25 % d'XP en aquesta pregunta</value></data>
+  <data name="Js_ListenReplay" xml:space="preserve"><value>Torna a escoltar la pregunta</value></data>
+  <data name="Js_ListenHint" xml:space="preserve"><value>Escolta i tria la teva resposta a sota</value></data>
   <data name="Js_Removed" xml:space="preserve"><value>Opció descartada per una pista</value></data>
   <data name="Js_SureRight" xml:space="preserve"><value>Segur i correcte: +3 XP.</value></data>
   <data name="Js_SureWrong" xml:space="preserve"><value>N'estaves segur: aquest tema torna al repàs d'avui.</value></data>

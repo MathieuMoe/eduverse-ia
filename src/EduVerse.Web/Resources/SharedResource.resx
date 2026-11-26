@@ -1027,6 +1027,8 @@
   <data name="Js_HintN" xml:space="preserve"><value>Hint {0} of {1}</value></data>
   <data name="Js_NoMoreHints" xml:space="preserve"><value>No more hints</value></data>
   <data name="Js_HintCost" xml:space="preserve"><value>Each hint: −25 % XP for this question</value></data>
+  <data name="Js_ListenReplay" xml:space="preserve"><value>Play the question again</value></data>
+  <data name="Js_ListenHint" xml:space="preserve"><value>Listen, then pick your answer below</value></data>
   <data name="Js_Removed" xml:space="preserve"><value>Option removed by a hint</value></data>
   <data name="Js_SureRight" xml:space="preserve"><value>Sure and right: +3 XP.</value></data>
   <data name="Js_SureWrong" xml:space="preserve"><value>You were sure: this topic comes back in today's review.</value></data>

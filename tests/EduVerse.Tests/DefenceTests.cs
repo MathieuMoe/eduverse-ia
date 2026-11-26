@@ -91,6 +91,7 @@ public class DefenceStoreTests(Database database) : IClassFixture<Database>
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(omar, attempt, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
                     ExerciseKind.Match => quizzes.AnswerMatchAsync(omar, attempt, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
                     ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(omar, attempt, exercise.CorrectIndices!, 1, 0, TeachLanguage.English),
+                    ExerciseKind.Listen => quizzes.AnswerListenAsync(omar, attempt, exercise.CorrectIndex!.Value, 1, 0, TeachLanguage.English),
                     _ => quizzes.AnswerTrueFalseAsync(omar, attempt, exercise.CorrectBool!.Value, 1, 0, TeachLanguage.English),
                 }))!;
             }
@@ -159,8 +160,9 @@ public class DefenceWebTests(App app) : IClassFixture<App>
                             // documented limitation) and this loop would wrongly think the attempt is defendable.
             for (var i = 0; i < 10; i++)
             {
-                // A drill (no options) is answered on its own endpoint, exactly as the real quiz page does; which of
-                // the 5 drill kinds shows up is now mixed for every subject (task #73), not just true/false.
+                // A drill (no options, except MultiSelect/Listen which share the classic Options shape) is answered on
+                // its own endpoint, exactly as the real quiz page does; which of the 6 drill kinds shows up is now
+                // mixed for every subject (task #73/#114), not just true/false.
                 var isDrill = current.TryGetProperty("exerciseKind", out var kind) && kind.ValueKind != JsonValueKind.Null;
                 var (url, body) = isDrill
                     ? kind.GetString() switch
@@ -176,6 +178,8 @@ public class DefenceWebTests(App app) : IClassFixture<App>
                         }),
                         // task #96: "select all that apply" — just pick the first option; this loop never checks correctness for a drill anyway.
                         "MultiSelect" => ($"/api/quiz/{candidate}/multiselect", (object)new { indices = new[] { 0 }, confidence = 1 }),
+                        // task #114: same request shape as classic /answer — just pick the first option.
+                        "Listen" => ($"/api/quiz/{candidate}/listen", (object)new { choice = 0, confidence = 1 }),
                         _ => ($"/api/quiz/{candidate}/truefalse", new { value = true, confidence = 1 }),
                     }
                     : ($"/api/quiz/{candidate}/answer", new { choice = i % 4, confidence = 1 });

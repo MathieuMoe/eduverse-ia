@@ -1259,11 +1259,35 @@ public static class ExerciseBank
         };
     }
 
-    private static readonly int[] AnyDrillKindOrder = [0, 1, 2, 3, 4];
+    /// <summary>"Listen and answer" (task #114): the student hears the prompt instead of reading it, then picks
+    /// from the same 4 options a classic multiple-choice question would show. Reuses <see cref="QuestionBanks.Generate"/>
+    /// directly rather than a curated bank, so every subject, level and language already has content — the one drill
+    /// kind that never returns null. <paramref name="exclude"/> avoids repeating a topic already heard this attempt,
+    /// same as the other kinds, but falls back to a repeat (bounded retries) instead of ever returning nothing,
+    /// since unlike the curated banks there's no smaller "full pool" to fall back to.</summary>
+    public static PracticeExercise Listen(Area area, Level level, TeachLanguage language, int seed, IReadOnlySet<string>? exclude = null)
+    {
+        var difficulty = DifficultyFor(level);
+        var q = QuestionBanks.Generate(area, level, difficulty, seed, language);
+        for (var retry = 1; retry < 20 && exclude is not null && exclude.Contains($"{ExerciseKind.Listen}|{q.Topic}"); retry++)
+        {
+            q = QuestionBanks.Generate(area, level, difficulty, unchecked(seed + retry * 101), language);
+        }
 
-    /// <summary>Picks among true/false, fill-blank, reorder, match and multi-select for any subject (task #96 adds
-    /// multi-select, a genuinely different way of answering — several toggled picks, not one tap — to the mix built
-    /// up by tasks #71-74); null if none of the 5 kinds has content for this area/level yet.
+        return new PracticeExercise(q.Topic, q.Difficulty, ExerciseKind.Listen, q.Prompt, q.Explanation)
+        {
+            Options = q.Options,
+            CorrectIndex = q.CorrectIndex,
+        };
+    }
+
+    private static readonly int[] AnyDrillKindOrder = [0, 1, 2, 3, 4, 5];
+
+    /// <summary>Picks among true/false, fill-blank, reorder, match, multi-select and listen for any subject (task
+    /// #96 added multi-select — several toggled picks, not one tap; task #114 added listen — hearing the prompt
+    /// instead of reading it, drawn from the ordinary question generator instead of a curated bank); null if none
+    /// of the 6 kinds has content for this area/level yet (only possible for the first 5 — Listen always has
+    /// content, so a subject with no other drill kind at all will still get Listen drills).
     /// <paramref name="allowTrueFalse"/> lets a caller exclude the 50/50-guessable true/false kind (task #74:
     /// QuizStore excludes it specifically for Placement, where that guess rate would add noise to the binary-search
     /// level calibration) while still mixing in the rest. <paramref name="exclude"/> (task #95/#97) is the set of
@@ -1286,7 +1310,8 @@ public static class ExerciseBank
                 1 => FillBlank(area, level, language, seed, exclude),
                 2 => Reorder(area, level, language, seed, exclude),
                 3 => Match(area, level, language, seed, exclude),
-                _ => MultiSelect(area, level, language, seed, exclude),
+                4 => MultiSelect(area, level, language, seed, exclude),
+                _ => Listen(area, level, language, seed, exclude),
             };
             if (exercise is not null)
             {

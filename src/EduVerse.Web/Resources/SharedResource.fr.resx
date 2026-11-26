@@ -1027,6 +1027,8 @@
   <data name="Js_HintN" xml:space="preserve"><value>Indice {0} sur {1}</value></data>
   <data name="Js_NoMoreHints" xml:space="preserve"><value>Plus d'indices</value></data>
   <data name="Js_HintCost" xml:space="preserve"><value>Chaque indice : −25 % d'XP sur cette question</value></data>
+  <data name="Js_ListenReplay" xml:space="preserve"><value>Réécouter la question</value></data>
+  <data name="Js_ListenHint" xml:space="preserve"><value>Écoute, puis choisis ta réponse ci-dessous</value></data>
   <data name="Js_Removed" xml:space="preserve"><value>Option retirée par un indice</value></data>
   <data name="Js_SureRight" xml:space="preserve"><value>Sûr et juste : +3 XP.</value></data>
   <data name="Js_SureWrong" xml:space="preserve"><value>Tu étais sûr : cette notion revient dans ta révision d'aujourd'hui.</value></data>

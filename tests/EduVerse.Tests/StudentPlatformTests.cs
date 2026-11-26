@@ -59,6 +59,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(nora, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.Spanish),
                     ExerciseKind.Match => quizzes.AnswerMatchAsync(nora, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.Spanish),
                     ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(nora, q.AttemptId, exercise.CorrectIndices!, 1, 0, TeachLanguage.Spanish),
+                    ExerciseKind.Listen => quizzes.AnswerListenAsync(nora, q.AttemptId, exercise.CorrectIndex!.Value, 1, 0, TeachLanguage.Spanish),
                     _ => quizzes.AnswerTrueFalseAsync(nora, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.Spanish),
                 });
             }
@@ -180,6 +181,9 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                     ExerciseKind.FillBlank => quizzes.AnswerFillBlankAsync(alex, q.AttemptId, right ? exercise.Answer! : exercise.Answer + "-wrong", 1, 0, TeachLanguage.French),
                     ExerciseKind.Reorder => quizzes.AnswerReorderAsync(alex, q.AttemptId, right ? exercise.CorrectOrder! : exercise.CorrectOrder!.Reverse().ToList(), 1, 0, TeachLanguage.French),
                     ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(alex, q.AttemptId, right ? exercise.CorrectIndices! : exercise.CorrectIndices!.Skip(1).ToList(), 1, 0, TeachLanguage.French),
+                    // Listen is allowed in Placement (task #114): it shares the classic 4-option guess rate, unlike
+                    // True/False's 50/50, so it doesn't add the noise that kind was excluded for.
+                    ExerciseKind.Listen => quizzes.AnswerListenAsync(alex, q.AttemptId, right ? exercise.CorrectIndex!.Value : (exercise.CorrectIndex!.Value + 1) % exercise.Options!.Count, 1, 0, TeachLanguage.French),
                     _ => quizzes.AnswerMatchAsync(alex, q.AttemptId, MatchAnswer(exercise.Pairs!, right), 1, 0, TeachLanguage.French),
                 });
             }
@@ -296,6 +300,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                         ExerciseKind.Match => quizzes.AnswerMatchAsync(userId, q.AttemptId, MatchAnswer(exercise.Pairs!, wantsRight), 1, 0, TeachLanguage.English),
                         // task #96: "select all that apply" — the right answer picks exactly the correct set, a wrong one drops one of them.
                         ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectIndices! : exercise.CorrectIndices!.Skip(1).ToList(), 1, 0, TeachLanguage.English),
+                        ExerciseKind.Listen => quizzes.AnswerListenAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectIndex!.Value : (exercise.CorrectIndex!.Value + 1) % exercise.Options!.Count, 1, 0, TeachLanguage.English),
                         _ => quizzes.AnswerTrueFalseAsync(userId, q.AttemptId, wantsRight ? exercise.CorrectBool!.Value : !exercise.CorrectBool!.Value, TeachLanguage.English),
                     });
                 }
@@ -351,6 +356,7 @@ public class StudentPlatformPersistenceTests(Database database) : IClassFixture<
                         ExerciseKind.Reorder => quizzes.AnswerReorderAsync(iker, q.AttemptId, exercise.CorrectOrder!, 1, 0, TeachLanguage.English),
                         ExerciseKind.Match => quizzes.AnswerMatchAsync(iker, q.AttemptId, exercise.Pairs!.ToDictionary(p => p.Left, p => p.Right), 1, 0, TeachLanguage.English),
                         ExerciseKind.MultiSelect => quizzes.AnswerMultiSelectAsync(iker, q.AttemptId, exercise.CorrectIndices!, 1, 0, TeachLanguage.English),
+                        ExerciseKind.Listen => quizzes.AnswerListenAsync(iker, q.AttemptId, exercise.CorrectIndex!.Value, 1, 0, TeachLanguage.English),
                         _ => quizzes.AnswerTrueFalseAsync(iker, q.AttemptId, exercise.CorrectBool!.Value, TeachLanguage.English),
                     });
                 }

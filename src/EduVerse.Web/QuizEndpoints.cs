@@ -169,6 +169,15 @@ public static class QuizEndpoints
         })
         .RequireRateLimiting("quiz");
 
+        // "Listen and answer" (task #114): same request/response shape as the classic /answer endpoint — an option
+        // index — since the exercise reuses the regular question generator instead of a curated bank.
+        api.MapPost("/{attemptId}/listen", async (string attemptId, QuizAnswerRequest request, HttpContext context, QuizStore store, IStringLocalizer<SharedResource> l) =>
+        {
+            var result = request is null ? null : await store.AnswerListenAsync(context.User.Id(), attemptId, request.Choice, request.Confidence ?? 1, request.Seconds ?? 0, Localization.LanguageForCurrentCulture(), context.RequestAborted);
+            return result is null ? Results.Json(new { code = "unknown_question" }, statusCode: StatusCodes.Status400BadRequest) : Results.Ok(AnswerPayload(result, l));
+        })
+        .RequireRateLimiting("quiz");
+
         // Live per-pair feedback for the Match drill (Duolingo-style green/red border as the student taps), read-only:
         // doesn't score, finish or advance the attempt — the /match call above still does that once every pair is right.
         api.MapPost("/{attemptId}/match/pair", async (string attemptId, QuizMatchPairRequest request, HttpContext context, QuizStore store) =>

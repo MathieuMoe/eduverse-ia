@@ -16,6 +16,12 @@ public enum ExerciseKind
     /// <summary>"Select all that apply": 2 or more of a short list of options are correct, picked by toggling rather
     /// than a single tap — a 5th answer shape, distinct from every kind above (task #96).</summary>
     MultiSelect,
+
+    /// <summary>"Listen and answer": the prompt is spoken aloud instead of shown as text, and the student picks
+    /// from the same 4 options a classic multiple-choice question would offer — a 6th answer shape built from the
+    /// existing question generator (task #114), so it needs no curated content bank of its own and works for every
+    /// subject, level and language the platform already has.</summary>
+    Listen,
 }
 
 /// <summary>One left/right pair for a <see cref="ExerciseKind.Match"/> exercise (e.g. word ↔ translation,
@@ -126,5 +132,17 @@ public sealed record PracticeExercise(
         }
 
         return given is not null && given.ToHashSet().SetEquals(CorrectIndices);
+    }
+
+    /// <summary>Same check as a classic multiple-choice answer — <see cref="Listen"/> reuses the same Options/CorrectIndex
+    /// shape, just spoken instead of shown.</summary>
+    public bool CheckListen(int given)
+    {
+        if (Kind != ExerciseKind.Listen || CorrectIndex is null)
+        {
+            throw new InvalidOperationException($"{nameof(CheckListen)} needs a {ExerciseKind.Listen} exercise.");
+        }
+
+        return given == CorrectIndex;
     }
 }

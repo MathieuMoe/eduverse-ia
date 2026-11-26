@@ -71,6 +71,7 @@ public sealed record SubjectProgress(Area Area, Level Level, bool Placed, int An
 public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvider clock)
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private static readonly int[] AllDifficulties = [1, 2, 3];
 
     public DateTimeOffset Now => clock.GetUtcNow();
 
@@ -182,11 +183,14 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             Adventure = AdventureOf(a),
         };
 
-    /// <summary>The view of a Duolingo-style drill: no options to list (the kind tells the client how to render it), no hints or evo.
+    /// <summary>The view of a Duolingo-style drill: usually no options to list (the kind tells the client how to render
+    /// it), no hints or evo. MultiSelect and Listen are the exceptions — both reuse the classic Options list (MultiSelect
+    /// to offer several checkboxes, Listen to offer the same 4 buttons a classic question would, just spoken instead of
+    /// shown), so both need it sent through instead of the usual empty array.
     /// Carries the Adventure map/hearts/story line exactly like a classic question's view does (task #74), so a drill
     /// landing mid-adventure doesn't make that chrome disappear for one question.</summary>
     private static QuestionView ViewOfExercise(QuizAttempt a, PracticeExercise e) =>
-        new(a.Id, a.Answered + 1, a.Length, e.Prompt, e.Kind == ExerciseKind.MultiSelect ? e.Options! : [], e.Visual, null, e.Difficulty, e.Topic, a.Level, a.Area, a.Mode, Levels.IsKids(a.Level))
+        new(a.Id, a.Answered + 1, a.Length, e.Prompt, e.Kind is ExerciseKind.MultiSelect or ExerciseKind.Listen ? e.Options! : [], e.Visual, null, e.Difficulty, e.Topic, a.Level, a.Area, a.Mode, Levels.IsKids(a.Level))
         {
             ExerciseKind = e.Kind,
             Tokens = e.Kind == ExerciseKind.Reorder ? e.Tokens : null,
@@ -397,6 +401,30 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
                 question = QuestionBanks.Generate(attempt.Area, attempt.Level, difficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, difficulty), language);
             }
 
+            // Some subjects (fixed-fact banks like History or Geography, as opposed to Maths' procedurally
+            // generated numbers) only have a handful of distinct questions per difficulty tier, and a student's last
+            // 300 answered questions (MemoryOfQuestions) are already excluded — so the loop above can exhaust that
+            // tier's whole pool and still be stuck on a duplicate. Before accepting one, widen to the other two
+            // difficulties: their pools are largely disjoint, so this often turns up something genuinely unseen
+            // without needing more authored content. Keeps the requested difficulty if nothing else is free.
+            if (used.Contains(KeyOf(question)))
+            {
+                foreach (var otherDifficulty in AllDifficulties.Where(d => d != difficulty))
+                {
+                    var alt = question;
+                    for (var retry = 0; retry < 15 && used.Contains(KeyOf(alt)); retry++)
+                    {
+                        alt = QuestionBanks.Generate(attempt.Area, attempt.Level, otherDifficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, otherDifficulty), language);
+                    }
+
+                    if (!used.Contains(KeyOf(alt)))
+                    {
+                        question = alt;
+                        break;
+                    }
+                }
+            }
+
             question = WithInterest(attempt, question, interests, language, used);
             used.Add(KeyOf(question));
             if (attempt.Mode == QuizMode.Evo)
@@ -603,6 +631,22 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
     }
 
+    /// <summary>Answers the current "listen and answer" drill (task #114): same shape as a classic multiple-choice
+    /// answer (an option index), since the exercise reuses the regular question generator instead of a curated bank.
+    /// Returns null when there is no such drill current.</summary>
+    public async Task<AnswerResult?> AnswerListenAsync(string userId, string attemptId, int choice, int confidence, int seconds, TeachLanguage language, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.FinishedAt is not null || attempt.CurrentExerciseJson is null)
+        {
+            return null;
+        }
+
+        var exercise = CurrentExercise(attempt);
+        var correct = exercise.CheckListen(choice);
+        return await FinishExerciseAnswerAsync(userId, attempt, exercise, correct, confidence, language, ct).ConfigureAwait(false);
+    }
+
     /// <summary>Checks a single left/right pairing of the current Match drill, Duolingo-style — a live green/red
     /// border as the student taps, instead of waiting for the final "Check". Read-only: no attempt state changes,
     /// no XP, no "answered" count, so the student can retry a wrong pairing freely; the final <see cref="AnswerMatchAsync"/>
@@ -626,9 +670,10 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         return pair is null ? null : pair.Right == right;
     }
 
-    /// <summary>Shared tail for the 5 drill-answer methods (true/false, fill-blank, reorder, match, multi-select):
-    /// scores the exercise, updates skill/streak/xp, and queues the next item (another drill, a classic question, or
-    /// the test summary). Seconds (time on screen) is reserved for the same rhythm-advice path the classic flow uses.</summary>
+    /// <summary>Shared tail for the 6 drill-answer methods (true/false, fill-blank, reorder, match, multi-select,
+    /// listen): scores the exercise, updates skill/streak/xp, and queues the next item (another drill, a classic
+    /// question, or the test summary). Seconds (time on screen) is reserved for the same rhythm-advice path the
+    /// classic flow uses.</summary>
     private async Task<AnswerResult> FinishExerciseAnswerAsync(string userId, QuizAttempt attempt, PracticeExercise exercise, bool correct, int confidence, TeachLanguage language, CancellationToken ct)
     {
         confidence = Math.Clamp(confidence, 0, Spaced.Sure);
@@ -670,7 +715,9 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return new AnswerResult(correct, 0, exercise.Explanation, reward.Xp, attempt.Run, next,
+        // CorrectIndex is only meaningful for Listen (it shares the classic MultipleChoice shape, so the client can
+        // highlight the right option button); every other drill kind here has no such index, hence the ?? 0.
+        return new AnswerResult(correct, exercise.CorrectIndex ?? 0, exercise.Explanation, reward.Xp, attempt.Run, next,
             summary is null ? null : summary with { Xp = attempt.Xp }, reward) { Confidence = confidence };
     }
 

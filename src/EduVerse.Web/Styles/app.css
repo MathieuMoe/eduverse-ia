@@ -302,6 +302,24 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
 .kids .quiz-visual { font-size: 3rem; line-height: 1.2; }
 .quiz-option[data-state="removed"] { opacity: .35; text-decoration: line-through; }
 
+/* Answer-feedback gamification: a shake on a wrong answer, a bouncy pop on the feedback card, the 🔥 streak pill
+   popping when it grows, and a small confetti burst every 5-in-a-row (Duolingo-style milestone), all driven from
+   quiz.js's shared finishAnswer() so every answer kind (classic, true/false, fill-blank, reorder, match,
+   multi-select) gets the same feel. */
+@keyframes qz-shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-5px); } 40%, 60% { transform: translateX(5px); } }
+.qz-shake { animation: qz-shake .4s ease; }
+@keyframes qz-pop-in { 0% { opacity: 0; transform: scale(.92) translateY(6px); } 60% { opacity: 1; transform: scale(1.02) translateY(0); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.qz-pop-in { animation: qz-pop-in .35s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes qz-streak-pop { 0% { transform: scale(1) rotate(0); } 40% { transform: scale(1.4) rotate(-8deg); } 70% { transform: scale(.95) rotate(4deg); } 100% { transform: scale(1) rotate(0); } }
+.qz-streak-pop { animation: qz-streak-pop .5s ease; display: inline-flex; }
+.qz-confetti { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 20; }
+.qz-confetti span { position: absolute; top: 50%; left: 50%; width: .5rem; height: .5rem; border-radius: 2px; animation: qz-confetti-burst .9s ease-out forwards; }
+@keyframes qz-confetti-burst { 0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); } 100% { opacity: 0; transform: var(--qz-confetti-end, translate(0, -60px)) rotate(var(--qz-confetti-rot, 180deg)) scale(.4); } }
+@media (prefers-reduced-motion: reduce) {
+  .qz-shake, .qz-pop-in, .qz-streak-pop { animation: none; }
+  .qz-confetti { display: none; }
+}
+
 /* Fill-blank/reorder/match drills (task #71) */
 .quiz-token, .quiz-match-item { transition: transform .12s ease, background-color .15s ease, border-color .15s ease, opacity .15s ease; }
 .quiz-token:hover:not(:disabled), .quiz-match-item:hover:not(:disabled) { transform: translateY(-1px); }

@@ -534,3 +534,74 @@ tables where one already fit.
 - Not yet done: no e2e scenarios specific to the 4 new pages (`/Student/Family`, `/Student/FutureLetter`,
   `/Student/PipClaims`, or the bridge suggestion in Companion) were added to `e2e.mjs` — coverage for them currently comes
   from the Core/Infrastructure xUnit suite only, and no new README screenshots were captured for the 4 pages.
+
+## Quiz/Learn: fix the real repeat bug, gamify the answer feedback (tasks #93-96, #113-114)
+Mathieu: "a veces preguntas también se repiten... mejorar mucho para que sea más gamificado" (more ways to answer, more
+animations, questions sometimes repeat, make it much more Duolingo-like overall).
+- **The repeat bug, root-caused and fixed in code** (`QuizStore.NextQuestion`, the classic-question branch): a
+  student's last 300 answered questions are already excluded (`MemoryOfQuestions`), and fixed-fact subjects (History,
+  Geography, Economics — as opposed to Maths' procedurally generated numbers) only have a handful of distinct
+  questions per difficulty tier. The old retry loop (`tries` attempts, same difficulty) could exhaust that tier's
+  whole pool and still hand back a duplicate. It now widens to the other two difficulties before accepting a repeat —
+  their pools are largely disjoint, so this very often turns up something genuinely unseen with **no new content
+  authored**. Covered by 3 new tests (`QuizRepeatAvoidanceTests.cs`, driving the private method via reflection since
+  it has no public seam) proving the fallback fires, still returns something when truly exhausted everywhere, and
+  doesn't widen when the current tier still has unseen content.
+- **Gamified answer feedback** (`quiz.js` + `app.css`, wired into the shared `finishAnswer()` tail so every exercise
+  kind gets it — classic, true/false, fill-blank, reorder, match, multi-select): a quick shake on a wrong answer, a
+  bouncy pop-in on the feedback card, the 🔥 streak pill popping when it grows, and a small CSS-only confetti burst
+  every 5-in-a-row (no JS library, no new npm dependency — a handful of absolutely-positioned coloured dots animated
+  via CSS custom properties per dot). All new animation classes respect `prefers-reduced-motion`. Required
+  `npm run build:css` (new Tailwind-layer classes) before they took effect.
+- Already done before Mathieu raised this, just not reflected in the task tracker until now: MultiSelect ("select all
+  that apply") was already a 6th exercise kind, and drill frequency was already tightened to every 3rd answered item.
+- Verified: `dotnet build` 0 warnings, `dotnet test` 700/700 (3 new), full `e2e.mjs` suite green on a clean server/DB
+  restart, TLS workaround applied only for the run and reverted immediately after.
+- Deliberately **not** attempted in this pass (tracked as tasks #97, #114 for a dedicated future pass, same way the
+  original 6 Duolingo-style kinds were split across tasks #69-75): a 7th answer-interaction kind (candidate: reuse the
+  existing TTS/speech-recognition infra from Oral exam/Interviews for a "listen and answer" mode) and expanding the
+  thin content pools themselves (the real, not just mitigated, fix for repeats in the smallest subjects) — both are
+  multi-language content-authoring efforts too large to fold into a quick-turnaround bug-fix pass.
+
+## Quiz/Learn: "Listen and answer" — the 7th exercise kind (task #114)
+Mathieu said "sigue" (continue) after the previous phase; of the two next-phase items proposed there (a 7th
+answer-interaction kind, and expanding content pools), this one was picked first: it needs **zero new content
+authoring** and reuses infra that already existed, unlike the content-pool expansion (task #97, still deliberately
+deferred — a much larger multi-language authoring effort).
+- **`ExerciseKind.Listen`** (`EduVerse.Core.Catalog.Exercises.cs`): the prompt is spoken instead of shown, and the
+  student picks from the same 4 options a classic multiple-choice question would offer. `PracticeExercise` gained a
+  `CheckListen(int)` method with the same shape as the classic check (`CorrectIndex` equality).
+- **`ExerciseBank.Listen(...)`** (`ExerciseBank.cs`) is architecturally different from every other drill kind: instead
+  of a curated content bank, it wraps `QuestionBanks.Generate` — the same generator the classic multiple-choice
+  questions already use — directly. That means Listen automatically has content for **every subject, level and
+  language the platform already supports**, with no authoring at all, and it's the one drill kind that never returns
+  null. `AnyDrill` now rotates across 6 kinds (`AnyDrillKindOrder = [0..5]`), Listen being the new catch-all case.
+- **`QuizStore`**: new `AnswerListenAsync` (mirrors the FillBlank/Reorder/Match/MultiSelect pattern), and the shared
+  `FinishExerciseAnswerAsync` tail now returns `exercise.CorrectIndex ?? 0` instead of a hardcoded `0`, so Listen (the
+  only drill kind whose `CorrectIndex` is ever non-null) gets its real correct-option index back for client-side
+  highlighting, while every other kind keeps its exact prior behavior. `ViewOfExercise` now sends `Options` through
+  for Listen too (previously only MultiSelect did — Listen would otherwise reach the client with an empty option
+  list and nothing to answer with).
+- **Web API**: new `POST /api/quiz/{id}/listen` endpoint, same request/response shape as the classic `/answer`
+  endpoint (an option index).
+- **`quiz.js`**: Listen falls into the existing generic "4-option grid" rendering branch for its answer buttons (no
+  new UI needed there), but the prompt itself is hidden (`sr-only`, kept for screen readers) behind a 🔊 replay button
+  and a short hint, since the point is to hear it, not read it. `say(text, onend, force)` gained a `force` parameter
+  so the prompt is spoken even when the speak toggle is off — a muted Listen drill would otherwise have nothing to
+  answer. `answer()` routes `exerciseKind === "Listen"` to the new endpoint and treats it like True/False for
+  suppressing the "tell me how you thought" block (it's a drill, not a graded classic question).
+- 4-language resx coverage added (`Js_ListenReplay`, `Js_ListenHint`).
+- Covered by new Core tests (content exists for every subject/level including Language/ForeignLanguage, where
+  TrueFalse/MultiSelect have gaps; `AnyDrill` includes it; `CheckListen` right/wrong/wrong-kind) and a new
+  Infrastructure round-trip test (`AnswerListenAsync` right/wrong, and that `ViewOfExercise` actually sends Options).
+  Several existing tests that dispatch on `exercise.Kind` with a `TrueFalse`-catching default branch needed an
+  explicit `Listen` case added (`StudentPlatformTests.cs`, `AdventureTests.cs`, `DefenceTests.cs` ×2) — without it,
+  a Listen drill landing in those flows would crash on `CorrectBool!.Value` (null for Listen) or, in the Defence web
+  test, on `CheckTrueFalse` throwing for the wrong exercise kind.
+- Verified: `dotnet build` 0 warnings, `dotnet test` 721/721 (up from 700; 21 new/updated), full `e2e.mjs` suite green
+  on a clean server/DB restart (one unrelated pre-existing flaky rhythm-pacing test failed once, passed on rerun —
+  Focus mode never serves drills at all, so it isn't connected to this change), TLS workaround applied only for the
+  run and reverted immediately after.
+- Not yet done: no dedicated e2e assertions target the Listen UI specifically beyond `answerQuizQuestion` recognizing
+  and clicking through it (via the new `[data-testid=quiz-listen]` / `#qz-listen-replay` locators) when it happens to
+  come up in the existing Practice-mode loops; no new README screenshot for the Listen UI.
