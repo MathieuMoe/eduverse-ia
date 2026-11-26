@@ -1127,3 +1127,38 @@ public sealed class FigureDiscovery
 
     public DateTimeOffset CompletedAt { get; set; }
 }
+
+/// <summary>A 3-question check of one era of a country's timeline; the questions (with their answers) stay on the server.</summary>
+public sealed class CountryCheck
+{
+    public string Id { get; set; } = "";
+
+    public string UserId { get; set; } = "";
+
+    public string Country { get; set; } = "";
+
+    public string Era { get; set; } = "";
+
+    /// <summary>The questions of the check (HistoryQuestion list, JSON).</summary>
+    public string QuestionsJson { get; set; } = "[]";
+
+    public int Correct { get; set; }
+
+    public bool Passed { get; set; }
+
+    public DateTimeOffset StartedAt { get; set; }
+
+    public DateTimeOffset? FinishedAt { get; set; }
+}
+
+/// <summary>The timeline of a country written by the AI for one student (CountryHistory, JSON, checked when parsed).</summary>
+public sealed class CustomCountry
+{
+    public string Key { get; set; } = "";
+
+    public string UserId { get; set; } = "";
+
+    public string Json { get; set; } = "";
+
+    public DateTimeOffset CreatedAt { get; set; }
+}

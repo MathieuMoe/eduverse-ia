@@ -59,6 +59,10 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
 
     public DbSet<FriendQuest> FriendQuests => Set<FriendQuest>();
 
+    public DbSet<CountryCheck> CountryChecks => Set<CountryCheck>();
+
+    public DbSet<CustomCountry> CustomCountries => Set<CustomCountry>();
+
     public DbSet<BadgeAward> BadgeAwards => Set<BadgeAward>();
 
     public DbSet<QuestClaim> QuestClaims => Set<QuestClaim>();
@@ -104,7 +108,7 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
     public DbSet<FigureDiscovery> FigureDiscoveries => Set<FigureDiscovery>();
 
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 27;
+    public const int DatabaseVersion = 28;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -191,6 +195,9 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
         builder.Entity<RoleplaySession>().HasIndex(r => new { r.UserId, r.StartedAt });
         builder.Entity<FriendQuest>().HasIndex(f => new { f.Week, f.UserA });
         builder.Entity<FriendQuest>().HasIndex(f => new { f.Week, f.UserB });
+        builder.Entity<CountryCheck>().HasIndex(c => new { c.UserId, c.Country });
+        builder.Entity<CustomCountry>().HasKey(c => c.Key);
+        builder.Entity<CustomCountry>().HasIndex(c => new { c.UserId, c.CreatedAt });
         builder.Entity<BadgeAward>().HasKey(b => new { b.UserId, b.Key });
         builder.Entity<QuestClaim>().HasKey(q => new { q.UserId, q.Day, q.Key });
         builder.Entity<CompanionMessage>(e => e.HasIndex(m => new { m.UserId, m.At }));

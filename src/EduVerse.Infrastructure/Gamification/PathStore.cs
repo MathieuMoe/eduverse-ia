@@ -46,6 +46,13 @@ public sealed class PathStore(EduVerseDb db, GamificationStore game)
         return new PathView(area, level, nodes, LearningPath.CurrentUnit(nodes)) { Legendary = legendary };
     }
 
+    /// <summary>Lessons of a unit already passed: the stage of the next one (its difficulty).</summary>
+    public async Task<int> LessonsPassedAsync(string userId, Area area, Level level, string topic, CancellationToken ct = default) =>
+        (await db.QuizAttempts.AsNoTracking()
+            .Where(a => a.UserId == userId && a.Area == area && a.Level == level && a.FinishedAt != null && a.Mode == QuizMode.Focus && a.Topic == topic)
+            .Select(a => new { a.Correct, a.Length }).ToListAsync(ct).ConfigureAwait(false))
+            .Count(a => LearningPath.LessonPassed(a.Correct, a.Length));
+
     /// <summary>Whether the boss of a unit is open right now (the path is followed in order).</summary>
     public async Task<bool> BossOpenAsync(string userId, Area area, Level level, string topic, CancellationToken ct = default)
     {

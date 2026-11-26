@@ -89,7 +89,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
 
     public async Task<QuestionView> StartAsync(string userId, Area area, Level level, QuizMode mode, TeachLanguage language,
         int? duelId = null, IReadOnlyList<QuizQuestion>? pool = null, string? topic = null, string engine = "demo",
-        Story? story = null, Theme theme = Theme.Space, CancellationToken ct = default)
+        Story? story = null, Theme theme = Theme.Space, int? difficulty = null, CancellationToken ct = default)
     {
         if (!Catalog.Available(area, level))
         {
@@ -117,6 +117,19 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             ArgumentNullException.ThrowIfNull(pool);
             attempt.PoolJson = JsonSerializer.Serialize(pool, JsonOptions);
             attempt.Length = Math.Min(AdaptiveQuiz.Length, pool.Count);
+        }
+        else if (mode == QuizMode.Focus)
+        {
+            // A lesson of the learning path: its stage sets the starting difficulty, and the AI may bring fresh questions
+            if (difficulty is { } d)
+            {
+                attempt.Difficulty = Math.Clamp(d, 1, 3);
+            }
+
+            if (pool is { Count: > 0 })
+            {
+                attempt.PoolJson = JsonSerializer.Serialize(pool, JsonOptions);
+            }
         }
         else if (mode == QuizMode.Review)
         {
@@ -163,7 +176,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             attempt.PlanJson = JsonSerializer.Serialize(await MistakesAsync(userId, ct).ConfigureAwait(false), JsonOptions);
         }
 
-        if (mode is QuizMode.Practice or QuizMode.Placement or QuizMode.Evo or QuizMode.Adventure)
+        if (mode is QuizMode.Practice or QuizMode.Placement or QuizMode.Evo or QuizMode.Adventure or QuizMode.Focus)
         {
             // A new test never starts with questions the student has already seen (as long as the bank has new ones)
             attempt.UsedJson = JsonSerializer.Serialize(await SeenAsync(userId, attempt.Area, mode == QuizMode.Placement ? null : attempt.Level, ct).ConfigureAwait(false), JsonOptions);
@@ -198,6 +211,12 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     private async Task<List<string>> SeenAsync(string userId, Area area, Level? level, CancellationToken ct) =>
         await db.QuizAnswers.Where(a => a.UserId == userId && a.Area == area && (level == null || a.Level == level) && a.Key != "")
             .OrderByDescending(a => a.Id).Select(a => a.Key).Take(MemoryOfQuestions).ToListAsync(ct).ConfigureAwait(false);
+
+    /// <summary>The prompts of the last questions this student answered on one topic (for the AI to avoid them).</summary>
+    public async Task<IReadOnlyList<string>> SeenPromptsAsync(string userId, Area area, Level level, string topic, CancellationToken ct = default) =>
+        (await db.QuizAnswers.Where(a => a.UserId == userId && a.Area == area && a.Level == level && a.Topic == topic && a.Key != "")
+            .OrderByDescending(a => a.Id).Select(a => a.Key).Take(MemoryOfQuestions).ToListAsync(ct).ConfigureAwait(false))
+            .Select(PathLesson.PromptOfKey).Distinct(StringComparer.Ordinal).ToList();
 
     /// <summary>How many past questions a new test tries not to repeat.</summary>
     public const int MemoryOfQuestions = 300;
@@ -441,15 +460,32 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
         else if (attempt.Mode == QuizMode.Focus)
         {
-            // Study session of the plan: one topic, adaptive difficulty, no repeated question
-            var seed = QuestionBanks.Seed(attempt.Seed, attempt.Answered, attempt.Difficulty);
-            question = QuestionBanks.ForTopic(attempt.Area, attempt.Level, attempt.Topic ?? "", attempt.Difficulty, seed, language);
-            for (var retry = 1; retry < 20 && used.Contains(KeyOf(question)); retry++)
+            // Study session of the plan or lesson of the path: one topic, adaptive difficulty, never a question the
+            // student already saw while the topic has new ones. Fresh questions written by the AI come first.
+            var fresh = attempt.PoolJson is null ? null : JsonSerializer.Deserialize<List<QuizQuestion>>(attempt.PoolJson, JsonOptions);
+            var free = fresh?.Where(q => !used.Contains(KeyOf(q))).OrderBy(q => Math.Abs(q.Difficulty - attempt.Difficulty)).FirstOrDefault();
+            if (free is not null)
             {
-                question = QuestionBanks.ForTopic(attempt.Area, attempt.Level, attempt.Topic ?? "", attempt.Difficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, attempt.Difficulty), language);
+                question = free;
+            }
+            else
+            {
+                question = FocusQuestion(attempt, attempt.Difficulty, used, language);
+                foreach (var other in AllDifficulties.Where(d => d != attempt.Difficulty).OrderBy(d => Math.Abs(d - attempt.Difficulty)))
+                {
+                    if (!used.Contains(KeyOf(question)))
+                    {
+                        break;
+                    }
+
+                    // The tier is used up: a question of the nearest other difficulty beats a repeat
+                    var alt = FocusQuestion(attempt, other, used, language);
+                    question = used.Contains(KeyOf(alt)) ? question : alt;
+                }
+
+                question = WithInterest(attempt, question, interests, language, used);
             }
 
-            question = WithInterest(attempt, question, interests, language, used);
             used.Add(KeyOf(question));
         }
         else if (attempt.Mode == QuizMode.Review)
@@ -503,6 +539,18 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
 
         attempt.UsedJson = JsonSerializer.Serialize(used, JsonOptions);
+        return question;
+    }
+
+    private static QuizQuestion FocusQuestion(QuizAttempt attempt, int difficulty, List<string> used, TeachLanguage language)
+    {
+        var topic = attempt.Topic ?? "";
+        var question = QuestionBanks.ForTopic(attempt.Area, attempt.Level, topic, difficulty, QuestionBanks.Seed(attempt.Seed, attempt.Answered, difficulty), language);
+        for (var retry = 1; retry < 40 && used.Contains(KeyOf(question)); retry++)
+        {
+            question = QuestionBanks.ForTopic(attempt.Area, attempt.Level, topic, difficulty, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, difficulty), language);
+        }
+
         return question;
     }
 

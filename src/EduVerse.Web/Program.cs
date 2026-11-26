@@ -132,6 +132,7 @@ app.MapLearning();
 app.MapQuiz();
 app.MapGame();
 app.MapRoleplay();
+app.MapCountries();
 app.MapTutor();
 app.MapTeacherCompanion();
 app.MapIdeas();

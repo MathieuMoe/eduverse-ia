@@ -1,0 +1,161 @@
+@page
+@model EduVerse.Web.Pages.Student.CountriesModel
+@using EduVerse.Core.Gamification
+@using EduVerse.Infrastructure.Gamification
+@{
+    ViewData["Title"] = L["Nav_Countries"];
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+<div>
+    <h1 class="text-2xl font-semibold tracking-tight text-foreground">@L["Nav_Countries"]</h1>
+    <p class="text-sm text-muted-foreground-1">@L["Countries_Subtitle"]</p>
+</div>
+
+@if (Model.Chosen is null)
+{
+    @if (Model.Missing)
+    {
+        <p class="p-3 rounded-xl text-sm tone-sun text-foreground" role="status">@L["Countries_Missing"]</p>
+    }
+
+    var all = Countries.All.Concat(Model.Custom).ToList();
+    var stamps = all.Where(c => Model.Passed(c) == c.Eras.Count).ToList();
+    <section class="@Ui.Card p-5" aria-labelledby="passport-title" data-testid="passport">
+        <div class="flex flex-wrap items-center gap-3">
+            <span class="size-12 shrink-0 rounded-2xl tone-sun grid place-items-center text-2xl" aria-hidden="true">🛂</span>
+            <div class="min-w-0">
+                <h2 id="passport-title" class="text-base font-semibold text-foreground">@L["Countries_Passport"]</h2>
+                <p class="text-sm text-muted-foreground-1">@string.Format(culture, L["Countries_PassportHint"], Countries.StampGems)</p>
+            </div>
+            <ul class="ms-auto flex flex-wrap gap-2">
+                @foreach (var c in stamps)
+                {
+                    <li class="size-12 rounded-full border-2 border-dashed border-primary grid place-items-center text-2xl -rotate-6 tip tip-b" data-tip="@c.Name.In(language)" data-testid="passport-stamp"><span aria-hidden="true">@c.Flag</span><span class="sr-only">@c.Name.In(language)</span></li>
+                }
+                @if (stamps.Count == 0)
+                {
+                    <li class="text-sm text-muted-foreground-1">@L["Countries_NoStamps"]</li>
+                }
+            </ul>
+        </div>
+    </section>
+
+    <ul class="grid sm:grid-cols-2 gap-4" data-testid="country-list">
+        @foreach (var c in all)
+        {
+            var passed = Model.Passed(c);
+            <li>
+                <a href="/Student/Countries?country=@Uri.EscapeDataString(c.Key)" class="@Ui.Card p-5 flex flex-row items-start gap-4 hover:-translate-y-0.5 transition-transform h-full" data-testid="country-@c.Key">
+                    <span class="size-14 shrink-0 rounded-2xl @(passed == c.Eras.Count ? "tone-mint" : "tone-sky") grid place-items-center text-3xl" aria-hidden="true">@c.Flag</span>
+                    <span class="min-w-0 grow">
+                        <span class="block text-base font-semibold text-foreground">@c.Name.In(language)@(passed == c.Eras.Count ? " 🛂" : "")</span>
+                        <span class="block mt-1 text-sm text-muted-foreground-1">@Countries.Year(c.Eras[0].From, language) → @Countries.Year(c.Eras[^1].To, language) · @string.Format(culture, L["Countries_Eras"], c.Eras.Count)</span>
+                        <span class="mt-2 block h-2 rounded-full bg-surface overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="@c.Eras.Count" aria-valuenow="@passed" aria-label="@L["Countries_Progress"]">
+                            <span class="block h-full bg-primary rounded-full" style="width: @(c.Eras.Count == 0 ? 0 : passed * 100 / c.Eras.Count)%"></span>
+                        </span>
+                        <span class="mt-2 flex flex-wrap gap-1.5">
+                            @if (c.Custom)
+                            {
+                                <span class="@Ui.Pill tone-lavender text-foreground">✨ @L["Countries_ByAi"]</span>
+                            }
+                            <span class="@Ui.Pill bg-surface text-foreground">@passed / @c.Eras.Count</span>
+                            <span class="@Ui.Pill tone-sun text-foreground">+@Countries.EraXp XP · 💎 @Countries.EraGems</span>
+                        </span>
+                    </span>
+                </a>
+            </li>
+        }
+    </ul>
+
+    <section class="@Ui.Card p-5" aria-labelledby="country-new-title">
+        <h2 id="country-new-title" class="text-base font-semibold text-foreground">✨ @L["Countries_NewTitle"]</h2>
+        <p class="mt-1 text-sm text-muted-foreground-1">@L["Countries_NewHint"]</p>
+        <form class="mt-3 flex flex-wrap items-end gap-2" id="country-new">
+            <label class="sr-only" for="country-name">@L["Countries_NewLabel"]</label>
+            <input id="country-name" class="@Ui.Input grow basis-48" maxlength="@CountryHistoryPrompt.MaxName" minlength="2" required placeholder="@L["Countries_NewLabel"]" disabled="@Model.Offline" data-testid="country-new-name" />
+            <button type="submit" class="@Ui.BtnPrimary" disabled="@Model.Offline" data-testid="country-new-go">@L["Countries_NewGo"]</button>
+        </form>
+        @if (Model.Offline)
+        {
+            <p class="mt-3 p-3 rounded-xl text-sm tone-sun text-foreground" data-testid="country-new-offline">@L["Js_CountryNeedsAi"]</p>
+        }
+        <p class="mt-2 text-sm" id="country-new-status" role="status" data-testid="country-new-status"></p>
+    </section>
+}
+else
+{
+    var view = Model.Chosen;
+    var c = view.Country;
+    EduVerse.Web.Breadcrumb.Set(ViewData, c.Name.In(language), ("/Student/Countries", L["Nav_Countries"]));
+    <section class="@Ui.Card p-5 flex flex-row flex-wrap items-center gap-4" id="country-root" data-country="@c.Key">
+        <span class="size-14 shrink-0 rounded-2xl tone-sky grid place-items-center text-3xl" aria-hidden="true">@c.Flag</span>
+        <div class="min-w-0 grow">
+            <h2 class="text-lg font-semibold text-foreground">@c.Name.In(language)@(view.Stamped ? " 🛂" : "")</h2>
+            <p class="text-sm text-muted-foreground-1">@L["Countries_TimelineHint"]</p>
+        </div>
+        <span class="@Ui.Pill tone-mint text-foreground text-sm!" data-testid="country-done">@view.Done / @c.Eras.Count</span>
+    </section>
+
+    <ol class="relative ms-5 border-s-2 border-dashed border-layer-line space-y-6" data-testid="country-timeline">
+        @for (var i = 0; i < c.Eras.Count; i++)
+        {
+            var era = c.Eras[i];
+            var state = view.Eras[i];
+            var tone = state switch
+            {
+                EraState.Done => "tone-mint",
+                EraState.Open => "bg-primary text-primary-foreground ring-4 ring-primary/25",
+                _ => "bg-surface grayscale opacity-60",
+            };
+            <li class="relative ps-8" data-testid="country-era" data-state="@state">
+                <span class="absolute -start-[1.45rem] top-1 size-10 rounded-full grid place-items-center text-xl @tone" aria-hidden="true">@(state == EraState.Locked ? "🔒" : era.Emoji)</span>
+                <p class="text-xs font-semibold text-muted-foreground-1">@Countries.Years(era, language)</p>
+                @if (state == EraState.Locked)
+                {
+                    <h3 class="text-base font-semibold text-muted-foreground-1">@era.Title.In(language)</h3>
+                    <p class="text-xs text-muted-foreground-1">@L["Countries_Locked"]</p>
+                }
+                else
+                {
+                    <details class="@Ui.Card mt-1 p-4 sm:p-5 group" open="@(state == EraState.Open)">
+                        <summary class="cursor-pointer list-none flex items-center gap-2">
+                            <h3 class="text-base font-semibold text-foreground grow">@era.Title.In(language)@(state == EraState.Done ? " ✅" : "")</h3>
+                            <span class="text-muted-foreground-1 group-open:rotate-180 transition-transform" aria-hidden="true">⌄</span>
+                        </summary>
+                        <p class="mt-3 text-sm text-foreground leading-relaxed">@era.Story.In(language)</p>
+                        <div class="mt-3 p-3 rounded-2xl tone-sun">
+                            <p class="text-xs font-semibold text-foreground">🤯 @L["Countries_Oddity"]</p>
+                            <p class="mt-1 text-sm text-foreground">@era.Oddity.In(language)</p>
+                        </div>
+                        <h4 class="mt-4 text-sm font-semibold text-foreground">@L["Countries_People"]</h4>
+                        <ul class="mt-2 grid sm:grid-cols-2 gap-2">
+                            @foreach (var p in era.People)
+                            {
+                                <li class="flex items-start gap-3 p-2.5 rounded-2xl bg-surface">
+                                    <span class="size-10 shrink-0 rounded-full tone-lavender grid place-items-center text-xl" aria-hidden="true">@p.Emoji</span>
+                                    <span class="min-w-0">
+                                        <span class="block text-sm font-semibold text-foreground">@p.Name.In(language)</span>
+                                        <span class="block text-xs text-muted-foreground-1">@p.Role.In(language)</span>
+                                        @if (p.Figure is not null)
+                                        {
+                                            <a href="/Student/Interview?figure=@p.Figure" class="mt-1 inline-block text-xs font-semibold text-primary hover:underline" data-testid="country-interview">🎙️ @L["Countries_Interview"]</a>
+                                        }
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                        <div class="mt-4" data-check-box>
+                            <button type="button" class="@Ui.BtnPrimary" data-check="@i" data-testid="country-check">🧭 @string.Format(culture, L["Countries_Check"], Countries.CheckLength)</button>
+                        </div>
+                    </details>
+                }
+            </li>
+        }
+    </ol>
+}
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/countries.js" asp-append-version="true"></script>
+}

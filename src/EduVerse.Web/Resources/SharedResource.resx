@@ -1843,4 +1843,32 @@
   <data name="BadgeHint_Legend" xml:space="preserve"><value>Make a unit of the path legendary</value></data>
   <data name="Badge_Actor" xml:space="preserve"><value>Actor</value></data>
   <data name="BadgeHint_Actor" xml:space="preserve"><value>Complete {0} different roleplays</value></data>
+  <data name="Nav_Countries" xml:space="preserve"><value>History trips</value></data>
+  <data name="Countries_Subtitle" xml:space="preserve"><value>Travel through the history of a country on a timeline: its great eras, its main figures and its strangest true facts.</value></data>
+  <data name="Countries_Missing" xml:space="preserve"><value>That trip does not exist (or is not yours). Pick a country below.</value></data>
+  <data name="Countries_Passport" xml:space="preserve"><value>Your history passport</value></data>
+  <data name="Countries_PassportHint" xml:space="preserve"><value>Pass every era of a country to get its stamp (+{0} gems).</value></data>
+  <data name="Countries_NoStamps" xml:space="preserve"><value>No stamps yet: start a trip!</value></data>
+  <data name="Countries_Eras" xml:space="preserve"><value>{0} eras</value></data>
+  <data name="Countries_Progress" xml:space="preserve"><value>Eras passed</value></data>
+  <data name="Countries_ByAi" xml:space="preserve"><value>Written by the AI</value></data>
+  <data name="Countries_NewTitle" xml:space="preserve"><value>Another country</value></data>
+  <data name="Countries_NewHint" xml:space="preserve"><value>Write the name of a country and the AI prepares its timeline for you (it needs an AI engine; the countries above work offline).</value></data>
+  <data name="Countries_NewLabel" xml:space="preserve"><value>Country (e.g. Italy, Egypt, Peru)</value></data>
+  <data name="Countries_NewGo" xml:space="preserve"><value>Prepare the trip</value></data>
+  <data name="Countries_TimelineHint" xml:space="preserve"><value>Walk the timeline in order: read each era and pass its check to open the next one.</value></data>
+  <data name="Countries_Locked" xml:space="preserve"><value>Pass the era before to open this one.</value></data>
+  <data name="Countries_Oddity" xml:space="preserve"><value>Strange but true</value></data>
+  <data name="Countries_People" xml:space="preserve"><value>Main figures</value></data>
+  <data name="Countries_Interview" xml:space="preserve"><value>Interview</value></data>
+  <data name="Countries_Check" xml:space="preserve"><value>Check this era ({0} questions)</value></data>
+  <data name="Js_CountrySubmit" xml:space="preserve"><value>Check my answers</value></data>
+  <data name="Js_CountryPassed" xml:space="preserve"><value>{0} of {1} right: era passed!</value></data>
+  <data name="Js_CountryFailed" xml:space="preserve"><value>{0} of {1} right: read the era again and try another check.</value></data>
+  <data name="Js_CountryStamp" xml:space="preserve"><value>Country complete: a new stamp in your passport!</value></data>
+  <data name="Js_CountryContinue" xml:space="preserve"><value>Continue the trip</value></data>
+  <data name="Js_CountryRetry" xml:space="preserve"><value>Try again</value></data>
+  <data name="Js_CountryWriting" xml:space="preserve"><value>The AI is preparing the timeline…</value></data>
+  <data name="Js_CountryNeedsAi" xml:space="preserve"><value>Writing a new country needs an AI engine. Choose one in the header, or travel through the countries above: they work offline.</value></data>
+  <data name="Js_Err_era_locked" xml:space="preserve"><value>This era is still locked: pass the one before first.</value></data>
 </root>

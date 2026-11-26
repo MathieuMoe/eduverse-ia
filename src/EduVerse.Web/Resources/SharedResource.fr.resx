@@ -1843,4 +1843,32 @@
   <data name="BadgeHint_Legend" xml:space="preserve"><value>Rends une unité du parcours légendaire</value></data>
   <data name="Badge_Actor" xml:space="preserve"><value>Acteur</value></data>
   <data name="BadgeHint_Actor" xml:space="preserve"><value>Termine {0} jeux de rôle différents</value></data>
+  <data name="Nav_Countries" xml:space="preserve"><value>Voyages dans l'histoire</value></data>
+  <data name="Countries_Subtitle" xml:space="preserve"><value>Voyage dans l'histoire d'un pays sur une frise : ses grandes époques, ses personnages principaux et ses faits vrais les plus étranges.</value></data>
+  <data name="Countries_Missing" xml:space="preserve"><value>Ce voyage n'existe pas (ou n'est pas à toi). Choisis un pays ci-dessous.</value></data>
+  <data name="Countries_Passport" xml:space="preserve"><value>Ton passeport d'histoire</value></data>
+  <data name="Countries_PassportHint" xml:space="preserve"><value>Réussis toutes les époques d'un pays pour obtenir son tampon (+{0} gemmes).</value></data>
+  <data name="Countries_NoStamps" xml:space="preserve"><value>Pas encore de tampon : commence un voyage !</value></data>
+  <data name="Countries_Eras" xml:space="preserve"><value>{0} époques</value></data>
+  <data name="Countries_Progress" xml:space="preserve"><value>Époques réussies</value></data>
+  <data name="Countries_ByAi" xml:space="preserve"><value>Écrit par l'IA</value></data>
+  <data name="Countries_NewTitle" xml:space="preserve"><value>Un autre pays</value></data>
+  <data name="Countries_NewHint" xml:space="preserve"><value>Écris le nom d'un pays et l'IA te prépare sa frise (il faut un moteur d'IA ; les pays ci-dessus marchent hors ligne).</value></data>
+  <data name="Countries_NewLabel" xml:space="preserve"><value>Pays (ex. Italie, Égypte, Pérou)</value></data>
+  <data name="Countries_NewGo" xml:space="preserve"><value>Préparer le voyage</value></data>
+  <data name="Countries_TimelineHint" xml:space="preserve"><value>Parcours la frise dans l'ordre : lis chaque époque et réussis son test pour ouvrir la suivante.</value></data>
+  <data name="Countries_Locked" xml:space="preserve"><value>Réussis l'époque précédente pour ouvrir celle-ci.</value></data>
+  <data name="Countries_Oddity" xml:space="preserve"><value>Étrange mais vrai</value></data>
+  <data name="Countries_People" xml:space="preserve"><value>Personnages principaux</value></data>
+  <data name="Countries_Interview" xml:space="preserve"><value>Interviewer</value></data>
+  <data name="Countries_Check" xml:space="preserve"><value>Tester cette époque ({0} questions)</value></data>
+  <data name="Js_CountrySubmit" xml:space="preserve"><value>Vérifier mes réponses</value></data>
+  <data name="Js_CountryPassed" xml:space="preserve"><value>{0} sur {1} : époque réussie !</value></data>
+  <data name="Js_CountryFailed" xml:space="preserve"><value>{0} sur {1} : relis l'époque et retente un test.</value></data>
+  <data name="Js_CountryStamp" xml:space="preserve"><value>Pays terminé : un nouveau tampon dans ton passeport !</value></data>
+  <data name="Js_CountryContinue" xml:space="preserve"><value>Continuer le voyage</value></data>
+  <data name="Js_CountryRetry" xml:space="preserve"><value>Réessayer</value></data>
+  <data name="Js_CountryWriting" xml:space="preserve"><value>L'IA prépare la frise…</value></data>
+  <data name="Js_CountryNeedsAi" xml:space="preserve"><value>Écrire un nouveau pays nécessite un moteur d'IA. Choisis-en un dans l'en-tête, ou voyage dans les pays ci-dessus : ils marchent hors ligne.</value></data>
+  <data name="Js_Err_era_locked" xml:space="preserve"><value>Cette époque est encore verrouillée : réussis d'abord la précédente.</value></data>
 </root>

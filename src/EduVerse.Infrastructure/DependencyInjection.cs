@@ -68,6 +68,7 @@ public static class DependencyInjection
         services.AddScoped<Gamification.PathStore>();
         services.AddScoped<Gamification.RoleplayStore>();
         services.AddScoped<Gamification.FriendQuestStore>();
+        services.AddScoped<Gamification.CountryStore>();
         services.AddScoped<Quizzes.QuizStore>();
         services.AddScoped<Tutor.TeachStore>();
         services.AddScoped<Tutor.CompanionStore>();

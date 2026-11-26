@@ -848,7 +848,7 @@
     async function start() {
         stage.innerHTML = `<div class="py-10 text-center text-sm text-muted-foreground-1"><span class="animate-spin inline-block size-5 border-2 border-current border-t-transparent rounded-full" aria-hidden="true"></span> ${esc(t("Generating"))}</div>`;
         try {
-            const body = { area, level, mode: mode === "Topic" ? "Practice" : mode, topic: topic || null, duelId: duel ? +duel : null, figure: figure || null };
+            const body = { area, level, mode: mode === "Topic" ? "Practice" : mode, topic: topic || null, duelId: duel ? +duel : null, figure: figure || null, path: !!pathUrl };
             const url = root.dataset.material ? `/api/materials/${encodeURIComponent(root.dataset.material)}/quiz` : mode === "Topic" ? "/api/quiz/topic" : unit ? "/api/quiz/boss" : mode === "Adventure" ? "/api/quiz/adventure" : "/api/quiz/start";
             const res = await api(url, { json: unit ? { area, level, topic: unit, legendary: root.dataset.legend === "1" } : mode === "Adventure" ? { area, level, theme } : body });
             render(res.question);

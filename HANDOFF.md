@@ -735,3 +735,42 @@ Mathieu: "Sigue" → the "next ideas" of the previous section. No schema change 
 - Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 795/795 (two runs), full `e2e.mjs` green on a clean DB
   (323 checks). One e2e catch fixed on the way: the new dashboard chips (league, friend quest) overflowed a 390 px phone
   with long nicknames — they now truncate.
+
+## Fresh questions in every lesson of the path + "History trips" (country timelines)
+Mathieu: "En cada etapa del camino de un tema siempre son las mismas preguntas, la IA debería preparar cada vez preguntas
+diferentes… y añadir una sección para conocer la historia de un país: sus personajes principales, sus cosas raras, su
+historia general, como un camino temporal." DatabaseVersion 27 → **28** (2 new tables).
+- **Why lessons repeated.** Focus mode (study plan and path lessons) never seeded `UsedJson` with the questions the student
+  had already answered (only Practice/Placement/Evo/Adventure did), so every lesson of a unit started from the same bank
+  seeds. Now Focus is seeded with `SeenAsync` too, and when a difficulty tier runs dry it widens to the nearest other
+  difficulty before accepting a repeat (`QuizStore.FocusQuestion`).
+- **Stage = difficulty.** `PathLesson.Difficulty(lessonsPassed)`: 1st lesson of a unit starts at 1, 2nd at 2, 3rd at 3
+  (`PathStore.LessonsPassedAsync`; the client sends `path: true` when the lesson was opened from the path). Adaptive
+  difficulty still moves from there.
+- **The AI writes each lesson.** With an engine, `POST /api/quiz/start` (Focus) asks the AI for 8 new questions on the
+  curriculum topic (`PathLesson.Build`): stage of the lesson, an "angle" drawn at random (`PathLesson.Angles`: everyday
+  life, a story, typical mistakes, sport, space, cooking…), 3 bank questions as scope examples and up to 30 prompts the
+  student already saw on that topic (`QuizStore.SeenPromptsAsync`) to avoid. "El código decide": `PathLesson.Parse`
+  checks every question (4 distinct options, one right — `TopicQuizPrompt.ParseAll`), drops any whose normalised prompt
+  was already seen, re-tags them with the bank topic (BKT keeps working) and needs at least 3. They go to
+  `attempt.PoolJson`; Focus serves them first, then the banks (never a seen question). Offline or if the AI fails →
+  banks only (engine "bank" in the answer; a fallback note if the AI failed).
+- **History trips** (`/Student/Countries`, nav "History trips / Voyages dans l'histoire / Viajes por la historia /
+  Viatges per la història"). Core `Countries.All`: Spain, France, Mexico, Japan, 6 eras each (years, story, 1–2 main
+  figures with an emoji avatar — no pictures of real people —, a "strange but true" fact), 4 languages. Figures that are
+  also interview figures link to the interview (Cervantes, Curie, Champollion). The timeline is walked in order: an era
+  opens when the previous one is passed. Each era ends with a 3-question check written by the code
+  (`CountryQuiz.Check`): 3 of 5 kinds drawn at random (who lived then, when, which weird fact, what came first, what a
+  figure is remembered for) with wrong options from other eras → different every time, always right; 2/3 to pass.
+  First pass: +15 XP, +5 gems; all eras → passport stamp 🛂 (+30 gems). Stores: `CountryStore` (entities
+  `CountryCheck` — questions and key stay on the server — and `CustomCountry`).
+- **Any other country with the AI.** `POST /api/countries {name}` → `CountryHistoryPrompt` (5–7 eras, real people only,
+  neutral and age-appropriate); `Parse` refuses timelines out of order, without people, or with fewer than 4 distinct
+  figures. Saved per student (`ai-xxxxxxxxxxxx`, last 12 listed). Offline → `needs_ai` (the 4 built-in countries work offline).
+- Tests: `FreshLessonTests.cs` (stage → difficulty, AI parse drops seen/invalid, pool first then banks, two lessons in a
+  row don't repeat), `CountryTests.cs` (content in every language and in order, checks valid and varied, right answer =
+  the era's fact, AI parse, store unlock/rewards/stamp/ownership, web: list, locked era 409, key never sent, needs_ai,
+  path lesson offline). e2e: AI country offline message, pass Spain's first era by reading its card, next era opens;
+  screenshot `docs/screenshot-countries.png`.
+- With the demo engine selected the "another country" form is disabled and says why (no failing request).
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 807/807, full `e2e.mjs` green on a clean DB (329 checks).

@@ -25,6 +25,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 ![Weekly league: Bronze to Diamond, promotion and demotion zones, and the friend quest of the week](docs/screenshot-league.png)
 ![Gem shop: streak freezes, double XP, heart potions and avatar frames — gems are only earned by learning](docs/screenshot-shop.png)
 ![Roleplay: haggling with a Roman merchant; the missions tick in code, the AI only plays the character](docs/screenshot-roleplay.png)
+![History trips: the timeline of a country, its main figures and a strange-but-true fact; each era ends with a check written by the code](docs/screenshot-countries.png)
 ![The story of your mistakes: the week's most-missed topics told as a short adventure](docs/screenshot-mistake-story.png)
 ![Arena: weekly ranking with nicknames, teams, class challenge, duels](docs/screenshot-arena.png)
 ![Achievements: titles, badges and their progress](docs/screenshot-achievements.png)

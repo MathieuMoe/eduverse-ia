@@ -1,4 +1,5 @@
 using EduVerse.Core.Catalog;
+using EduVerse.Core.Gamification;
 using EduVerse.Core.Learning;
 using EduVerse.Infrastructure.Engines;
 using EduVerse.Infrastructure.Gamification;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace EduVerse.Web;
 
-public sealed record QuizStartRequest(Area Area, Level Level, QuizMode Mode, string? Topic, int? DuelId, string? Figure = null);
+public sealed record QuizStartRequest(Area Area, Level Level, QuizMode Mode, string? Topic, int? DuelId, string? Figure = null, bool Path = false);
 
 public sealed record QuizAnswerRequest(int Choice, int? Confidence = null, int? Seconds = null);
 
@@ -33,11 +34,35 @@ public sealed record BossRequest(Area Area, Level Level, string? Topic, bool Leg
 /// </summary>
 public static class QuizEndpoints
 {
+    private sealed record FreshLesson(IReadOnlyList<QuizQuestion>? Pool, int? Difficulty);
+
+    /// <summary>
+    /// A lesson on one topic (study plan or learning path): the stage of the path sets the difficulty and, with an AI
+    /// engine, a new set of questions is written avoiding the ones the student already saw. Offline (or if the AI
+    /// fails) the banks answer, still without repeating a question the student answered.
+    /// </summary>
+    private static async Task<AiRunner.Run<FreshLesson>> FreshLessonAsync(QuizStartRequest request, HttpContext context, QuizStore store, PathStore paths, AiEngines engines, ILogger logger)
+    {
+        var userId = context.User.Id();
+        var topic = request.Topic!;
+        int? difficulty = request.Path ? PathLesson.Difficulty(await paths.LessonsPassedAsync(userId, request.Area, request.Level, topic, context.RequestAborted)) : null;
+        var language = Localization.LanguageForCurrentCulture();
+        return await AiRunner.RunAsync(context, engines, logger, async ai =>
+        {
+            var seen = await store.SeenPromptsAsync(userId, request.Area, request.Level, topic, context.RequestAborted);
+            var stage = difficulty ?? AdaptiveQuiz.StartDifficulty;
+            var seed = Random.Shared.Next();
+            var examples = Enumerable.Range(0, 3).Select(i => QuestionBanks.ForTopic(request.Area, request.Level, topic, stage, QuestionBanks.Seed(seed, i, stage), language)).ToList();
+            var prompt = PathLesson.Build(request.Area, request.Level, topic, stage, PathLesson.AngleFor(seed), seen, examples, language);
+            return new FreshLesson(PathLesson.Parse(await ai.GenerateAsync(prompt, context.RequestAborted), topic, seen), difficulty);
+        }, () => Task.FromResult(new FreshLesson(null, difficulty)));
+    }
+
     public static IEndpointRouteBuilder MapQuiz(this IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/api/quiz").RequireAuthorization(CurrentUser.StudentPolicy);
 
-        api.MapPost("/start", async (QuizStartRequest request, HttpContext context, QuizStore store, GamificationStore game, IStringLocalizer<SharedResource> l) =>
+        api.MapPost("/start", async (QuizStartRequest request, HttpContext context, QuizStore store, GamificationStore game, PathStore paths, AiEngines engines, ILogger<QuizStartRequest> logger, IStringLocalizer<SharedResource> l) =>
         {
             if (request is null || !Enum.IsDefined(request.Area) || !Enum.IsDefined(request.Level) || request.Mode is not (QuizMode.Practice or QuizMode.Placement or QuizMode.Duel or QuizMode.Evo or QuizMode.Notebook or QuizMode.Review or QuizMode.Interview or QuizMode.Focus))
             {
@@ -73,7 +98,18 @@ public static class QuizEndpoints
                 return Results.Json(new { code = "nothing_to_review" }, statusCode: StatusCodes.Status409Conflict);
             }
 
-            var question = await store.StartAsync(context.User.Id(), request.Area, request.Level, request.Mode, Localization.LanguageForCurrentCulture(), request.DuelId, topic: request.Mode == QuizMode.Focus ? request.Topic : null, ct: context.RequestAborted);
+            if (request.Mode == QuizMode.Focus)
+            {
+                return await AiRunner.GuardAsync(async () =>
+                {
+                    var lesson = await FreshLessonAsync(request, context, store, paths, engines, logger);
+                    var focus = await store.StartAsync(context.User.Id(), request.Area, request.Level, QuizMode.Focus, Localization.LanguageForCurrentCulture(),
+                        pool: lesson.Result.Pool, topic: request.Topic, engine: lesson.Engine, difficulty: lesson.Result.Difficulty, ct: context.RequestAborted);
+                    return Results.Ok(new { engine = lesson.Result.Pool is null ? "bank" : lesson.Engine, fallback = lesson.Fallback, question = QuestionPayload(focus, l) });
+                });
+            }
+
+            var question = await store.StartAsync(context.User.Id(), request.Area, request.Level, request.Mode, Localization.LanguageForCurrentCulture(), request.DuelId, ct: context.RequestAborted);
             return Results.Ok(new { engine = "bank", question = QuestionPayload(question, l) });
         })
         .RequireRateLimiting("quiz");

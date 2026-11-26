@@ -172,6 +172,18 @@ public static class TopicQuizPrompt
 
     public static IReadOnlyList<QuizQuestion> Parse(JsonElement json, string topic)
     {
+        var questions = ParseAll(json, topic);
+        if (questions.Count < 5)
+        {
+            throw new AiGenerationException("The AI did not return enough valid questions.");
+        }
+
+        return questions.Take(12).ToList();
+    }
+
+    /// <summary>Every valid question of the answer (4 distinct options, one right), however few.</summary>
+    public static List<QuizQuestion> ParseAll(JsonElement json, string topic)
+    {
         var questions = new List<QuizQuestion>();
         foreach (var q in Json.Objects(json, "questions"))
         {
@@ -188,12 +200,7 @@ public static class TopicQuizPrompt
             questions.Add(new QuizQuestion("topic:" + topic, difficulty, text, options, correct.Value, Json.Text(q, "explanation", 600)));
         }
 
-        if (questions.Count < 5)
-        {
-            throw new AiGenerationException("The AI did not return enough valid questions.");
-        }
-
-        return questions.Take(12).ToList();
+        return questions;
     }
 
     /// <summary>Next question from the pool: the closest to the wanted difficulty, in the order given.</summary>
