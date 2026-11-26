@@ -69,6 +69,38 @@ public sealed class FriendQuestStore(EduVerseDb db, GamificationStore game, Leag
         return FriendQuestOutcome.Started;
     }
 
+    /// <summary>
+    /// From Tuesday, a student without a friend quest gets one with the free classmate closest in XP this week (they
+    /// are told on the dashboard and the league page). Returns the quest, or null when nobody is free.
+    /// </summary>
+    public async Task<FriendQuestView?> AutoPairAsync(string userId, CancellationToken ct = default)
+    {
+        if (await CurrentAsync(userId, ct).ConfigureAwait(false) is { } existing)
+        {
+            return existing;
+        }
+
+        if (!FriendQuests.AutoPairDue(game.Today, game.DayOf(game.WeekStart)))
+        {
+            return null;
+        }
+
+        var candidates = await CandidatesAsync(userId, ct).ConfigureAwait(false);
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
+        var from = game.WeekStart;
+        var ids = candidates.Select(c => c.UserId).Append(userId).ToList();
+        var xp = await db.XpEvents.Where(x => ids.Contains(x.UserId) && x.At >= from).GroupBy(x => x.UserId)
+            .Select(g => new { g.Key, Sum = g.Sum(x => x.Amount) }).ToDictionaryAsync(g => g.Key, g => g.Sum, ct).ConfigureAwait(false);
+        var friend = FriendQuests.Pick(candidates, xp.GetValueOrDefault(userId), c => xp.GetValueOrDefault(c.UserId), c => c.Nickname);
+        return friend is not null && await StartAsync(userId, friend.UserId, ct).ConfigureAwait(false) == FriendQuestOutcome.Started
+            ? await CurrentAsync(userId, ct).ConfigureAwait(false)
+            : null;
+    }
+
     public async Task<FriendQuestView?> CurrentAsync(string userId, CancellationToken ct = default)
     {
         var row = await CurrentRowAsync(userId, ct).ConfigureAwait(false);

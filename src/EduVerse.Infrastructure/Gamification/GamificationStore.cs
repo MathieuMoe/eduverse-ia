@@ -18,10 +18,16 @@ public sealed record Reward(int Xp, IReadOnlyList<string> Badges, IReadOnlyList<
     /// <summary>The answer XP was doubled (happy hour or a double-XP boost from the shop).</summary>
     public bool Boosted { get; init; }
 
-    /// <summary>Gems won with this reward (quests, badges, daily goal).</summary>
+    /// <summary>Gems won with this reward (quests, badges, daily goal, streak milestone).</summary>
     public int Gems { get; init; }
 
-    public Reward Plus(Reward other) => new(Xp + other.Xp, [.. Badges, .. other.Badges], [.. Quests, .. other.Quests]) { Boosted = Boosted || other.Boosted, Gems = Gems + other.Gems };
+    /// <summary>The streak milestone (7, 30, 100… days) this answer reached, or 0.</summary>
+    public int Milestone { get; init; }
+
+    public Reward Plus(Reward other) => new(Xp + other.Xp, [.. Badges, .. other.Badges], [.. Quests, .. other.Quests])
+    {
+        Boosted = Boosted || other.Boosted, Gems = Gems + other.Gems, Milestone = Math.Max(Milestone, other.Milestone),
+    };
 }
 
 /// <summary>The shop as one student sees it: balance, what they own and what is running.</summary>
@@ -165,7 +171,8 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
     public async Task<Reward> AnswerAsync(string userId, bool correct, int difficulty, int run, string source, int hints, bool sure, CancellationToken ct = default)
     {
         var profile = await db.StudentProfiles.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false);
-        if (!await ActiveTodayAsync(userId, ct).ConfigureAwait(false))
+        var firstToday = !await ActiveTodayAsync(userId, ct).ConfigureAwait(false);
+        if (firstToday)
         {
             // First answer of the day: a missed day in between is covered now by a streak freeze, if the student has enough
             await SettleStreakAsync(userId, ct).ConfigureAwait(false);
@@ -174,7 +181,34 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
         var boosted = (profile is not null && HappyHour.IsActive(profile.HappyHour, LocalTime)) || await DoubleXpActiveAsync(userId, ct).ConfigureAwait(false);
         var xp = HappyHour.Apply(Xp.ForAnswer(correct, difficulty, run, hints, sure), boosted);
         await AwardAsync(userId, xp, source, correct, ct).ConfigureAwait(false);
-        return new Reward(xp, [], []) { Boosted = boosted }.Plus(await CheckAsync(userId, ct).ConfigureAwait(false));
+        var reward = new Reward(xp, [], []) { Boosted = boosted };
+        if (firstToday && source is "answer" or "tutor")
+        {
+            // The first answer of the day is the one that can make the streak reach a milestone: gems, once per milestone
+            var streak = await StreakAsync(userId, ct).ConfigureAwait(false);
+            var key = "streak:" + streak.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (Streaks.IsMilestone(streak) && !await db.GemEvents.AnyAsync(g => g.UserId == userId && g.Reason == key, ct).ConfigureAwait(false))
+            {
+                db.GemEvents.Add(new GemEvent { UserId = userId, Amount = Streaks.MilestoneGems(streak), Reason = key, At = Now });
+                await db.SaveChangesAsync(ct).ConfigureAwait(false);
+                reward = reward with { Milestone = streak, Gems = Streaks.MilestoneGems(streak) };
+            }
+        }
+
+        return reward.Plus(await CheckAsync(userId, ct).ConfigureAwait(false));
+    }
+
+    /// <summary>The evening reminder: the streak is alive but nothing was done today (null when it isn't at risk).</summary>
+    public async Task<(int Streak, int HoursLeft, int Freezes)?> StreakRiskAsync(string userId, CancellationToken ct = default)
+    {
+        if (await ActiveTodayAsync(userId, ct).ConfigureAwait(false))
+        {
+            return null;
+        }
+
+        var streak = await StreakAsync(userId, ct).ConfigureAwait(false);
+        var time = LocalTime;
+        return Streaks.AtRisk(streak, false, time) ? (streak, Streaks.HoursLeft(time), await FreezesOwnedAsync(userId, ct).ConfigureAwait(false)) : null;
     }
 
     /// <summary>The time of day where the platform runs (same zone as the streak days).</summary>
@@ -482,7 +516,7 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
         var quizCorrect = await db.QuizAnswers.CountAsync(a => a.UserId == userId && a.Correct, ct).ConfigureAwait(false);
         var tutorCorrect = await db.Attempts.CountAsync(a => a.UserId == userId && a.Correct, ct).ConfigureAwait(false);
         var tests = await db.QuizAttempts.Where(a => a.UserId == userId && a.FinishedAt != null)
-            .Select(a => new { a.Mode, a.Correct, a.Length, a.Won }).ToListAsync(ct).ConfigureAwait(false);
+            .Select(a => new { a.Mode, a.Correct, a.Length, a.Won, a.Topic }).ToListAsync(ct).ConfigureAwait(false);
         var areas = await db.QuizAnswers.Where(a => a.UserId == userId).Select(a => a.Area).Distinct().CountAsync(ct).ConfigureAwait(false);
         var advanced = await db.QuizAnswers.AnyAsync(a => a.UserId == userId && a.Level >= Level.Master, ct).ConfigureAwait(false);
         var mastered = await db.Mastery.CountAsync(m => m.UserId == userId && m.Status == MasteryStatus.Mastered, ct).ConfigureAwait(false);
@@ -513,7 +547,9 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
             certificates.Count,
             certificates.Count(k => Trades.Find(k)?.Kind == TradeKind.Hobby),
             await db.IdeaVotes.CountAsync(v => v.UserId == userId && v.Proposed && db.Ideas.Any(i => i.Id == v.IdeaId && i.Status == EduVerse.Core.Ideas.IdeaStatus.Available), ct).ConfigureAwait(false),
-            await db.ThinkingNotes.CountAsync(t => t.UserId == userId, ct).ConfigureAwait(false));
+            await db.ThinkingNotes.CountAsync(t => t.UserId == userId, ct).ConfigureAwait(false),
+            tests.Count(t => t.Mode == QuizMode.Adventure && t.Won && LearningPath.IsLegend(t.Topic)),
+            await db.RoleplaySessions.Where(r => r.UserId == userId && r.Completed).Select(r => r.Scenario).Distinct().CountAsync(ct).ConfigureAwait(false));
     }
 
     public async Task<int> TotalXpAsync(string userId, CancellationToken ct = default) =>

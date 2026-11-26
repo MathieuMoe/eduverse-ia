@@ -25,7 +25,7 @@ public sealed record QuizMatchPairRequest(string Left, string Right);
 
 public sealed record AdventureRequest(Area Area, Level Level, Theme Theme);
 
-public sealed record BossRequest(Area Area, Level Level, string? Topic);
+public sealed record BossRequest(Area Area, Level Level, string? Topic, bool Legendary = false);
 
 /// <summary>
 /// API of the tests of the catalog: start (practice, placement, duel or AI topic), current question, answer.
@@ -122,7 +122,7 @@ public static class QuizEndpoints
 
         // The boss of a unit of the learning path (phase 4): an adventure that starts at the guardian and only asks the
         // unit's topic. The AI writes the villain's lines; offline, a villain written in advance takes the stage.
-        api.MapPost("/boss", async (BossRequest request, HttpContext context, QuizStore store, PathStore paths, AiEngines engines, ILogger<BossRequest> logger, IStringLocalizer<SharedResource> l) =>
+        api.MapPost("/boss", async (BossRequest request, HttpContext context, QuizStore store, PathStore paths, GamificationStore game, AiEngines engines, ILogger<BossRequest> logger, IStringLocalizer<SharedResource> l) =>
         {
             if (request is null || !Enum.IsDefined(request.Area) || !Enum.IsDefined(request.Level) || string.IsNullOrEmpty(request.Topic)
                 || !Core.Curriculum.AreaSubjects.Topics(request.Area, request.Level).Contains(request.Topic))
@@ -131,7 +131,20 @@ public static class QuizEndpoints
             }
 
             var userId = context.User.Id();
-            if (!await paths.BossOpenAsync(userId, request.Area, request.Level, request.Topic, context.RequestAborted))
+            if (request.Legendary)
+            {
+                // Legendary: only after the unit's boss is beaten, and it costs gems (lost if the student fails)
+                if (!await paths.LegendOpenAsync(userId, request.Area, request.Level, request.Topic, context.RequestAborted))
+                {
+                    return Results.Json(new { code = "legend_locked" }, statusCode: StatusCodes.Status409Conflict);
+                }
+
+                if (!await game.SpendAsync(userId, Core.Gamification.LearningPath.LegendPrice, "buy:Legendary", context.RequestAborted))
+                {
+                    return Results.Json(new { code = "potion_notenoughgems" }, statusCode: StatusCodes.Status409Conflict);
+                }
+            }
+            else if (!await paths.BossOpenAsync(userId, request.Area, request.Level, request.Topic, context.RequestAborted))
             {
                 return Results.Json(new { code = "boss_locked" }, statusCode: StatusCodes.Status409Conflict);
             }
@@ -144,7 +157,8 @@ public static class QuizEndpoints
                     async ai => Core.Gamification.BossPrompt.Parse(await ai.GenerateAsync(Core.Gamification.BossPrompt.Build(request.Area, request.Level, topicName, language), context.RequestAborted)),
                     () => Task.FromResult(Core.Gamification.DemoBosses.Write(topicName, userId, language)));
                 var question = await store.StartAsync(userId, request.Area, request.Level, QuizMode.Adventure, language, engine: run.Engine,
-                    story: run.Result, theme: Theme.Castle, topic: Core.Gamification.LearningPath.BossTopic(request.Topic), ct: context.RequestAborted);
+                    story: run.Result, theme: Theme.Castle, ct: context.RequestAborted,
+                    topic: request.Legendary ? Core.Gamification.LearningPath.LegendTopic(request.Topic) : Core.Gamification.LearningPath.BossTopic(request.Topic));
                 return Results.Ok(new { engine = run.Engine, fallback = run.Fallback, question = QuestionPayload(question, l) });
             });
         })
@@ -341,7 +355,8 @@ public static class QuizEndpoints
             passed = a.Passed,
             doors = a.Doors,
             hearts = a.Hearts,
-            maxHearts = Adventure.Hearts,
+            maxHearts = a.MaxHearts,
+            legendary = a.Legendary,
             bossHp = a.BossHp,
             bossMax = a.BossMax,
             boss = a.Boss,
@@ -359,6 +374,7 @@ public static class QuizEndpoints
             xp = reward.Xp,
             boosted = reward.Boosted,
             gems = reward.Gems,
+            milestone = reward.Milestone,
             badges = reward.Badges.Select(b => new { key = b, icon = Core.Gamification.Badges.All.First(x => x.Key == b).Icon, name = l[$"Badge_{b}"].Value }),
             quests = reward.Quests.Select(q => new { key = q, name = l[$"Quest_{q}"].Value }),
         };

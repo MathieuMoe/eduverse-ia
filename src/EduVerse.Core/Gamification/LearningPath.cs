@@ -23,7 +23,7 @@ public enum PathNodeState
 public sealed record PathNode(string Topic, int Unit, int Step, PathNodeKind Kind, PathNodeState State);
 
 /// <summary>What the student has done on one unit (one topic of a subject and level).</summary>
-public sealed record UnitProgress(int LessonsPassed, bool ChestOpened, bool BossBeaten);
+public sealed record UnitProgress(int LessonsPassed, bool ChestOpened, bool BossBeaten, bool Legendary = false);
 
 /// <summary>
 /// The learning path (Duolingo-style): each topic of a subject and level is a unit of
@@ -90,13 +90,26 @@ public static class LearningPath
     /// <summary>The attempt topic that marks an adventure as the boss of a unit.</summary>
     public static string BossTopic(string topic) => "unit:" + topic;
 
-    public static bool IsBoss(string? attemptTopic) => attemptTopic?.StartsWith("unit:", StringComparison.Ordinal) == true;
+    /// <summary>The attempt topic of the legendary challenge of a unit (after its boss is beaten).</summary>
+    public static string LegendTopic(string topic) => "legend:" + topic;
+
+    public static bool IsLegend(string? attemptTopic) => attemptTopic?.StartsWith("legend:", StringComparison.Ordinal) == true;
+
+    /// <summary>Any adventure of the path (boss or legendary): straight to the guardian, only the unit's topic, no drills.</summary>
+    public static bool IsBoss(string? attemptTopic) => attemptTopic?.StartsWith("unit:", StringComparison.Ordinal) == true || IsLegend(attemptTopic);
 
     public static string UnitOf(string attemptTopic)
     {
         ArgumentNullException.ThrowIfNull(attemptTopic);
-        return IsBoss(attemptTopic) ? attemptTopic[5..] : attemptTopic;
+        return IsLegend(attemptTopic) ? attemptTopic[7..] : IsBoss(attemptTopic) ? attemptTopic[5..] : attemptTopic;
     }
+
+    /// <summary>Legendary: one heart only, one more blow to land, and a price in gems (lost if the student fails).</summary>
+    public const int LegendHearts = 1;
+
+    public const int LegendExtraBlows = 1;
+
+    public const int LegendPrice = 40;
 }
 
 /// <summary>

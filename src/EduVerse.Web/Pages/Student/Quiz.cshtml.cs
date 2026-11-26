@@ -33,13 +33,16 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game, Ed
     /// <summary>The unit topic when this adventure is the boss of a unit of the learning path.</summary>
     public string? Unit { get; private set; }
 
+    /// <summary>The unit boss is played as the legendary challenge (one heart, costs gems).</summary>
+    public bool Legend { get; private set; }
+
     /// <summary>Where "continue the path" goes, when the test was started from the learning path.</summary>
     public string? PathUrl { get; private set; }
 
     /// <summary>Daily goal, happy hour and sound settings (header pill and sound toggle).</summary>
     public DailyGoalView Goal { get; private set; } = null!;
 
-    public async Task<IActionResult> OnGetAsync(Area? area, Level? level, QuizMode? mode, string? topic, int? duel, Theme? theme, string? figure, int? material, string? unit = null, string? from = null)
+    public async Task<IActionResult> OnGetAsync(Area? area, Level? level, QuizMode? mode, string? topic, int? duel, Theme? theme, string? figure, int? material, string? unit = null, string? from = null, int? legend = null)
     {
         if (material is { } materialId)
         {
@@ -109,7 +112,7 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game, Ed
                 return RedirectToPage("/Student/Path", new { area = Area, level = Level });
             }
 
-            (Unit, Theme) = (unit, Theme.Castle);
+            (Unit, Theme, Legend) = (unit, Theme.Castle, legend == 1);
         }
 
         if (Unit is not null || (from == "path" && Mode == QuizMode.Focus))

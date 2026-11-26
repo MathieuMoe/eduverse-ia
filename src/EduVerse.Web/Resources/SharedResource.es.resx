@@ -1828,4 +1828,19 @@
   <data name="Notice_Friend_Claimed" xml:space="preserve"><value>+{0} gemas para ti. ¡Gracias por el trabajo en equipo!</value></data>
   <data name="Notice_Friend_NotYet" xml:space="preserve"><value>Todavía no: seguid ganando XP juntos.</value></data>
   <data name="Notice_Goal_Saved" xml:space="preserve"><value>Meta diaria guardada.</value></data>
+  <data name="Friend_Chip" xml:space="preserve"><value>Con {0}: {1}/{2} XP</value></data>
+  <data name="StreakRisk_Title" xml:space="preserve"><value>¡Tu racha de {0} días está en peligro!</value></data>
+  <data name="StreakRisk_Text" xml:space="preserve"><value>Hoy aún no has practicado: quedan {0} h para medianoche.</value></data>
+  <data name="StreakRisk_Freeze" xml:space="preserve"><value>(Tienes {0} protector de racha listo, por si acaso.)</value></data>
+  <data name="StreakRisk_Go" xml:space="preserve"><value>Practicar 2 minutos</value></data>
+  <data name="Js_MilestoneTitle" xml:space="preserve"><value>¡{0} días de racha!</value></data>
+  <data name="Js_MilestoneText" xml:space="preserve"><value>¡Todo un hito! +{0} gemas para celebrarlo.</value></data>
+  <data name="Path_Legendary" xml:space="preserve"><value>Legendario</value></data>
+  <data name="Path_LegendHint" xml:space="preserve"><value>Vence otra vez al jefe con un solo corazón: la unidad se vuelve dorada. Si fallas, pierdes las gemas.</value></data>
+  <data name="Js_Legendary" xml:space="preserve"><value>Legendario</value></data>
+  <data name="Js_Err_legend_locked" xml:space="preserve"><value>Vence antes al jefe de la unidad (o ya es legendaria).</value></data>
+  <data name="Badge_Legend" xml:space="preserve"><value>Leyenda</value></data>
+  <data name="BadgeHint_Legend" xml:space="preserve"><value>Haz legendaria una unidad de la ruta</value></data>
+  <data name="Badge_Actor" xml:space="preserve"><value>Actor</value></data>
+  <data name="BadgeHint_Actor" xml:space="preserve"><value>Completa {0} juegos de rol distintos</value></data>
 </root>

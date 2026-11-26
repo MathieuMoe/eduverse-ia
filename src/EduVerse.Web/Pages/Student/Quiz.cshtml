@@ -34,7 +34,7 @@
     }
 }
 <div id="qz-root" class="w-full space-y-4 sm:space-y-5 @(Model.Kids ? "kids" : "")"
-     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-material="@Model.MaterialId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-unit="@Model.Unit" data-path="@Model.PathUrl" data-kids="@(Model.Kids ? "1" : "0")" data-sounds="@(Model.Goal.Sounds ? "1" : "0")" data-potion-price="@EduVerse.Core.Gamification.Shop.Price(EduVerse.Core.Gamification.ShopItem.Potion)"
+     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-material="@Model.MaterialId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-unit="@Model.Unit" data-legend="@(Model.Legend ? "1" : "")" data-path="@Model.PathUrl" data-kids="@(Model.Kids ? "1" : "0")" data-sounds="@(Model.Goal.Sounds ? "1" : "0")" data-potion-price="@EduVerse.Core.Gamification.Shop.Price(EduVerse.Core.Gamification.ShopItem.Potion)"
      data-reasons="@System.Text.Json.JsonSerializer.Serialize(Enum.GetValues<EduVerse.Core.Tutor.ThinkingError>().ToDictionary(e => e.ToString(), e => EduVerse.Core.Tutor.Thinking.Label(e, EduVerse.Web.Localization.LanguageForCurrentCulture())))">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">

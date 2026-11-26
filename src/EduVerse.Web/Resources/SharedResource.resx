@@ -1828,4 +1828,19 @@
   <data name="Notice_Friend_Claimed" xml:space="preserve"><value>+{0} gems for you. Thanks for the teamwork!</value></data>
   <data name="Notice_Friend_NotYet" xml:space="preserve"><value>Not yet: keep earning XP together.</value></data>
   <data name="Notice_Goal_Saved" xml:space="preserve"><value>Daily goal saved.</value></data>
+  <data name="Friend_Chip" xml:space="preserve"><value>With {0}: {1}/{2} XP</value></data>
+  <data name="StreakRisk_Title" xml:space="preserve"><value>Your {0}-day streak is at risk!</value></data>
+  <data name="StreakRisk_Text" xml:space="preserve"><value>You haven't practised today: {0} h left before midnight.</value></data>
+  <data name="StreakRisk_Freeze" xml:space="preserve"><value>(You have {0} streak freeze ready, just in case.)</value></data>
+  <data name="StreakRisk_Go" xml:space="preserve"><value>Practise 2 minutes</value></data>
+  <data name="Js_MilestoneTitle" xml:space="preserve"><value>{0}-day streak!</value></data>
+  <data name="Js_MilestoneText" xml:space="preserve"><value>A milestone! +{0} gems to celebrate.</value></data>
+  <data name="Path_Legendary" xml:space="preserve"><value>Legendary</value></data>
+  <data name="Path_LegendHint" xml:space="preserve"><value>Beat the boss again with a single heart: the unit turns gold. Lost gems if you fail.</value></data>
+  <data name="Js_Legendary" xml:space="preserve"><value>Legendary</value></data>
+  <data name="Js_Err_legend_locked" xml:space="preserve"><value>Beat the unit's boss first (or this unit is already legendary).</value></data>
+  <data name="Badge_Legend" xml:space="preserve"><value>Legend</value></data>
+  <data name="BadgeHint_Legend" xml:space="preserve"><value>Make a unit of the path legendary</value></data>
+  <data name="Badge_Actor" xml:space="preserve"><value>Actor</value></data>
+  <data name="BadgeHint_Actor" xml:space="preserve"><value>Complete {0} different roleplays</value></data>
 </root>

@@ -71,6 +71,8 @@ public static class GameEndpoints
                 goalJustReached = end.GoalJustReached,
                 happyHour = end.HappyHour,
                 gems = end.Gems,
+                milestone = end.Milestone,
+                milestoneGems = end.Milestone ? Streaks.MilestoneGems(end.Streak) : 0,
                 gemBalance = summary.Gems,
                 league = league?.Me is { } me ? new
                 {

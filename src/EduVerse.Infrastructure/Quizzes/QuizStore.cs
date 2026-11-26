@@ -34,6 +34,11 @@ public sealed record AdventureView(Theme Theme, string Title, string? Intro, str
 {
     /// <summary>The boss of a unit of the learning path (no doors: straight to the guardian).</summary>
     public bool UnitBoss { get; init; }
+
+    /// <summary>The legendary challenge of a unit: one heart only.</summary>
+    public bool Legendary { get; init; }
+
+    public int MaxHearts { get; init; } = Adventure.Hearts;
 }
 
 /// <summary>A topic to review today.</summary>
@@ -132,9 +137,16 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
             if (LearningPath.IsBoss(topic))
             {
                 // The boss of a unit of the path: straight to the guardian, every blow on the unit's topic
-                attempt.AdventureJson = JsonSerializer.Serialize(Adventure.Start(theme) with { Passed = Adventure.Doors }, JsonOptions);
+                var start = Adventure.Start(theme) with { Passed = Adventure.Doors };
+                if (LearningPath.IsLegend(topic))
+                {
+                    // Legendary: one heart, one more blow
+                    start = start with { Hearts = LearningPath.LegendHearts, BossHp = Adventure.BossHp + LearningPath.LegendExtraBlows };
+                }
+
+                attempt.AdventureJson = JsonSerializer.Serialize(start, JsonOptions);
                 attempt.PlanJson = JsonSerializer.Serialize(new List<string> { LearningPath.UnitOf(topic!) }, JsonOptions);
-                attempt.Length = Adventure.BossHp + Adventure.Hearts - 1;
+                attempt.Length = start.BossHp + start.Hearts - 1;
             }
             else
             {
@@ -322,7 +334,7 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         }
 
         var state = JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson, JsonOptions)!;
-        if (state.Finished || state.Hearts >= Adventure.Hearts)
+        if (state.Finished || state.Hearts >= Adventure.Hearts || LearningPath.IsLegend(attempt.Topic))
         {
             return (BuyOutcome.Limit, state.Hearts);
         }
@@ -351,7 +363,11 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         var line = unitBoss ? (a.Answered == 0 ? story.BossIntro : story.Doors[Math.Min(a.Answered - 1, story.Doors.Count - 1)])
             : state.InBoss ? story.BossIntro : story.Doors[Math.Min(state.Passed, story.Doors.Count - 1)];
         return new AdventureView(state.Theme, story.Title, a.Answered == 0 ? story.Intro : null, line, state.Passed, Adventure.Doors, state.Hearts,
-            state.BossHp, Adventure.BossHp, story.Boss, state.InBoss) { UnitBoss = unitBoss };
+            state.BossHp, Adventure.BossHp + (LearningPath.IsLegend(a.Topic) ? LearningPath.LegendExtraBlows : 0), story.Boss, state.InBoss)
+        {
+            UnitBoss = unitBoss, Legendary = LearningPath.IsLegend(a.Topic),
+            MaxHearts = LearningPath.IsLegend(a.Topic) ? LearningPath.LegendHearts : Adventure.Hearts,
+        };
     }
 
     /// <summary>A new question, different from the ones already asked in this test (the same sequence for both sides of a duel).</summary>

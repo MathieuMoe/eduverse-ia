@@ -216,7 +216,7 @@
         const hearts = "❤️".repeat(Math.max(0, a.hearts)) + "🤍".repeat(Math.max(0, a.maxHearts - a.hearts));
         return `<div class="rounded-3xl tone-${a.inBoss ? "pink" : "sky"} p-4 sm:p-5" data-testid="adventure-map">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                ${a.unitBoss ? `<ol class="flex items-center gap-2" data-testid="unit-boss">${villain}<li class="text-sm font-semibold text-foreground">${esc(a.boss)}</li></ol>` : `<ol class="flex items-center gap-1 sm:gap-1.5" aria-label="${esc(t("Map"))}">${doors}<li class="h-0.5 w-3 sm:w-5 bg-foreground/20 rounded" aria-hidden="true"></li>
+                ${a.unitBoss ? `<ol class="flex items-center gap-2" data-testid="unit-boss">${villain}<li class="text-sm font-semibold text-foreground">${esc(a.boss)}${a.legendary ? ` <span class="ms-1 text-xs py-0.5 px-2 rounded-full tone-sun" data-testid="legendary-badge">👑 ${esc(t("Legendary"))}</span>` : ""}</li></ol>` : `<ol class="flex items-center gap-1 sm:gap-1.5" aria-label="${esc(t("Map"))}">${doors}<li class="h-0.5 w-3 sm:w-5 bg-foreground/20 rounded" aria-hidden="true"></li>
                     <li class="size-11 rounded-2xl grid place-items-center text-2xl ${a.inBoss ? "bg-white dark:bg-white/20 ring-2 ring-rose-400" : "bg-white/60 dark:bg-white/10"}" aria-label="${esc(a.boss)}">🐲</li></ol>`}
                 <span class="flex items-center gap-2"><span class="text-lg tracking-wider" aria-label="${esc(fmt(t("HeartsN"), a.hearts))}" data-testid="hearts" id="qz-hearts">${hearts}</span>
                 ${a.hearts < a.maxHearts ? `<button type="button" id="qz-potion" class="py-1 px-2.5 rounded-full text-xs font-semibold bg-white/80 dark:bg-white/15 text-foreground hover:bg-white tip tip-b" data-tip="${esc(t("PotionTip"))}" data-max="${a.maxHearts}" data-testid="adventure-potion">🧪 +1 ❤️ · 💎 ${esc(root.dataset.potionPrice || "")}</button>` : ""}</span>
@@ -771,7 +771,10 @@
         const tile = (tone, icon, label, id, delay) => `<div class="le-rise p-3 rounded-2xl ${tone}" style="animation-delay:${delay}ms">
                 <p class="text-xs font-semibold uppercase tracking-wide text-foreground/70"><span aria-hidden="true">${icon}</span> ${esc(label)}</p>
                 <p class="mt-1 text-2xl font-bold text-foreground" id="${id}">0</p></div>`;
-        const streak = e.streakExtended ? `<div class="le-rise mt-3 p-4 rounded-2xl tone-peach flex items-center justify-center gap-3" style="animation-delay:420ms" data-testid="lesson-streak">
+        const streak = e.milestone ? `<div class="le-rise mt-3 p-5 rounded-2xl tone-sun text-center" style="animation-delay:420ms" data-testid="lesson-milestone">
+                <p class="le-flame text-6xl" aria-hidden="true">🔥</p>
+                <p class="mt-2 text-2xl font-bold text-foreground">${esc(fmt(t("MilestoneTitle"), e.streak))}</p>
+                <p class="mt-1 text-sm text-foreground/75">${esc(fmt(t("MilestoneText"), e.milestoneGems))}</p></div>` : e.streakExtended ? `<div class="le-rise mt-3 p-4 rounded-2xl tone-peach flex items-center justify-center gap-3" style="animation-delay:420ms" data-testid="lesson-streak">
                 <span class="le-flame text-4xl" aria-hidden="true">🔥</span>
                 <div class="text-left"><p class="text-lg font-semibold text-foreground">${esc(fmt(t("LessonStreak"), e.streak))}</p>
                 <p class="text-xs text-foreground/70">${esc(t("LessonStreakSub"))}</p></div></div>` : "";
@@ -813,7 +816,8 @@
             setTimeout(() => requestAnimationFrame(grow), 560);
         }
         sfx("complete");
-        if (e.goalJustReached) setTimeout(() => { confettiBurst(box); sfx("goal"); }, 900);
+        if (e.goalJustReached || e.milestone) setTimeout(() => { confettiBurst(box); sfx("goal"); }, 900);
+        if (e.milestone) setTimeout(() => confettiBurst(box), 1500);
         mascotSays(box.firstElementChild);
     }
 
@@ -846,7 +850,7 @@
         try {
             const body = { area, level, mode: mode === "Topic" ? "Practice" : mode, topic: topic || null, duelId: duel ? +duel : null, figure: figure || null };
             const url = root.dataset.material ? `/api/materials/${encodeURIComponent(root.dataset.material)}/quiz` : mode === "Topic" ? "/api/quiz/topic" : unit ? "/api/quiz/boss" : mode === "Adventure" ? "/api/quiz/adventure" : "/api/quiz/start";
-            const res = await api(url, { json: unit ? { area, level, topic: unit } : mode === "Adventure" ? { area, level, theme } : body });
+            const res = await api(url, { json: unit ? { area, level, topic: unit, legendary: root.dataset.legend === "1" } : mode === "Adventure" ? { area, level, theme } : body });
             render(res.question);
             if (res.fallback) {
                 const n = document.createElement("p");

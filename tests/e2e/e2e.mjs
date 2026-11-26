@@ -287,9 +287,14 @@ async function demo(page, role) {
     }
     check(await page.locator("[data-testid=friend-pair]").count() === 1, "the friend quest shows both partners and the shared progress");
     await page.screenshot({ path: join(DOCS, "screenshot-league.png"), fullPage: true });
+    // Streak at risk: an evening reminder on the dashboard when nothing was done today (depends on the clock, so only checked when shown)
+    await page.goto(BASE + "/Student");
+    if (await page.locator("[data-testid=streak-risk]").count()) {
+        check((await page.locator("[data-testid=streak-risk]").textContent()).includes("streak"), "the streak reminder names the streak");
+    }
     // Roleplay (phase 6): haggle with the Roman merchant; the missions tick in code, the character follows its script offline
     await page.goto(BASE + "/Student/Roleplay");
-    check(await page.locator("[data-testid=roleplay-list] > li").count() === 4, "four roleplays to choose from");
+    check(await page.locator("[data-testid=roleplay-list] > li").count() === 8, "eight roleplays to choose from");
     await page.click("[data-testid=roleplay-market]");
     await page.locator("[data-testid=roleplay-character]").first().waitFor();
     check(await page.locator("[data-testid=roleplay-goal][data-met='0']").count() === 4, "the roleplay starts with four open missions");
@@ -712,7 +717,7 @@ async function demo(page, role) {
     check(await page.locator("[data-testid=album-connections] [data-unlocked='0']").count() >= 1, "connections involving an uncompleted figure stay locked");
 
     await page.goto(BASE + "/Student/Achievements");
-    check(await page.locator("[data-testid=badges] li").count() === 28, "all badges with their progress");
+    check(await page.locator("[data-testid=badges] li").count() === 30, "all badges with their progress");
     await page.screenshot({ path: join(DOCS, "screenshot-achievements.png"), fullPage: true });
     await page.goto(BASE + "/Student");
     check((await page.locator("[data-testid=curiosity]").count()) === 1, "what I want to know widget is on the dashboard");
@@ -1307,7 +1312,7 @@ for (const dark of [false, true]) {
         await noOverflow(page, `mobile${dark ? " dark" : ""} /`);
         await demo(page, role);
         const pages = {
-            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Student/Path?area=History&level=Primary3", "/Student/League", "/Student/Shop", "/Student/Roleplay", "/Student/Roleplay?scenario=airport", "/Marketplace", "/Marketplace/Bookings", "/About"],
+            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Student/Path?area=History&level=Primary3", "/Student/League", "/Student/Shop", "/Student/Roleplay", "/Student/Roleplay?scenario=airport", "/Student/Roleplay?scenario=rubberduck", "/Marketplace", "/Marketplace/Bookings", "/About"],
             teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Course?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary", "/Moderation/Ideas"],
             director: ["/Institution", "/Institution/Risk", "/Institution/Quality"],
             tutor: ["/Tutor", "/Tutor/Profile", "/Marketplace"],

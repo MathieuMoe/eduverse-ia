@@ -1828,4 +1828,19 @@
   <data name="Notice_Friend_Claimed" xml:space="preserve"><value>+{0} gemmes per a tu. Gràcies pel treball en equip!</value></data>
   <data name="Notice_Friend_NotYet" xml:space="preserve"><value>Encara no: continueu guanyant XP junts.</value></data>
   <data name="Notice_Goal_Saved" xml:space="preserve"><value>Objectiu diari desat.</value></data>
+  <data name="Friend_Chip" xml:space="preserve"><value>Amb {0}: {1}/{2} XP</value></data>
+  <data name="StreakRisk_Title" xml:space="preserve"><value>La teva ratxa de {0} dies està en perill!</value></data>
+  <data name="StreakRisk_Text" xml:space="preserve"><value>Avui encara no has practicat: queden {0} h per a mitjanit.</value></data>
+  <data name="StreakRisk_Freeze" xml:space="preserve"><value>(Tens {0} protector de ratxa a punt, per si de cas.)</value></data>
+  <data name="StreakRisk_Go" xml:space="preserve"><value>Practicar 2 minuts</value></data>
+  <data name="Js_MilestoneTitle" xml:space="preserve"><value>{0} dies de ratxa!</value></data>
+  <data name="Js_MilestoneText" xml:space="preserve"><value>Una fita! +{0} gemmes per celebrar-ho.</value></data>
+  <data name="Path_Legendary" xml:space="preserve"><value>Llegendari</value></data>
+  <data name="Path_LegendHint" xml:space="preserve"><value>Torna a vèncer el cap amb un sol cor: la unitat es torna daurada. Si falles, perds les gemmes.</value></data>
+  <data name="Js_Legendary" xml:space="preserve"><value>Llegendari</value></data>
+  <data name="Js_Err_legend_locked" xml:space="preserve"><value>Venç abans el cap de la unitat (o ja és llegendària).</value></data>
+  <data name="Badge_Legend" xml:space="preserve"><value>Llegenda</value></data>
+  <data name="BadgeHint_Legend" xml:space="preserve"><value>Fes llegendària una unitat de la ruta</value></data>
+  <data name="Badge_Actor" xml:space="preserve"><value>Actor</value></data>
+  <data name="BadgeHint_Actor" xml:space="preserve"><value>Completa {0} jocs de rol diferents</value></data>
 </root>

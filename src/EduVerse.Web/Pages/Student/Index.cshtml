@@ -182,6 +182,18 @@ else
         </form>
     </section>
 
+    @if (Model.StreakRisk is { } risk)
+    {
+        <a href="/Student/Quiz?area=@(Model.Practice?.Area ?? Area.Mathematics)&level=@(Model.Practice?.Level ?? Model.Level)" class="le-rise p-4 rounded-3xl tone-peach flex flex-wrap sm:flex-nowrap items-center gap-4 hover:opacity-95" data-testid="streak-risk">
+            <span class="le-flame text-4xl" aria-hidden="true">🔥</span>
+            <span class="grow min-w-0">
+                <span class="block text-base font-semibold text-foreground">@string.Format(culture, L["StreakRisk_Title"], risk.Streak)</span>
+                <span class="block text-sm text-foreground/75">@string.Format(culture, L["StreakRisk_Text"], risk.HoursLeft)@(risk.Freezes > 0 ? " " + string.Format(culture, L["StreakRisk_Freeze"], risk.Freezes) : "")</span>
+            </span>
+            <span class="@Ui.BtnPrimary shrink-0">@L["StreakRisk_Go"]</span>
+        </a>
+    }
+
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5" data-testid="game-kpis">
         <div class="@Ui.Kpi tone-lavender">
             <p class="@Ui.KpiLabel">@L["Game_Xp"]</p>
@@ -215,9 +227,13 @@ else
             {
                 <p class="mt-2 text-sm text-foreground/70">@L["Game_NoClassRank"]</p>
             }
+            @if (Model.FriendQuest is { } fq)
+            {
+                <a href="/Student/League#friend-quest" class="block mt-1.5 max-w-full truncate py-1 px-2.5 rounded-full text-xs font-semibold bg-white/70 dark:bg-white/10 text-foreground hover:underline" data-testid="dashboard-friend">🤝 @string.Format(culture, L["Friend_Chip"], fq.Friend.Nickname, fq.Total, FriendQuests.Target)</a>
+            }
             @if (Model.League is { Me: { } leagueMe } league)
             {
-                <a href="/Student/League" class="mt-2 self-start @Ui.Pill bg-white/70 dark:bg-white/10 text-foreground py-1 px-2.5 hover:underline" data-testid="dashboard-league">@Leagues.Emoji(league.Division) @string.Format(culture, L["League_Chip"], L[$"Division_{league.Division}"], leagueMe.Position, league.Rows.Count)</a>
+                <a href="/Student/League" class="block mt-1.5 max-w-full truncate py-1 px-2.5 rounded-full text-xs font-semibold bg-white/70 dark:bg-white/10 text-foreground hover:underline" data-testid="dashboard-league">@Leagues.Emoji(league.Division) @string.Format(culture, L["League_Chip"], L[$"Division_{league.Division}"], leagueMe.Position, league.Rows.Count)</a>
             }
         </div>
     </div>

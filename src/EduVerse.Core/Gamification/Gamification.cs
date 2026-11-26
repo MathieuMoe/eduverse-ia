@@ -124,6 +124,9 @@ public sealed record LessonEnd(
 
     /// <summary>Gems won during the lesson (quests, badges, daily goal).</summary>
     public int Gems { get; init; }
+
+    /// <summary>This lesson made the streak reach a milestone (7, 30, 100… days): a bigger celebration.</summary>
+    public bool Milestone => StreakExtended && Streaks.IsMilestone(Streak);
 }
 
 /// <summary>Gems: the currency of the shop, earned by keeping promises (quests, badges, the daily goal), never bought.</summary>
@@ -253,6 +256,31 @@ public static class Streaks
         return missed.Count <= freezesOwned ? missed : [];
     }
 
+    /// <summary>Streak lengths worth a celebration (and gems, once each).</summary>
+    public static readonly IReadOnlyList<int> Milestones = [7, 14, 30, 50, 100, 200, 365];
+
+    /// <summary>Gems for reaching a milestone: more for the longer ones.</summary>
+    public static int MilestoneGems(int days) => days switch
+    {
+        >= 365 => 200,
+        >= 100 => 100,
+        >= 50 => 60,
+        >= 30 => 40,
+        >= 14 => 25,
+        _ => 15,
+    };
+
+    public static bool IsMilestone(int days) => Milestones.Contains(days);
+
+    /// <summary>From this hour on, a streak not yet extended today is "at risk" (Duolingo's evening reminder).</summary>
+    public const int RiskHour = 18;
+
+    /// <summary>The streak is alive, nothing done today yet, and the evening has come.</summary>
+    public static bool AtRisk(int streak, bool playedToday, TimeOnly localTime) => streak > 0 && !playedToday && localTime.Hour >= RiskHour;
+
+    /// <summary>Hours left before midnight (rounded up), for the reminder.</summary>
+    public static int HoursLeft(TimeOnly localTime) => (int)Math.Ceiling((TimeSpan.FromHours(24) - localTime.ToTimeSpan()).TotalHours);
+
     public static int Best(IEnumerable<DateOnly> activeDays)
     {
         var best = 0;
@@ -347,7 +375,7 @@ public static class Quests
 }
 
 /// <summary>Everything a student has done, for the badges.</summary>
-public sealed record BadgeStats(int Correct, int BestStreak, int Tests, int PerfectTests, int Areas, int Placements, int DuelsWon, int Mastered, int Xp, bool AdvancedLevel, int Reviews = 0, int EvoCaught = 0, int Adventures = 0, int Taught = 0, int Interviews = 0, int Certificates = 0, int Hobbies = 0, int Ideas = 0, int Reflections = 0);
+public sealed record BadgeStats(int Correct, int BestStreak, int Tests, int PerfectTests, int Areas, int Placements, int DuelsWon, int Mastered, int Xp, bool AdvancedLevel, int Reviews = 0, int EvoCaught = 0, int Adventures = 0, int Taught = 0, int Interviews = 0, int Certificates = 0, int Hobbies = 0, int Ideas = 0, int Reflections = 0, int Legends = 0, int Roleplays = 0);
 
 public sealed record Badge(string Key, string Icon, int Goal, Func<BadgeStats, int> Measure)
 {
@@ -388,6 +416,8 @@ public static class Badges
         new("Hobbyist", "🎨", 1, s => s.Hobbies),
         new("IdeaMaker", "💡", 1, s => s.Ideas),
         new("Thinker", "🧠", 5, s => s.Reflections),
+        new("Legend", "👑", 1, s => s.Legends),
+        new("Actor", "🎭", 3, s => s.Roleplays),
     ];
 
     public static IReadOnlyList<Badge> Earned(BadgeStats stats) => All.Where(b => b.Earned(stats)).ToList();
@@ -597,6 +627,13 @@ public static class FriendQuests
     public static int Percent(int xpA, int xpB) => Math.Clamp(100 * (Math.Max(0, xpA) + Math.Max(0, xpB)) / Target, 0, 100);
 
     public static bool Reached(int xpA, int xpB) => xpA + xpB >= Target;
+
+    /// <summary>From Tuesday on, a student who hasn't picked a partner is paired automatically (Monday stays free to choose).</summary>
+    public static bool AutoPairDue(DateOnly today, DateOnly weekStart) => today.DayNumber - weekStart.DayNumber >= 1;
+
+    /// <summary>The automatic partner: the free classmate whose XP this week is closest (a balanced team), then by name.</summary>
+    public static T? Pick<T>(IEnumerable<T> candidates, int myWeekXp, Func<T, int> weekXp, Func<T, string> name) =>
+        candidates.OrderBy(c => Math.Abs(weekXp(c) - myWeekXp)).ThenBy(name, StringComparer.Ordinal).FirstOrDefault();
 }
 
 /// <summary>Ranking with ties: equal scores share the same position (1, 2, 2, 4).</summary>

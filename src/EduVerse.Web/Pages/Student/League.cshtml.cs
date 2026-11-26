@@ -30,7 +30,7 @@ public sealed class LeagueModel(LeagueStore leagues, FriendQuestStore friends) :
                 await leagues.MarkResultSeenAsync(User.Id(), HttpContext.RequestAborted);
             }
 
-            Quest = await friends.CurrentAsync(User.Id(), HttpContext.RequestAborted);
+            Quest = await friends.AutoPairAsync(User.Id(), HttpContext.RequestAborted);
             Candidates = Quest is null ? await friends.CandidatesAsync(User.Id(), HttpContext.RequestAborted) : [];
         }
     }

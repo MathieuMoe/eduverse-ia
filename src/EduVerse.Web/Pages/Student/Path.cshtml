@@ -52,13 +52,21 @@
         var topic = unit.First().Topic;
         var topicName = EduVerse.Web.QuizEndpoints.TopicName(topic, L);
         var current = unit.Key == path.CurrentUnit;
+        var legend = path.Legendary.Contains(topic);
         <section class="@Ui.Card p-4 sm:p-6 @(current ? "ring-2 ring-primary/40 scroll-mt-24" : "")" id="@(current ? "path-current" : null)" aria-labelledby="unit-@unit.Key" data-testid="path-unit">
-            <div class="p-4 rounded-2xl tone-@info.Tone flex items-center justify-between gap-3">
+            <div class="p-4 rounded-2xl @(legend ? "tone-sun ring-2 ring-amber-300" : "tone-" + info.Tone) flex flex-wrap items-center justify-between gap-3" data-testid="path-unit-header" data-legendary="@(legend ? "1" : "0")">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-foreground/70">@string.Format(culture, L["Path_Unit"], unit.Key + 1)</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-foreground/70">@string.Format(culture, L["Path_Unit"], unit.Key + 1)@(legend ? " · 👑 " + L["Path_Legendary"] : "")</p>
                     <h2 id="unit-@unit.Key" class="text-lg font-semibold text-foreground">@topicName</h2>
                 </div>
-                <span class="text-sm font-semibold text-foreground/80">@unit.Count(n => n.State == PathNodeState.Done) / @unit.Count()</span>
+                @if (!legend && path.BossBeaten(topic))
+                {
+                    <a href="/Student/Quiz?area=@path.Area&level=@path.Level&mode=Adventure&unit=@Uri.EscapeDataString(topic)&legend=1" class="@Ui.BtnLight py-1.5! px-3! text-xs tip tip-b" data-tip="@L["Path_LegendHint"]" data-testid="path-legend">👑 @L["Path_Legendary"] · 💎 @LearningPath.LegendPrice</a>
+                }
+                else
+                {
+                    <span class="text-sm font-semibold text-foreground/80">@unit.Count(n => n.State == PathNodeState.Done) / @unit.Count()</span>
+                }
             </div>
             <ol class="mt-5 flex flex-col items-center gap-4">
                 @foreach (var node in unit)

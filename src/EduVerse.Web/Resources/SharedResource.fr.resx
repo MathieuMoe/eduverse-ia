@@ -1828,4 +1828,19 @@
   <data name="Notice_Friend_Claimed" xml:space="preserve"><value>+{0} gemmes pour toi. Merci pour le travail d'équipe !</value></data>
   <data name="Notice_Friend_NotYet" xml:space="preserve"><value>Pas encore : continuez à gagner de l'XP ensemble.</value></data>
   <data name="Notice_Goal_Saved" xml:space="preserve"><value>Objectif du jour enregistré.</value></data>
+  <data name="Friend_Chip" xml:space="preserve"><value>Avec {0} : {1}/{2} XP</value></data>
+  <data name="StreakRisk_Title" xml:space="preserve"><value>Ta série de {0} jours est en danger !</value></data>
+  <data name="StreakRisk_Text" xml:space="preserve"><value>Tu ne t'es pas entraîné aujourd'hui : il reste {0} h avant minuit.</value></data>
+  <data name="StreakRisk_Freeze" xml:space="preserve"><value>(Tu as {0} protection de série prête, au cas où.)</value></data>
+  <data name="StreakRisk_Go" xml:space="preserve"><value>M'entraîner 2 minutes</value></data>
+  <data name="Js_MilestoneTitle" xml:space="preserve"><value>Série de {0} jours !</value></data>
+  <data name="Js_MilestoneText" xml:space="preserve"><value>Un cap franchi ! +{0} gemmes pour fêter ça.</value></data>
+  <data name="Path_Legendary" xml:space="preserve"><value>Légendaire</value></data>
+  <data name="Path_LegendHint" xml:space="preserve"><value>Bats le boss à nouveau avec un seul cœur : l'unité devient dorée. Gemmes perdues en cas d'échec.</value></data>
+  <data name="Js_Legendary" xml:space="preserve"><value>Légendaire</value></data>
+  <data name="Js_Err_legend_locked" xml:space="preserve"><value>Bats d'abord le boss de l'unité (ou elle est déjà légendaire).</value></data>
+  <data name="Badge_Legend" xml:space="preserve"><value>Légende</value></data>
+  <data name="BadgeHint_Legend" xml:space="preserve"><value>Rends une unité du parcours légendaire</value></data>
+  <data name="Badge_Actor" xml:space="preserve"><value>Acteur</value></data>
+  <data name="BadgeHint_Actor" xml:space="preserve"><value>Termine {0} jeux de rôle différents</value></data>
 </root>

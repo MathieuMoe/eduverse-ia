@@ -710,3 +710,28 @@ DatabaseVersion 22 → 27 (dev/demo DBs are recreated).
 - Not done / next ideas: Duolingo-style push reminders (needs a notification channel), a "legendary" replay of a
   finished unit, more roleplay scenarios (the format is just data in `Roleplays.All`), friend quests that pair
   automatically, and an e2e path that beats a unit boss (covered by `PathStoreTests` only).
+
+## "More like Duolingo", round 2: streak reminders and milestones, legendary units, 4 more roleplays, automatic friend quests
+Mathieu: "Sigue" → the "next ideas" of the previous section. No schema change (DatabaseVersion stays 27).
+- **Streak at risk + milestones.** Core `Streaks.AtRisk` (streak alive, nothing done today, from 18:00 local),
+  `Streaks.HoursLeft`, `Streaks.Milestones` (7, 14, 30, 50, 100, 200, 365) and `MilestoneGems`. The first answer of
+  the day that makes the streak reach a milestone pays its gems once (`GemEvent "streak:N"`, `Reward.Milestone`);
+  `LessonEnd.Milestone` drives a bigger celebration in the end-of-lesson panel. `GamificationStore.StreakRiskAsync` →
+  a reminder card on the dashboard (with the freezes owned) linking to a quick practice. No push notifications.
+- **Legendary units.** After a unit's boss is beaten, `/Student/Path` offers "👑 Legendary" (40 gems, lost on failure):
+  an adventure with topic `legend:{topic}`, one heart, one more blow, no potions, no drills. `LearningPath.IsBoss` now
+  covers both prefixes; `IsLegend`/`LegendTopic`/`UnitOf`. `PathView.Legendary` (units won) turns the unit header gold.
+  `POST /api/quiz/boss` takes `legendary: true` (`legend_locked` when the boss isn't beaten yet or it's already legendary).
+- **Badges:** `Legend` 👑 (one legendary unit) and `Actor` 🎭 (3 different roleplays completed) — `BadgeStats.Legends/Roleplays`.
+- **4 more roleplays** (now 8): lost in the city and at the doctor's (foreign language), rocket launch control (physics:
+  forces, action–reaction, a = F ÷ m = 10 m/s²) and debugging with a rubber duck (programming: the off-by-one of
+  `range(10)`). Still pure data in `Roleplays.All`; a test plays a model answer through every scenario to prove each
+  goal is reachable.
+- **Automatic friend quests.** From Tuesday (`FriendQuests.AutoPairDue`), a student without a partner is paired with the
+  free classmate closest in XP this week (`FriendQuests.Pick`, `FriendQuestStore.AutoPairAsync`), from the dashboard or
+  the league page; a dashboard chip shows the shared progress. Monday stays free to choose.
+- Tests: `MoreGameTests.cs` (rules + store: milestone paid once, reminder by clock, legendary flow end to end, auto-pairing
+  by weekday). e2e: 8 roleplays, the reminder when shown, the rubber-duck page in the mobile sweep.
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 795/795 (two runs), full `e2e.mjs` green on a clean DB
+  (323 checks). One e2e catch fixed on the way: the new dashboard chips (league, friend quest) overflowed a 390 px phone
+  with long nicknames — they now truncate.

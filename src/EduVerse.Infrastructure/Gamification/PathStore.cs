@@ -9,6 +9,12 @@ namespace EduVerse.Infrastructure.Gamification;
 public sealed record PathView(Area Area, Level Level, IReadOnlyList<PathNode> Nodes, int CurrentUnit)
 {
     public int Done => Nodes.Count(n => n.State == PathNodeState.Done);
+
+    /// <summary>Units whose legendary challenge is won (shown gold with a crown).</summary>
+    public IReadOnlySet<string> Legendary { get; init; } = new HashSet<string>();
+
+    /// <summary>A unit whose boss is beaten can be played as a legendary challenge.</summary>
+    public bool BossBeaten(string topic) => Nodes.Any(n => n.Topic == topic && n.Kind == PathNodeKind.Boss && n.State == PathNodeState.Done);
 }
 
 /// <summary>
@@ -34,8 +40,10 @@ public sealed class PathStore(EduVerseDb db, GamificationStore game)
         var nodes = LearningPath.Build(topics, topic => new UnitProgress(
             attempts.Count(a => a.Mode == QuizMode.Focus && a.Topic == topic && LearningPath.LessonPassed(a.Correct, a.Length)),
             chests.Contains(topic),
-            attempts.Any(a => a.Mode == QuizMode.Adventure && a.Topic == LearningPath.BossTopic(topic) && a.Won)));
-        return new PathView(area, level, nodes, LearningPath.CurrentUnit(nodes));
+            attempts.Any(a => a.Mode == QuizMode.Adventure && a.Topic == LearningPath.BossTopic(topic) && a.Won),
+            attempts.Any(a => a.Mode == QuizMode.Adventure && a.Topic == LearningPath.LegendTopic(topic) && a.Won)));
+        var legendary = topics.Where(t => attempts.Any(a => a.Mode == QuizMode.Adventure && a.Topic == LearningPath.LegendTopic(t) && a.Won)).ToHashSet();
+        return new PathView(area, level, nodes, LearningPath.CurrentUnit(nodes)) { Legendary = legendary };
     }
 
     /// <summary>Whether the boss of a unit is open right now (the path is followed in order).</summary>
@@ -43,6 +51,13 @@ public sealed class PathStore(EduVerseDb db, GamificationStore game)
     {
         var path = await PathAsync(userId, area, level, ct).ConfigureAwait(false);
         return path.Nodes.Any(n => n.Topic == topic && n.Kind == PathNodeKind.Boss && n.State != PathNodeState.Locked);
+    }
+
+    /// <summary>The legendary challenge of a unit opens once its boss is beaten (it can be replayed after a failure).</summary>
+    public async Task<bool> LegendOpenAsync(string userId, Area area, Level level, string topic, CancellationToken ct = default)
+    {
+        var path = await PathAsync(userId, area, level, ct).ConfigureAwait(false);
+        return path.BossBeaten(topic) && !path.Legendary.Contains(topic);
     }
 
     /// <summary>Opens the chest of a unit when it is the open node: its gems (null when it is locked or already open).</summary>
