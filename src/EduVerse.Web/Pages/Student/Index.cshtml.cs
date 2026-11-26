@@ -15,7 +15,7 @@ namespace EduVerse.Web.Pages.Student;
 public sealed record SubjectCard(Subject Subject, IReadOnlyList<(Concept Concept, MasteryState? State)> Concepts, int Mastered, int Progress, NextStep Next);
 
 /// <summary>Student dashboard: subjects with their mastery map and next step, classes, settings.</summary>
-public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, EduVerse.Infrastructure.Tutor.CuriosityStore curiosity, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
+public sealed class IndexModel(LeagueStore leagues, LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, EduVerse.Infrastructure.Tutor.CuriosityStore curiosity, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
 {
     public IReadOnlyList<SubjectCard> Subjects { get; private set; } = [];
 
@@ -30,6 +30,12 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
     public bool Kids => Levels.IsKids(Level);
 
     public GameSummary Game { get; private set; } = null!;
+
+    /// <summary>Daily XP goal and happy hour.</summary>
+    public DailyGoalView Goal { get; private set; } = null!;
+
+    /// <summary>This week's league (null for a young child or a student who turned competition off).</summary>
+    public LeagueView? League { get; private set; }
 
     public (int Position, int Size)? Position { get; private set; }
 
@@ -81,6 +87,8 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
         var profile = await store.ProfileAsync(userId, HttpContext.RequestAborted);
         (Stage, Level) = (profile.Stage, profile.Level);
         Game = await game.SummaryAsync(userId, HttpContext.RequestAborted);
+        Goal = await game.GoalAsync(userId, HttpContext.RequestAborted);
+        League = await leagues.ViewAsync(userId, HttpContext.RequestAborted);
         var boards = await game.BoardsAsync(userId, HttpContext.RequestAborted);
         Board = boards.Count > 0 ? boards[0] : null;
         Position = Board?.Students.FirstOrDefault(s => s.Me) is { } me ? (me.Position, Board.Students.Count) : null;
@@ -117,6 +125,13 @@ public sealed class IndexModel(LearningStore store, ClassroomStore classrooms, G
         var classroom = await classrooms.JoinAsync(User.Id(), code, HttpContext.RequestAborted);
         Notice = classroom is null ? "Join_Unknown" : "Join_Done";
         return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostGoalAsync(int goal, int happyHour)
+    {
+        await game.SaveGoalAsync(User.Id(), goal, happyHour, HttpContext.RequestAborted);
+        Notice = "Goal_Saved";
+        return RedirectToPage(null, null, "daily-goal");
     }
 
     public async Task<IActionResult> OnPostSettingsAsync(Level level)

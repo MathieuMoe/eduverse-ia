@@ -30,7 +30,11 @@ public sealed record QuestionView(string AttemptId, int Number, int Length, stri
 }
 
 /// <summary>What the adventure screen shows with a question: the map, the hearts, the boss and the line of the story.</summary>
-public sealed record AdventureView(Theme Theme, string Title, string? Intro, string Line, int Passed, int Doors, int Hearts, int BossHp, int BossMax, string Boss, bool InBoss);
+public sealed record AdventureView(Theme Theme, string Title, string? Intro, string Line, int Passed, int Doors, int Hearts, int BossHp, int BossMax, string Boss, bool InBoss)
+{
+    /// <summary>The boss of a unit of the learning path (no doors: straight to the guardian).</summary>
+    public bool UnitBoss { get; init; }
+}
 
 /// <summary>A topic to review today.</summary>
 public sealed record ReviewItem(Area Area, Level Level, string Topic);
@@ -45,6 +49,9 @@ public sealed record QuizSummary(int Correct, int Length, int Stars, int Xp, Lev
     public int Hearts { get; init; }
 
     public string? Ending { get; init; }
+
+    /// <summary>At least one right answer was a classic question (drills keep no answer history, so they can't be defended).</summary>
+    public bool Defendable { get; init; }
 }
 
 public sealed record AnswerResult(bool Correct, int CorrectIndex, string Explanation, int Xp, int Run, QuestionView? Next, QuizSummary? Summary, Reward Reward)
@@ -121,12 +128,22 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         else if (mode == QuizMode.Adventure)
         {
             ArgumentNullException.ThrowIfNull(story);
-            attempt.AdventureJson = JsonSerializer.Serialize(Adventure.Start(theme), JsonOptions);
             attempt.StoryJson = JsonSerializer.Serialize(story, JsonOptions);
-            // The boss asks the weakest topics of the student in this subject and level
-            var weak = await db.TopicSkills.Where(t => t.UserId == userId && t.Area == attempt.Area && t.Level == attempt.Level && t.Attempts > 0)
-                .OrderBy(t => t.PKnown).Select(t => t.Topic).Take(Adventure.BossHp).ToListAsync(ct).ConfigureAwait(false);
-            attempt.PlanJson = JsonSerializer.Serialize(weak, JsonOptions);
+            if (LearningPath.IsBoss(topic))
+            {
+                // The boss of a unit of the path: straight to the guardian, every blow on the unit's topic
+                attempt.AdventureJson = JsonSerializer.Serialize(Adventure.Start(theme) with { Passed = Adventure.Doors }, JsonOptions);
+                attempt.PlanJson = JsonSerializer.Serialize(new List<string> { LearningPath.UnitOf(topic!) }, JsonOptions);
+                attempt.Length = Adventure.BossHp + Adventure.Hearts - 1;
+            }
+            else
+            {
+                attempt.AdventureJson = JsonSerializer.Serialize(Adventure.Start(theme), JsonOptions);
+                // The boss asks the weakest topics of the student in this subject and level
+                var weak = await db.TopicSkills.Where(t => t.UserId == userId && t.Area == attempt.Area && t.Level == attempt.Level && t.Attempts > 0)
+                    .OrderBy(t => t.PKnown).Select(t => t.Topic).Take(Adventure.BossHp).ToListAsync(ct).ConfigureAwait(false);
+                attempt.PlanJson = JsonSerializer.Serialize(weak, JsonOptions);
+            }
         }
         else if (mode == QuizMode.Notebook)
         {
@@ -221,7 +238,8 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
     /// meaning for a free-topic, fixed-pool or interview-script set.</summary>
     private static PracticeExercise? TryExerciseFor(QuizAttempt attempt, TeachLanguage language)
     {
-        if (attempt.Mode is not (QuizMode.Practice or QuizMode.Adventure or QuizMode.Duel or QuizMode.Placement) || attempt.Answered % 3 != 0)
+        // A unit boss of the learning path only asks its own topic: drills come from other content banks, so none there
+        if (attempt.Mode is not (QuizMode.Practice or QuizMode.Adventure or QuizMode.Duel or QuizMode.Placement) || attempt.Answered % 3 != 0 || LearningPath.IsBoss(attempt.Topic))
         {
             return null;
         }
@@ -291,6 +309,35 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         return finished;
     }
 
+    /// <summary>
+    /// A potion bought with gems during an adventure: one heart back (never above the maximum, never after the end).
+    /// Returns the new hearts, or the reason it was refused.
+    /// </summary>
+    public async Task<(BuyOutcome Outcome, int Hearts)> UsePotionAsync(string userId, string attemptId, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt is null || attempt.Mode != QuizMode.Adventure || attempt.FinishedAt is not null || attempt.AdventureJson is null)
+        {
+            return (BuyOutcome.NotNow, 0);
+        }
+
+        var state = JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson, JsonOptions)!;
+        if (state.Finished || state.Hearts >= Adventure.Hearts)
+        {
+            return (BuyOutcome.Limit, state.Hearts);
+        }
+
+        if (!await game.SpendAsync(userId, Shop.Price(ShopItem.Potion), "buy:" + nameof(ShopItem.Potion), ct).ConfigureAwait(false))
+        {
+            return (BuyOutcome.NotEnoughGems, state.Hearts);
+        }
+
+        state = state with { Hearts = state.Hearts + 1 };
+        attempt.AdventureJson = JsonSerializer.Serialize(state, JsonOptions);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return (BuyOutcome.Bought, state.Hearts);
+    }
+
     private static AdventureView? AdventureOf(QuizAttempt a)
     {
         if (a.AdventureJson is null || a.StoryJson is null)
@@ -300,9 +347,11 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
 
         var state = JsonSerializer.Deserialize<AdventureState>(a.AdventureJson, JsonOptions)!;
         var story = JsonSerializer.Deserialize<Story>(a.StoryJson, JsonOptions)!;
-        var line = state.InBoss ? story.BossIntro : story.Doors[Math.Min(state.Passed, story.Doors.Count - 1)];
+        var unitBoss = LearningPath.IsBoss(a.Topic);
+        var line = unitBoss ? (a.Answered == 0 ? story.BossIntro : story.Doors[Math.Min(a.Answered - 1, story.Doors.Count - 1)])
+            : state.InBoss ? story.BossIntro : story.Doors[Math.Min(state.Passed, story.Doors.Count - 1)];
         return new AdventureView(state.Theme, story.Title, a.Answered == 0 ? story.Intro : null, line, state.Passed, Adventure.Doors, state.Hearts,
-            state.BossHp, Adventure.BossHp, story.Boss, state.InBoss);
+            state.BossHp, Adventure.BossHp, story.Boss, state.InBoss) { UnitBoss = unitBoss };
     }
 
     /// <summary>A new question, different from the ones already asked in this test (the same sequence for both sides of a duel).</summary>
@@ -365,7 +414,11 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
                 : QuestionBanks.Generate(attempt.Area, attempt.Level, 3, seed, language);
             for (var retry = 1; retry < 20 && used.Contains(KeyOf(question)); retry++)
             {
-                question = QuestionBanks.Generate(attempt.Area, attempt.Level, 3, QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, 3), language);
+                // A unit boss stays on its topic even when it has to look further for a question not seen yet
+                var retrySeed = QuestionBanks.Seed(attempt.Seed + retry * 101, attempt.Answered, 3);
+                question = LearningPath.IsBoss(attempt.Topic) && weak.Count > 0
+                    ? QuestionBanks.ForTopic(attempt.Area, attempt.Level, weak[0], 3, retrySeed, language)
+                    : QuestionBanks.Generate(attempt.Area, attempt.Level, 3, retrySeed, language);
             }
 
             used.Add(KeyOf(question));
@@ -782,7 +835,11 @@ public sealed class QuizStore(EduVerseDb db, GamificationStore game, TimeProvide
         attempt.Xp += reward.Xp;
         var topics = await db.QuizAnswers.Where(a => a.AttemptId == attempt.Id).GroupBy(a => a.Topic)
             .Select(g => new TopicResult(g.Key, g.Count(a => a.Correct), g.Count())).ToListAsync(ct).ConfigureAwait(false);
-        var summary = new QuizSummary(attempt.Correct, attempt.Length, AdaptiveQuiz.Stars(attempt.Correct, attempt.Length), attempt.Xp, attempt.Result, topics, duelOutcome);
+        var summary = new QuizSummary(attempt.Correct, attempt.Length, AdaptiveQuiz.Stars(attempt.Correct, attempt.Length), attempt.Xp, attempt.Result, topics, duelOutcome)
+        {
+            // Same rule as the defence itself: a right answer on a topic the bank can ask again (not a one-off word problem)
+            Defendable = topics.Any(t => t.Correct > 0 && EduVerse.Core.Curriculum.AreaSubjects.Topics(attempt.Area, attempt.Level).Contains(t.Topic)),
+        };
         if (attempt.Mode == QuizMode.Adventure)
         {
             var state = JsonSerializer.Deserialize<AdventureState>(attempt.AdventureJson!, JsonOptions)!;

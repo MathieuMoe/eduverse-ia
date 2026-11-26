@@ -215,6 +215,10 @@ else
             {
                 <p class="mt-2 text-sm text-foreground/70">@L["Game_NoClassRank"]</p>
             }
+            @if (Model.League is { Me: { } leagueMe } league)
+            {
+                <a href="/Student/League" class="mt-2 self-start @Ui.Pill bg-white/70 dark:bg-white/10 text-foreground py-1 px-2.5 hover:underline" data-testid="dashboard-league">@Leagues.Emoji(league.Division) @string.Format(culture, L["League_Chip"], L[$"Division_{league.Division}"], leagueMe.Position, league.Rows.Count)</a>
+            }
         </div>
     </div>
 
@@ -293,13 +297,66 @@ else
                     }
                 </section>
 
+                <section class="@Ui.Card p-5 min-w-0 scroll-mt-24" id="daily-goal" data-testid="daily-goal">
+                    <div class="flex items-center gap-4">
+                        <div class="xp-ring size-16 shrink-0 rounded-full grid place-items-center" style="--p:@Model.Goal.Percent" role="img" aria-label="@string.Format(culture, L["DailyGoal_Of"], Model.Goal.TodayXp, Model.Goal.Goal)">
+                            <span class="size-12 rounded-full bg-white/90 dark:bg-[#262236] grid place-items-center text-lg" aria-hidden="true">@(Model.Goal.Reached ? "🏆" : "🎯")</span>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 class="text-base font-semibold text-foreground">@L["DailyGoal_Title"]</h2>
+                            <p class="text-sm text-foreground" data-testid="daily-goal-progress">@string.Format(culture, L["DailyGoal_Of"], Model.Goal.TodayXp, Model.Goal.Goal)@(Model.Goal.Reached ? " · " + L["DailyGoal_Done"] : "")</p>
+                            @if (Model.Goal.HappyHourActive)
+                            {
+                                <p class="mt-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300" data-testid="happy-hour-now">⚡ @string.Format(culture, L["HappyHour_Now"], Model.Goal.HappyHourMinutesLeft)</p>
+                            }
+                        </div>
+                    </div>
+                    <form method="post" asp-page-handler="Goal" class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <fieldset>
+                            <legend class="text-xs text-muted-foreground-1">@L["DailyGoal_Pick"]</legend>
+                            <div class="mt-1 flex flex-wrap gap-1.5">
+                                @foreach (var option in DailyGoals.Options)
+                                {
+                                    <label class="cursor-pointer"><input type="radio" name="goal" value="@option" class="sr-only peer" @(option == Model.Goal.Goal ? "checked" : "") data-testid="goal-@option" /><span class="inline-block py-1 px-3 rounded-full text-xs font-semibold border border-layer-line peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30">@L[$"DailyGoal_Level_{option}"] · @option XP</span></label>
+                                }
+                            </div>
+                        </fieldset>
+                        <label class="block">
+                            <span class="text-xs text-muted-foreground-1">@L["HappyHour_Pick"]</span>
+                            <select name="happyHour" class="@Ui.Input mt-1 py-1.5!" data-testid="happy-hour-select">
+                                <option value="@HappyHour.Off">@L["HappyHour_Off"]</option>
+                                @foreach (var hour in HappyHour.Hours)
+                                {
+                                    <option value="@hour" selected="@(hour == Model.Goal.HappyHour)">@($"{hour:00}:00–{hour:00}:30")</option>
+                                }
+                            </select>
+                        </label>
+                        <div class="sm:col-span-2 flex items-center justify-between gap-3">
+                            <p class="text-xs text-muted-foreground-1">@L["HappyHour_Hint"]</p>
+                            <button type="submit" class="@Ui.BtnLight shrink-0" data-testid="goal-save">@L["DailyGoal_Save"]</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="@Ui.Card p-5 min-w-0" id="mistake-story" data-testid="mistake-story">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h2 class="text-base font-semibold text-foreground">@L["Story_Title"]</h2>
+                            <p class="text-xs text-muted-foreground-1">@L["Story_Hint"]</p>
+                        </div>
+                        <span class="text-2xl" aria-hidden="true">📖</span>
+                    </div>
+                    <button type="button" class="@Ui.BtnLight mt-3 self-start" id="mistake-story-go" data-testid="mistake-story-go">✨ @L["Story_Go"]</button>
+                    <div class="mt-3" id="mistake-story-out" aria-live="polite"></div>
+                </section>
+
                 <section class="@Ui.Card p-5 min-w-0" data-testid="quests">
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <h2 class="text-base font-semibold text-foreground">@L["Game_Quests"]</h2>
-                            <p class="text-xs text-muted-foreground-1">@L["Game_QuestsHint"]</p>
+                            <p class="text-xs text-muted-foreground-1">@string.Format(culture, L["Game_QuestsGems"], EduVerse.Core.Gamification.Gems.Quest)</p>
                         </div>
-                        <span class="text-2xl" aria-hidden="true">🎯</span>
+                        <a href="/Student/Shop" class="@Ui.Pill tone-sky text-foreground py-1 px-3 text-sm hover:opacity-90 tip tip-b" data-tip="@L["Nav_Shop"]" data-testid="dashboard-gems"><span aria-hidden="true">💎</span> @g.Gems.ToString("N0", culture)</a>
                     </div>
                     <ul class="mt-4 space-y-3">
                         @foreach (var q in g.Quests)
@@ -418,7 +475,7 @@ else
                         @foreach (var s in order)
                         {
                             <div class="w-1/3 flex flex-col items-center gap-1 min-w-0">
-                                <span class="text-2xl" aria-hidden="true">@s.Avatar</span>
+                                <span class="text-2xl avatar-frame frame-@(s.Frame.Length > 0 ? s.Frame : "none")" aria-hidden="true">@s.Avatar</span>
                                 <span class="text-xs font-semibold text-foreground truncate max-w-full">@s.Nickname@(s.Me ? " ★" : "")</span>
                                 <div class="w-full rounded-t-2xl podium-@s.Position @(s.Position == 1 ? "tone-plum" : s.Position == 2 ? "tone-lavender" : "tone-peach") grid place-items-center">
                                     <span class="text-2xl font-bold @(s.Position == 1 ? "text-white" : "text-foreground")">@s.Position</span>
@@ -507,4 +564,9 @@ else
             </section>
         </aside>
     </div>
+}
+
+@section Scripts {
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/game.js" asp-append-version="true"></script>
 }

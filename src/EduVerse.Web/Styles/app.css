@@ -320,6 +320,31 @@ html.dark[data-accent="blue"] { --primary: #93c5fd; --primary-hover: #60a5fa; --
   .qz-confetti { display: none; }
 }
 
+/* End-of-lesson screens (Duolingo-style): stat tiles that pop in one after another, a flame that bounces when the
+   lesson kept the streak alive, the daily-goal ring filling up, and a glowing happy-hour pill. Numbers come from
+   /api/game/lesson-end; quiz.js only counts them up. */
+@keyframes le-rise { 0% { opacity: 0; transform: translateY(14px) scale(.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+.le-rise { animation: le-rise .45s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes le-flame { 0%, 100% { transform: scale(1) rotate(0); } 30% { transform: scale(1.25) rotate(-6deg); } 60% { transform: scale(.95) rotate(5deg); } }
+.le-flame { display: inline-block; animation: le-flame 1.1s ease-in-out 3; }
+@keyframes le-glow { 0%, 100% { box-shadow: 0 0 0 0 rgb(52 211 153 / .45); } 50% { box-shadow: 0 0 0 6px rgb(52 211 153 / 0); } }
+.qz-happy { animation: le-glow 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .le-rise, .le-flame, .qz-happy { animation: none; }
+}
+
+/* Shop (phase 2): avatar frames bought with gems, shown around the animal in rankings */
+.avatar-frame { display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 9999px; line-height: 1; }
+.frame-gold { box-shadow: 0 0 0 2px #f6c85f, 0 0 10px rgb(246 200 95 / .55); background: rgb(246 200 95 / .18); }
+.frame-rainbow { box-shadow: 0 0 0 2px #f472b6, 0 0 0 4px #fbbf24, 0 0 0 6px #34d399, 0 0 0 8px #60a5fa; background: rgb(167 139 250 / .15); }
+.frame-fire { box-shadow: 0 0 0 2px #f97316, 0 0 12px rgb(249 115 22 / .7); animation: frame-fire 1.6s ease-in-out infinite; }
+@keyframes frame-fire { 0%, 100% { box-shadow: 0 0 0 2px #f97316, 0 0 8px rgb(249 115 22 / .55); } 50% { box-shadow: 0 0 0 2px #ef4444, 0 0 16px rgb(239 68 68 / .75); } }
+@keyframes gem-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+.gem-pop { animation: gem-pop .45s cubic-bezier(.34,1.56,.64,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .frame-fire, .gem-pop { animation: none; }
+}
+
 /* Fill-blank/reorder/match drills (task #71) */
 .quiz-token, .quiz-match-item { transition: transform .12s ease, background-color .15s ease, border-color .15s ease, opacity .15s ease; }
 .quiz-token:hover:not(:disabled), .quiz-match-item:hover:not(:disabled) { transform: translateY(-1px); }

@@ -130,6 +130,23 @@ public static class ExerciseBank
             Text.Of("The French Revolution began in 1789.|La Revolución Francesa comenzó en 1789.|La Révolution française a commencé en 1789.|La Revolució Francesa va començar el 1789."),
             true,
             Text.Of("Yes: it began in 1789, with the storming of the Bastille in July.|Sí: comenzó en 1789, con la toma de la Bastilla en julio.|Oui : elle a commencé en 1789, avec la prise de la Bastille en juillet.|Sí: va començar el 1789, amb la presa de la Bastilla al juliol.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("history.knights", 1,
+            Text.Of("Knights and castles belong to the Middle Ages.|Los caballeros y los castillos pertenecen a la Edad Media.|Les chevaliers et les châteaux forts appartiennent au Moyen Âge.|Els cavallers i els castells pertanyen a l'edat mitjana."),
+            true,
+            Text.Of("Yes: castles and knights are typical of the Middle Ages, roughly from the 5th to the 15th century.|Sí: los castillos y los caballeros son típicos de la Edad Media, más o menos del siglo V al XV.|Oui : les châteaux forts et les chevaliers sont typiques du Moyen Âge, à peu près du Vᵉ au XVᵉ siècle.|Sí: els castells i els cavallers són típics de l'edat mitjana, més o menys del segle V al XV.")),
+        new("history.moon_landing", 2,
+            Text.Of("The first Moon landing took place in 1969.|El primer alunizaje tuvo lugar en 1969.|Le premier alunissage a eu lieu en 1969.|El primer allunatge va tenir lloc el 1969."),
+            true,
+            Text.Of("Yes: Apollo 11 landed on the Moon in July 1969.|Sí: el Apolo 11 se posó en la Luna en julio de 1969.|Oui : Apollo 11 s'est posé sur la Lune en juillet 1969.|Sí: l'Apollo 11 es va posar a la Lluna el juliol de 1969.")),
+        new("history.magna_carta", 3,
+            Text.Of("The Magna Carta was sealed after the French Revolution.|La Carta Magna se selló después de la Revolución francesa.|La Grande Charte a été scellée après la Révolution française.|La Carta Magna es va segellar després de la Revolució francesa."),
+            false,
+            Text.Of("No: the Magna Carta dates from 1215, more than five centuries before 1789.|No: la Carta Magna es de 1215, más de cinco siglos antes de 1789.|Non : la Grande Charte date de 1215, plus de cinq siècles avant 1789.|No: la Carta Magna és del 1215, més de cinc segles abans del 1789.")),
+        new("history.cold_war", 3,
+            Text.Of("During the Cold War, the USA and the USSR fought each other directly in a world war.|Durante la Guerra Fría, EE. UU. y la URSS lucharon directamente en una guerra mundial.|Pendant la guerre froide, les États-Unis et l'URSS se sont affrontés directement dans une guerre mondiale.|Durant la Guerra Freda, els EUA i l'URSS es van enfrontar directament en una guerra mundial."),
+            false,
+            Text.Of("No: they never fought each other directly; their rivalry played out through an arms race and wars in other countries.|No: nunca se enfrentaron directamente; su rivalidad se dio en la carrera armamentística y en guerras en otros países.|Non : ils ne se sont jamais affrontés directement ; leur rivalité passait par la course aux armements et des guerres dans d'autres pays.|No: mai no es van enfrontar directament; la seva rivalitat es va donar en la cursa armamentística i en guerres en altres països.")),
     ];
 
     private static readonly IReadOnlyList<TrueFalseItem> GeographyTrueFalse =
@@ -154,6 +171,23 @@ public static class ExerciseBank
             Text.Of("Mount Everest is the tallest mountain on Earth, measured from sea level.|El Everest es la montaña más alta de la Tierra, medida desde el nivel del mar.|L'Everest est la plus haute montagne de la Terre, mesurée depuis le niveau de la mer.|L'Everest és la muntanya més alta de la Terra, mesurada des del nivell del mar."),
             true,
             Text.Of("Yes: at 8,849 meters above sea level, Everest is the highest point on Earth.|Sí: con 8.849 metros sobre el nivel del mar, el Everest es el punto más alto de la Tierra.|Oui : avec 8 849 mètres au-dessus du niveau de la mer, l'Everest est le point le plus haut de la Terre.|Sí: amb 8.849 metres sobre el nivell del mar, l'Everest és el punt més alt de la Terra.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("geography.sunrise", 1,
+            Text.Of("The Sun rises in the east.|El Sol sale por el este.|Le Soleil se lève à l'est.|El Sol surt per l'est."),
+            true,
+            Text.Of("Yes: because the Earth spins from west to east, the Sun appears in the east every morning.|Sí: como la Tierra gira de oeste a este, el Sol aparece por el este cada mañana.|Oui : comme la Terre tourne d'ouest en est, le Soleil apparaît à l'est chaque matin.|Sí: com que la Terra gira d'oest a est, el Sol apareix per l'est cada matí.")),
+        new("geography.iberia", 2,
+            Text.Of("Spain and Portugal share the Iberian Peninsula.|España y Portugal comparten la península ibérica.|L'Espagne et le Portugal se partagent la péninsule Ibérique.|Espanya i Portugal comparteixen la península Ibèrica."),
+            true,
+            Text.Of("Yes: the Iberian Peninsula is shared mainly by Spain and Portugal, plus Andorra and Gibraltar.|Sí: la península ibérica la comparten sobre todo España y Portugal, además de Andorra y Gibraltar.|Oui : la péninsule Ibérique est partagée surtout par l'Espagne et le Portugal, plus Andorre et Gibraltar.|Sí: la península Ibèrica la comparteixen sobretot Espanya i Portugal, a més d'Andorra i Gibraltar.")),
+        new("geography.seasons", 3,
+            Text.Of("Seasons happen because the Earth gets closer to and farther from the Sun.|Las estaciones se producen porque la Tierra se acerca y se aleja del Sol.|Les saisons existent parce que la Terre se rapproche et s'éloigne du Soleil.|Les estacions es produeixen perquè la Terra s'acosta i s'allunya del Sol."),
+            false,
+            Text.Of("No: seasons are caused by the tilt of the Earth's axis, which changes how directly sunlight reaches each hemisphere.|No: se deben a la inclinación del eje terrestre, que cambia cómo llega la luz del Sol a cada hemisferio.|Non : elles sont dues à l'inclinaison de l'axe de la Terre, qui change l'angle sous lequel le Soleil éclaire chaque hémisphère.|No: es deuen a la inclinació de l'eix terrestre, que canvia com arriba la llum del Sol a cada hemisferi.")),
+        new("geography.hemispheres", 3,
+            Text.Of("When it is summer in Spain, it is winter in Argentina.|Cuando es verano en España, es invierno en Argentina.|Quand c'est l'été en Espagne, c'est l'hiver en Argentine.|Quan és estiu a Espanya, és hivern a l'Argentina."),
+            true,
+            Text.Of("Yes: the two hemispheres have opposite seasons, because of the tilt of the Earth's axis.|Sí: los dos hemisferios tienen estaciones opuestas, por la inclinación del eje terrestre.|Oui : les deux hémisphères ont des saisons opposées, à cause de l'inclinaison de l'axe terrestre.|Sí: els dos hemisferis tenen estacions oposades, per la inclinació de l'eix terrestre.")),
     ];
 
     private static readonly IReadOnlyList<TrueFalseItem> EconomicsTrueFalse =
@@ -178,6 +212,23 @@ public static class ExerciseBank
             Text.Of("GDP measures the total value of goods and services produced in a country.|El PIB mide el valor total de los bienes y servicios producidos en un país.|Le PIB mesure la valeur totale des biens et services produits dans un pays.|El PIB mesura el valor total dels béns i serveis produïts en un país."),
             true,
             Text.Of("Yes: Gross Domestic Product adds up the value of everything produced in a country, usually per year.|Sí: el Producto Interior Bruto suma el valor de todo lo producido en un país, normalmente por año.|Oui : le Produit intérieur brut additionne la valeur de tout ce qui est produit dans un pays, en général par an.|Sí: el Producte Interior Brut suma el valor de tot el que es produeix en un país, normalment per any.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("economics.interest", 3,
+            Text.Of("If you borrow money, you usually have to pay it back with interest.|Si pides dinero prestado, normalmente tienes que devolverlo con intereses.|Si tu empruntes de l'argent, tu dois généralement le rembourser avec des intérêts.|Si demanes diners prestats, normalment els has de tornar amb interessos."),
+            true,
+            Text.Of("Yes: interest is the price of borrowing money.|Sí: los intereses son el precio de pedir dinero prestado.|Oui : les intérêts sont le prix de l'argent emprunté.|Sí: els interessos són el preu de demanar diners prestats.")),
+        new("economics.unemployment_rate", 3,
+            Text.Of("The unemployment rate is the share of the whole population that has no job.|La tasa de paro es el porcentaje de toda la población que no tiene trabajo.|Le taux de chômage est la part de toute la population qui n'a pas d'emploi.|La taxa d'atur és el percentatge de tota la població que no té feina."),
+            false,
+            Text.Of("No: it is measured over the labour force (people working or looking for work), not the whole population, which includes children and retirees.|No: se calcula sobre la población activa (quien trabaja o busca trabajo), no sobre toda la población, que incluye niños y jubilados.|Non : il se calcule sur la population active (qui travaille ou cherche un emploi), pas sur toute la population, qui inclut enfants et retraités.|No: es calcula sobre la població activa (qui treballa o busca feina), no sobre tota la població, que inclou infants i jubilats.")),
+        new("economics.vat", 3,
+            Text.Of("VAT is a tax paid by the final consumer when buying goods and services.|El IVA es un impuesto que paga el consumidor final al comprar bienes y servicios.|La TVA est un impôt payé par le consommateur final lorsqu'il achète des biens et des services.|L'IVA és un impost que paga el consumidor final quan compra béns i serveis."),
+            true,
+            Text.Of("Yes: VAT is included in the price, so the consumer pays it and businesses pass it on to the state.|Sí: el IVA va incluido en el precio, así que lo paga el consumidor y las empresas lo entregan a Hacienda.|Oui : la TVA est incluse dans le prix ; c'est le consommateur qui la paie et les entreprises la reversent à l'État.|Sí: l'IVA va inclòs en el preu, així que el paga el consumidor i les empreses el lliuren a Hisenda.")),
+        new("economics.diversification", 3,
+            Text.Of("Putting all your savings into one company's shares is the safest way to invest.|Poner todos tus ahorros en acciones de una sola empresa es la forma más segura de invertir.|Placer toutes ses économies dans les actions d'une seule entreprise est la façon la plus sûre d'investir.|Posar tots els estalvis en accions d'una sola empresa és la manera més segura d'invertir."),
+            false,
+            Text.Of("No: spreading money across many investments (diversifying) lowers the risk of losing a lot at once.|No: repartir el dinero entre muchas inversiones (diversificar) reduce el riesgo de perder mucho de golpe.|Non : répartir son argent entre de nombreux placements (diversifier) réduit le risque de beaucoup perdre d'un coup.|No: repartir els diners entre moltes inversions (diversificar) redueix el risc de perdre'n molts de cop.")),
     ];
 
     private static readonly IReadOnlyList<TrueFalseItem> ProgrammingTrueFalse =
@@ -395,6 +446,23 @@ public static class ExerciseBank
             Text.Of("The 1776 document that declared the United States independent is called the Declaration of ___.|El documento de 1776 que declaró la independencia de Estados Unidos se llama la Declaración de ___.|Le document de 1776 qui a déclaré l'indépendance des États-Unis s'appelle la déclaration d'___.|El document de 1776 que va declarar la independència dels Estats Units s'anomena la Declaració d'___."),
             Text.Of("Independence|Independencia|Indépendance|Independència"),
             Text.Of("The Declaration of Independence was adopted on July 4, 1776.|La Declaración de Independencia se adoptó el 4 de julio de 1776.|La déclaration d'Indépendance a été adoptée le 4 juillet 1776.|La Declaració d'Independència es va adoptar el 4 de juliol de 1776.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("history.castles", 1,
+            Text.Of("In the Middle Ages, lords lived in stone ___.|En la Edad Media, los señores vivían en ___ de piedra.|Au Moyen Âge, les seigneurs vivaient dans des ___ forts en pierre.|A l'edat mitjana, els senyors vivien en ___ de pedra."),
+            Text.Of("castles|castillos|châteaux|castells"),
+            Text.Of("Castles protected lords and their people from attacks.|Los castillos protegían a los señores y a su gente de los ataques.|Les châteaux forts protégeaient les seigneurs et leurs gens des attaques.|Els castells protegien els senyors i la seva gent dels atacs.")),
+        new("history.gutenberg", 2,
+            Text.Of("Gutenberg invented a printing press with movable ___.|Gutenberg inventó una imprenta de ___ móviles.|Gutenberg a inventé une presse à ___ mobiles.|Gutenberg va inventar una impremta de ___ mòbils."),
+            Text.Of("type|tipos|caractères|tipus"),
+            Text.Of("Movable type let printers reuse letters to print many books quickly.|Los tipos móviles permitían reutilizar las letras para imprimir muchos libros rápidamente.|Les caractères mobiles permettaient de réutiliser les lettres pour imprimer vite de nombreux livres.|Els tipus mòbils permetien reutilitzar les lletres per imprimir molts llibres ràpidament.")),
+        new("history.industrial", 3,
+            Text.Of("The 18th-century change from handwork to machines is called the Industrial ___.|El paso del trabajo manual a las máquinas en el siglo XVIII se llama la Revolución ___.|Le passage du travail manuel aux machines au XVIIIᵉ siècle s'appelle la révolution ___.|El pas del treball manual a les màquines al segle XVIII s'anomena la Revolució ___."),
+            Text.Of("Revolution|Industrial|industrielle|Industrial"),
+            Text.Of("It began in Britain with steam engines and textile factories.|Empezó en Gran Bretaña con las máquinas de vapor y las fábricas textiles.|Elle a commencé en Grande-Bretagne avec les machines à vapeur et les usines textiles.|Va començar a la Gran Bretanya amb les màquines de vapor i les fàbriques tèxtils.")),
+        new("history.vassal", 3,
+            Text.Of("In the Middle Ages, someone who received land from a lord in exchange for loyalty was a ___.|En la Edad Media, quien recibía tierras de un señor a cambio de fidelidad era un ___.|Au Moyen Âge, celui qui recevait une terre d'un seigneur en échange de sa fidélité était un ___.|A l'edat mitjana, qui rebia terres d'un senyor a canvi de fidelitat era un ___."),
+            Text.Of("vassal|vasallo|vassal|vassall"),
+            Text.Of("This bond between lord and vassal was the basis of feudalism.|Este vínculo entre señor y vasallo era la base del feudalismo.|Ce lien entre seigneur et vassal était la base de la féodalité.|Aquest vincle entre senyor i vassall era la base del feudalisme.")),
     ];
 
     private static readonly IReadOnlyList<FillBlankItem> GeographyFillBlank =
@@ -411,6 +479,23 @@ public static class ExerciseBank
             Text.Of("The imaginary line around the middle of the Earth is called the ___.|La línea imaginaria alrededor de la mitad de la Tierra se llama el ___.|La ligne imaginaire autour du milieu de la Terre s'appelle l'___.|La línia imaginària al voltant de la meitat de la Terra s'anomena l'___."),
             Text.Of("equator|ecuador|équateur|equador"),
             Text.Of("The equator divides the Earth into the Northern and Southern hemispheres.|El ecuador divide la Tierra en el hemisferio norte y el hemisferio sur.|L'équateur divise la Terre en hémisphère nord et hémisphère sud.|L'equador divideix la Terra en hemisferi nord i hemisferi sud.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("geography.north", 1,
+            Text.Of("On most maps, the top points ___.|En la mayoría de los mapas, la parte de arriba señala el ___.|Sur la plupart des cartes, le haut indique le ___.|En la majoria de mapes, la part de dalt assenyala el ___."),
+            Text.Of("north|norte|nord|nord"),
+            Text.Of("Most maps put north at the top; the compass rose shows the directions.|La mayoría de los mapas ponen el norte arriba; la rosa de los vientos muestra las direcciones.|La plupart des cartes placent le nord en haut ; la rose des vents indique les directions.|La majoria de mapes posen el nord a dalt; la rosa dels vents mostra les direccions.")),
+        new("geography.sahara", 2,
+            Text.Of("The largest hot desert in the world is the ___.|El mayor desierto cálido del mundo es el ___.|Le plus grand désert chaud du monde est le ___.|El desert càlid més gran del món és el ___."),
+            Text.Of("Sahara|Sáhara|Sahara|Sàhara"),
+            Text.Of("The Sahara covers much of North Africa.|El Sáhara cubre gran parte del norte de África.|Le Sahara couvre une grande partie de l'Afrique du Nord.|El Sàhara cobreix gran part del nord de l'Àfrica.")),
+        new("geography.meridians", 3,
+            Text.Of("Lines that run from the North Pole to the South Pole are called ___.|Las líneas que van del Polo Norte al Polo Sur se llaman ___.|Les lignes qui vont du pôle Nord au pôle Sud s'appellent des ___.|Les línies que van del pol Nord al pol Sud s'anomenen ___."),
+            Text.Of("meridians|meridianos|méridiens|meridians"),
+            Text.Of("Meridians measure longitude; the prime meridian passes through Greenwich.|Los meridianos miden la longitud; el meridiano cero pasa por Greenwich.|Les méridiens mesurent la longitude ; le méridien d'origine passe par Greenwich.|Els meridians mesuren la longitud; el meridià zero passa per Greenwich.")),
+        new("geography.delta", 3,
+            Text.Of("The fan-shaped area where a river splits before reaching the sea is a ___.|La zona en forma de abanico donde un río se divide antes de llegar al mar es un ___.|La zone en éventail où un fleuve se divise avant d'atteindre la mer est un ___.|La zona en forma de ventall on un riu es divideix abans d'arribar al mar és un ___."),
+            Text.Of("delta"),
+            Text.Of("The Ebro and the Nile both end in a delta.|El Ebro y el Nilo acaban en un delta.|L'Èbre et le Nil se terminent tous deux par un delta.|L'Ebre i el Nil acaben en un delta.")),
     ];
 
     private static readonly IReadOnlyList<FillBlankItem> EconomicsFillBlank =
@@ -427,6 +512,23 @@ public static class ExerciseBank
             Text.Of("A market where only one company sells a product is called a ___.|Un mercado donde solo una empresa vende un producto se llama un ___.|Un marché où une seule entreprise vend un produit s'appelle un ___.|Un mercat on només una empresa ven un producte s'anomena un ___."),
             Text.Of("monopoly|monopolio|monopole|monopoli"),
             Text.Of("In a monopoly, one company controls the whole market for a product.|En un monopolio, una sola empresa controla todo el mercado de un producto.|Dans un monopole, une seule entreprise contrôle tout le marché d'un produit.|En un monopoli, una sola empresa controla tot el mercat d'un producte.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("economics.inflation_word", 3,
+            Text.Of("A general rise in prices over time is called ___.|Una subida general de los precios a lo largo del tiempo se llama ___.|Une hausse générale des prix au fil du temps s'appelle l'___.|Una pujada general dels preus al llarg del temps s'anomena ___."),
+            Text.Of("inflation|inflación|inflation|inflació"),
+            Text.Of("With inflation, the same money buys fewer things.|Con inflación, el mismo dinero compra menos cosas.|Avec l'inflation, le même argent achète moins de choses.|Amb inflació, els mateixos diners compren menys coses.")),
+        new("economics.tax", 3,
+            Text.Of("A compulsory payment that people and companies make to the state is a ___.|Un pago obligatorio que personas y empresas hacen al Estado es un ___.|Un paiement obligatoire que les personnes et les entreprises versent à l'État est un ___.|Un pagament obligatori que persones i empreses fan a l'Estat és un ___."),
+            Text.Of("tax|impuesto|impôt|impost"),
+            Text.Of("Taxes pay for public services such as schools, hospitals and roads.|Los impuestos pagan servicios públicos como escuelas, hospitales y carreteras.|Les impôts financent les services publics comme les écoles, les hôpitaux et les routes.|Els impostos paguen serveis públics com escoles, hospitals i carreteres.")),
+        new("economics.exports", 3,
+            Text.Of("Goods that a country sells abroad are called ___.|Los bienes que un país vende al extranjero se llaman ___.|Les biens qu'un pays vend à l'étranger s'appellent des ___.|Els béns que un país ven a l'estranger s'anomenen ___."),
+            Text.Of("exports|exportaciones|exportations|exportacions"),
+            Text.Of("Exports bring money into a country; imports are goods bought from abroad.|Las exportaciones traen dinero al país; las importaciones son bienes comprados fuera.|Les exportations font entrer de l'argent dans le pays ; les importations sont des biens achetés à l'étranger.|Les exportacions porten diners al país; les importacions són béns comprats a fora.")),
+        new("economics.entrepreneur", 3,
+            Text.Of("A person who starts their own business is an ___.|Una persona que crea su propio negocio es un ___.|Une personne qui crée sa propre entreprise est un ___.|Una persona que crea el seu propi negoci és un ___."),
+            Text.Of("entrepreneur|emprendedor|entrepreneur|emprenedor"),
+            Text.Of("Entrepreneurs take risks to turn an idea into a business.|Los emprendedores asumen riesgos para convertir una idea en un negocio.|Les entrepreneurs prennent des risques pour transformer une idée en entreprise.|Els emprenedors assumeixen riscos per convertir una idea en un negoci.")),
     ];
 
     private static readonly IReadOnlyList<FillBlankItem> ProgrammingFillBlank =
@@ -617,6 +719,19 @@ public static class ExerciseBank
         new("history.rivers", 3, GenericReorderPrompt,
             Text.Of("Many ancient civilizations developed near rivers|Muchas civilizaciones antiguas se desarrollaron cerca de ríos|De nombreuses civilisations anciennes se sont développées près des rivières|Moltes civilitzacions antigues es van desenvolupar a prop de rius"),
             Text.Of("Rivers like the Nile and the Tigris gave water for farming and travel.|Ríos como el Nilo y el Tigris daban agua para la agricultura y el transporte.|Des fleuves comme le Nil et le Tigre fournissaient de l'eau pour l'agriculture et les déplacements.|Rius com el Nil i el Tigris donaven aigua per a l'agricultura i el transport.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("history.vikings", 1, GenericReorderPrompt,
+            Text.Of("The Vikings sailed in long wooden ships|Los vikingos navegaban en largos barcos de madera|Les Vikings naviguaient sur de longs bateaux en bois|Els víkings navegaven en llargs vaixells de fusta"),
+            Text.Of("Viking longships could cross seas and also sail up rivers.|Los barcos vikingos podían cruzar mares y también remontar ríos.|Les drakkars vikings pouvaient traverser les mers et remonter les fleuves.|Els vaixells víkings podien travessar mars i també remuntar rius.")),
+        new("history.columbus_voyage", 2, GenericReorderPrompt,
+            Text.Of("Columbus reached America in 1492|Colón llegó a América en 1492|Christophe Colomb a atteint l'Amérique en 1492|Colom va arribar a Amèrica el 1492"),
+            Text.Of("His voyage was funded by the Catholic Monarchs.|Su viaje lo financiaron los Reyes Católicos.|Son voyage a été financé par les Rois catholiques.|El seu viatge el van finançar els Reis Catòlics.")),
+        new("history.democracy", 3, GenericReorderPrompt,
+            Text.Of("Democracy was born in ancient Athens|La democracia nació en la antigua Atenas|La démocratie est née dans l'Athènes antique|La democràcia va néixer a l'antiga Atenes"),
+            Text.Of("In the 5th century BC, Athenian citizens voted directly in the assembly.|En el siglo V a. C., los ciudadanos atenienses votaban directamente en la asamblea.|Au Vᵉ siècle av. J.-C., les citoyens athéniens votaient directement à l'assemblée.|Al segle V aC, els ciutadans atenesos votaven directament a l'assemblea.")),
+        new("history.reunification", 3, GenericReorderPrompt,
+            Text.Of("The fall of the Berlin Wall led to German reunification|La caída del muro de Berlín llevó a la reunificación alemana|La chute du mur de Berlin a mené à la réunification allemande|La caiguda del mur de Berlín va portar a la reunificació alemanya"),
+            Text.Of("The Wall fell in 1989 and Germany was reunified in 1990.|El muro cayó en 1989 y Alemania se reunificó en 1990.|Le mur est tombé en 1989 et l'Allemagne a été réunifiée en 1990.|El mur va caure el 1989 i Alemanya es va reunificar el 1990.")),
     ];
 
     private static readonly IReadOnlyList<ReorderItem> GeographyReorder =
@@ -630,6 +745,19 @@ public static class ExerciseBank
         new("geography.earthquakes", 3, GenericReorderPrompt,
             Text.Of("Earthquakes happen along tectonic plate boundaries|Los terremotos ocurren a lo largo de los límites de las placas tectónicas|Les tremblements de terre se produisent le long des limites des plaques tectoniques|Els terratrèmols passen al llarg dels límits de les plaques tectòniques"),
             Text.Of("Most earthquakes occur where tectonic plates meet and grind against each other.|La mayoría de los terremotos ocurren donde las placas tectónicas se encuentran y rozan entre sí.|La plupart des tremblements de terre se produisent là où les plaques tectoniques se rencontrent et frottent l'une contre l'autre.|La majoria de terratrèmols passen on les plaques tectòniques es troben i freguen entre si.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("geography.rivers", 1, GenericReorderPrompt,
+            Text.Of("Rivers carry fresh water to the sea|Los ríos llevan agua dulce al mar|Les fleuves portent de l'eau douce jusqu'à la mer|Els rius porten aigua dolça al mar"),
+            Text.Of("Rain and melting snow feed rivers, which flow down to the sea.|La lluvia y la nieve derretida alimentan los ríos, que bajan hasta el mar.|La pluie et la neige fondue alimentent les fleuves, qui descendent jusqu'à la mer.|La pluja i la neu fosa alimenten els rius, que baixen fins al mar.")),
+        new("geography.volcanoes", 2, GenericReorderPrompt,
+            Text.Of("A volcano can throw out hot lava|Un volcán puede expulsar lava caliente|Un volcan peut projeter de la lave brûlante|Un volcà pot expulsar lava calenta"),
+            Text.Of("Lava is molten rock that rises from deep inside the Earth.|La lava es roca fundida que sube desde el interior de la Tierra.|La lave est de la roche fondue qui remonte des profondeurs de la Terre.|La lava és roca fosa que puja des de l'interior de la Terra.")),
+        new("geography.cities", 3, GenericReorderPrompt,
+            Text.Of("More than half of humanity lives in cities|Más de la mitad de la humanidad vive en ciudades|Plus de la moitié de l'humanité vit en ville|Més de la meitat de la humanitat viu en ciutats"),
+            Text.Of("Since about 2007, the world's urban population has been larger than its rural population.|Desde hacia 2007, la población urbana del mundo supera a la rural.|Depuis 2007 environ, la population urbaine mondiale dépasse la population rurale.|Des de cap al 2007, la població urbana del món supera la rural.")),
+        new("geography.tides", 3, GenericReorderPrompt,
+            Text.Of("The Moon's gravity causes the ocean tides|La gravedad de la Luna causa las mareas|La gravité de la Lune provoque les marées|La gravetat de la Lluna causa les marees"),
+            Text.Of("The Moon (and, less, the Sun) pulls on the oceans, so the sea rises and falls about twice a day.|La Luna (y, en menor medida, el Sol) atrae los océanos, así que el mar sube y baja unas dos veces al día.|La Lune (et, dans une moindre mesure, le Soleil) attire les océans : la mer monte et descend environ deux fois par jour.|La Lluna (i, en menor mesura, el Sol) atreu els oceans, així que el mar puja i baixa unes dues vegades al dia.")),
     ];
 
     private static readonly IReadOnlyList<ReorderItem> EconomicsReorder =
@@ -643,6 +771,19 @@ public static class ExerciseBank
         new("economics.competition", 3, GenericReorderPrompt,
             Text.Of("Competition between companies can lower prices|La competencia entre empresas puede bajar los precios|La concurrence entre entreprises peut faire baisser les prix|La competència entre empreses pot abaixar els preus"),
             Text.Of("When companies compete for customers, they often lower prices to attract them.|Cuando las empresas compiten por clientes, suelen bajar los precios para atraerlos.|Quand les entreprises se font concurrence pour des clients, elles baissent souvent les prix pour les attirer.|Quan les empreses competeixen per clients, solen abaixar els preus per atreure'ls.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("economics.law_of_demand", 3, GenericReorderPrompt,
+            Text.Of("When prices rise people usually buy less|Cuando suben los precios la gente suele comprar menos|Quand les prix montent les gens achètent généralement moins|Quan pugen els preus la gent sol comprar menys"),
+            Text.Of("This is the law of demand: the higher the price, the lower the quantity demanded.|Es la ley de la demanda: a mayor precio, menor cantidad demandada.|C'est la loi de la demande : plus le prix est élevé, plus la quantité demandée baisse.|És la llei de la demanda: com més preu, menys quantitat demandada.")),
+        new("economics.public_services", 3, GenericReorderPrompt,
+            Text.Of("Taxes help pay for public services|Los impuestos ayudan a pagar los servicios públicos|Les impôts aident à payer les services publics|Els impostos ajuden a pagar els serveis públics"),
+            Text.Of("Schools, hospitals and roads are funded with the taxes that citizens and companies pay.|Escuelas, hospitales y carreteras se financian con los impuestos que pagan ciudadanos y empresas.|Les écoles, les hôpitaux et les routes sont financés par les impôts des citoyens et des entreprises.|Escoles, hospitals i carreteres es financen amb els impostos que paguen ciutadans i empreses.")),
+        new("economics.purchasing_power", 3, GenericReorderPrompt,
+            Text.Of("Inflation reduces what your money can buy|La inflación reduce lo que puede comprar tu dinero|L'inflation réduit ce que ton argent peut acheter|La inflació redueix el que poden comprar els teus diners"),
+            Text.Of("If prices rise faster than your income, the same money buys less.|Si los precios suben más deprisa que tus ingresos, el mismo dinero compra menos.|Si les prix augmentent plus vite que tes revenus, le même argent achète moins.|Si els preus pugen més de pressa que els teus ingressos, els mateixos diners compren menys.")),
+        new("economics.rates", 3, GenericReorderPrompt,
+            Text.Of("The central bank raises interest rates to fight inflation|El banco central sube los tipos de interés para frenar la inflación|La banque centrale relève les taux d'intérêt pour lutter contre l'inflation|El banc central apuja els tipus d'interès per frenar la inflació"),
+            Text.Of("Higher rates make borrowing more expensive, which cools spending and prices.|Unos tipos más altos encarecen los préstamos, lo que enfría el gasto y los precios.|Des taux plus élevés rendent l'emprunt plus cher, ce qui freine les dépenses et les prix.|Uns tipus més alts encareixen els préstecs, cosa que refreda la despesa i els preus.")),
     ];
 
     private static readonly IReadOnlyList<ReorderItem> ProgrammingReorder =
@@ -910,6 +1051,39 @@ public static class ExerciseBank
                 (Text.Of("Iron Age|Edad de Hierro|âge du fer|Edat del Ferro"), Text.Of("tools made of iron|herramientas hechas de hierro|outils en fer|eines fetes de ferro")),
             ],
             Text.Of("Each era is named after the main material used for tools at the time.|Cada era recibe el nombre del material principal usado para las herramientas en esa época.|Chaque ère porte le nom du matériau principal utilisé pour les outils à cette époque.|Cada era rep el nom del material principal utilitzat per a les eines en aquella època.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("history.inventions", 1,
+            Text.Of("Match each invention with what it does.|Relaciona cada invento con su utilidad.|Associe chaque invention à ce qu'elle permet de faire.|Relaciona cada invent amb la seva utilitat."),
+            [
+                (Text.Of("wheel|rueda|roue|roda"), Text.Of("helps carry heavy loads|ayuda a transportar cargas pesadas|aide à transporter des charges lourdes|ajuda a transportar càrregues pesades")),
+                (Text.Of("compass|brújula|boussole|brúixola"), Text.Of("shows where north is|indica dónde está el norte|indique où est le nord|indica on és el nord")),
+                (Text.Of("calendar|calendario|calendrier|calendari"), Text.Of("counts the days of the year|cuenta los días del año|compte les jours de l'année|compta els dies de l'any")),
+            ],
+            Text.Of("The wheel helps carry loads, the compass shows north, and the calendar counts the days.|La rueda ayuda a transportar cargas, la brújula indica el norte y el calendario cuenta los días.|La roue aide à transporter des charges, la boussole indique le nord et le calendrier compte les jours.|La roda ajuda a transportar càrregues, la brúixola indica el nord i el calendari compta els dies.")),
+        new("history.explorers", 2,
+            Text.Of("Match each explorer with their journey.|Relaciona cada explorador con su viaje.|Associe chaque explorateur à son voyage.|Relaciona cada explorador amb el seu viatge."),
+            [
+                (Text.Of("Columbus|Colón|Christophe Colomb|Colom"), Text.Of("reached America in 1492|llegó a América en 1492|a atteint l'Amérique en 1492|va arribar a Amèrica el 1492")),
+                (Text.Of("Magellan|Magallanes|Magellan|Magallanes"), Text.Of("first expedition around the world|primera expedición alrededor del mundo|première expédition autour du monde|primera expedició al voltant del món")),
+                (Text.Of("Marco Polo"), Text.Of("travelled to China|viajó a China|a voyagé jusqu'en Chine|va viatjar fins a la Xina")),
+            ],
+            Text.Of("Columbus crossed the Atlantic, Magellan's expedition sailed around the world, and Marco Polo travelled to China.|Colón cruzó el Atlántico, la expedición de Magallanes dio la vuelta al mundo y Marco Polo viajó a China.|Colomb a traversé l'Atlantique, l'expédition de Magellan a fait le tour du monde et Marco Polo a voyagé jusqu'en Chine.|Colom va travessar l'Atlàntic, l'expedició de Magallanes va fer la volta al món i Marco Polo va viatjar fins a la Xina.")),
+        new("history.periods", 3,
+            Text.Of("Match each period with its dates.|Relaciona cada época con sus fechas.|Associe chaque période à ses dates.|Relaciona cada època amb les seves dates."),
+            [
+                (Text.Of("Antiquity|Edad Antigua|Antiquité|Edat Antiga"), Text.Of("until 476|hasta el 476|jusqu'en 476|fins al 476")),
+                (Text.Of("Middle Ages|Edad Media|Moyen Âge|Edat Mitjana"), Text.Of("476–1492")),
+                (Text.Of("Early modern period|Edad Moderna|Époque moderne|Edat Moderna"), Text.Of("1492–1789")),
+            ],
+            Text.Of("By the usual convention, Antiquity ends with the fall of Rome (476), the Middle Ages around 1492, and the early modern period lasts until 1789.|Según la convención habitual, la Edad Antigua acaba con la caída de Roma (476), la Edad Media hacia 1492 y la Edad Moderna dura hasta 1789.|Selon la convention habituelle, l'Antiquité s'achève avec la chute de Rome (476), le Moyen Âge vers 1492 et l'époque moderne dure jusqu'en 1789.|Segons la convenció habitual, l'edat antiga acaba amb la caiguda de Roma (476), l'edat mitjana cap al 1492 i l'edat moderna dura fins al 1789.")),
+        new("history.revolutions", 3,
+            Text.Of("Match each revolution with its year.|Relaciona cada revolución con su año.|Associe chaque révolution à son année.|Relaciona cada revolució amb el seu any."),
+            [
+                (Text.Of("French Revolution|Revolución francesa|Révolution française|Revolució francesa"), Text.Of("1789")),
+                (Text.Of("Russian Revolution|Revolución rusa|Révolution russe|Revolució russa"), Text.Of("1917")),
+                (Text.Of("US Declaration of Independence|Independencia de EE. UU.|Indépendance américaine|Independència dels EUA"), Text.Of("1776")),
+            ],
+            Text.Of("1776: US independence; 1789: the French Revolution; 1917: the Russian Revolution.|1776: independencia de EE. UU.; 1789: Revolución francesa; 1917: Revolución rusa.|1776 : indépendance américaine ; 1789 : Révolution française ; 1917 : révolution russe.|1776: independència dels EUA; 1789: Revolució francesa; 1917: Revolució russa.")),
     ];
 
     private static readonly IReadOnlyList<MatchItem> GeographyMatch =
@@ -938,6 +1112,39 @@ public static class ExerciseBank
                 (Text.Of("temperate|templado|tempéré|temperat"), Text.Of("mild, with four seasons|templado, con cuatro estaciones|doux, avec quatre saisons|suau, amb quatre estacions")),
             ],
             Text.Of("Tropical climates are hot and humid, polar climates are cold all year, and temperate climates have four mild seasons.|Los climas tropicales son cálidos y húmedos, los polares son fríos todo el año, y los templados tienen cuatro estaciones suaves.|Les climats tropicaux sont chauds et humides, les climats polaires sont froids toute l'année, et les climats tempérés ont quatre saisons douces.|Els climes tropicals són càlids i humits, els polars són freds tot l'any, i els temperats tenen quatre estacions suaus.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("geography.capitals", 1,
+            Text.Of("Match each country with its capital.|Relaciona cada país con su capital.|Associe chaque pays à sa capitale.|Relaciona cada país amb la seva capital."),
+            [
+                (Text.Of("Spain|España|Espagne|Espanya"), Text.Of("Madrid")),
+                (Text.Of("Italy|Italia|Italie|Itàlia"), Text.Of("Rome|Roma|Rome|Roma")),
+                (Text.Of("Germany|Alemania|Allemagne|Alemanya"), Text.Of("Berlin|Berlín|Berlin|Berlín")),
+            ],
+            Text.Of("Madrid is the capital of Spain, Rome of Italy and Berlin of Germany.|Madrid es la capital de España, Roma la de Italia y Berlín la de Alemania.|Madrid est la capitale de l'Espagne, Rome celle de l'Italie et Berlin celle de l'Allemagne.|Madrid és la capital d'Espanya, Roma la d'Itàlia i Berlín la d'Alemanya.")),
+        new("geography.river_cities", 2,
+            Text.Of("Match each river with a city it flows through.|Relaciona cada río con una ciudad por la que pasa.|Associe chaque fleuve à une ville qu'il traverse.|Relaciona cada riu amb una ciutat per on passa."),
+            [
+                (Text.Of("Seine|Sena|Seine|Sena"), Text.Of("Paris|París|Paris|París")),
+                (Text.Of("Thames|Támesis|Tamise|Tàmesi"), Text.Of("London|Londres|Londres|Londres")),
+                (Text.Of("Ebro|Ebro|Èbre|Ebre"), Text.Of("Zaragoza|Zaragoza|Saragosse|Saragossa")),
+            ],
+            Text.Of("The Seine flows through Paris, the Thames through London and the Ebro through Zaragoza.|El Sena pasa por París, el Támesis por Londres y el Ebro por Zaragoza.|La Seine traverse Paris, la Tamise Londres et l'Èbre Saragosse.|El Sena passa per París, el Tàmesi per Londres i l'Ebre per Saragossa.")),
+        new("geography.biomes", 3,
+            Text.Of("Match each biome with its description.|Relaciona cada bioma con su descripción.|Associe chaque biome à sa description.|Relaciona cada bioma amb la seva descripció."),
+            [
+                (Text.Of("savanna|sabana|savane|sabana"), Text.Of("grassland with scattered trees and a dry season|pradera con árboles dispersos y una estación seca|prairie aux arbres épars avec une saison sèche|prada amb arbres dispersos i una estació seca")),
+                (Text.Of("taiga|taiga|taïga|taiga"), Text.Of("huge conifer forest in cold regions|enorme bosque de coníferas en regiones frías|immense forêt de conifères des régions froides|enorme bosc de coníferes de regions fredes")),
+                (Text.Of("tundra|tundra|toundra|tundra"), Text.Of("cold treeless plain with frozen subsoil|llanura fría sin árboles y con el subsuelo helado|plaine froide sans arbres au sous-sol gelé|plana freda sense arbres i amb el subsòl glaçat")),
+            ],
+            Text.Of("Savannas are tropical grasslands, the taiga is a cold conifer forest, and the tundra is a treeless plain over permafrost.|La sabana es una pradera tropical, la taiga un bosque frío de coníferas y la tundra una llanura sin árboles sobre permafrost.|La savane est une prairie tropicale, la taïga une forêt froide de conifères et la toundra une plaine sans arbres sur le pergélisol.|La sabana és una prada tropical, la taiga un bosc fred de coníferes i la tundra una plana sense arbres sobre permafrost.")),
+        new("geography.map_terms", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("latitude|latitud|latitude|latitud"), Text.Of("distance north or south of the equator|distancia al norte o al sur del ecuador|distance au nord ou au sud de l'équateur|distància al nord o al sud de l'equador")),
+                (Text.Of("longitude|longitud|longitude|longitud"), Text.Of("distance east or west of the prime meridian|distancia al este o al oeste del meridiano cero|distance à l'est ou à l'ouest du méridien d'origine|distància a l'est o a l'oest del meridià zero")),
+                (Text.Of("scale|escala|échelle|escala"), Text.Of("ratio between distances on the map and on the ground|relación entre las distancias del mapa y las reales|rapport entre les distances sur la carte et sur le terrain|relació entre les distàncies del mapa i les reals")),
+            ],
+            Text.Of("Latitude measures north–south from the equator, longitude east–west from Greenwich, and the scale converts map distances into real ones.|La latitud mide norte-sur desde el ecuador, la longitud este-oeste desde Greenwich y la escala convierte las distancias del mapa en reales.|La latitude mesure le nord-sud depuis l'équateur, la longitude l'est-ouest depuis Greenwich et l'échelle convertit les distances de la carte en distances réelles.|La latitud mesura nord-sud des de l'equador, la longitud est-oest des de Greenwich i l'escala converteix les distàncies del mapa en reals.")),
     ];
 
     private static readonly IReadOnlyList<MatchItem> EconomicsMatch =
@@ -966,6 +1173,39 @@ public static class ExerciseBank
                 (Text.Of("investment|inversión|investissement|inversió"), Text.Of("money put in to earn more later|dinero invertido para ganar más después|argent investi pour en gagner plus tard|diners invertits per guanyar-ne més després")),
             ],
             Text.Of("A tax goes to the government, a debt is money owed, and an investment is money put in to grow.|Un impuesto va al gobierno, una deuda es dinero que se debe, y una inversión es dinero puesto para crecer.|Un impôt va au gouvernement, une dette est de l'argent dû, et un investissement est de l'argent placé pour qu'il fructifie.|Un impost va al govern, un deute és diners que es deuen, i una inversió és diners posats perquè creixin.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("economics.sectors", 3,
+            Text.Of("Match each economic sector with an example.|Relaciona cada sector económico con un ejemplo.|Associe chaque secteur économique à un exemple.|Relaciona cada sector econòmic amb un exemple."),
+            [
+                (Text.Of("primary sector|sector primario|secteur primaire|sector primari"), Text.Of("farming|agricultura|agriculture|agricultura")),
+                (Text.Of("secondary sector|sector secundario|secteur secondaire|sector secundari"), Text.Of("a car factory|una fábrica de coches|une usine automobile|una fàbrica de cotxes")),
+                (Text.Of("tertiary sector|sector terciario|secteur tertiaire|sector terciari"), Text.Of("a hospital|un hospital|un hôpital|un hospital")),
+            ],
+            Text.Of("The primary sector takes resources from nature, the secondary transforms them in factories, and the tertiary provides services.|El sector primario obtiene recursos de la naturaleza, el secundario los transforma en fábricas y el terciario ofrece servicios.|Le secteur primaire tire ses ressources de la nature, le secondaire les transforme en usine et le tertiaire fournit des services.|El sector primari obté recursos de la natura, el secundari els transforma en fàbriques i el terciari ofereix serveis.")),
+        new("economics.institutions", 3,
+            Text.Of("Match each institution with its role.|Relaciona cada institución con su función.|Associe chaque institution à son rôle.|Relaciona cada institució amb la seva funció."),
+            [
+                (Text.Of("ECB|BCE|BCE|BCE"), Text.Of("sets interest rates in the euro area|fija los tipos de interés de la zona euro|fixe les taux d'intérêt de la zone euro|fixa els tipus d'interès de la zona euro")),
+                (Text.Of("IMF|FMI|FMI|FMI"), Text.Of("lends to countries in financial trouble|presta a países con problemas financieros|prête aux pays en difficulté financière|presta a països amb problemes financers")),
+                (Text.Of("WTO|OMC|OMC|OMC"), Text.Of("sets the rules of world trade|establece las normas del comercio mundial|fixe les règles du commerce mondial|estableix les normes del comerç mundial")),
+            ],
+            Text.Of("The European Central Bank steers the euro, the International Monetary Fund helps countries in crisis, and the World Trade Organization oversees trade rules.|El Banco Central Europeo gestiona el euro, el Fondo Monetario Internacional ayuda a países en crisis y la Organización Mundial del Comercio vigila las normas del comercio.|La Banque centrale européenne pilote l'euro, le Fonds monétaire international aide les pays en crise et l'Organisation mondiale du commerce veille aux règles du commerce.|El Banc Central Europeu gestiona l'euro, el Fons Monetari Internacional ajuda països en crisi i l'Organització Mundial del Comerç vetlla per les normes del comerç.")),
+        new("economics.money_terms", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("salary|salario|salaire|salari"), Text.Of("money paid for work|dinero que se cobra por trabajar|argent reçu pour un travail|diners que es cobren per treballar")),
+                (Text.Of("savings|ahorro|épargne|estalvi"), Text.Of("money kept for later|dinero guardado para más adelante|argent mis de côté pour plus tard|diners guardats per a més endavant")),
+                (Text.Of("loan|préstamo|prêt|préstec"), Text.Of("money borrowed that must be repaid|dinero prestado que hay que devolver|argent emprunté qu'il faut rembourser|diners prestats que s'han de tornar")),
+            ],
+            Text.Of("A salary is earned by working, savings are kept for later, and a loan is borrowed money you must pay back.|El salario se cobra por trabajar, el ahorro se guarda para más adelante y un préstamo es dinero que hay que devolver.|Le salaire se gagne en travaillant, l'épargne est mise de côté pour plus tard et un prêt est de l'argent qu'il faut rembourser.|El salari es cobra per treballar, l'estalvi es guarda per a més endavant i un préstec són diners que s'han de tornar.")),
+        new("economics.market_types", 3,
+            TermMeaningPrompt,
+            [
+                (Text.Of("monopoly|monopolio|monopole|monopoli"), Text.Of("a single seller|un solo vendedor|un seul vendeur|un sol venedor")),
+                (Text.Of("oligopoly|oligopolio|oligopole|oligopoli"), Text.Of("a few large sellers|unos pocos grandes vendedores|quelques grands vendeurs|uns quants grans venedors")),
+                (Text.Of("perfect competition|competencia perfecta|concurrence parfaite|competència perfecta"), Text.Of("many small sellers of the same product|muchos pequeños vendedores del mismo producto|de nombreux petits vendeurs du même produit|molts petits venedors del mateix producte")),
+            ],
+            Text.Of("The fewer the sellers, the more power each one has over the price.|Cuantos menos vendedores, más poder tiene cada uno sobre el precio.|Moins il y a de vendeurs, plus chacun a de pouvoir sur le prix.|Com menys venedors, més poder té cadascun sobre el preu.")),
     ];
 
     private static readonly IReadOnlyList<MatchItem> ProgrammingMatch =
@@ -1173,6 +1413,23 @@ public static class ExerciseBank
             Text.Of("Select all the figures of the Renaissance.|Selecciona todas las figuras del Renacimiento.|Sélectionne toutes les figures de la Renaissance.|Selecciona totes les figures del Renaixement."),
             [Text.Of("Napoleon Bonaparte|Napoleón Bonaparte|Napoléon Bonaparte|Napoleó Bonaparte"), Text.Of("Leonardo da Vinci|Leonardo da Vinci|Léonard de Vinci|Leonardo da Vinci"), Text.Of("Michelangelo|Miguel Ángel|Michel-Ange|Miquel Àngel"), Text.Of("Albert Einstein|Albert Einstein|Albert Einstein|Albert Einstein")], [1, 2],
             Text.Of("Leonardo da Vinci and Michelangelo were Renaissance artists (15th-16th century); Napoleon and Einstein lived centuries later.|Leonardo da Vinci y Miguel Ángel fueron artistas del Renacimiento (siglos XV-XVI); Napoleón y Einstein vivieron siglos después.|Léonard de Vinci et Michel-Ange étaient des artistes de la Renaissance (XVe-XVIe siècle) ; Napoléon et Einstein ont vécu des siècles plus tard.|Leonardo da Vinci i Miquel Àngel van ser artistes del Renaixement (segles XV-XVI); Napoleó i Einstein van viure segles després.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("history.multiselect.ancient_inventions", 1,
+            Text.Of("Select all the inventions that already existed in ancient times.|Selecciona todos los inventos que ya existían en la Antigüedad.|Sélectionne toutes les inventions qui existaient déjà dans l'Antiquité.|Selecciona tots els invents que ja existien a l'antiguitat."),
+            [Text.Of("The wheel|La rueda|La roue|La roda"), Text.Of("Television|La televisión|La télévision|La televisió"), Text.Of("Boats|Los barcos|Les bateaux|Els vaixells"), Text.Of("Airplanes|Los aviones|Les avions|Els avions")], [0, 2],
+            Text.Of("The wheel and boats are thousands of years old; television and airplanes appeared in the 20th century.|La rueda y los barcos tienen miles de años; la televisión y los aviones aparecieron en el siglo XX.|La roue et les bateaux ont des milliers d'années ; la télévision et les avions sont apparus au XXᵉ siècle.|La roda i els vaixells tenen milers d'anys; la televisió i els avions van aparèixer al segle XX.")),
+        new("history.multiselect.middle_ages", 2,
+            Text.Of("Select everything typical of the Middle Ages.|Selecciona todo lo típico de la Edad Media.|Sélectionne tout ce qui est typique du Moyen Âge.|Selecciona tot el que és típic de l'edat mitjana."),
+            [Text.Of("Castles|Los castillos|Les châteaux forts|Els castells"), Text.Of("Knights|Los caballeros|Les chevaliers|Els cavallers"), Text.Of("Electric trains|Los trenes eléctricos|Les trains électriques|Els trens elèctrics"), Text.Of("Radio|La radio|La radio|La ràdio")], [0, 1],
+            Text.Of("Castles and knights belong to the Middle Ages; electric trains and radio came with the industrial age.|Los castillos y los caballeros son de la Edad Media; los trenes eléctricos y la radio llegaron con la era industrial.|Les châteaux forts et les chevaliers appartiennent au Moyen Âge ; les trains électriques et la radio sont arrivés avec l'ère industrielle.|Els castells i els cavallers són de l'edat mitjana; els trens elèctrics i la ràdio van arribar amb l'era industrial.")),
+        new("history.multiselect.eec_founders", 3,
+            Text.Of("Select all the founding members of the EEC (1957).|Selecciona todos los miembros fundadores de la CEE (1957).|Sélectionne tous les membres fondateurs de la CEE (1957).|Selecciona tots els membres fundadors de la CEE (1957)."),
+            [Text.Of("France|Francia|La France|França"), Text.Of("Spain|España|L'Espagne|Espanya"), Text.Of("Italy|Italia|L'Italie|Itàlia"), Text.Of("The United Kingdom|El Reino Unido|Le Royaume-Uni|El Regne Unit")], [0, 2],
+            Text.Of("France and Italy signed the Treaty of Rome in 1957; the United Kingdom joined in 1973 and Spain in 1986.|Francia e Italia firmaron el Tratado de Roma en 1957; el Reino Unido entró en 1973 y España en 1986.|La France et l'Italie ont signé le traité de Rome en 1957 ; le Royaume-Uni est entré en 1973 et l'Espagne en 1986.|França i Itàlia van signar el Tractat de Roma el 1957; el Regne Unit hi va entrar el 1973 i Espanya el 1986.")),
+        new("history.multiselect.warsaw_pact", 3,
+            Text.Of("Select all the countries that were in the Warsaw Pact.|Selecciona todos los países que formaron parte del Pacto de Varsovia.|Sélectionne tous les pays qui faisaient partie du pacte de Varsovie.|Selecciona tots els països que van formar part del Pacte de Varsòvia."),
+            [Text.Of("Poland|Polonia|La Pologne|Polònia"), Text.Of("France|Francia|La France|França"), Text.Of("Hungary|Hungría|La Hongrie|Hongria"), Text.Of("Portugal|Portugal|Le Portugal|Portugal")], [0, 2],
+            Text.Of("Poland and Hungary were in the Soviet-led Warsaw Pact; France and Portugal were founding members of NATO.|Polonia y Hungría formaban parte del Pacto de Varsovia, liderado por la URSS; Francia y Portugal fueron miembros fundadores de la OTAN.|La Pologne et la Hongrie faisaient partie du pacte de Varsovie, dirigé par l'URSS ; la France et le Portugal étaient membres fondateurs de l'OTAN.|Polònia i Hongria formaven part del Pacte de Varsòvia, liderat per l'URSS; França i Portugal van ser membres fundadors de l'OTAN.")),
     ];
 
     private static readonly IReadOnlyList<MultiSelectItem> GeographyMultiSelect =
@@ -1189,6 +1446,23 @@ public static class ExerciseBank
             Text.Of("Select all the correct country-capital pairs.|Selecciona todos los pares país-capital correctos.|Sélectionne toutes les paires pays-capitale correctes.|Selecciona tots els parells país-capital correctes."),
             [Text.Of("Spain — Lisbon|España — Lisboa|Espagne — Lisbonne|Espanya — Lisboa"), Text.Of("France — Paris|Francia — París|France — Paris|França — París"), Text.Of("Japan — Tokyo|Japón — Tokio|Japon — Tokyo|Japó — Tòquio"), Text.Of("Italy — Berlin|Italia — Berlín|Italie — Berlin|Itàlia — Berlín")], [1, 2],
             Text.Of("Paris is the capital of France and Tokyo of Japan; Spain's capital is Madrid (not Lisbon) and Italy's is Rome (not Berlin).|París es la capital de Francia y Tokio de Japón; la capital de España es Madrid (no Lisboa) y la de Italia es Roma (no Berlín).|Paris est la capitale de la France et Tokyo celle du Japon ; la capitale de l'Espagne est Madrid (pas Lisbonne) et celle de l'Italie est Rome (pas Berlin).|París és la capital de França i Tòquio del Japó; la capital d'Espanya és Madrid (no Lisboa) i la d'Itàlia és Roma (no Berlín).")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("geography.multiselect.islands", 1,
+            Text.Of("Select all the islands.|Selecciona todas las islas.|Sélectionne toutes les îles.|Selecciona totes les illes."),
+            [Text.Of("Mallorca|Mallorca|Majorque|Mallorca"), Text.Of("Madrid"), Text.Of("Tenerife"), Text.Of("Toledo|Toledo|Tolède|Toledo")], [0, 2],
+            Text.Of("Mallorca and Tenerife are islands; Madrid and Toledo are inland cities.|Mallorca y Tenerife son islas; Madrid y Toledo son ciudades del interior.|Majorque et Tenerife sont des îles ; Madrid et Tolède sont des villes de l'intérieur.|Mallorca i Tenerife són illes; Madrid i Toledo són ciutats de l'interior.")),
+        new("geography.multiselect.europe", 2,
+            Text.Of("Select all the countries in Europe.|Selecciona todos los países de Europa.|Sélectionne tous les pays d'Europe.|Selecciona tots els països d'Europa."),
+            [Text.Of("Portugal"), Text.Of("Kenya|Kenia|Le Kenya|Kenya"), Text.Of("Poland|Polonia|La Pologne|Polònia"), Text.Of("Peru|Perú|Le Pérou|Perú")], [0, 2],
+            Text.Of("Portugal and Poland are in Europe; Kenya is in Africa and Peru in South America.|Portugal y Polonia están en Europa; Kenia está en África y Perú en América del Sur.|Le Portugal et la Pologne sont en Europe ; le Kenya est en Afrique et le Pérou en Amérique du Sud.|Portugal i Polònia són a Europa; Kenya és a l'Àfrica i el Perú a Amèrica del Sud.")),
+        new("geography.multiselect.landlocked", 3,
+            Text.Of("Select all the countries with no sea coast.|Selecciona todos los países sin costa.|Sélectionne tous les pays sans accès à la mer.|Selecciona tots els països sense costa."),
+            [Text.Of("Switzerland|Suiza|La Suisse|Suïssa"), Text.Of("Austria|Austria|L'Autriche|Àustria"), Text.Of("Italy|Italia|L'Italie|Itàlia"), Text.Of("Portugal|Portugal|Le Portugal|Portugal")], [0, 1],
+            Text.Of("Switzerland and Austria have no coast at all; Italy and Portugal have long coastlines.|Suiza y Austria no tienen costa; Italia y Portugal tienen costas muy largas.|La Suisse et l'Autriche n'ont aucun accès à la mer ; l'Italie et le Portugal ont de longues côtes.|Suïssa i Àustria no tenen costa; Itàlia i Portugal tenen costes molt llargues.")),
+        new("geography.multiselect.southern_hemisphere", 3,
+            Text.Of("Select all the countries in the Southern Hemisphere.|Selecciona todos los países del hemisferio sur.|Sélectionne tous les pays de l'hémisphère Sud.|Selecciona tots els països de l'hemisferi sud."),
+            [Text.Of("Argentina|Argentina|L'Argentine|Argentina"), Text.Of("Canada|Canadá|Le Canada|Canadà"), Text.Of("Australia|Australia|L'Australie|Austràlia"), Text.Of("Japan|Japón|Le Japon|Japó")], [0, 2],
+            Text.Of("Argentina and Australia lie south of the equator; Canada and Japan are in the Northern Hemisphere.|Argentina y Australia están al sur del ecuador; Canadá y Japón están en el hemisferio norte.|L'Argentine et l'Australie sont au sud de l'équateur ; le Canada et le Japon sont dans l'hémisphère Nord.|L'Argentina i Austràlia són al sud de l'equador; el Canadà i el Japó són a l'hemisferi nord.")),
     ];
 
     private static readonly IReadOnlyList<MultiSelectItem> EconomicsMultiSelect =
@@ -1205,6 +1479,23 @@ public static class ExerciseBank
             Text.Of("Select all the situations that would make a product's price go up.|Selecciona todas las situaciones que harían subir el precio de un producto.|Sélectionne toutes les situations qui feraient augmenter le prix d'un produit.|Selecciona totes les situacions que farien pujar el preu d'un producte."),
             [Text.Of("A new factory floods the market with it|Una nueva fábrica inunda el mercado con él|Une nouvelle usine en inonde le marché|Una nova fàbrica n'inunda el mercat"), Text.Of("Demand rises while supply stays the same|La demanda sube y la oferta se mantiene|La demande augmente et l'offre reste la même|La demanda puja i l'oferta es manté"), Text.Of("A shortage reduces how much is available|Una escasez reduce cuánto hay disponible|Une pénurie réduit la quantité disponible|Una escassetat redueix la quantitat disponible"), Text.Of("Nobody wants to buy it anymore|Ya nadie quiere comprarlo|Plus personne ne veut l'acheter|Ja ningú el vol comprar")], [1, 2],
             Text.Of("Rising demand or a shrinking supply both push the price up; flooding the market or losing all buyers push it down instead.|Más demanda o menos oferta suben el precio; inundar el mercado o perder a todos los compradores lo bajan.|Une demande en hausse ou une offre réduite font monter le prix ; inonder le marché ou perdre tous les acheteurs le font baisser.|Més demanda o menys oferta pugen el preu; inundar el mercat o perdre tots els compradors el fan baixar.")),
+        // Task #97: more items per difficulty tier, so a drill repeats less often across sessions.
+        new("economics.multiselect.taxes", 3,
+            Text.Of("Select all the taxes.|Selecciona todos los impuestos.|Sélectionne tous les impôts.|Selecciona tots els impostos."),
+            [Text.Of("VAT|IVA|TVA|IVA"), Text.Of("Income tax|Impuesto sobre la renta (IRPF)|Impôt sur le revenu|Impost sobre la renda (IRPF)"), Text.Of("A salary|Un salario|Un salaire|Un salari"), Text.Of("A loan|Un préstamo|Un prêt|Un préstec")], [0, 1],
+            Text.Of("VAT and income tax are taxes paid to the state; a salary is income from work and a loan is borrowed money.|El IVA y el IRPF son impuestos que se pagan al Estado; un salario es un ingreso por trabajar y un préstamo es dinero prestado.|La TVA et l'impôt sur le revenu sont des impôts payés à l'État ; un salaire est un revenu du travail et un prêt de l'argent emprunté.|L'IVA i l'IRPF són impostos que es paguen a l'Estat; un salari és un ingrés per treballar i un préstec són diners prestats.")),
+        new("economics.multiselect.fixed_costs", 3,
+            Text.Of("Select the fixed costs of a bakery (they stay the same however much bread it makes).|Selecciona los costes fijos de una panadería (no cambian por mucho pan que haga).|Sélectionne les coûts fixes d'une boulangerie (ils ne changent pas, quelle que soit la quantité de pain).|Selecciona els costos fixos d'un forn de pa (no canvien per molt pa que faci)."),
+            [Text.Of("Rent of the shop|Alquiler del local|Loyer du local|Lloguer del local"), Text.Of("Flour|Harina|Farine|Farina"), Text.Of("Insurance|Seguro|Assurance|Assegurança"), Text.Of("Paper bags|Bolsas de papel|Sacs en papier|Bosses de paper")], [0, 2],
+            Text.Of("Rent and insurance cost the same however much bread is made; flour and bags grow with production, so they are variable costs.|El alquiler y el seguro cuestan lo mismo se haga el pan que se haga; la harina y las bolsas crecen con la producción, así que son costes variables.|Le loyer et l'assurance coûtent pareil quelle que soit la production ; la farine et les sacs augmentent avec elle, ce sont des coûts variables.|El lloguer i l'assegurança costen el mateix es faci el pa que es faci; la farina i les bosses creixen amb la producció, així que són costos variables.")),
+        new("economics.multiselect.inflation_causes", 3,
+            Text.Of("Select everything that can push inflation up.|Selecciona todo lo que puede hacer subir la inflación.|Sélectionne tout ce qui peut faire monter l'inflation.|Selecciona tot el que pot fer pujar la inflació."),
+            [Text.Of("Demand growing faster than production|Que la demanda crezca más que la producción|Une demande qui augmente plus vite que la production|Que la demanda creixi més que la producció"), Text.Of("A big rise in energy prices|Una gran subida del precio de la energía|Une forte hausse des prix de l'énergie|Una gran pujada del preu de l'energia"), Text.Of("The central bank raising interest rates|Que el banco central suba los tipos de interés|La banque centrale qui relève ses taux|Que el banc central apugi els tipus d'interès"), Text.Of("Wages falling across the economy|Que los salarios bajen en toda la economía|Une baisse générale des salaires|Que els salaris baixin a tota l'economia")], [0, 1],
+            Text.Of("Too much demand or more expensive energy push prices up; higher interest rates and falling wages tend to cool them down.|El exceso de demanda o una energía más cara suben los precios; tipos más altos y salarios a la baja tienden a frenarlos.|Trop de demande ou une énergie plus chère font monter les prix ; des taux plus élevés et des salaires en baisse tendent à les freiner.|L'excés de demanda o una energia més cara apugen els preus; tipus més alts i salaris a la baixa tendeixen a frenar-los.")),
+        new("economics.multiselect.gdp", 3,
+            Text.Of("Select everything that counts in a country's GDP.|Selecciona todo lo que cuenta en el PIB de un país.|Sélectionne tout ce qui compte dans le PIB d'un pays.|Selecciona tot el que compta en el PIB d'un país."),
+            [Text.Of("A new car made in a local factory|Un coche nuevo fabricado en una fábrica del país|Une voiture neuve fabriquée dans une usine du pays|Un cotxe nou fabricat en una fàbrica del país"), Text.Of("A haircut at a hairdresser's|Un corte de pelo en una peluquería|Une coupe chez le coiffeur|Un tall de cabell en una perruqueria"), Text.Of("Selling a second-hand bike|Vender una bici de segunda mano|La vente d'un vélo d'occasion|Vendre una bici de segona mà"), Text.Of("Buying shares of a company|Comprar acciones de una empresa|L'achat d'actions d'une entreprise|Comprar accions d'una empresa")], [0, 1],
+            Text.Of("GDP counts newly produced goods and services; selling second-hand items or buying shares only changes who owns something that already exists.|El PIB cuenta los bienes y servicios producidos de nuevo; vender objetos usados o comprar acciones solo cambia de manos algo que ya existía.|Le PIB compte les biens et services nouvellement produits ; vendre un objet d'occasion ou acheter des actions ne fait que changer le propriétaire de quelque chose qui existe déjà.|El PIB compta els béns i serveis produïts de nou; vendre objectes de segona mà o comprar accions només canvia de mans una cosa que ja existia.")),
     ];
 
     private static readonly IReadOnlyList<MultiSelectItem> ProgrammingMultiSelect =

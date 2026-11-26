@@ -13,8 +13,14 @@
         case QuizMode.Interview:
             EduVerse.Web.Breadcrumb.Set(ViewData, L["QuizMode_Interview"], ("/Student/Interview", L["Nav_Interview"]), ("/Student/Interview?figure=" + Model.Figure!.Key, Model.Figure.Name));
             break;
+        case QuizMode.Adventure when Model.Unit is not null:
+            EduVerse.Web.Breadcrumb.Set(ViewData, L["Path_Boss"], ("/Student/Path?area=" + Model.Area + "&level=" + Model.Level, L["Nav_Path"]));
+            break;
         case QuizMode.Adventure:
             EduVerse.Web.Breadcrumb.Set(ViewData, areaName, ("/Student/Adventures", L["Nav_Adventures"]));
+            break;
+        case QuizMode.Focus when Model.PathUrl is not null:
+            EduVerse.Web.Breadcrumb.Set(ViewData, areaName + (Model.Topic is { } pt ? " · " + EduVerse.Web.QuizEndpoints.TopicName(pt, L) : ""), ("/Student/Path?area=" + Model.Area + "&level=" + Model.Level, L["Nav_Path"]));
             break;
         case QuizMode.Duel:
             EduVerse.Web.Breadcrumb.Set(ViewData, areaName, ("/Student/Arena", L["Nav_Arena"]));
@@ -28,7 +34,7 @@
     }
 }
 <div id="qz-root" class="w-full space-y-4 sm:space-y-5 @(Model.Kids ? "kids" : "")"
-     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-material="@Model.MaterialId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-kids="@(Model.Kids ? "1" : "0")"
+     data-area="@Model.Area" data-level="@Model.Level" data-mode="@Model.Mode" data-topic="@Model.Topic" data-duel="@Model.DuelId" data-material="@Model.MaterialId" data-theme="@Model.Theme" data-figure="@Model.Figure?.Key" data-unit="@Model.Unit" data-path="@Model.PathUrl" data-kids="@(Model.Kids ? "1" : "0")" data-sounds="@(Model.Goal.Sounds ? "1" : "0")" data-potion-price="@EduVerse.Core.Gamification.Shop.Price(EduVerse.Core.Gamification.ShopItem.Potion)"
      data-reasons="@System.Text.Json.JsonSerializer.Serialize(Enum.GetValues<EduVerse.Core.Tutor.ThinkingError>().ToDictionary(e => e.ToString(), e => EduVerse.Core.Tutor.Thinking.Label(e, EduVerse.Web.Localization.LanguageForCurrentCulture())))">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
@@ -39,8 +45,13 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
+            @if (Model.Goal.HappyHourActive)
+            {
+                <span class="@Ui.Pill tone-mint text-foreground py-1 px-3 text-sm font-semibold tip tip-b qz-happy" data-tip="@string.Format(culture, L["HappyHour_Left"], Model.Goal.HappyHourMinutesLeft)" data-testid="happy-hour-pill"><span aria-hidden="true">⚡</span> @L["HappyHour_Pill"]</span>
+            }
             <span class="@Ui.Pill tone-sun text-foreground py-1 px-3 text-sm tip tip-b" data-tip="@L["Game_Xp"]"><span aria-hidden="true">⭐</span> <span id="qz-xp" data-testid="quiz-xp">0</span> XP</span>
             <span class="@Ui.Pill tone-peach text-foreground py-1 px-3 text-sm tip tip-b" data-tip="@L["Quiz_Run"]"><span aria-hidden="true">🔥</span> <span id="qz-run">0</span></span>
+            <button type="button" id="qz-sound" class="@Ui.IconBtn tip tip-b" aria-pressed="@(Model.Goal.Sounds ? "true" : "false")" data-tip="@L["Quiz_Sounds"]" aria-label="@L["Quiz_Sounds"]" data-testid="sound-toggle">@(Model.Goal.Sounds ? "🔔" : "🔕")</button>
             <button type="button" id="qz-speak" class="@Ui.IconBtn tip tip-b" aria-pressed="@(Model.Kids ? "true" : "false")" data-tip="@L["Quiz_ReadAloud"]" aria-label="@L["Quiz_ReadAloud"]">🔊</button>
             <button type="button" id="qz-oral" class="@Ui.IconBtn tip tip-b hidden" aria-pressed="false" data-tip="@L["Quiz_OralExam"]" aria-label="@L["Quiz_OralExam"]" data-testid="oral-toggle">🎧</button>
         </div>

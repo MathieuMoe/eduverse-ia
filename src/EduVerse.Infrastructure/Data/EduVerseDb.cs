@@ -49,6 +49,16 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
 
     public DbSet<XpEvent> XpEvents => Set<XpEvent>();
 
+    public DbSet<GemEvent> GemEvents => Set<GemEvent>();
+
+    public DbSet<StreakFreezeUse> StreakFreezeUses => Set<StreakFreezeUse>();
+
+    public DbSet<LeagueMember> LeagueMembers => Set<LeagueMember>();
+
+    public DbSet<RoleplaySession> RoleplaySessions => Set<RoleplaySession>();
+
+    public DbSet<FriendQuest> FriendQuests => Set<FriendQuest>();
+
     public DbSet<BadgeAward> BadgeAwards => Set<BadgeAward>();
 
     public DbSet<QuestClaim> QuestClaims => Set<QuestClaim>();
@@ -94,7 +104,7 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
     public DbSet<FigureDiscovery> FigureDiscoveries => Set<FigureDiscovery>();
 
     /// <summary>Version of the schema created by EnsureCreated (stored in SQLite "PRAGMA user_version").</summary>
-    public const int DatabaseVersion = 22;
+    public const int DatabaseVersion = 27;
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -174,6 +184,13 @@ public sealed class EduVerseDb(DbContextOptions<EduVerseDb> options) : IdentityD
         builder.Entity<TopicSkill>().HasKey(t => new { t.UserId, t.Area, t.Level, t.Topic });
         builder.Entity<SubjectLevel>().HasKey(s => new { s.UserId, s.Area });
         builder.Entity<XpEvent>().HasIndex(x => new { x.UserId, x.At });
+        builder.Entity<GemEvent>().HasIndex(g => new { g.UserId, g.At });
+        builder.Entity<StreakFreezeUse>().HasIndex(f => new { f.UserId, f.Day }).IsUnique();
+        builder.Entity<LeagueMember>().HasIndex(m => new { m.UserId, m.Week }).IsUnique();
+        builder.Entity<LeagueMember>().HasIndex(m => new { m.Week, m.Group });
+        builder.Entity<RoleplaySession>().HasIndex(r => new { r.UserId, r.StartedAt });
+        builder.Entity<FriendQuest>().HasIndex(f => new { f.Week, f.UserA });
+        builder.Entity<FriendQuest>().HasIndex(f => new { f.Week, f.UserB });
         builder.Entity<BadgeAward>().HasKey(b => new { b.UserId, b.Key });
         builder.Entity<QuestClaim>().HasKey(q => new { q.UserId, q.Day, q.Key });
         builder.Entity<CompanionMessage>(e => e.HasIndex(m => new { m.UserId, m.At }));

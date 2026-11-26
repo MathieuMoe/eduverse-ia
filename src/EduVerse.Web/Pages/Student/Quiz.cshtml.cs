@@ -30,7 +30,16 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game, Ed
 
     public EduVerse.Core.Tutor.Figure? Figure { get; private set; }
 
-    public async Task<IActionResult> OnGetAsync(Area? area, Level? level, QuizMode? mode, string? topic, int? duel, Theme? theme, string? figure, int? material)
+    /// <summary>The unit topic when this adventure is the boss of a unit of the learning path.</summary>
+    public string? Unit { get; private set; }
+
+    /// <summary>Where "continue the path" goes, when the test was started from the learning path.</summary>
+    public string? PathUrl { get; private set; }
+
+    /// <summary>Daily goal, happy hour and sound settings (header pill and sound toggle).</summary>
+    public DailyGoalView Goal { get; private set; } = null!;
+
+    public async Task<IActionResult> OnGetAsync(Area? area, Level? level, QuizMode? mode, string? topic, int? duel, Theme? theme, string? figure, int? material, string? unit = null, string? from = null)
     {
         if (material is { } materialId)
         {
@@ -54,6 +63,7 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game, Ed
             area = Figure.Area;
         }
         Theme = theme is { } th && Enum.IsDefined(th) ? th : Theme.Space;
+        Goal = await game.GoalAsync(User.Id(), HttpContext.RequestAborted);
         var profile = await learning.ProfileAsync(User.Id(), HttpContext.RequestAborted);
         Mode = mode is { } m && Enum.IsDefined(m) ? m : QuizMode.Practice;
         Topic = string.IsNullOrWhiteSpace(topic) ? null : topic.Trim()[..Math.Min(topic.Trim().Length, TopicQuizPrompt.MaxTopicLength)];
@@ -90,6 +100,21 @@ public sealed class QuizModel(LearningStore learning, GamificationStore game, Ed
         if (Mode == QuizMode.Focus && (Topic is null || !EduVerse.Core.Curriculum.AreaSubjects.Topics(Area, Level).Contains(Topic)))
         {
             return RedirectToPage("/Student/Plan");
+        }
+
+        if (Mode == QuizMode.Adventure && unit is not null)
+        {
+            if (!EduVerse.Core.Curriculum.AreaSubjects.Topics(Area, Level).Contains(unit))
+            {
+                return RedirectToPage("/Student/Path", new { area = Area, level = Level });
+            }
+
+            (Unit, Theme) = (unit, Theme.Castle);
+        }
+
+        if (Unit is not null || (from == "path" && Mode == QuizMode.Focus))
+        {
+            PathUrl = $"/Student/Path?area={Area}&level={Level}#path-current";
         }
 
         return Page();

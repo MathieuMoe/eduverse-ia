@@ -6,7 +6,8 @@
     const $ = (id) => document.getElementById(id);
     const root = $("qz-root");
     const stage = $("qz-stage");
-    const { area, level, mode, topic, duel, theme, figure } = root.dataset;
+    const { area, level, mode, topic, duel, theme, figure, unit } = root.dataset;
+    const pathUrl = root.dataset.path || "";
     const kids = root.dataset.kids === "1";
     const speakButton = $("qz-speak");
     const oralButton = $("qz-oral");
@@ -30,6 +31,47 @@
     const primary = `${btn} bg-primary text-primary-foreground hover:bg-primary-hover`;
     const light = `${btn} border border-layer-line bg-layer text-foreground hover:bg-layer-hover`;
     const voices = { en: "en-GB", es: "es-ES", fr: "fr-FR", ca: "ca-ES" };
+
+    // Sound effects (Duolingo-style): tiny tones synthesized with the Web Audio API, so there are no audio files to
+    // load. The AudioContext is only created on the first sound, which always follows a click (browsers refuse to
+    // start one before a user gesture). The student's choice is saved on the server (/api/game/sounds).
+    let sounds = root.dataset.sounds !== "0";
+    let audio = null;
+    function tone(freq, start, length, type = "sine", gain = 0.12) {
+        const osc = audio.createOscillator();
+        const vol = audio.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audio.currentTime + start);
+        vol.gain.setValueAtTime(0.0001, audio.currentTime + start);
+        vol.gain.exponentialRampToValueAtTime(gain, audio.currentTime + start + 0.02);
+        vol.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + start + length);
+        osc.connect(vol).connect(audio.destination);
+        osc.start(audio.currentTime + start);
+        osc.stop(audio.currentTime + start + length + 0.05);
+    }
+    const sfxNotes = {
+        correct: [[660, 0, 0.12], [880, 0.1, 0.22]],
+        wrong: [[220, 0, 0.18, "triangle"], [175, 0.14, 0.26, "triangle"]],
+        streak: [[523, 0, 0.1], [659, 0.08, 0.1], [784, 0.16, 0.1], [1047, 0.24, 0.25]],
+        complete: [[523, 0, 0.15], [659, 0.14, 0.15], [784, 0.28, 0.15], [1047, 0.42, 0.4]],
+        goal: [[784, 0, 0.12], [988, 0.1, 0.12], [1175, 0.2, 0.12], [1568, 0.3, 0.45]],
+    };
+    function sfx(name) {
+        if (!sounds || !sfxNotes[name]) return;
+        try {
+            audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+            if (audio.state === "suspended") audio.resume();
+            for (const [f, st, len, type] of sfxNotes[name]) tone(f, st, len, type);
+        } catch { /* no audio device: stay silent */ }
+    }
+    $("qz-sound")?.addEventListener("click", async (e) => {
+        sounds = !sounds;
+        const b = e.currentTarget;
+        b.setAttribute("aria-pressed", String(sounds));
+        b.textContent = sounds ? "🔔" : "🔕";
+        if (sounds) sfx("correct");
+        try { await api("/api/game/sounds", { json: { on: sounds } }); } catch { /* the toggle still works for this page */ }
+    });
 
     // onend fires even when speak is off (no-op synthesis) so an oral-mode caller can always chain the next step.
     // force bypasses the speak toggle: a "Listen and answer" drill (task #114) has nothing to read if speech is off,
@@ -113,7 +155,8 @@
     }
 
     function toast(reward) {
-        const items = [...(reward?.badges || []).map((b) => `${b.icon} ${esc(fmt(t("NewBadge"), b.name))}`), ...(reward?.quests || []).map((q) => `🎯 ${esc(fmt(t("QuestDone"), q.name))}`)];
+        const items = [...(reward?.badges || []).map((b) => `${b.icon} ${esc(fmt(t("NewBadge"), b.name))}`), ...(reward?.quests || []).map((q) => `🎯 ${esc(fmt(t("QuestDone"), q.name))}`),
+            ...(reward?.gems ? [`💎 ${esc(fmt(t("GemsWon"), reward.gems))}`] : [])];
         const el = $("qz-toast");
         if (!items.length) return;
         el.innerHTML = items.join("<br>");
@@ -121,13 +164,13 @@
         setTimeout(() => el.classList.add("hidden"), 6000);
     }
 
-    function addXp(amount) {
+    function addXp(amount, boosted) {
         if (!amount) return;
         xp += amount;
         $("qz-xp").textContent = String(xp);
         const pop = document.createElement("span");
         pop.className = "xp-pop absolute top-16 right-6 text-lg font-bold text-primary pointer-events-none";
-        pop.textContent = `+${amount} XP`;
+        pop.textContent = `+${amount} XP${boosted ? " ⚡×2" : ""}`;
         stage.appendChild(pop);
         setTimeout(() => pop.remove(), 1200);
     }
@@ -169,19 +212,44 @@
             return `<li class="size-9 sm:size-10 rounded-full grid place-items-center text-lg ${i === a.passed && !a.inBoss ? "bg-white dark:bg-white/20 ring-2 ring-primary animate-pulse" : "bg-white/60 dark:bg-white/10"}" aria-label="${esc(fmt(t("DoorN"), i + 1))}">${state}</li>`;
         }).join(`<li class="h-0.5 w-3 sm:w-5 bg-foreground/20 rounded" aria-hidden="true"></li>`);
         const hp = Math.round(100 * a.bossHp / a.bossMax);
+        const villain = a.unitBoss ? `<li class="size-11 rounded-2xl grid place-items-center text-2xl bg-white dark:bg-white/20 ring-2 ring-rose-400 qz-streak-pop" aria-label="${esc(a.boss)}">🐲</li>` : "";
         const hearts = "❤️".repeat(Math.max(0, a.hearts)) + "🤍".repeat(Math.max(0, a.maxHearts - a.hearts));
         return `<div class="rounded-3xl tone-${a.inBoss ? "pink" : "sky"} p-4 sm:p-5" data-testid="adventure-map">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <ol class="flex items-center gap-1 sm:gap-1.5" aria-label="${esc(t("Map"))}">${doors}<li class="h-0.5 w-3 sm:w-5 bg-foreground/20 rounded" aria-hidden="true"></li>
-                    <li class="size-11 rounded-2xl grid place-items-center text-2xl ${a.inBoss ? "bg-white dark:bg-white/20 ring-2 ring-rose-400" : "bg-white/60 dark:bg-white/10"}" aria-label="${esc(a.boss)}">🐲</li></ol>
-                <span class="text-lg tracking-wider" aria-label="${esc(fmt(t("HeartsN"), a.hearts))}" data-testid="hearts">${hearts}</span>
+                ${a.unitBoss ? `<ol class="flex items-center gap-2" data-testid="unit-boss">${villain}<li class="text-sm font-semibold text-foreground">${esc(a.boss)}</li></ol>` : `<ol class="flex items-center gap-1 sm:gap-1.5" aria-label="${esc(t("Map"))}">${doors}<li class="h-0.5 w-3 sm:w-5 bg-foreground/20 rounded" aria-hidden="true"></li>
+                    <li class="size-11 rounded-2xl grid place-items-center text-2xl ${a.inBoss ? "bg-white dark:bg-white/20 ring-2 ring-rose-400" : "bg-white/60 dark:bg-white/10"}" aria-label="${esc(a.boss)}">🐲</li></ol>`}
+                <span class="flex items-center gap-2"><span class="text-lg tracking-wider" aria-label="${esc(fmt(t("HeartsN"), a.hearts))}" data-testid="hearts" id="qz-hearts">${hearts}</span>
+                ${a.hearts < a.maxHearts ? `<button type="button" id="qz-potion" class="py-1 px-2.5 rounded-full text-xs font-semibold bg-white/80 dark:bg-white/15 text-foreground hover:bg-white tip tip-b" data-tip="${esc(t("PotionTip"))}" data-max="${a.maxHearts}" data-testid="adventure-potion">🧪 +1 ❤️ · 💎 ${esc(root.dataset.potionPrice || "")}</button>` : ""}</span>
             </div>
+            <p class="hidden mt-2 text-xs font-medium text-foreground" role="status" id="qz-potion-status"></p>
             ${a.inBoss ? `<div class="mt-3"><div class="flex justify-between text-xs text-foreground/70"><span>${esc(a.boss)}</span><span>${a.bossHp}/${a.bossMax}</span></div>
                 <div class="mt-1 h-2.5 rounded-full bg-white/70 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-rose-500 transition-all" style="width:${hp}%"></div></div></div>` : ""}
             ${a.intro ? `<p class="mt-3 text-sm font-medium text-foreground">${esc(a.intro)}</p>` : ""}
             <p class="mt-2 text-sm text-foreground/80 italic" data-testid="story-line">${esc(a.line)}</p>
         </div>`;
     }
+
+    // Potion (phase 2): gems buy one heart back during an adventure; the server checks the price and the maximum.
+    stage.addEventListener("click", async (e) => {
+        const b = e.target.closest("#qz-potion");
+        if (!b || !attemptId) return;
+        b.disabled = true;
+        const out = $("qz-potion-status");
+        try {
+            const r = await api(`/api/quiz/${encodeURIComponent(attemptId)}/potion`, { json: {} });
+            const max = +b.dataset.max;
+            $("qz-hearts").textContent = "❤️".repeat(r.hearts) + "🤍".repeat(Math.max(0, max - r.hearts));
+            $("qz-hearts").setAttribute("aria-label", fmt(t("HeartsN"), r.hearts));
+            pulse($("qz-hearts"), "qz-streak-pop", 500);
+            sfx("streak");
+            if (r.hearts >= max) b.remove(); else b.disabled = false;
+            out.textContent = fmt(t("PotionDrunk"), r.gems);
+        } catch (err) {
+            out.textContent = err.data?.code === "potion_notenoughgems" ? t("PotionNoGems") : err.message;
+            b.disabled = false;
+        }
+        out.classList.remove("hidden");
+    });
 
     function render(q) {
         question = q;
@@ -410,13 +478,16 @@
         if (res.confidence !== 1 && res.confidence !== undefined) bets.push({ sure: res.confidence === 2, correct: res.correct });
         markCorrect?.();
         $("qz-run").textContent = String(res.run);
-        addXp(res.reward?.xp);
+        addXp(res.reward?.xp, res.reward?.boosted);
         toast(res.reward);
         if (res.correct) {
             pulse($("qz-run").parentElement, "qz-streak-pop", 500);
-            if ((res.run || 0) > 0 && res.run % 5 === 0) confettiBurst(stage);
+            const milestone = (res.run || 0) > 0 && res.run % 5 === 0;
+            if (milestone) confettiBurst(stage);
+            sfx(milestone ? "streak" : "correct");
         } else {
             pulse(stage, "qz-shake", 400);
+            sfx("wrong");
         }
         const fb = $("qz-feedback");
         fb.className = `mt-5 p-4 rounded-2xl ${res.correct ? "tone-mint" : "tone-pink"}`;
@@ -432,9 +503,24 @@
             <p class="mt-1 text-sm text-foreground/80">${esc(res.explanation)}</p>
             ${notes.map((n) => `<p class="mt-1 text-xs text-foreground/70">${esc(n)}</p>`).join("")}
             ${res.pace ? `<p class="mt-2 p-2.5 rounded-xl bg-white/60 dark:bg-white/10 text-sm text-foreground" data-testid="quiz-pace" data-pace="${esc(res.pace.kind)}">⏱️ ${esc(res.pace.text)}</p>` : ""}
+            ${res.correct || isDrill || !answered.number ? "" : `<div class="mt-2"><button type="button" class="py-1.5 px-3 rounded-full text-xs font-semibold bg-white/70 dark:bg-white/10 text-foreground hover:bg-white" id="qz-trick" data-number="${answered.number}" data-testid="quiz-trick">💡 ${esc(t("TrickAsk"))}</button>
+                <div class="mt-2 hidden p-3 rounded-xl bg-white/70 dark:bg-white/10 text-sm text-foreground" id="qz-trick-out" aria-live="polite" data-testid="quiz-trick-text"></div></div>`}
             ${res.correct || !Object.keys(reasons).length || isDrill ? "" : thinkingBlock(answered.number)}
             <div class="mt-3 flex justify-end"><button type="button" class="${primary}" id="qz-next" data-testid="quiz-next">${esc(res.summary ? t("SeeResults") : t("Next"))} →</button></div>`;
         wireThinking(answered.id);
+        // "Give me a trick" (phase 5): a memory hook for the question just missed (AI, or a technique offline)
+        $("qz-trick")?.addEventListener("click", async (e) => {
+            const b = e.currentTarget;
+            const out = $("qz-trick-out");
+            b.disabled = true;
+            out.classList.remove("hidden");
+            out.textContent = t("TrickWriting");
+            try {
+                const r = await api(`/api/quiz/${encodeURIComponent(attemptId)}/trick/${b.dataset.number}`, { method: "POST" });
+                out.innerHTML = `<p class="text-xs font-semibold text-foreground/70">💡 ${esc(t("TrickTitle"))}</p><p class="mt-1">${esc(r.trick)}</p>`;
+                b.remove();
+            } catch (err) { out.textContent = err.message; b.disabled = false; }
+        });
         const next = $("qz-next");
         next.focus();
         const advance = () => res.summary ? summary(res.summary) : render(res.next);
@@ -605,7 +691,7 @@
                 <p class="text-4xl" aria-hidden="true">${s.won ? "🏆" : "🌙"}</p>
                 <p class="mt-2 text-lg font-semibold text-foreground">${esc(t(s.won ? "AdventureWon" : "AdventureLost"))}</p>
                 <p class="mt-1 text-sm text-foreground/80">${esc(s.ending)}</p></div>
-            <form class="mt-4 p-4 rounded-2xl border border-layer-line bg-layer text-left space-y-3" id="qz-rate" data-testid="adventure-rating">
+            ${unit ? "" : `<form class="mt-4 p-4 rounded-2xl border border-layer-line bg-layer text-left space-y-3" id="qz-rate" data-testid="adventure-rating">
                 <p class="text-sm font-semibold text-foreground">📝 ${esc(t("RateTitle"))}</p>
                 <fieldset><legend class="text-xs text-muted-foreground-1">${esc(t("RateStars"))}</legend>
                     <div class="mt-1 flex gap-1">${[1, 2, 3, 4, 5].map((n) => `<label class="cursor-pointer text-2xl has-checked:scale-110"><input type="radio" name="stars" value="${n}" class="sr-only peer" data-testid="rate-star-${n}"><span class="grayscale opacity-40 peer-checked:grayscale-0 peer-checked:opacity-100" aria-label="${n}">⭐</span></label>`).join("")}</div></fieldset>
@@ -615,7 +701,7 @@
                     <div class="mt-1 flex flex-wrap gap-2">${[["true", "😄"], ["false", "😐"]].map(([v, e]) => `<label class="cursor-pointer"><input type="radio" name="fun" value="${v}" class="sr-only peer" ${v === "true" ? "checked" : ""}><span class="inline-block py-1 px-3 rounded-full text-xs font-semibold border border-layer-line peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary">${e} ${esc(t(v === "true" ? "Yes" : "No"))}</span></label>`).join("")}</div></fieldset>
                 <div class="flex flex-wrap items-center gap-3"><button type="submit" class="${primary}" data-testid="rate-send">${esc(t("RateSend"))}</button>
                     <p class="text-sm text-foreground" role="status" aria-live="polite" id="qz-rate-status"></p></div>
-            </form>` : "";
+            </form>`}` : "";
         const duelText = s.duel === null || s.duel === undefined ? (mode === "Duel" ? `<p class="mt-4 text-sm text-muted-foreground-1">${esc(t("DuelWaiting"))}</p>` : "")
             : `<p class="mt-4 text-lg font-semibold text-foreground">${esc(t(s.duel > 0 ? "DuelWon" : s.duel < 0 ? "DuelLost" : "DuelDraw"))}</p>`;
         const topics = s.topics.length ? `<ul class="mt-5 space-y-2 text-left">${s.topics.map((x) => {
@@ -631,14 +717,15 @@
             <a class="mt-1 inline-block text-xs text-primary hover:underline" href="/Student/Learner#lr-map-title">${esc(t("BetMap"))} →</a></div>` : "";
         bets = [];
         stage.innerHTML = `<div class="text-center" data-testid="quiz-summary">
+            <div id="qz-lesson-end" data-testid="lesson-end" aria-live="polite"></div>
             <p class="text-4xl tracking-widest" aria-label="${esc(fmt(t("StarsN"), s.stars))}">${stars}</p>
             ${mode === "Review" ? `<p class="mt-2 text-sm font-medium text-primary">⚡ ${esc(t("ReviewDone"))}</p>` : mode === "Notebook" || mode === "Evo" ? `<p class="mt-2 text-sm font-medium text-primary">🔎 ${esc(fmt(t("EvoDone"), s.correct))}</p>` : ""}
             <h2 class="mt-3 text-2xl font-semibold text-foreground">${esc(fmt(t("ScoreOf"), s.correct, s.length))}</h2>
             <p class="mt-1 text-sm text-muted-foreground-1">${esc(fmt(t("XpWon"), xp))}</p>
             ${adventure}${duelText}${placed}${topics}${betBlock}
             <div class="mt-6 flex flex-wrap justify-center gap-2">
-                ${mode === "Duel" ? `<a class="${primary}" href="/Student/Arena">${esc(t("BackToArena"))}</a>` : mode === "Focus" ? `<a class="${primary}" href="/Student/Plan" data-testid="focus-back">${esc(t("PlanBack"))}</a>` : mode === "Interview" ? `<a class="${primary}" href="/Student/Interview">${esc(t("OtherInterviews"))}</a>` : mode === "Adventure" ? `<a class="${primary}" href="/Student/Adventures">${esc(t("NewAdventure"))}</a>` : mode === "Review" ? `<a class="${primary}" href="/Student">${esc(t("Dashboard"))}</a>` : `<button type="button" class="${primary}" id="qz-again">${esc(t("Again"))}</button>`}
-                ${["Practice", "Review", "Focus", "Adventure"].includes(mode) && s.correct > 0 ? `<a class="${light}" href="/Student/Defend?attempt=${encodeURIComponent(attemptId)}" data-testid="quiz-defend">🛡️ ${esc(t("DefendOpen"))}</a>` : ""}
+                ${pathUrl ? `<a class="${primary}" href="${esc(pathUrl)}" data-testid="path-back">🧭 ${esc(t("PathContinue"))}</a>` : mode === "Duel" ? `<a class="${primary}" href="/Student/Arena">${esc(t("BackToArena"))}</a>` : mode === "Focus" ? `<a class="${primary}" href="/Student/Plan" data-testid="focus-back">${esc(t("PlanBack"))}</a>` : mode === "Interview" ? `<a class="${primary}" href="/Student/Interview">${esc(t("OtherInterviews"))}</a>` : mode === "Adventure" ? `<a class="${primary}" href="/Student/Adventures">${esc(t("NewAdventure"))}</a>` : mode === "Review" ? `<a class="${primary}" href="/Student">${esc(t("Dashboard"))}</a>` : `<button type="button" class="${primary}" id="qz-again">${esc(t("Again"))}</button>`}
+                ${["Practice", "Review", "Focus", "Adventure"].includes(mode) && s.defendable ? `<a class="${light}" href="/Student/Defend?attempt=${encodeURIComponent(attemptId)}" data-testid="quiz-defend">🛡️ ${esc(t("DefendOpen"))}</a>` : ""}
                 <a class="${light}" href="/Student/History?id=${encodeURIComponent(attemptId)}" data-testid="quiz-review">${esc(t("Review"))}</a>
                 <a class="${light}" href="/Student/Explore">${esc(t("OtherSubjects"))}</a>
             </div></div>`;
@@ -655,6 +742,91 @@
         });
         $("qz-again")?.addEventListener("click", () => { xp = 0; $("qz-xp").textContent = "0"; $("qz-run").textContent = "0"; start(); });
         say(s.ending || fmt(t("ScoreOf"), s.correct, s.length));
+        lessonEnd();
+    }
+
+    // Counts a number up inside an element (the stat tiles of the end-of-lesson screen).
+    function countUp(el, to, suffix = "", ms = 700) {
+        if (!el) return;
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce || to <= 0) { el.textContent = to + suffix; return; }
+        const t0 = performance.now();
+        const step = (now) => {
+            const k = Math.min(1, (now - t0) / ms);
+            el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + suffix;
+            if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }
+
+    // End-of-lesson screens: XP, accuracy and time tiles, the streak kept alive today, the daily goal ring and the
+    // day's quests. Everything is read from the server; a failure just leaves the classic summary below.
+    async function lessonEnd() {
+        const box = $("qz-lesson-end");
+        if (!box || !attemptId) return;
+        let e;
+        try { e = await api(`/api/game/lesson-end/${encodeURIComponent(attemptId)}`); } catch { return; }
+        if (!box.isConnected) return;
+        const time = `${Math.floor(e.seconds / 60)}:${String(e.seconds % 60).padStart(2, "0")}`;
+        const tile = (tone, icon, label, id, delay) => `<div class="le-rise p-3 rounded-2xl ${tone}" style="animation-delay:${delay}ms">
+                <p class="text-xs font-semibold uppercase tracking-wide text-foreground/70"><span aria-hidden="true">${icon}</span> ${esc(label)}</p>
+                <p class="mt-1 text-2xl font-bold text-foreground" id="${id}">0</p></div>`;
+        const streak = e.streakExtended ? `<div class="le-rise mt-3 p-4 rounded-2xl tone-peach flex items-center justify-center gap-3" style="animation-delay:420ms" data-testid="lesson-streak">
+                <span class="le-flame text-4xl" aria-hidden="true">🔥</span>
+                <div class="text-left"><p class="text-lg font-semibold text-foreground">${esc(fmt(t("LessonStreak"), e.streak))}</p>
+                <p class="text-xs text-foreground/70">${esc(t("LessonStreakSub"))}</p></div></div>` : "";
+        const quests = (e.quests || []).map((q) => `<li class="flex items-center gap-2 text-sm"><span aria-hidden="true">${q.done ? "✅" : "🎯"}</span>
+                <span class="grow text-left text-foreground">${esc(q.text)}</span>
+                <span class="text-xs text-muted-foreground-1">${q.progress}/${q.target}</span></li>`).join("");
+        box.innerHTML = `<div class="mb-6 p-4 sm:p-5 rounded-3xl border border-layer-line bg-layer">
+            <p class="le-rise text-lg font-semibold text-foreground">🎉 ${esc(t("LessonComplete"))}${e.happyHour ? ` <span class="ms-1 align-middle text-xs py-0.5 px-2 rounded-full tone-mint">⚡ ${esc(t("HappyHourOn"))}</span>` : ""}${e.gems ? ` <a href="/Student/Shop" class="gem-pop ms-1 align-middle text-xs py-0.5 px-2 rounded-full tone-sky hover:underline" style="animation-delay:700ms" data-testid="lesson-gems">💎 +${e.gems}</a>` : ""}</p>
+            <div class="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+                ${tile("tone-sun", "⭐", t("LessonXp"), "le-xp", 80)}
+                ${tile("tone-mint", "🎯", t("LessonAccuracy"), "le-acc", 180)}
+                ${tile("tone-sky", "⏱️", t("LessonTime"), "le-time", 280)}
+            </div>
+            ${streak}
+            <div class="le-rise mt-3 p-4 rounded-2xl ${e.goalReached ? "tone-mint" : "bg-surface"} flex items-center gap-4" style="animation-delay:560ms" data-testid="lesson-goal" data-reached="${e.goalReached ? "1" : "0"}">
+                <div class="xp-ring size-14 shrink-0 rounded-full grid place-items-center" id="le-ring" style="--p:0" role="img" aria-label="${esc(fmt(t("GoalOf"), e.todayXp, e.goal))}">
+                    <span class="size-11 rounded-full bg-white/90 dark:bg-[#262236] grid place-items-center text-xs font-bold text-foreground">${e.goalPercent}%</span></div>
+                <div class="text-left min-w-0"><p class="text-sm font-semibold text-foreground">${esc(e.goalJustReached ? t("GoalJustReached") : e.goalReached ? t("GoalReached") : t("GoalToday"))}</p>
+                <p class="text-xs text-foreground/70">${esc(fmt(t("GoalOf"), e.todayXp, e.goal))}</p></div></div>
+            ${e.league ? `<a href="/Student/League" class="le-rise mt-3 flex items-center gap-3 p-3 rounded-2xl ${e.league.zone === "Promoted" ? "tone-mint" : e.league.zone === "Demoted" ? "tone-pink" : "bg-surface"} hover:opacity-90" style="animation-delay:620ms" data-testid="lesson-league">
+                <span class="text-2xl" aria-hidden="true">${esc(e.league.emoji)}</span>
+                <span class="grow text-left text-sm text-foreground">${esc(fmt(t("LeaguePlace"), e.league.name, e.league.position, e.league.size))}</span>
+                <span class="text-xs font-semibold text-foreground/70">${e.league.zone === "Promoted" ? "▲" : e.league.zone === "Demoted" ? "▼" : ""}</span></a>` : ""}
+            ${quests ? `<ul class="le-rise mt-3 space-y-1.5" style="animation-delay:680ms" data-testid="lesson-quests">${quests}</ul>` : ""}
+        </div>`;
+        countUp($("le-xp"), e.xp);
+        countUp($("le-acc"), e.accuracy, "%");
+        $("le-time").textContent = time;
+        const ring = $("le-ring");
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) ring.style.setProperty("--p", e.goalPercent);
+        else {
+            const t0 = performance.now();
+            const grow = (now) => {
+                const k = Math.min(1, (now - t0) / 900);
+                ring.style.setProperty("--p", Math.round(e.goalPercent * k));
+                if (k < 1) requestAnimationFrame(grow);
+            };
+            setTimeout(() => requestAnimationFrame(grow), 560);
+        }
+        sfx("complete");
+        if (e.goalJustReached) setTimeout(() => { confettiBurst(box); sfx("goal"); }, 900);
+        mascotSays(box.firstElementChild);
+    }
+
+    // The Tutor reacts to the lesson (phase 5): the mood is decided on the server, the words come from the AI or a
+    // line written in advance. A failure just leaves the screen without the bubble.
+    async function mascotSays(panel) {
+        if (!panel) return;
+        let m;
+        try { m = await api(`/api/game/mascot/${encodeURIComponent(attemptId)}`, { method: "POST" }); } catch { return; }
+        if (!panel.isConnected) return;
+        panel.insertAdjacentHTML("afterbegin", `<div class="le-rise mb-3 flex items-start gap-3 text-left" data-testid="lesson-mascot" data-mood="${esc(m.mood)}">
+            <span class="size-11 shrink-0 rounded-full tone-sun grid place-items-center text-2xl" aria-hidden="true">🦉</span>
+            <p class="relative py-2 px-3.5 rounded-2xl rounded-tl-sm tone-sun text-sm font-medium text-foreground">${esc(m.emoji)} ${esc(m.line)}</p></div>`);
     }
 
     function showError(e) {
@@ -673,8 +845,8 @@
         stage.innerHTML = `<div class="py-10 text-center text-sm text-muted-foreground-1"><span class="animate-spin inline-block size-5 border-2 border-current border-t-transparent rounded-full" aria-hidden="true"></span> ${esc(t("Generating"))}</div>`;
         try {
             const body = { area, level, mode: mode === "Topic" ? "Practice" : mode, topic: topic || null, duelId: duel ? +duel : null, figure: figure || null };
-            const url = root.dataset.material ? `/api/materials/${encodeURIComponent(root.dataset.material)}/quiz` : mode === "Topic" ? "/api/quiz/topic" : mode === "Adventure" ? "/api/quiz/adventure" : "/api/quiz/start";
-            const res = await api(url, { json: mode === "Adventure" ? { area, level, theme } : body });
+            const url = root.dataset.material ? `/api/materials/${encodeURIComponent(root.dataset.material)}/quiz` : mode === "Topic" ? "/api/quiz/topic" : unit ? "/api/quiz/boss" : mode === "Adventure" ? "/api/quiz/adventure" : "/api/quiz/start";
+            const res = await api(url, { json: unit ? { area, level, topic: unit } : mode === "Adventure" ? { area, level, theme } : body });
             render(res.question);
             if (res.fallback) {
                 const n = document.createElement("p");

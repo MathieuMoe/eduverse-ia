@@ -15,14 +15,30 @@ public sealed record Reward(int Xp, IReadOnlyList<string> Badges, IReadOnlyList<
 {
     public static readonly Reward None = new(0, [], []);
 
-    public Reward Plus(Reward other) => new(Xp + other.Xp, [.. Badges, .. other.Badges], [.. Quests, .. other.Quests]);
+    /// <summary>The answer XP was doubled (happy hour or a double-XP boost from the shop).</summary>
+    public bool Boosted { get; init; }
+
+    /// <summary>Gems won with this reward (quests, badges, daily goal).</summary>
+    public int Gems { get; init; }
+
+    public Reward Plus(Reward other) => new(Xp + other.Xp, [.. Badges, .. other.Badges], [.. Quests, .. other.Quests]) { Boosted = Boosted || other.Boosted, Gems = Gems + other.Gems };
 }
+
+/// <summary>The shop as one student sees it: balance, what they own and what is running.</summary>
+public sealed record ShopView(int Gems, int Freezes, int DoubleXpMinutesLeft, IReadOnlySet<string> Frames, string Frame);
+
+/// <summary>The student's daily goal and happy hour, as the dashboard and the test header show them.</summary>
+public sealed record DailyGoalView(int Goal, int TodayXp, int Percent, bool Reached, int HappyHour, bool HappyHourActive, int HappyHourMinutesLeft, bool Sounds);
 
 public sealed record QuestView(Quest Quest, int Progress, bool Done);
 
 public sealed record BadgeView(Badge Badge, int Progress, DateTimeOffset? EarnedAt);
 
-public sealed record RankEntry(string UserId, string Nickname, string Avatar, Team Team, int Xp, int Position, bool Me);
+public sealed record RankEntry(string UserId, string Nickname, string Avatar, Team Team, int Xp, int Position, bool Me)
+{
+    /// <summary>The avatar frame the student bought and equipped ("" for none).</summary>
+    public string Frame { get; init; } = "";
+}
 
 public sealed record TeamEntry(Team Team, int Score, int Members, int Position);
 
@@ -40,6 +56,12 @@ public sealed record GameSummary(
     public int Unsure { get; init; }
 
     public int UnsureRight { get; init; }
+
+    /// <summary>Gem balance (shop currency).</summary>
+    public int Gems { get; init; }
+
+    /// <summary>The avatar frame equipped ("" for none).</summary>
+    public string Frame => Profile.Frame;
 }
 
 public sealed record DuelView(Duel Duel, string Rival, string RivalAvatar, bool IChallenged, int? MyScore, int? RivalScore, bool CanPlay);
@@ -61,7 +83,7 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
 
     public DateOnly Today => DayOf(Now);
 
-    private DateTimeOffset StartOf(DateOnly day)
+    public DateTimeOffset StartOf(DateOnly day)
     {
         var local = day.ToDateTime(TimeOnly.MinValue);
         return new DateTimeOffset(local, Zone.GetUtcOffset(local));
@@ -142,9 +164,82 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
 
     public async Task<Reward> AnswerAsync(string userId, bool correct, int difficulty, int run, string source, int hints, bool sure, CancellationToken ct = default)
     {
-        var xp = Xp.ForAnswer(correct, difficulty, run, hints, sure);
+        var profile = await db.StudentProfiles.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false);
+        if (!await ActiveTodayAsync(userId, ct).ConfigureAwait(false))
+        {
+            // First answer of the day: a missed day in between is covered now by a streak freeze, if the student has enough
+            await SettleStreakAsync(userId, ct).ConfigureAwait(false);
+        }
+
+        var boosted = (profile is not null && HappyHour.IsActive(profile.HappyHour, LocalTime)) || await DoubleXpActiveAsync(userId, ct).ConfigureAwait(false);
+        var xp = HappyHour.Apply(Xp.ForAnswer(correct, difficulty, run, hints, sure), boosted);
         await AwardAsync(userId, xp, source, correct, ct).ConfigureAwait(false);
-        return new Reward(xp, [], []).Plus(await CheckAsync(userId, ct).ConfigureAwait(false));
+        return new Reward(xp, [], []) { Boosted = boosted }.Plus(await CheckAsync(userId, ct).ConfigureAwait(false));
+    }
+
+    /// <summary>The time of day where the platform runs (same zone as the streak days).</summary>
+    public TimeOnly LocalTime => TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(Now, Zone).DateTime);
+
+    /// <summary>XP earned today, all sources.</summary>
+    public async Task<int> TodayXpAsync(string userId, CancellationToken ct = default)
+    {
+        var from = StartOf(Today);
+        return await db.XpEvents.Where(x => x.UserId == userId && x.At >= from).SumAsync(x => x.Amount, ct).ConfigureAwait(false);
+    }
+
+    public async Task<DailyGoalView> GoalAsync(string userId, CancellationToken ct = default)
+    {
+        var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+        var goal = DailyGoals.Normalize(profile.DailyGoal);
+        var today = await TodayXpAsync(userId, ct).ConfigureAwait(false);
+        var time = LocalTime;
+        return new DailyGoalView(goal, today, DailyGoals.Percent(today, goal), DailyGoals.Reached(today, goal), profile.HappyHour,
+            HappyHour.IsActive(profile.HappyHour, time), HappyHour.MinutesLeft(profile.HappyHour, time), profile.Sounds);
+    }
+
+    /// <summary>Saves the daily goal and the happy hour (values outside the offered options are normalized).</summary>
+    public async Task SaveGoalAsync(string userId, int goal, int happyHour, CancellationToken ct = default)
+    {
+        var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+        profile.DailyGoal = DailyGoals.Normalize(goal);
+        profile.HappyHour = HappyHour.Normalize(happyHour);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    public async Task SaveSoundsAsync(string userId, bool on, CancellationToken ct = default)
+    {
+        var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+        profile.Sounds = on;
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The end-of-lesson screens of a finished test of this student (null otherwise): XP of the lesson, accuracy, time,
+    /// whether this lesson is the one that kept the streak alive today, and the daily goal before/after.
+    /// </summary>
+    public async Task<LessonEnd?> LessonEndAsync(string userId, string attemptId, CancellationToken ct = default)
+    {
+        var attempt = await db.QuizAttempts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == attemptId && a.UserId == userId, ct).ConfigureAwait(false);
+        if (attempt?.FinishedAt is not { } finished)
+        {
+            return null;
+        }
+
+        var lessonXp = await db.XpEvents.Where(x => x.UserId == userId && x.At >= attempt.StartedAt).SumAsync(x => x.Amount, ct).ConfigureAwait(false);
+        var todayXp = await TodayXpAsync(userId, ct).ConfigureAwait(false);
+        var todayStart = StartOf(Today);
+        var startedToday = attempt.StartedAt >= todayStart;
+        var activeBefore = await db.XpEvents.AnyAsync(x => x.UserId == userId && (x.Reason == "answer" || x.Reason == "tutor") && x.At >= todayStart && x.At < attempt.StartedAt, ct).ConfigureAwait(false);
+        var days = await ActiveDaysAsync(userId, null, ct).ConfigureAwait(false);
+        var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+        var goal = DailyGoals.Normalize(profile.DailyGoal);
+        var before = startedToday ? todayXp - lessonXp : todayXp;
+        return new LessonEnd(lessonXp, attempt.Correct, attempt.Length, (int)Math.Max(0, (finished - attempt.StartedAt).TotalSeconds),
+            Streaks.Current(days, Today, await FrozenDaysAsync(userId, ct).ConfigureAwait(false)), startedToday && !activeBefore && days.Contains(Today), goal, todayXp,
+            DailyGoals.Reached(todayXp, goal), DailyGoals.JustReached(before, todayXp, goal), HappyHour.IsActive(profile.HappyHour, LocalTime))
+        {
+            Gems = await db.GemEvents.Where(g => g.UserId == userId && g.At >= attempt.StartedAt && g.Amount > 0).SumAsync(g => g.Amount, ct).ConfigureAwait(false),
+        };
     }
 
     /// <summary>Claims finished quests of today and new badges (each gives XP once).</summary>
@@ -155,12 +250,15 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
         var claimed = await db.QuestClaims.Where(q => q.UserId == userId && q.Day == today.DayNumber).Select(q => q.Key).ToListAsync(ct).ConfigureAwait(false);
         var quests = new List<string>();
         var xp = 0;
+        var gems = 0;
         foreach (var quest in Quests.ForDay(userId, today).Where(q => Quests.Done(q, stats) && !claimed.Contains(q.Key)))
         {
             db.QuestClaims.Add(new QuestClaim { UserId = userId, Day = today.DayNumber, Key = quest.Key });
             db.XpEvents.Add(new XpEvent { UserId = userId, Amount = quest.Reward, Reason = "quest:" + quest.Key, At = Now });
+            db.GemEvents.Add(new GemEvent { UserId = userId, Amount = Gems.Quest, Reason = "quest:" + quest.Key, At = Now });
             quests.Add(quest.Key);
             xp += quest.Reward;
+            gems += Gems.Quest;
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -171,12 +269,176 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
         {
             db.BadgeAwards.Add(new BadgeAward { UserId = userId, Key = badge.Key, EarnedAt = Now });
             db.XpEvents.Add(new XpEvent { UserId = userId, Amount = Xp.Badge, Reason = "badge:" + badge.Key, At = Now });
+            db.GemEvents.Add(new GemEvent { UserId = userId, Amount = Gems.Badge, Reason = "badge:" + badge.Key, At = Now });
             badges.Add(badge.Key);
             xp += Xp.Badge;
+            gems += Gems.Badge;
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return new Reward(xp, badges, quests);
+
+        // The daily goal pays its gems once a day, the first time today's XP reaches it
+        var goalKey = "goal:" + today.DayNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var profile = await db.StudentProfiles.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId, ct).ConfigureAwait(false);
+        var goal = DailyGoals.Normalize(profile?.DailyGoal ?? DailyGoals.Default);
+        if (DailyGoals.Reached(await TodayXpAsync(userId, ct).ConfigureAwait(false), goal)
+            && !await db.GemEvents.AnyAsync(g => g.UserId == userId && g.Reason == goalKey, ct).ConfigureAwait(false))
+        {
+            db.GemEvents.Add(new GemEvent { UserId = userId, Amount = Gems.DailyGoal, Reason = goalKey, At = Now });
+            await db.SaveChangesAsync(ct).ConfigureAwait(false);
+            gems += Gems.DailyGoal;
+        }
+
+        return new Reward(xp, badges, quests) { Gems = gems };
+    }
+
+    // ---------- Personality (phase 5): the week's mistakes, for "the story of your mistakes" ----------
+
+    /// <summary>
+    /// The topics the student got wrong most in the last 7 days (at most <see cref="MistakeStory.MaxTopics"/>), each with
+    /// its latest wrong question and the right answer (bank content, never something the student wrote).
+    /// </summary>
+    public async Task<IReadOnlyList<(Area Area, Level Level, string Topic, string Prompt, string Answer)>> MistakesOfWeekAsync(string userId, CancellationToken ct = default)
+    {
+        var since = Now.AddDays(-7);
+        var wrong = await db.QuizAnswers.AsNoTracking().Where(a => a.UserId == userId && !a.Correct && a.At >= since && a.Prompt != "")
+            .OrderByDescending(a => a.Id).Take(200).ToListAsync(ct).ConfigureAwait(false);
+        return wrong.GroupBy(a => (a.Area, a.Level, a.Topic)).OrderByDescending(g => g.Count()).Take(MistakeStory.MaxTopics)
+            .Select(g =>
+            {
+                var latest = g.First();
+                var options = System.Text.Json.JsonSerializer.Deserialize<List<string>>(latest.OptionsJson) ?? [];
+                var answer = latest.CorrectIndex >= 0 && latest.CorrectIndex < options.Count ? options[latest.CorrectIndex] : "";
+                return (g.Key.Area, g.Key.Level, g.Key.Topic, latest.Prompt, answer);
+            })
+            .Where(x => x.answer.Length > 0).ToList();
+    }
+
+    /// <summary>A classic question this student answered in a test (prompt, options and right answer), for "give me a trick".</summary>
+    public async Task<QuizAnswer?> AnsweredAsync(string userId, string attemptId, int number, CancellationToken ct = default) =>
+        await db.QuizAnswers.AsNoTracking().FirstOrDefaultAsync(a => a.UserId == userId && a.AttemptId == attemptId && a.Number == number, ct).ConfigureAwait(false);
+
+    // ---------- Gems, shop and streak freezes (phase 2 of the Duolingo pass) ----------
+
+    public async Task<int> GemsAsync(string userId, CancellationToken ct = default) =>
+        await db.GemEvents.Where(g => g.UserId == userId).SumAsync(g => g.Amount, ct).ConfigureAwait(false);
+
+    private async Task<bool> ActiveTodayAsync(string userId, CancellationToken ct)
+    {
+        var from = StartOf(Today);
+        return await db.XpEvents.AnyAsync(x => x.UserId == userId && (x.Reason == "answer" || x.Reason == "tutor") && x.At >= from, ct).ConfigureAwait(false);
+    }
+
+    private async Task<List<DateOnly>> FrozenDaysAsync(string userId, CancellationToken ct) =>
+        (await db.StreakFreezeUses.Where(f => f.UserId == userId).Select(f => f.Day).ToListAsync(ct).ConfigureAwait(false)).Select(DateOnly.FromDayNumber).ToList();
+
+    private async Task<int> FreezesOwnedAsync(string userId, CancellationToken ct)
+    {
+        var bought = await db.GemEvents.CountAsync(g => g.UserId == userId && g.Reason == "buy:" + nameof(ShopItem.StreakFreeze), ct).ConfigureAwait(false);
+        var used = await db.StreakFreezeUses.CountAsync(f => f.UserId == userId, ct).ConfigureAwait(false);
+        return Math.Max(0, bought - used);
+    }
+
+    /// <summary>Covers the days missed since the last active day with streak freezes, when the student owns enough (all or nothing).</summary>
+    public async Task<IReadOnlyList<DateOnly>> SettleStreakAsync(string userId, CancellationToken ct = default)
+    {
+        var owned = await FreezesOwnedAsync(userId, ct).ConfigureAwait(false);
+        if (owned == 0)
+        {
+            return [];
+        }
+
+        var days = Streaks.DaysToFreeze(await ActiveDaysAsync(userId, null, ct).ConfigureAwait(false), await FrozenDaysAsync(userId, ct).ConfigureAwait(false), Today, owned);
+        foreach (var day in days)
+        {
+            db.StreakFreezeUses.Add(new StreakFreezeUse { UserId = userId, Day = day.DayNumber, At = Now });
+        }
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return days;
+    }
+
+    /// <summary>The current streak, counting the days saved by freezes as kept (not as added).</summary>
+    public async Task<int> StreakAsync(string userId, CancellationToken ct = default) =>
+        Streaks.Current(await ActiveDaysAsync(userId, null, ct).ConfigureAwait(false), Today, await FrozenDaysAsync(userId, ct).ConfigureAwait(false));
+
+    private async Task<DateTimeOffset?> LastDoubleXpAsync(string userId, CancellationToken ct) =>
+        (await db.GemEvents.Where(g => g.UserId == userId && g.Reason == "buy:" + nameof(ShopItem.DoubleXp)).Select(g => g.At).ToListAsync(ct).ConfigureAwait(false))
+            .Cast<DateTimeOffset?>().DefaultIfEmpty(null).Max();
+
+    private async Task<bool> DoubleXpActiveAsync(string userId, CancellationToken ct) =>
+        Shop.DoubleXpActive(await LastDoubleXpAsync(userId, ct).ConfigureAwait(false), Now);
+
+    public async Task<ShopView> ShopAsync(string userId, CancellationToken ct = default)
+    {
+        var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+        await SettleStreakAsync(userId, ct).ConfigureAwait(false);
+        var frames = (await db.GemEvents.Where(g => g.UserId == userId && g.Reason.StartsWith("buy:Frame")).Select(g => g.Reason).ToListAsync(ct).ConfigureAwait(false))
+            .Select(r => Enum.TryParse<ShopItem>(r[4..], out var item) ? Shop.FrameKey(item) : "").Where(k => k.Length > 0).ToHashSet();
+        return new ShopView(await GemsAsync(userId, ct).ConfigureAwait(false), await FreezesOwnedAsync(userId, ct).ConfigureAwait(false),
+            Shop.DoubleXpMinutesLeft(await LastDoubleXpAsync(userId, ct).ConfigureAwait(false), Now), frames, profile.Frame);
+    }
+
+    /// <summary>Takes gems if the balance allows it (false otherwise; nothing is spent).</summary>
+    public async Task<bool> SpendAsync(string userId, int price, string reason, CancellationToken ct = default)
+    {
+        if (await GemsAsync(userId, ct).ConfigureAwait(false) < price)
+        {
+            return false;
+        }
+
+        db.GemEvents.Add(new GemEvent { UserId = userId, Amount = -price, Reason = reason, At = Now });
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>Buys an item of the shop. Potions are bought where they are drunk (during an adventure, see QuizStore).</summary>
+    public async Task<BuyOutcome> BuyAsync(string userId, ShopItem item, CancellationToken ct = default)
+    {
+        if (!Enum.IsDefined(item) || item == ShopItem.Potion)
+        {
+            return BuyOutcome.NotNow;
+        }
+
+        var shop = await ShopAsync(userId, ct).ConfigureAwait(false);
+        if (item == ShopItem.StreakFreeze && shop.Freezes >= Shop.MaxFreezes)
+        {
+            return BuyOutcome.Limit;
+        }
+
+        if (Shop.IsFrame(item) && shop.Frames.Contains(Shop.FrameKey(item)))
+        {
+            return BuyOutcome.AlreadyOwned;
+        }
+
+        if (!await SpendAsync(userId, Shop.Price(item), "buy:" + item, ct).ConfigureAwait(false))
+        {
+            return BuyOutcome.NotEnoughGems;
+        }
+
+        if (Shop.IsFrame(item))
+        {
+            var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+            profile.Frame = Shop.FrameKey(item);
+            await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        }
+
+        return BuyOutcome.Bought;
+    }
+
+    /// <summary>Equips an owned frame ("" takes it off). False for a frame the student doesn't own.</summary>
+    public async Task<bool> EquipFrameAsync(string userId, string frame, CancellationToken ct = default)
+    {
+        var shop = await ShopAsync(userId, ct).ConfigureAwait(false);
+        if (!Shop.IsFrameKey(frame) || (frame.Length > 0 && !shop.Frames.Contains(frame)))
+        {
+            return false;
+        }
+
+        var profile = await ProfileAsync(userId, ct).ConfigureAwait(false);
+        profile.Frame = frame;
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        return true;
     }
 
     public async Task<DayStats> DayStatsAsync(string userId, DateOnly day, CancellationToken ct = default)
@@ -277,10 +539,13 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
             .Select(g => new { g.Key, Total = g.Count(), Right = g.Count(a => a.Correct) }).ToListAsync(ct).ConfigureAwait(false);
         var sure = confidence.FirstOrDefault(c => c.Key == 2);
         var unsure = confidence.FirstOrDefault(c => c.Key == 0);
-        return new GameSummary(profile, xp, level, into, size, Xp.Rank(level), Streaks.Current(days, today), Streaks.Best(days), weekXp,
+        await SettleStreakAsync(userId, ct).ConfigureAwait(false);
+        var frozen = await FrozenDaysAsync(userId, ct).ConfigureAwait(false);
+        return new GameSummary(profile, xp, level, into, size, Xp.Rank(level), Streaks.Current(days, today, frozen), Streaks.Best(days), weekXp,
             days.Contains(today), quests, badges, calendar, today)
         {
             Sure = sure?.Total ?? 0, SureRight = sure?.Right ?? 0, Unsure = unsure?.Total ?? 0, UnsureRight = unsure?.Right ?? 0,
+            Gems = await GemsAsync(userId, ct).ConfigureAwait(false),
         };
     }
 
@@ -301,7 +566,7 @@ public sealed class GamificationStore(EduVerseDb db, TimeProvider clock, IOption
             var visible = members.Where(m => profiles.TryGetValue(m, out var p) && p.Nickname.Length > 0 && (p.Compete || m == userId)).ToList();
             var ranked = Leaderboard.Rank(visible, m => xp.TryGetValue(m, out var v) ? v : 0)
                 .Select(r => new RankEntry(r.Item, profiles[r.Item].Nickname, profiles[r.Item].Avatar, profiles[r.Item].Team,
-                    xp.TryGetValue(r.Item, out var v) ? v : 0, r.Position, r.Item == userId)).ToList();
+                    xp.TryGetValue(r.Item, out var v) ? v : 0, r.Position, r.Item == userId) { Frame = profiles[r.Item].Frame }).ToList();
             var teams = Enum.GetValues<Team>().Select(t =>
             {
                 var teamMembers = members.Where(m => profiles.TryGetValue(m, out var p) && p.Team == t).ToList();

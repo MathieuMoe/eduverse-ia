@@ -65,21 +65,192 @@ public static class Xp
     };
 }
 
+/// <summary>
+/// The daily XP goal the student picks (Duolingo-style "casual / regular / serious / intense"). Every XP of the day counts
+/// (answers, finished tests, quests, badges), so the goal is reachable in many ways.
+/// </summary>
+public static class DailyGoals
+{
+    public const int Default = 20;
+
+    public static readonly IReadOnlyList<int> Options = [10, 20, 30, 50];
+
+    /// <summary>A value outside <see cref="Options"/> (old data, a tampered form) falls back to <see cref="Default"/>.</summary>
+    public static int Normalize(int goal) => Options.Contains(goal) ? goal : Default;
+
+    /// <summary>0–100, for the progress ring.</summary>
+    public static int Percent(int todayXp, int goal) => Math.Clamp(100 * Math.Max(0, todayXp) / Math.Max(1, goal), 0, 100);
+
+    public static bool Reached(int todayXp, int goal) => todayXp >= goal;
+
+    /// <summary>True only for the lesson that crossed the line (to celebrate it once).</summary>
+    public static bool JustReached(int xpBefore, int xpAfter, int goal) => xpBefore < goal && xpAfter >= goal;
+}
+
+/// <summary>
+/// "Happy hour": a daily half hour, chosen by the student, in which every answer gives double XP. Off by default:
+/// the student opts in, so the XP of an answer stays predictable unless they asked for the bonus.
+/// </summary>
+public static class HappyHour
+{
+    public const int Off = -1;
+
+    public const int Minutes = 30;
+
+    public const int Multiplier = 2;
+
+    /// <summary>The hours offered in the picker (local time).</summary>
+    public static readonly IReadOnlyList<int> Hours = [7, 13, 16, 17, 18, 19, 20, 21];
+
+    public static int Normalize(int hour) => Hours.Contains(hour) ? hour : Off;
+
+    public static bool IsActive(int hour, TimeOnly localTime) =>
+        hour is >= 0 and <= 23 && localTime >= new TimeOnly(hour, 0) && localTime < new TimeOnly(hour, 0).AddMinutes(Minutes);
+
+    /// <summary>Whole minutes left in the window (0 when it is not active).</summary>
+    public static int MinutesLeft(int hour, TimeOnly localTime) =>
+        IsActive(hour, localTime) ? (int)Math.Ceiling((new TimeOnly(hour, 0).AddMinutes(Minutes) - localTime).TotalMinutes) : 0;
+
+    public static int Apply(int xp, bool active) => active ? xp * Multiplier : xp;
+}
+
+/// <summary>What the end-of-lesson screens show: computed from the attempt and the XP log, never guessed by the browser.</summary>
+public sealed record LessonEnd(
+    int Xp, int Correct, int Length, int Seconds, int Streak, bool StreakExtended, int Goal, int TodayXp, bool GoalReached, bool GoalJustReached, bool HappyHour)
+{
+    public int Accuracy => Length == 0 ? 0 : (int)Math.Round(100.0 * Correct / Length);
+
+    public int GoalPercent => DailyGoals.Percent(TodayXp, Goal);
+
+    /// <summary>Gems won during the lesson (quests, badges, daily goal).</summary>
+    public int Gems { get; init; }
+}
+
+/// <summary>Gems: the currency of the shop, earned by keeping promises (quests, badges, the daily goal), never bought.</summary>
+public static class Gems
+{
+    public const int Quest = 5;
+
+    public const int Badge = 10;
+
+    public const int DailyGoal = 10;
+}
+
+public enum ShopItem
+{
+    StreakFreeze,
+    DoubleXp,
+    Potion,
+    FrameGold,
+    FrameRainbow,
+    FrameFire,
+}
+
+public enum BuyOutcome
+{
+    Bought,
+    NotEnoughGems,
+    Limit,
+    AlreadyOwned,
+    NotNow,
+}
+
+/// <summary>What the shop sells and the rules of each item (prices in gems).</summary>
+public static class Shop
+{
+    /// <summary>At most two streak freezes waiting at once, as in Duolingo.</summary>
+    public const int MaxFreezes = 2;
+
+    public const int DoubleXpMinutes = 15;
+
+    public static readonly IReadOnlyList<ShopItem> Items = Enum.GetValues<ShopItem>();
+
+    public static int Price(ShopItem item) => item switch
+    {
+        ShopItem.StreakFreeze => 50,
+        ShopItem.DoubleXp => 40,
+        ShopItem.Potion => 30,
+        ShopItem.FrameGold => 120,
+        ShopItem.FrameRainbow => 200,
+        _ => 300,
+    };
+
+    public static string Icon(ShopItem item) => item switch
+    {
+        ShopItem.StreakFreeze => "🧊",
+        ShopItem.DoubleXp => "⚡",
+        ShopItem.Potion => "🧪",
+        ShopItem.FrameGold => "🥇",
+        ShopItem.FrameRainbow => "🌈",
+        _ => "🔥",
+    };
+
+    public static bool IsFrame(ShopItem item) => item is ShopItem.FrameGold or ShopItem.FrameRainbow or ShopItem.FrameFire;
+
+    /// <summary>The CSS name of a frame ("gold", "rainbow", "fire"), stored on the profile when equipped.</summary>
+    public static string FrameKey(ShopItem item) => item switch
+    {
+        ShopItem.FrameGold => "gold",
+        ShopItem.FrameRainbow => "rainbow",
+        ShopItem.FrameFire => "fire",
+        _ => "",
+    };
+
+    public static bool IsFrameKey(string? key) => key is "" or "gold" or "rainbow" or "fire";
+
+    /// <summary>Double XP stays on for <see cref="DoubleXpMinutes"/> after the last purchase.</summary>
+    public static bool DoubleXpActive(DateTimeOffset? lastBought, DateTimeOffset now) =>
+        lastBought is { } at && now >= at && now < at.AddMinutes(DoubleXpMinutes);
+
+    public static int DoubleXpMinutesLeft(DateTimeOffset? lastBought, DateTimeOffset now) =>
+        DoubleXpActive(lastBought, now) ? (int)Math.Ceiling((lastBought!.Value.AddMinutes(DoubleXpMinutes) - now).TotalMinutes) : 0;
+}
+
 /// <summary>Days in a row with at least one answer. The streak is still alive today until midnight if yesterday counted.</summary>
 public static class Streaks
 {
-    public static int Current(IEnumerable<DateOnly> activeDays, DateOnly today)
+    public static int Current(IEnumerable<DateOnly> activeDays, DateOnly today) => Current(activeDays, today, []);
+
+    /// <summary>
+    /// Days covered by a streak freeze keep the streak alive without adding to it (Duolingo-style): the count walks back
+    /// through active and frozen days, and only active days count.
+    /// </summary>
+    public static int Current(IEnumerable<DateOnly> activeDays, DateOnly today, IEnumerable<DateOnly> frozenDays)
     {
         var days = activeDays.ToHashSet();
-        var day = days.Contains(today) ? today : today.AddDays(-1);
+        var frozen = frozenDays.ToHashSet();
+        var day = days.Contains(today) || frozen.Contains(today) ? today : today.AddDays(-1);
         var count = 0;
-        while (days.Contains(day))
+        while (days.Contains(day) || frozen.Contains(day))
         {
-            count++;
+            count += days.Contains(day) ? 1 : 0;
             day = day.AddDays(-1);
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// The missed days (between the last active or frozen day and today) that the student's freezes would cover:
+    /// all of them if there are enough freezes, none otherwise (a freeze can't half-save a streak), and none when
+    /// there was no streak to save.
+    /// </summary>
+    public static IReadOnlyList<DateOnly> DaysToFreeze(IEnumerable<DateOnly> activeDays, IEnumerable<DateOnly> frozenDays, DateOnly today, int freezesOwned)
+    {
+        var covered = activeDays.Concat(frozenDays).Where(d => d < today).ToHashSet();
+        if (covered.Count == 0 || freezesOwned <= 0)
+        {
+            return [];
+        }
+
+        var last = covered.Max();
+        var missed = new List<DateOnly>();
+        for (var d = last.AddDays(1); d < today; d = d.AddDays(1))
+        {
+            missed.Add(d);
+        }
+
+        return missed.Count <= freezesOwned ? missed : [];
     }
 
     public static int Best(IEnumerable<DateOnly> activeDays)
@@ -349,6 +520,83 @@ public static class Teams
         ArgumentNullException.ThrowIfNull(members);
         return Enum.GetValues<Team>().OrderBy(t => members.TryGetValue(t, out var n) ? n : 0).First();
     }
+}
+
+public enum Division
+{
+    Bronze,
+    Silver,
+    Gold,
+    Sapphire,
+    Diamond,
+}
+
+public enum LeagueResult
+{
+    Stayed,
+    Promoted,
+    Demoted,
+}
+
+/// <summary>
+/// Weekly leagues (Duolingo-style): groups of up to <see cref="GroupSize"/> students of the same division compete on the
+/// XP of the week; the top of the group goes up a division, the bottom goes down. Only nicknames are ever shown.
+/// </summary>
+public static class Leagues
+{
+    public const int GroupSize = 20;
+
+    /// <summary>A quarter of the group, at most 5, at least 1 when there is someone to compete with.</summary>
+    public static int ZoneSize(int groupSize) => groupSize < 2 ? 0 : Math.Clamp(groupSize / 4, 1, 5);
+
+    /// <summary>
+    /// Where a position (1-based, ties share a position) ends the week. Promotion needs XP: nobody goes up by doing
+    /// nothing. Demotion only touches the bottom zone, never someone already promoted, never below Bronze.
+    /// </summary>
+    public static LeagueResult ResultOf(int position, int groupSize, int weekXp, Division division)
+    {
+        var zone = ZoneSize(groupSize);
+        if (weekXp > 0 && position <= zone && division < Division.Diamond)
+        {
+            return LeagueResult.Promoted;
+        }
+
+        return position > groupSize - zone && position > zone && division > Division.Bronze ? LeagueResult.Demoted : LeagueResult.Stayed;
+    }
+
+    public static Division Next(Division division, LeagueResult result) => result switch
+    {
+        LeagueResult.Promoted => (Division)Math.Min((int)division + 1, (int)Division.Diamond),
+        LeagueResult.Demoted => (Division)Math.Max((int)division - 1, (int)Division.Bronze),
+        _ => division,
+    };
+
+    public static string Emoji(Division division) => division switch
+    {
+        Division.Bronze => "🥉",
+        Division.Silver => "🥈",
+        Division.Gold => "🥇",
+        Division.Sapphire => "💠",
+        _ => "💎",
+    };
+
+    /// <summary>The zone a position is in right now, for the colours of the table.</summary>
+    public static LeagueResult ZoneOf(int position, int groupSize, int weekXp, Division division) => ResultOf(position, groupSize, weekXp, division);
+}
+
+/// <summary>
+/// Friend quests (phase 7): two classmates team up for the week and add their XP towards a shared target; when they
+/// reach it, each one claims the same gems. Cooperation, not competition: nobody can lose a friend quest.
+/// </summary>
+public static class FriendQuests
+{
+    public const int Target = 300;
+
+    public const int Gems = 25;
+
+    public static int Percent(int xpA, int xpB) => Math.Clamp(100 * (Math.Max(0, xpA) + Math.Max(0, xpB)) / Target, 0, 100);
+
+    public static bool Reached(int xpA, int xpB) => xpA + xpB >= Target;
 }
 
 /// <summary>Ranking with ties: equal scores share the same position (1, 2, 2, 4).</summary>

@@ -130,6 +130,8 @@ app.MapGet("/culture/{culture}", async (string culture, string? returnUrl, HttpC
 app.MapTeaching();
 app.MapLearning();
 app.MapQuiz();
+app.MapGame();
+app.MapRoleplay();
 app.MapTutor();
 app.MapTeacherCompanion();
 app.MapIdeas();

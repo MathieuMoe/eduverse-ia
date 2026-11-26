@@ -1,0 +1,81 @@
+@page
+@model EduVerse.Web.Pages.Student.ShopModel
+@using EduVerse.Core.Gamification
+@{
+    ViewData["Title"] = L["Nav_Shop"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var shop = Model.Shop;
+}
+@if (Model.Notice is { } notice)
+{
+    <div class="p-3 rounded-lg text-sm @(notice is "Shop_Bought" or "Shop_Equipped" ? "bg-teal-50 text-teal-800 dark:bg-teal-500/15 dark:text-teal-300" : "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300")" role="status" data-testid="shop-notice" data-notice="@notice">@L[$"Notice_{notice}"]</div>
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-foreground">@L["Nav_Shop"]</h1>
+        <p class="text-sm text-muted-foreground-1">@L["Shop_Subtitle"]</p>
+    </div>
+    <p class="gem-pop py-2 px-4 rounded-full tone-sky text-lg font-bold text-foreground" data-testid="shop-gems"><span aria-hidden="true">💎</span> @shop.Gems.ToString("N0", culture)</p>
+</div>
+
+<div class="grid sm:grid-cols-3 gap-4" data-testid="shop-status">
+    <div class="@Ui.Kpi tone-sky">
+        <p class="@Ui.KpiLabel">🧊 @L["Shop_Freezes"]</p>
+        <p class="mt-2 text-3xl font-semibold text-foreground" data-testid="shop-freezes">@shop.Freezes / @Shop.MaxFreezes</p>
+        <p class="mt-auto pt-3 text-xs text-foreground/60">@string.Format(culture, L["Shop_StreakNow"], Model.Streak)</p>
+    </div>
+    <div class="@Ui.Kpi tone-mint">
+        <p class="@Ui.KpiLabel">⚡ @L["Shop_Boost"]</p>
+        <p class="mt-2 text-3xl font-semibold text-foreground" data-testid="shop-boost">@(shop.DoubleXpMinutesLeft > 0 ? string.Format(culture, L["Shop_MinutesLeft"], shop.DoubleXpMinutesLeft) : L["Shop_Off"].Value)</p>
+        <p class="mt-auto pt-3 text-xs text-foreground/60">@L["Shop_BoostHint"]</p>
+    </div>
+    <div class="@Ui.Kpi tone-lavender">
+        <p class="@Ui.KpiLabel">🖼️ @L["Shop_Frame"]</p>
+        <p class="mt-2 text-3xl" aria-hidden="true"><span class="avatar-frame frame-@(shop.Frame.Length > 0 ? shop.Frame : "none")">@Model.Avatar</span></p>
+        <p class="mt-auto pt-3 text-xs text-foreground/60">@L["Shop_FrameHint"]</p>
+    </div>
+</div>
+
+<section class="@Ui.Card p-5" aria-labelledby="shop-items-title">
+    <h2 id="shop-items-title" class="text-base font-semibold text-foreground">@L["Shop_Items"]</h2>
+    <p class="text-xs text-muted-foreground-1">@L["Shop_EarnHint"]</p>
+    <ul class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-4" data-testid="shop-items">
+        @foreach (var item in Shop.Items)
+        {
+            var price = Shop.Price(item);
+            var owned = Shop.IsFrame(item) && shop.Frames.Contains(Shop.FrameKey(item));
+            var equipped = owned && shop.Frame == Shop.FrameKey(item);
+            var full = item == ShopItem.StreakFreeze && shop.Freezes >= Shop.MaxFreezes;
+            <li class="p-4 rounded-3xl border border-layer-line bg-layer flex flex-col gap-2" data-testid="shop-item-@item">
+                <div class="flex items-center gap-3">
+                    <span class="size-12 shrink-0 rounded-2xl bg-surface grid place-items-center text-2xl" aria-hidden="true"><span class="@(Shop.IsFrame(item) ? "avatar-frame frame-" + Shop.FrameKey(item) : "")">@Shop.Icon(item)</span></span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-foreground">@L[$"ShopItem_{item}"]</p>
+                        <p class="text-xs text-muted-foreground-1">@L[$"ShopItem_{item}_Text"]</p>
+                    </div>
+                </div>
+                <div class="mt-auto pt-2 flex items-center justify-between gap-2">
+                    <span class="@Ui.Pill tone-sky text-foreground">💎 @price</span>
+                    @if (item == ShopItem.Potion)
+                    {
+                        <span class="text-xs text-muted-foreground-1">@L["Shop_PotionWhere"]</span>
+                    }
+                    else if (equipped)
+                    {
+                        <form method="post" asp-page-handler="Frame"><input type="hidden" name="frame" value="" /><button type="submit" class="@Ui.BtnLight py-1.5! px-3! text-xs" data-testid="shop-unequip">@L["Shop_TakeOff"]</button></form>
+                    }
+                    else if (owned)
+                    {
+                        <form method="post" asp-page-handler="Frame"><input type="hidden" name="frame" value="@Shop.FrameKey(item)" /><button type="submit" class="@Ui.BtnLight py-1.5! px-3! text-xs" data-testid="shop-equip-@item">@L["Shop_Equip"]</button></form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-page-handler="Buy"><input type="hidden" name="item" value="@item" />
+                            <button type="submit" class="@Ui.BtnPrimary py-1.5! px-3! text-xs" disabled="@(full || shop.Gems < price)" data-testid="shop-buy-@item">@(full ? L["Shop_Full"] : L["Shop_Buy"])</button></form>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+</section>

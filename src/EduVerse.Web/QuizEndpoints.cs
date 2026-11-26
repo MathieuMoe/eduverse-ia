@@ -25,6 +25,8 @@ public sealed record QuizMatchPairRequest(string Left, string Right);
 
 public sealed record AdventureRequest(Area Area, Level Level, Theme Theme);
 
+public sealed record BossRequest(Area Area, Level Level, string? Topic);
+
 /// <summary>
 /// API of the tests of the catalog: start (practice, placement, duel or AI topic), current question, answer.
 /// The answer key stays on the server; the AI only writes questions for free topics.
@@ -118,6 +120,36 @@ public static class QuizEndpoints
         })
         .RequireRateLimiting("ai");
 
+        // The boss of a unit of the learning path (phase 4): an adventure that starts at the guardian and only asks the
+        // unit's topic. The AI writes the villain's lines; offline, a villain written in advance takes the stage.
+        api.MapPost("/boss", async (BossRequest request, HttpContext context, QuizStore store, PathStore paths, AiEngines engines, ILogger<BossRequest> logger, IStringLocalizer<SharedResource> l) =>
+        {
+            if (request is null || !Enum.IsDefined(request.Area) || !Enum.IsDefined(request.Level) || string.IsNullOrEmpty(request.Topic)
+                || !Core.Curriculum.AreaSubjects.Topics(request.Area, request.Level).Contains(request.Topic))
+            {
+                return Results.BadRequest();
+            }
+
+            var userId = context.User.Id();
+            if (!await paths.BossOpenAsync(userId, request.Area, request.Level, request.Topic, context.RequestAborted))
+            {
+                return Results.Json(new { code = "boss_locked" }, statusCode: StatusCodes.Status409Conflict);
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var topicName = TopicName(request.Topic, l);
+            return await AiRunner.GuardAsync(async () =>
+            {
+                var run = await AiRunner.RunAsync(context, engines, logger,
+                    async ai => Core.Gamification.BossPrompt.Parse(await ai.GenerateAsync(Core.Gamification.BossPrompt.Build(request.Area, request.Level, topicName, language), context.RequestAborted)),
+                    () => Task.FromResult(Core.Gamification.DemoBosses.Write(topicName, userId, language)));
+                var question = await store.StartAsync(userId, request.Area, request.Level, QuizMode.Adventure, language, engine: run.Engine,
+                    story: run.Result, theme: Theme.Castle, topic: Core.Gamification.LearningPath.BossTopic(request.Topic), ct: context.RequestAborted);
+                return Results.Ok(new { engine = run.Engine, fallback = run.Fallback, question = QuestionPayload(question, l) });
+            });
+        })
+        .RequireRateLimiting("ai");
+
         api.MapPost("/{attemptId}/hint", async (string attemptId, HttpContext context, QuizStore store) =>
             await store.HintAsync(context.User.Id(), attemptId, Localization.LanguageForCurrentCulture(), context.RequestAborted) is { } h
                 ? Results.Ok(new { level = h.Level, max = Hints.Max, removed = h.Removed, text = h.Text })
@@ -178,6 +210,40 @@ public static class QuizEndpoints
         })
         .RequireRateLimiting("quiz");
 
+        // "Give me a trick" (phase 5): a memory hook for a classic question already answered in this test. The question
+        // and its right answer come from the answer history (bank content), never from what the student typed.
+        api.MapPost("/{attemptId}/trick/{number:int}", async (string attemptId, int number, HttpContext context, GamificationStore game, AiEngines engines, ILogger<QuizAnswerRequest> logger, IStringLocalizer<SharedResource> l) =>
+        {
+            var answered = await game.AnsweredAsync(context.User.Id(), attemptId, number, context.RequestAborted);
+            var options = answered is null ? new List<string>() : System.Text.Json.JsonSerializer.Deserialize<List<string>>(answered.OptionsJson) ?? new List<string>();
+            if (answered is null || answered.CorrectIndex < 0 || answered.CorrectIndex >= options.Count)
+            {
+                return Results.NotFound();
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var answer = options[answered.CorrectIndex];
+            var topicName = TopicName(answered.Topic, l);
+            return await AiRunner.GuardAsync(async () =>
+            {
+                var run = await AiRunner.RunAsync(context, engines, logger,
+                    async ai => Core.Gamification.Tricks.Parse(await ai.GenerateAsync(Core.Gamification.Tricks.Build(answered.Prompt, answer, topicName, answered.Level, language), context.RequestAborted)),
+                    () => Task.FromResult(Core.Gamification.Tricks.Offline(answered.Topic, answered.Prompt, answer, language)));
+                return Results.Ok(new { trick = run.Result, engine = run.Engine });
+            });
+        })
+        .RequireRateLimiting("ai");
+
+        // A potion bought with gems during an adventure: one heart back (phase 2 of the Duolingo pass)
+        api.MapPost("/{attemptId}/potion", async (string attemptId, HttpContext context, QuizStore store, GamificationStore game) =>
+        {
+            var (outcome, hearts) = await store.UsePotionAsync(context.User.Id(), attemptId, context.RequestAborted);
+            return outcome == Core.Gamification.BuyOutcome.Bought
+                ? Results.Ok(new { hearts, gems = await game.GemsAsync(context.User.Id(), context.RequestAborted) })
+                : Results.Json(new { code = "potion_" + outcome.ToString().ToLowerInvariant(), hearts }, statusCode: StatusCodes.Status409Conflict);
+        })
+        .RequireRateLimiting("quiz");
+
         // Live per-pair feedback for the Match drill (Duolingo-style green/red border as the student taps), read-only:
         // doesn't score, finish or advance the attempt — the /match call above still does that once every pair is right.
         api.MapPost("/{attemptId}/match/pair", async (string attemptId, QuizMatchPairRequest request, HttpContext context, QuizStore store) =>
@@ -218,6 +284,7 @@ public static class QuizEndpoints
             won = s.Won,
             hearts = s.Hearts,
             ending = s.Ending,
+            defendable = s.Defendable,
         } : null,
         reward = RewardView(result.Reward, l),
     };
@@ -279,6 +346,7 @@ public static class QuizEndpoints
             bossMax = a.BossMax,
             boss = a.Boss,
             inBoss = a.InBoss,
+            unitBoss = a.UnitBoss,
         } : null,
     };
 
@@ -289,6 +357,8 @@ public static class QuizEndpoints
         return new
         {
             xp = reward.Xp,
+            boosted = reward.Boosted,
+            gems = reward.Gems,
             badges = reward.Badges.Select(b => new { key = b, icon = Core.Gamification.Badges.All.First(x => x.Key == b).Icon, name = l[$"Badge_{b}"].Value }),
             quests = reward.Quests.Select(q => new { key = q, name = l[$"Quest_{q}"].Value }),
         };

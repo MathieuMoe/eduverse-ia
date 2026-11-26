@@ -1,0 +1,126 @@
+@page
+@model EduVerse.Web.Pages.Student.LeagueModel
+@using EduVerse.Core.Gamification
+@{
+    ViewData["Title"] = L["Nav_League"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var league = Model.League;
+}
+@if (league is null)
+{
+    <section class="@Ui.Card p-6 text-center" data-testid="league-off">
+        <p class="text-4xl" aria-hidden="true">🏟️</p>
+        <h1 class="mt-2 text-xl font-semibold text-foreground">@L["Nav_League"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1">@L["League_Off"]</p>
+        <a class="@Ui.BtnLight mt-4 self-center" href="/Student/Arena">@L["Nav_Arena"]</a>
+    </section>
+    return;
+}
+@if (league.ShowResult && league.LastResult is { } last)
+{
+    <div class="le-rise p-4 rounded-3xl @(last switch { LeagueResult.Promoted => "tone-mint", LeagueResult.Demoted => "tone-pink", _ => "tone-sky" }) flex items-center gap-4" role="status" data-testid="league-result" data-result="@last">
+        <span class="text-4xl le-flame" aria-hidden="true">@(last switch { LeagueResult.Promoted => "🚀", LeagueResult.Demoted => "🌧️", _ => "🛡️" })</span>
+        <div>
+            <p class="text-lg font-semibold text-foreground">@string.Format(culture, L[$"League_Result_{last}"], L[$"Division_{league.Division}"])</p>
+            <p class="text-sm text-foreground/70">@string.Format(culture, L["League_LastPosition"], league.LastPosition)</p>
+        </div>
+    </div>
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+        <span class="size-16 rounded-3xl tone-sun grid place-items-center text-4xl" aria-hidden="true">@Leagues.Emoji(league.Division)</span>
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-foreground" data-testid="league-division" data-division="@league.Division">@string.Format(culture, L["League_Title"], L[$"Division_{league.Division}"])</h1>
+            <p class="text-sm text-muted-foreground-1">@string.Format(culture, L["League_EndsIn"], (int)Model.Left.TotalDays, Model.Left.Hours)</p>
+        </div>
+    </div>
+    <ol class="flex items-center gap-1.5" aria-label="@L["League_Divisions"]">
+        @foreach (var d in Enum.GetValues<Division>())
+        {
+            <li class="size-9 rounded-full grid place-items-center text-lg @(d == league.Division ? "bg-white dark:bg-white/20 ring-2 ring-primary" : d < league.Division ? "" : "grayscale opacity-40") tip tip-b" data-tip="@L[$"Division_{d}"]" aria-label="@L[$"Division_{d}"]">@Leagues.Emoji(d)</li>
+        }
+    </ol>
+</div>
+
+<section class="@Ui.Card p-4 sm:p-5" aria-labelledby="league-table-title">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="league-table-title" class="text-base font-semibold text-foreground">@L["League_Table"]</h2>
+        <p class="text-xs text-muted-foreground-1">@string.Format(culture, L["League_Rules"], league.ZoneSize)</p>
+    </div>
+    <ol class="mt-3 space-y-1.5" data-testid="league-table">
+        @foreach (var r in league.Rows)
+        {
+            var zone = r.Zone switch { LeagueResult.Promoted => "border-s-4 border-emerald-400", LeagueResult.Demoted => "border-s-4 border-rose-400", _ => "border-s-4 border-transparent" };
+            <li class="flex items-center gap-3 p-2.5 rounded-xl @zone @(r.Me ? "tone-plum" : "bg-surface")" data-testid="league-row" data-zone="@r.Zone" data-me="@(r.Me ? "1" : "0")">
+                <span class="w-7 text-center text-sm font-bold @(r.Me ? "text-white" : "text-foreground")">@r.Position</span>
+                <span class="text-xl avatar-frame frame-@(r.Frame.Length > 0 ? r.Frame : "none")" aria-hidden="true">@r.Avatar</span>
+                <span class="grow min-w-0 truncate text-sm font-medium @(r.Me ? "text-white" : "text-foreground")">@r.Nickname@(r.Me ? " · " + L["Arena_You"] : "")</span>
+                @if (r.Zone == LeagueResult.Promoted)
+                {
+                    <span class="text-xs @(r.Me ? "text-white/90" : "text-emerald-700 dark:text-emerald-300")">▲ @L["League_Up"]</span>
+                }
+                else if (r.Zone == LeagueResult.Demoted)
+                {
+                    <span class="text-xs @(r.Me ? "text-white/90" : "text-rose-700 dark:text-rose-300")">▼ @L["League_Down"]</span>
+                }
+                <span class="text-sm font-semibold @(r.Me ? "text-white" : "text-foreground") tabular-nums">@r.Xp XP</span>
+            </li>
+        }
+    </ol>
+    @if (league.Rows.Count < 2)
+    {
+        <p class="mt-3 text-sm text-muted-foreground-1">@L["League_Alone"]</p>
+    }
+</section>
+
+<section class="@Ui.Card p-4 sm:p-5 scroll-mt-24" id="friend-quest" aria-labelledby="friend-quest-title" data-testid="friend-quest">
+    <div class="flex items-start justify-between gap-3">
+        <div>
+            <h2 id="friend-quest-title" class="text-base font-semibold text-foreground">🤝 @L["Friend_Title"]</h2>
+            <p class="text-xs text-muted-foreground-1">@string.Format(culture, L["Friend_Hint"], FriendQuests.Target, FriendQuests.Gems)</p>
+        </div>
+    </div>
+    @if (Model.Notice is { } notice)
+    {
+        <p class="mt-3 p-2.5 rounded-xl text-sm @(notice is "Friend_Started" or "Friend_Claimed" ? "tone-mint" : "tone-pink") text-foreground" role="status" data-testid="friend-notice" data-notice="@notice">@string.Format(culture, L[$"Notice_{notice}"], FriendQuests.Gems)</p>
+    }
+    @if (Model.Quest is { } q)
+    {
+        <div class="mt-4 flex items-center justify-center gap-4" data-testid="friend-pair">
+            <span class="flex flex-col items-center gap-1"><span class="text-3xl avatar-frame frame-@(q.Me.Frame.Length > 0 ? q.Me.Frame : "none")" aria-hidden="true">@q.Me.Avatar</span><span class="text-xs font-semibold text-foreground">@L["Arena_You"] · @q.Me.Xp XP</span></span>
+            <span class="text-2xl" aria-hidden="true">🤝</span>
+            <span class="flex flex-col items-center gap-1"><span class="text-3xl avatar-frame frame-@(q.Friend.Frame.Length > 0 ? q.Friend.Frame : "none")" aria-hidden="true">@q.Friend.Avatar</span><span class="text-xs font-semibold text-foreground">@q.Friend.Nickname · @q.Friend.Xp XP</span></span>
+        </div>
+        <div class="mt-3 h-3 rounded-full bg-surface overflow-hidden" role="progressbar" aria-label="@L["Friend_Title"]" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@q.Percent">
+            <div class="h-full rounded-full @(q.Reached ? "bg-emerald-500" : "bg-primary")" style="width:@(q.Percent)%"></div>
+        </div>
+        <p class="mt-1 text-xs text-muted-foreground-1 text-center" data-testid="friend-progress">@string.Format(culture, L["Friend_Progress"], q.Total, FriendQuests.Target)</p>
+        @if (q.Reached && !q.Claimed)
+        {
+            <form method="post" asp-page-handler="Claim" class="mt-3 text-center"><button type="submit" class="@Ui.BtnPrimary" data-testid="friend-claim">🎁 @string.Format(culture, L["Friend_Claim"], FriendQuests.Gems)</button></form>
+        }
+        else if (q.Claimed)
+        {
+            <p class="mt-3 text-sm text-center font-semibold text-foreground">✅ @L["Friend_Claimed"]</p>
+        }
+    }
+    else if (Model.Candidates.Count > 0)
+    {
+        <form method="post" asp-page-handler="Friend" class="mt-4 flex flex-wrap items-end gap-2">
+            <label class="grow min-w-48"><span class="text-xs text-muted-foreground-1">@L["Friend_Pick"]</span>
+                <select name="friend" class="@Ui.Input mt-1" data-testid="friend-select">
+                    @foreach (var c in Model.Candidates)
+                    {
+                        <option value="@c.UserId">@c.Avatar @c.Nickname</option>
+                    }
+                </select>
+            </label>
+            <button type="submit" class="@Ui.BtnPrimary" data-testid="friend-start">@L["Friend_Start"]</button>
+        </form>
+    }
+    else
+    {
+        <p class="mt-3 text-sm text-muted-foreground-1">@L["Friend_NoOne"]</p>
+    }
+</section>

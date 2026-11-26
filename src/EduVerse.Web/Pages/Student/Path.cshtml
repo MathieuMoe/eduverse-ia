@@ -1,0 +1,104 @@
+@page
+@model EduVerse.Web.Pages.Student.PathModel
+@using EduVerse.Core.Catalog
+@using EduVerse.Core.Gamification
+@{
+    ViewData["Title"] = L["Nav_Path"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var path = Model.Path;
+    var info = Catalog.Info(path.Area);
+    // A gentle zig-zag, like a trail on a hillside (small enough not to overflow a 390 px phone)
+    var offsets = new[] { 0, 44, 64, 44, 0, -44, -64, -44 };
+    var i = 0;
+}
+@if (Model.Notice is { } notice)
+{
+    <div class="p-3 rounded-lg text-sm @(notice == "Chest_Opened" ? "tone-sun text-foreground" : "bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-300")" role="status" data-testid="path-notice" data-notice="@notice">
+        @if (notice == "Chest_Opened")
+        {
+            <span class="gem-pop inline-block" aria-hidden="true">🎁</span> @string.Format(culture, L["Notice_Chest_Opened"], Model.ChestGems)
+        }
+        else
+        {
+            @L[$"Notice_{notice}"]
+        }
+    </div>
+}
+
+<div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3 min-w-0">
+        <span class="size-12 shrink-0 rounded-2xl tone-@info.Tone grid place-items-center text-2xl" aria-hidden="true">@info.Icon</span>
+        <div class="min-w-0">
+            <h1 class="text-xl font-semibold text-foreground truncate" data-testid="path-title">@L[$"Area_{path.Area}"] · @L[$"Level_{path.Level}"]</h1>
+            <p class="text-sm text-muted-foreground-1">@string.Format(culture, L["Path_Progress"], path.Done, path.Nodes.Count)</p>
+        </div>
+    </div>
+    <div class="h-2.5 w-full sm:w-64 rounded-full bg-surface overflow-hidden" role="progressbar" aria-label="@L["Nav_Path"]" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@(path.Nodes.Count == 0 ? 0 : 100 * path.Done / path.Nodes.Count)">
+        <div class="h-full rounded-full bg-primary" style="width:@(path.Nodes.Count == 0 ? 0 : 100 * path.Done / path.Nodes.Count)%"></div>
+    </div>
+</div>
+
+<nav class="flex gap-2 overflow-x-auto pb-1" aria-label="@L["Path_Subjects"]" data-testid="path-subjects">
+    @foreach (var s in Model.Subjects)
+    {
+        var si = Catalog.Info(s.Area);
+        <a href="/Student/Path?area=@s.Area&level=@s.Level" class="shrink-0 py-1.5 px-3 rounded-full text-sm font-medium border @(s.Area == path.Area ? "bg-primary text-primary-foreground border-primary" : "border-layer-line bg-layer text-foreground hover:bg-layer-hover")" aria-current="@(s.Area == path.Area ? "page" : null)"><span aria-hidden="true">@si.Icon</span> @L[$"Area_{s.Area}"]</a>
+    }
+</nav>
+
+<div class="space-y-6" data-testid="path">
+    @foreach (var unit in path.Nodes.GroupBy(n => n.Unit))
+    {
+        var topic = unit.First().Topic;
+        var topicName = EduVerse.Web.QuizEndpoints.TopicName(topic, L);
+        var current = unit.Key == path.CurrentUnit;
+        <section class="@Ui.Card p-4 sm:p-6 @(current ? "ring-2 ring-primary/40 scroll-mt-24" : "")" id="@(current ? "path-current" : null)" aria-labelledby="unit-@unit.Key" data-testid="path-unit">
+            <div class="p-4 rounded-2xl tone-@info.Tone flex items-center justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-foreground/70">@string.Format(culture, L["Path_Unit"], unit.Key + 1)</p>
+                    <h2 id="unit-@unit.Key" class="text-lg font-semibold text-foreground">@topicName</h2>
+                </div>
+                <span class="text-sm font-semibold text-foreground/80">@unit.Count(n => n.State == PathNodeState.Done) / @unit.Count()</span>
+            </div>
+            <ol class="mt-5 flex flex-col items-center gap-4">
+                @foreach (var node in unit)
+                {
+                    var offset = offsets[i++ % offsets.Length];
+                    var (icon, label) = node.Kind switch
+                    {
+                        PathNodeKind.Chest => ("🎁", L["Path_Chest"].Value),
+                        PathNodeKind.Boss => ("🐲", L["Path_Boss"].Value),
+                        _ => (node.State == PathNodeState.Done ? "⭐" : "📘", L["Path_Lesson"].Value),
+                    };
+                    var tone = node.State switch
+                    {
+                        PathNodeState.Done => "tone-mint",
+                        PathNodeState.Open => "bg-primary text-primary-foreground ring-4 ring-primary/25 animate-pulse",
+                        _ => "bg-surface grayscale opacity-60",
+                    };
+                    <li style="transform: translateX(@(offset)px)" class="flex flex-col items-center gap-1" data-testid="path-node" data-kind="@node.Kind" data-state="@node.State">
+                        @if (node.State == PathNodeState.Locked)
+                        {
+                            <span class="size-16 rounded-full grid place-items-center text-2xl @tone" aria-label="@label · @L["Path_Locked"]">@icon</span>
+                        }
+                        else if (node.Kind == PathNodeKind.Chest)
+                        {
+                            <form method="post" asp-page-handler="Chest">
+                                <input type="hidden" name="area" value="@path.Area" /><input type="hidden" name="level" value="@path.Level" /><input type="hidden" name="topic" value="@node.Topic" />
+                                <button type="submit" class="size-16 rounded-full grid place-items-center text-3xl @tone kid-wiggle" disabled="@(node.State == PathNodeState.Done)" aria-label="@label" data-testid="path-chest">@(node.State == PathNodeState.Done ? "📭" : icon)</button>
+                            </form>
+                        }
+                        else
+                        {
+                            var href = node.Kind == PathNodeKind.Boss
+                                ? $"/Student/Quiz?area={path.Area}&level={path.Level}&mode=Adventure&unit={Uri.EscapeDataString(node.Topic)}"
+                                : $"/Student/Quiz?area={path.Area}&level={path.Level}&mode=Focus&topic={Uri.EscapeDataString(node.Topic)}&from=path";
+                            <a href="@href" class="size-16 rounded-full grid place-items-center text-2xl @tone hover:scale-105 transition-transform" aria-label="@label · @topicName" data-testid="path-go">@icon</a>
+                        }
+                        <span class="text-xs font-medium @(node.State == PathNodeState.Open ? "text-primary" : "text-muted-foreground-1")">@(node.State == PathNodeState.Open ? L["Path_Start"].Value : label)</span>
+                    </li>
+                }
+            </ol>
+        </section>
+    }
+</div>

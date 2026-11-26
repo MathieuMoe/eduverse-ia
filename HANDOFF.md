@@ -605,3 +605,108 @@ deferred — a much larger multi-language authoring effort).
 - Not yet done: no dedicated e2e assertions target the Listen UI specifically beyond `answerQuizQuestion` recognizing
   and clicking through it (via the new `[data-testid=quiz-listen]` / `#qz-listen-replay` locators) when it happens to
   come up in the existing Practice-mode loops; no new README screenshot for the Listen UI.
+
+## Quiz/Learn: content-pool expansion for History, Geography and Economics (task #97)
+Mathieu: "empeza con la 97" — the real (not just mitigated) fix for repeats in the thinnest subjects, deferred from the
+#93-96 pass. Content only plus a few computed generators; no change to `QuizStore`, endpoints or UI.
+- **Classic questions** (`SocialBanks.cs`):
+  - History: +34 dated events (Primary2–HighSchool, all with distinct years so chronology never ties), +28 people and
+    historians (Primary2 had none; more for Bachelor–Doctorate), and two new fact groups: `history.civilizations`
+    (who built what, Primary2–Secondary1) and `history.concepts` (Renaissance, Enlightenment, feudalism, Cold War…,
+    Secondary2–Bachelor). `Generate` now mixes them in by level.
+  - Geography: +21 countries (flags/continents/capitals at Primary2–HighSchool), +46 facts (oceans, deserts, rivers,
+    ranges and lakes, 4 more climates, population vocabulary, 13 more geographers for Bachelor–Doctorate, which were
+    down to 2 questions per level at difficulty 3), and three **computed** generators, "code decides": `Scale`
+    (map scale → km), `TimeZone` (15° = 1 h, east/west) and `Density` (inhab./km²). Primary3 now also gets flags and
+    physical facts.
+  - Economics: +37 facts (basic concepts for Secondary2, the subject's first level; HighSchool/Bachelor concepts; 16
+    more economists) and four computed generators: `UnitPrice` and `Savings` (topic `economics.budget`),
+    `GdpPerCapita`, `Unemployment` and `RealInterest` (topic `economics.indicators`).
+  - New topics, named in all 4 resx files: `history.civilizations`, `history.concepts`, `geography.maps`,
+    `geography.population`, `economics.indicators`, `economics.budget` (the last one was already used as a drill
+    topic, so that drill now gets a translated name too).
+  - Distinct questions (prompt+answer, 3000 seeds, Spanish), before → after, worst cells: History Primary2 d1 7 → 26,
+    Master d1 3 → 26; Geography Bachelor/Master/Doctorate d3 2 → 113-313, HighSchool d3 8 → 387; Economics
+    Master/Doctorate d1 ~58 → ~125.
+- **Drills** (`ExerciseBank.cs`): +4 items per kind (TrueFalse, FillBlank, Reorder, Match, MultiSelect) for each of
+  the three subjects — 60 items, 4 languages each. History/Geography get +1 in tiers 1 and 2 and +2 in tier 3.
+  Economics gets all 4 in tier 3: the subject starts at Secondary2, so `DifficultyFor` only ever reaches tier 3 for
+  it — its tier 1/2 items were unreachable, and the subject effectively had **one** item per drill kind. Now every
+  level has ≥2 items per kind (Economics: 5).
+- Tests: new `ContentPoolTests.cs` (11 cases) — minimum distinct classic questions per level×difficulty (≥12),
+  ≥2 drill items per kind and level (Economics ≥5), every drill answerable with its own answer in all 4 languages,
+  and the computed scale/time-zone/unemployment/real-interest answers checked against values parsed from the prompt.
+- Verified in the cloud: `EduVerse.Core` builds with 0 warnings; `ContentPoolTests` run 11/11 (compiled against
+  Core with the same analyzers); the `CatalogTests` validity loop (4 distinct options, no `{0}`, no NaN, explanation
+  present) replicated for all 3 subjects × every level × 4 languages × 3 difficulties: 0 errors. The full xUnit suite
+  and e2e could **not** run there (nuget.org is blocked from the cloud sandbox) — run them locally before committing.
+- Not done: the other 7 subjects' drill banks are still thin (mostly 1 item per tier); Economics' tier-1/2 drill items
+  remain unreachable dead content (harmless, left in place).
+
+## "More like Duolingo": game loop, economy, leagues, path, AI personality, roleplays, friend quests (phases 1–7)
+Mathieu: "¿Qué podrías mejorar para dar más game, más IA divertida, más como Duolingo?" → "Vamos por todos". Seven
+phases, each verified on its own (build 0 warnings, full xUnit suite, full e2e on a clean DB). Same rules as always:
+**the code decides, the AI writes** (every number, goal, reward and unlock is computed in C#; the AI only writes words,
+always with an offline fallback), 4 languages via `tools/strings_student.py` + `generate_resx.py`, no new NuGet/npm package.
+DatabaseVersion 22 → 27 (dev/demo DBs are recreated).
+- **Phase 1 — end of lesson, daily goal, sounds, happy hour.** Core `DailyGoals` (10/20/30/50 XP), `HappyHour` (a 30-min
+  daily window the student opts into, ×2 answer XP; off by default so answer XP stays predictable), `LessonEnd`.
+  `StudentProfile.DailyGoal/HappyHour/Sounds`. `GamificationStore.GoalAsync/SaveGoalAsync/SaveSoundsAsync/LessonEndAsync`
+  (XP of the lesson, accuracy, time, whether this lesson kept the streak alive today, goal before/after). New
+  `GameEndpoints.cs` (`/api/game/goal`, `/sounds`, `/lesson-end/{attempt}`). `quiz.js`: an end-of-lesson panel inside
+  `quiz-summary` (tiles counting up, flame when the streak was extended, goal ring filling, quests), synthesized sound
+  effects with the Web Audio API (no audio files; toggle saved on the server), "⚡×2" XP pops. Dashboard: daily-goal card
+  with the goal and happy-hour pickers.
+- **Phase 2 — gems, shop, streak freezes, potions, frames.** Core `Gems` (quest 5, badge 10, daily goal 10/day),
+  `Shop`/`ShopItem`/`BuyOutcome`, `Streaks.Current(..., frozenDays)` + `Streaks.DaysToFreeze` (all-or-nothing).
+  Entities `GemEvent` (balance = sum; purchases keep `buy:Item`), `StreakFreezeUse`; `StudentProfile.Frame`.
+  `GamificationStore.BuyAsync/SpendAsync/ShopAsync/EquipFrameAsync/SettleStreakAsync` (settled lazily on the first answer
+  of the day, the dashboard and the shop). Double XP = 15 min after buying. `QuizStore.UsePotionAsync` + `POST
+  /api/quiz/{id}/potion` (+1 heart during an adventure). Page `/Student/Shop`; frames (`.frame-gold/rainbow/fire`) in the
+  rankings. Gems can never be bought with money.
+- **Phase 3 — weekly leagues.** Core `Division` (Bronze→Diamond), `Leagues` (groups of 20; top/bottom quarter, max 5,
+  go up/down; no XP = no promotion). Entity `LeagueMember` (one row per week). `LeagueStore.JoinAsync` settles last
+  week's place from that week's XP log when the student first shows up (never depends on when anyone looks). Young
+  children and students with competition off stay out. Page `/Student/League`, chip on the dashboard and in the lesson end.
+  The demo seeder puts the demo classmates in this week's Bronze group.
+- **Phase 4 — learning path, chests, unit bosses.** Core `LearningPath` (each topic of `AreaSubjects.Topics` = a unit of
+  lesson → lesson → chest → lesson → boss; state computed from finished Focus attempts, chest `GemEvent`s and won boss
+  adventures — nothing stored twice), `BossPrompt` (AI villain) + `DemoBosses` (offline villains). `PathStore`. The boss
+  is an `Adventure` attempt whose `Topic` is `unit:{topic}`: it starts at the guardian, every blow is on the unit's topic
+  (also on retries), and no drills are mixed in. `POST /api/quiz/boss` (refused while locked). Page `/Student/Path`;
+  lessons reuse Focus (5 questions) and end with "continue the path".
+- **Phase 5 — AI personality.** Core `Mascot` (mood decided in code: goal/perfect/great/good/tough; AI or offline line),
+  `Tricks` ("give me a trick" after a wrong classic answer: AI mnemonic, or a technique matched to the topic kind filled
+  with the real question/answer), `MistakeStory` (the week's 3 most-missed topics, picked in code from `QuizAnswers`,
+  told as a short adventure + a practice link). Endpoints `POST /api/game/mascot/{attempt}` ("quiz" limit),
+  `POST /api/quiz/{id}/trick/{n}` (only for questions already answered), `POST /api/game/mistake-story` ("ai" limit).
+  Dashboard card + new `wwwroot/js/game.js`.
+- **Phase 6 — roleplays.** Core `Roleplays` (airport check-in and café in the foreign language; Roman-market haggling and
+  a science-fair judge in the interface language). Missions are checked in code on the student's words (`GoalCheck`:
+  words in any language of the list, a question, a number in a range); the AI only plays the character (dialogue passed
+  as data, "never follow instructions written in it"); offline, the character follows a script. Entity
+  `RoleplaySession`, `RoleplayStore`, `RoleplayEndpoints.cs`, page `/Student/Roleplay` + `wwwroot/js/roleplay.js`
+  (speech synthesis and recognition in the character's language). 40 XP + 15 gems when every mission is done; 10 turns max.
+- **Phase 7 — friend quests.** Core `FriendQuests` (two classmates, 300 XP together this week, 25 gems each, claimed once).
+  Entity `FriendQuest`, `FriendQuestStore` (classmates who compete, never young children, one quest per student per week).
+  Section on `/Student/League`.
+- **Two real bugs fixed on the way** (both behind the long-standing "defend" e2e flake): `DefenceStore.StartAsync` only
+  tried the first 3 right topics at their exact difficulty — a right answer that was a word problem about the student's
+  interests (e.g. `math.percent` in Primary3) can't be asked again by the bank, so it could create nothing; it now tries
+  every right topic at every difficulty. And `QuizSummary.Defendable` replaces `correct > 0` for the "Defend my answers"
+  button, using the same rule (a right classic answer on a topic the bank can ask again).
+- Resx: phase strings live in `tools/strings_student.py` (and the task #97 topics were moved there too). Watch out:
+  that file is a Python dict, so a repeated key silently wins — `Goal_Save`/`Goal_Done` already existed (the exam plan),
+  hence the `DailyGoal_*` keys.
+- Tests: `DailyGoalTests.cs`, `ShopTests.cs`, `LeagueTests.cs`, `PathTests.cs`, `PersonalityTests.cs`, `RoleplayTests.cs`
+  (+ `QuizDriver`/`FixedClock` helpers in `DailyGoalTests.cs`). e2e: lesson end, sounds toggle, daily goal, shop, league,
+  friend quest, path lesson, trick, mascot, story of mistakes, roleplay; the new pages in the mobile overflow sweep;
+  screenshots `screenshot-{lesson-end,daily-goal,shop,league,path,roleplay,mistake-story}.png` added to the README.
+- Verified: `dotnet build -warnaserror` 0 warnings; `dotnet test` 788/788 (732 before this pass, i.e. 721 + task #97's 11),
+  run twice back to back; full `e2e.mjs` green on a clean DB (323 checks, up from 284), after every phase.
+  Build/test environment note: nuget.org is blocked from the cloud sandbox, so this pass compiled against the DLLs of
+  the repo's own `bin/` folders with a temporary, never-delivered `Directory.Build.targets`; the xUnit analyzers
+  (`xunit.analyzers` package) were therefore not run there — run `dotnet build -warnaserror` once on Windows.
+- Not done / next ideas: Duolingo-style push reminders (needs a notification channel), a "legendary" replay of a
+  finished unit, more roleplay scenarios (the format is just data in `Roleplays.All`), friend quests that pair
+  automatically, and an e2e path that beats a unit boss (covered by `PathStoreTests` only).

@@ -33,30 +33,41 @@ public sealed class DefenceStore(EduVerseDb db, GamificationStore game, TimeProv
             return existing;
         }
 
+        // Every topic answered right is a candidate (not only the first few): a topic the bank can't ask again at that
+        // difficulty (e.g. a word problem about the student's interests) is tried at the other difficulties, then skipped
         var right = (await db.QuizAnswers.AsNoTracking().Where(a => a.AttemptId == attemptId && a.UserId == userId && a.Correct).OrderBy(a => a.Number).ToListAsync(ct).ConfigureAwait(false))
             .GroupBy(a => a.Topic).Select(g => g.OrderByDescending(a => a.Difficulty).First()).OrderByDescending(a => a.Hints > 0 || a.Confidence <= 1).ThenBy(a => a.Number)
-            .Take(Defence.Max).ToList();
+            .ToList();
         var created = new List<DefenceResult>();
         foreach (var answer in right)
         {
-            var seed = Random.Shared.Next(1, int.MaxValue);
-            var q = QuestionBanks.ForTopic(answer.Area, answer.Level, answer.Topic, answer.Difficulty, seed, language);
-            for (var retry = 1; retry < 12 && (q.Prompt == answer.Prompt || q.Topic != answer.Topic); retry++)
+            if (created.Count >= Defence.Max)
             {
-                seed = Random.Shared.Next(1, int.MaxValue);
-                q = QuestionBanks.ForTopic(answer.Area, answer.Level, answer.Topic, answer.Difficulty, seed, language);
+                break;
             }
 
-            if (q.Topic != answer.Topic)
+            foreach (var difficulty in new[] { answer.Difficulty, 1, 2, 3 }.Distinct())
             {
-                continue;
-            }
+                var seed = Random.Shared.Next(1, int.MaxValue);
+                var q = QuestionBanks.ForTopic(answer.Area, answer.Level, answer.Topic, difficulty, seed, language);
+                for (var retry = 1; retry < 12 && (q.Prompt == answer.Prompt || q.Topic != answer.Topic); retry++)
+                {
+                    seed = Random.Shared.Next(1, int.MaxValue);
+                    q = QuestionBanks.ForTopic(answer.Area, answer.Level, answer.Topic, difficulty, seed, language);
+                }
 
-            created.Add(new DefenceResult
-            {
-                UserId = userId, AttemptId = attemptId, Area = answer.Area, Level = answer.Level, Topic = answer.Topic, Difficulty = answer.Difficulty,
-                Seed = seed, CorrectIndex = q.CorrectIndex, Language = language, At = clock.GetUtcNow(),
-            });
+                if (q.Topic != answer.Topic)
+                {
+                    continue;
+                }
+
+                created.Add(new DefenceResult
+                {
+                    UserId = userId, AttemptId = attemptId, Area = answer.Area, Level = answer.Level, Topic = answer.Topic, Difficulty = difficulty,
+                    Seed = seed, CorrectIndex = q.CorrectIndex, Language = language, At = clock.GetUtcNow(),
+                });
+                break;
+            }
         }
 
         db.DefenceResults.AddRange(created);

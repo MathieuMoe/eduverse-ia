@@ -952,17 +952,23 @@
   <data name="Topic_history_chronology" xml:space="preserve"><value>Cronologia</value></data>
   <data name="Topic_history_people" xml:space="preserve"><value>Personatges històrics</value></data>
   <data name="Topic_history_historiography" xml:space="preserve"><value>Historiografia</value></data>
+  <data name="Topic_history_civilizations" xml:space="preserve"><value>Civilitzacions</value></data>
+  <data name="Topic_history_concepts" xml:space="preserve"><value>Èpoques i conceptes</value></data>
   <data name="Topic_geography_countries" xml:space="preserve"><value>Països i banderes</value></data>
   <data name="Topic_geography_continents" xml:space="preserve"><value>Continents</value></data>
   <data name="Topic_geography_capitals" xml:space="preserve"><value>Capitals</value></data>
   <data name="Topic_geography_physical" xml:space="preserve"><value>Geografia física</value></data>
   <data name="Topic_geography_climate" xml:space="preserve"><value>Climes</value></data>
   <data name="Topic_geography_theory" xml:space="preserve"><value>Teoria geogràfica</value></data>
+  <data name="Topic_geography_maps" xml:space="preserve"><value>Mapes i fusos horaris</value></data>
+  <data name="Topic_geography_population" xml:space="preserve"><value>Població</value></data>
   <data name="Topic_economics_percentages" xml:space="preserve"><value>Percentatges</value></data>
   <data name="Topic_economics_concepts" xml:space="preserve"><value>Conceptes bàsics</value></data>
   <data name="Topic_economics_finance" xml:space="preserve"><value>Finances</value></data>
   <data name="Topic_economics_markets" xml:space="preserve"><value>Mercats</value></data>
   <data name="Topic_economics_thinkers" xml:space="preserve"><value>Economistes</value></data>
+  <data name="Topic_economics_indicators" xml:space="preserve"><value>Indicadors econòmics</value></data>
+  <data name="Topic_economics_budget" xml:space="preserve"><value>Finances personals</value></data>
   <data name="Topic_programming_loops" xml:space="preserve"><value>Bucles</value></data>
   <data name="Topic_programming_variables" xml:space="preserve"><value>Variables</value></data>
   <data name="Topic_programming_conditions" xml:space="preserve"><value>Condicions</value></data>
@@ -1677,4 +1683,149 @@
   <data name="Notice_Curiosity_TooLong" xml:space="preserve"><value>És una mica llarga. Pots escurçar-la?</value></data>
   <data name="Notice_Curiosity_NotAllowed" xml:space="preserve"><value>No puc afegir aquesta. Intenta preguntar-ho d'una altra manera.</value></data>
   <data name="Notice_Curiosity_Limit" xml:space="preserve"><value>Ja tens prou preguntes esperant. Explora o treu-ne una primer.</value></data>
+  <data name="Js_LessonComplete" xml:space="preserve"><value>Lliçó completada!</value></data>
+  <data name="Js_LessonXp" xml:space="preserve"><value>XP</value></data>
+  <data name="Js_LessonAccuracy" xml:space="preserve"><value>Precisió</value></data>
+  <data name="Js_LessonTime" xml:space="preserve"><value>Temps</value></data>
+  <data name="Js_LessonStreak" xml:space="preserve"><value>Ratxa de {0} dies!</value></data>
+  <data name="Js_LessonStreakSub" xml:space="preserve"><value>Aquesta lliçó ha mantingut viva la teva ratxa avui.</value></data>
+  <data name="Js_GoalOf" xml:space="preserve"><value>{0} / {1} XP avui</value></data>
+  <data name="Js_GoalToday" xml:space="preserve"><value>Objectiu diari</value></data>
+  <data name="Js_GoalReached" xml:space="preserve"><value>Objectiu diari assolit</value></data>
+  <data name="Js_GoalJustReached" xml:space="preserve"><value>Acabes d'assolir l'objectiu diari!</value></data>
+  <data name="Js_HappyHourOn" xml:space="preserve"><value>XP doble</value></data>
+  <data name="Quiz_Sounds" xml:space="preserve"><value>Efectes de so</value></data>
+  <data name="HappyHour_Pill" xml:space="preserve"><value>XP doble</value></data>
+  <data name="HappyHour_Left" xml:space="preserve"><value>Hora feliç: queden {0} min</value></data>
+  <data name="HappyHour_Now" xml:space="preserve"><value>És la teva hora feliç: XP doble durant {0} minuts més</value></data>
+  <data name="HappyHour_Pick" xml:space="preserve"><value>Hora feliç (XP doble 30 min al dia)</value></data>
+  <data name="HappyHour_Off" xml:space="preserve"><value>Desactivada</value></data>
+  <data name="HappyHour_Hint" xml:space="preserve"><value>Cada resposta dona el doble d'XP durant la teva hora feliç.</value></data>
+  <data name="DailyGoal_Title" xml:space="preserve"><value>Objectiu diari</value></data>
+  <data name="DailyGoal_Of" xml:space="preserve"><value>{0} / {1} XP avui</value></data>
+  <data name="DailyGoal_Done" xml:space="preserve"><value>assolit!</value></data>
+  <data name="DailyGoal_Pick" xml:space="preserve"><value>Quant vols aprendre cada dia?</value></data>
+  <data name="DailyGoal_Level_10" xml:space="preserve"><value>Relaxat</value></data>
+  <data name="DailyGoal_Level_20" xml:space="preserve"><value>Normal</value></data>
+  <data name="DailyGoal_Level_30" xml:space="preserve"><value>Seriós</value></data>
+  <data name="DailyGoal_Level_50" xml:space="preserve"><value>Intens</value></data>
+  <data name="DailyGoal_Save" xml:space="preserve"><value>Desa</value></data>
+  <data name="Nav_Shop" xml:space="preserve"><value>Botiga</value></data>
+  <data name="Game_QuestsGems" xml:space="preserve"><value>Noves cada dia · XP i {0} 💎 cadascuna</value></data>
+  <data name="Js_GemsWon" xml:space="preserve"><value>+{0} gemmes</value></data>
+  <data name="Js_PotionTip" xml:space="preserve"><value>Beu-te una poció: un cor més</value></data>
+  <data name="Js_PotionDrunk" xml:space="preserve"><value>Glu, glu! Un cor més. Et queden {0} gemmes</value></data>
+  <data name="Js_PotionNoGems" xml:space="preserve"><value>No tens prou gemmes: completa missions i l'objectiu diari per guanyar-ne més.</value></data>
+  <data name="Shop_Subtitle" xml:space="preserve"><value>Gasta les gemmes que guanyes amb missions, insígnies i l'objectiu diari.</value></data>
+  <data name="Shop_Freezes" xml:space="preserve"><value>Protectors de ratxa</value></data>
+  <data name="Shop_StreakNow" xml:space="preserve"><value>Ratxa actual: {0} dies</value></data>
+  <data name="Shop_Boost" xml:space="preserve"><value>XP doble</value></data>
+  <data name="Shop_MinutesLeft" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Shop_Off" xml:space="preserve"><value>Inactiu</value></data>
+  <data name="Shop_BoostHint" xml:space="preserve"><value>Cada resposta dona el doble d'XP mentre dura.</value></data>
+  <data name="Shop_Frame" xml:space="preserve"><value>Marc de l'avatar</value></data>
+  <data name="Shop_FrameHint" xml:space="preserve"><value>Els companys el veuen a les classificacions.</value></data>
+  <data name="Shop_Items" xml:space="preserve"><value>Articles</value></data>
+  <data name="Shop_EarnHint" xml:space="preserve"><value>Les gemmes només es guanyen aprenent: no es poden comprar amb diners.</value></data>
+  <data name="Shop_Buy" xml:space="preserve"><value>Compra</value></data>
+  <data name="Shop_Full" xml:space="preserve"><value>Ja tens el màxim</value></data>
+  <data name="Shop_Equip" xml:space="preserve"><value>Posar-me'l</value></data>
+  <data name="Shop_TakeOff" xml:space="preserve"><value>Treure-me'l</value></data>
+  <data name="Shop_PotionWhere" xml:space="preserve"><value>Fes-la servir durant una aventura</value></data>
+  <data name="ShopItem_StreakFreeze" xml:space="preserve"><value>Protector de ratxa</value></data>
+  <data name="ShopItem_StreakFreeze_Text" xml:space="preserve"><value>Salva la ratxa si un dia no practiques. En pots guardar 2.</value></data>
+  <data name="ShopItem_DoubleXp" xml:space="preserve"><value>XP doble · 15 min</value></data>
+  <data name="ShopItem_DoubleXp_Text" xml:space="preserve"><value>Comença ara: cada resposta compta doble durant 15 minuts.</value></data>
+  <data name="ShopItem_Potion" xml:space="preserve"><value>Poció de cor</value></data>
+  <data name="ShopItem_Potion_Text" xml:space="preserve"><value>Un cor més en una aventura, abans que t'atrapi el drac.</value></data>
+  <data name="ShopItem_FrameGold" xml:space="preserve"><value>Marc daurat</value></data>
+  <data name="ShopItem_FrameGold_Text" xml:space="preserve"><value>Una llum daurada al voltant del teu animal.</value></data>
+  <data name="ShopItem_FrameRainbow" xml:space="preserve"><value>Marc arc de Sant Martí</value></data>
+  <data name="ShopItem_FrameRainbow_Text" xml:space="preserve"><value>Quatre anells de colors per a les classificacions.</value></data>
+  <data name="ShopItem_FrameFire" xml:space="preserve"><value>Marc de foc</value></data>
+  <data name="ShopItem_FrameFire_Text" xml:space="preserve"><value>Una flama que tremola: només per als més constants.</value></data>
+  <data name="Notice_Shop_Bought" xml:space="preserve"><value>Comprat! Ja és teu.</value></data>
+  <data name="Notice_Shop_Equipped" xml:space="preserve"><value>Marc actualitzat.</value></data>
+  <data name="Notice_Shop_NotEnoughGems" xml:space="preserve"><value>Encara no tens prou gemmes: completa missions i l'objectiu diari.</value></data>
+  <data name="Notice_Shop_Limit" xml:space="preserve"><value>Ja tens el màxim.</value></data>
+  <data name="Notice_Shop_AlreadyOwned" xml:space="preserve"><value>Ja el tens.</value></data>
+  <data name="Notice_Shop_NotNow" xml:space="preserve"><value>Aquest article no es compra aquí.</value></data>
+  <data name="Js_Err_potion_limit" xml:space="preserve"><value>Els teus cors ja són plens.</value></data>
+  <data name="Js_Err_potion_notnow" xml:space="preserve"><value>Les pocions només serveixen durant una aventura.</value></data>
+  <data name="Nav_League" xml:space="preserve"><value>Lliga</value></data>
+  <data name="Division_Bronze" xml:space="preserve"><value>Bronze</value></data>
+  <data name="Division_Silver" xml:space="preserve"><value>Plata</value></data>
+  <data name="Division_Gold" xml:space="preserve"><value>Or</value></data>
+  <data name="Division_Sapphire" xml:space="preserve"><value>Safir</value></data>
+  <data name="Division_Diamond" xml:space="preserve"><value>Diamant</value></data>
+  <data name="League_Title" xml:space="preserve"><value>Lliga {0}</value></data>
+  <data name="League_EndsIn" xml:space="preserve"><value>La setmana acaba d'aquí a {0} d {1} h</value></data>
+  <data name="League_Divisions" xml:space="preserve"><value>Divisions</value></data>
+  <data name="League_Table" xml:space="preserve"><value>Classificació de la setmana</value></data>
+  <data name="League_Rules" xml:space="preserve"><value>Els {0} primers pugen dilluns i els {0} últims baixen</value></data>
+  <data name="League_Up" xml:space="preserve"><value>puja</value></data>
+  <data name="League_Down" xml:space="preserve"><value>baixa</value></data>
+  <data name="League_Alone" xml:space="preserve"><value>Ets el primer del teu grup aquesta setmana: els altres s'hi afegeixen quan practiquen.</value></data>
+  <data name="League_Off" xml:space="preserve"><value>Has desactivat la competició a l'Arena, així que no jugues les lligues.</value></data>
+  <data name="League_Result_Promoted" xml:space="preserve"><value>Has pujat a la lliga {0}!</value></data>
+  <data name="League_Result_Demoted" xml:space="preserve"><value>Has baixat a la lliga {0}: aquesta setmana la pots recuperar.</value></data>
+  <data name="League_Result_Stayed" xml:space="preserve"><value>Continues a la lliga {0}.</value></data>
+  <data name="League_LastPosition" xml:space="preserve"><value>La setmana passada vas quedar en la posició {0}.</value></data>
+  <data name="League_Chip" xml:space="preserve"><value>Lliga {0} · {1}a de {2}</value></data>
+  <data name="Js_LeaguePlace" xml:space="preserve"><value>Lliga {0}: vas {1}a de {2} aquesta setmana</value></data>
+  <data name="Nav_Path" xml:space="preserve"><value>Ruta d'aprenentatge</value></data>
+  <data name="Path_Progress" xml:space="preserve"><value>{0} de {1} passos fets</value></data>
+  <data name="Path_Subjects" xml:space="preserve"><value>Matèries</value></data>
+  <data name="Path_Unit" xml:space="preserve"><value>Unitat {0}</value></data>
+  <data name="Path_Lesson" xml:space="preserve"><value>Lliçó</value></data>
+  <data name="Path_Chest" xml:space="preserve"><value>Cofre</value></data>
+  <data name="Path_Boss" xml:space="preserve"><value>Cap de la unitat</value></data>
+  <data name="Path_Start" xml:space="preserve"><value>Comença!</value></data>
+  <data name="Path_Locked" xml:space="preserve"><value>bloquejat</value></data>
+  <data name="Notice_Chest_Opened" xml:space="preserve"><value>El cofre tenia {0} gemmes a dins!</value></data>
+  <data name="Notice_Chest_Locked" xml:space="preserve"><value>Aquest cofre encara no es pot obrir: acaba abans les lliçons.</value></data>
+  <data name="Js_PathContinue" xml:space="preserve"><value>Continua el camí</value></data>
+  <data name="Js_Err_boss_locked" xml:space="preserve"><value>Aquest cap encara està bloquejat: acaba primer les lliçons de la unitat.</value></data>
+  <data name="Story_Title" xml:space="preserve"><value>El conte dels teus errors</value></data>
+  <data name="Story_Hint" xml:space="preserve"><value>Una petita aventura sobre els temes que més has fallat aquesta setmana i després una pràctica ràpida.</value></data>
+  <data name="Story_Go" xml:space="preserve"><value>Explica'm el meu conte</value></data>
+  <data name="Js_StoryWriting" xml:space="preserve"><value>Escrivint el teu conte…</value></data>
+  <data name="Js_StoryTopics" xml:space="preserve"><value>Temes del conte: {0}</value></data>
+  <data name="Js_StoryPractice" xml:space="preserve"><value>Practicar el primer ara</value></data>
+  <data name="Js_StoryNoMistakes" xml:space="preserve"><value>Cap errada aquesta setmana… així que encara no hi ha conte! Fes un test i torna.</value></data>
+  <data name="Js_TrickAsk" xml:space="preserve"><value>Dona'm un truc</value></data>
+  <data name="Js_TrickTitle" xml:space="preserve"><value>Un truc per recordar-ho</value></data>
+  <data name="Js_TrickWriting" xml:space="preserve"><value>Pensant un truc…</value></data>
+  <data name="Nav_Roleplay" xml:space="preserve"><value>Jocs de rol</value></data>
+  <data name="Roleplay_Subtitle" xml:space="preserve"><value>Parla amb un personatge i compleix les missions. Et respon en el seu idioma; pots escriure o parlar.</value></data>
+  <data name="Roleplay_Goals" xml:space="preserve"><value>{0} missions</value></data>
+  <data name="Roleplay_YourLine" xml:space="preserve"><value>La teva frase…</value></data>
+  <data name="Roleplay_Mic" xml:space="preserve"><value>Parlar</value></data>
+  <data name="Roleplay_Send" xml:space="preserve"><value>Dir-ho</value></data>
+  <data name="Roleplay_Missions" xml:space="preserve"><value>Missions</value></data>
+  <data name="Roleplay_MissionsHint" xml:space="preserve"><value>Es marquen soles quan dius el que cal.</value></data>
+  <data name="Js_RoleplayTurns" xml:space="preserve"><value>Queden {0} torns</value></data>
+  <data name="Js_RoleplayDone" xml:space="preserve"><value>Totes les missions complertes! +{0} XP i {1} gemmes</value></data>
+  <data name="Js_RoleplayOut" xml:space="preserve"><value>S'han acabat els torns aquesta vegada. Torna-ho a provar: ho aconseguiràs!</value></data>
+  <data name="Js_RoleplayAgain" xml:space="preserve"><value>Tornar a jugar</value></data>
+  <data name="Js_RoleplayOthers" xml:space="preserve"><value>Altres jocs de rol</value></data>
+  <data name="Js_RoleplayThinking" xml:space="preserve"><value>El personatge està pensant…</value></data>
+  <data name="Js_RoleplayListening" xml:space="preserve"><value>Escoltant…</value></data>
+  <data name="Js_RoleplayMicError" xml:space="preserve"><value>No t'he sentit: torna-ho a provar o escriu.</value></data>
+  <data name="Js_Err_roleplay_empty" xml:space="preserve"><value>Escriu o digues alguna cosa primer.</value></data>
+  <data name="Js_Err_roleplay_closed" xml:space="preserve"><value>Aquesta conversa ha acabat: comença'n una altra.</value></data>
+  <data name="Friend_Title" xml:space="preserve"><value>Missió amb un amic de la setmana</value></data>
+  <data name="Friend_Hint" xml:space="preserve"><value>Fes equip amb un company: entre tots dos, guanyeu {0} XP aquesta setmana i cadascú rebrà {1} gemmes.</value></data>
+  <data name="Friend_Pick" xml:space="preserve"><value>Amb qui vols fer equip?</value></data>
+  <data name="Friend_Start" xml:space="preserve"><value>Fer equip</value></data>
+  <data name="Friend_Progress" xml:space="preserve"><value>{0} / {1} XP entre tots dos</value></data>
+  <data name="Friend_Claim" xml:space="preserve"><value>Recollir {0} gemmes</value></data>
+  <data name="Friend_Claimed" xml:space="preserve"><value>Gemmes recollides. Gran treball en equip!</value></data>
+  <data name="Friend_NoOne" xml:space="preserve"><value>Cap company no està lliure aquesta setmana: uneix-te a una classe o torna-ho a provar la setmana vinent.</value></data>
+  <data name="Notice_Friend_Started" xml:space="preserve"><value>Equip format! Compta cada XP de tots dos.</value></data>
+  <data name="Notice_Friend_AlreadyPaired" xml:space="preserve"><value>Ja tens una missió amb un amic aquesta setmana.</value></data>
+  <data name="Notice_Friend_NotAvailable" xml:space="preserve"><value>Aquest company no pot fer equip ara.</value></data>
+  <data name="Notice_Friend_Claimed" xml:space="preserve"><value>+{0} gemmes per a tu. Gràcies pel treball en equip!</value></data>
+  <data name="Notice_Friend_NotYet" xml:space="preserve"><value>Encara no: continueu guanyant XP junts.</value></data>
+  <data name="Notice_Goal_Saved" xml:space="preserve"><value>Objectiu diari desat.</value></data>
 </root>

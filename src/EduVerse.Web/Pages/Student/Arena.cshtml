@@ -46,7 +46,7 @@
                         {
                             <li class="flex items-center gap-3 p-2 rounded-xl @(s.Me ? "tone-plum" : s.Position <= 3 ? "bg-surface" : "")">
                                 <span class="w-6 text-center text-sm font-bold @(s.Me ? "text-white" : "text-foreground")">@(s.Position switch { 1 => "🥇", 2 => "🥈", 3 => "🥉", _ => s.Position.ToString(culture) })</span>
-                                <span class="text-xl" aria-hidden="true">@s.Avatar</span>
+                                <span class="text-xl avatar-frame frame-@(s.Frame.Length > 0 ? s.Frame : "none")" aria-hidden="true">@s.Avatar</span>
                                 <span class="grow min-w-0 truncate text-sm font-medium @(s.Me ? "text-white" : "text-foreground")">@s.Nickname@(s.Me ? " · " + L["Arena_You"] : "")</span>
                                 <span class="text-xs @(s.Me ? "text-white/80" : "text-muted-foreground-1") tip" data-tip="@L[$"Team_{s.Team}"]" aria-label="@L[$"Team_{s.Team}"]">@Teams.Emoji(s.Team)</span>
                                 <span class="text-sm font-semibold @(s.Me ? "text-white" : "text-foreground") tabular-nums">@s.Xp XP</span>
@@ -138,7 +138,7 @@
     <aside class="xl:col-span-4 space-y-4 sm:space-y-6 min-w-0">
         <section class="@Ui.Card p-5" data-testid="arena-settings">
             <div class="flex items-center gap-3">
-                <span class="size-14 rounded-2xl tone-lavender grid place-items-center text-3xl" aria-hidden="true">@Model.Profile.Avatar</span>
+                <span class="size-14 rounded-2xl tone-lavender grid place-items-center text-3xl" aria-hidden="true"><span class="avatar-frame frame-@(Model.Profile.Frame.Length > 0 ? Model.Profile.Frame : "none")">@Model.Profile.Avatar</span></span>
                 <div class="min-w-0">
                     <p class="text-xs text-muted-foreground-1">@L["Arena_Nickname"]</p>
                     <p class="text-lg font-semibold text-foreground truncate" data-testid="nickname">@Model.Profile.Nickname</p>

@@ -245,6 +245,82 @@ async function demo(page, role) {
     await demo(page, "student");
     check(await page.locator("[data-testid=game-kpis] > div").count() === 4, "dashboard shows XP, level, streak and rank");
     check(await page.locator("[data-testid=quests] li").count() === 3, "three daily quests");
+    // Daily goal and happy hour: pick "Serious" (30 XP) and an evening happy hour, saved on the server
+    await page.click("[data-testid=daily-goal] label:has([data-testid=goal-30])");
+    await page.selectOption("[data-testid=happy-hour-select]", "19");
+    await page.click("[data-testid=goal-save]");
+    await page.locator("[data-testid=daily-goal-progress]").waitFor();
+    check((await page.locator("[data-testid=daily-goal-progress]").textContent()).includes("/ 30 XP"), "the daily goal is saved");
+    check(await page.locator("[data-testid=happy-hour-select]").inputValue() === "19", "the happy hour is saved");
+    await page.locator("[data-testid=daily-goal]").screenshot({ path: join(DOCS, "screenshot-daily-goal.png") });
+    // The story of your mistakes (phase 5): the week's missed topics told as a short adventure, then a practice link
+    await page.click("[data-testid=mistake-story-go]");
+    await Promise.race([page.locator("[data-testid=mistake-story-text]").waitFor(), page.locator("[data-testid=mistake-story-none]").waitFor()]);
+    check(await page.locator("[data-testid=mistake-story-text], [data-testid=mistake-story-none]").count() === 1, "the story of your mistakes is told (or explained why not)");
+    if (await page.locator("[data-testid=mistake-story-text]").count()) {
+        await page.locator("[data-testid=mistake-story]").screenshot({ path: join(DOCS, "screenshot-mistake-story.png") });
+    }
+    // Gem shop (phase 2): the demo badges and quests already paid Sara some gems
+    const gemsBefore = +(await page.locator("[data-testid=dashboard-gems]").textContent()).replace(/\D/g, "");
+    check(gemsBefore >= 50, `the demo student starts with gems from badges and quests (${gemsBefore})`);
+    await page.click("[data-testid=dashboard-gems]");
+    await page.locator("[data-testid=shop-items]").waitFor();
+    check(await page.locator("[data-testid=shop-items] > li").count() === 6, "the shop offers six items");
+    await page.click("[data-testid=shop-buy-StreakFreeze]");
+    await page.locator("[data-testid=shop-notice]").waitFor();
+    check(await page.locator("[data-testid=shop-notice]").getAttribute("data-notice") === "Shop_Bought", "a streak freeze can be bought with gems");
+    check((await page.locator("[data-testid=shop-freezes]").textContent()).trim().startsWith("1"), "the freeze is waiting for a missed day");
+    check(+(await page.locator("[data-testid=shop-gems]").textContent()).replace(/\D/g, "") === gemsBefore - 50, "the gems are spent");
+    await page.screenshot({ path: join(DOCS, "screenshot-shop.png"), fullPage: true });
+    // Weekly league (phase 3): the demo classmates share Sara's Bronze group; Mia (6) never competes
+    await page.goto(BASE + "/Student");
+    await page.click("[data-testid=dashboard-league]");
+    await page.locator("[data-testid=league-table]").waitFor();
+    check(await page.locator("[data-testid=league-division]").getAttribute("data-division") === "Bronze", "everyone starts in the Bronze league");
+    check(await page.locator("[data-testid=league-row]").count() >= 3, "the league groups the classmates who compete");
+    check(await page.locator("[data-testid=league-row][data-me='1']").count() === 1, "the student sees herself in the league table");
+    // Friend quest (phase 7): team up with a classmate for a shared weekly XP target
+    if (await page.locator("[data-testid=friend-start]").count()) {
+        await page.click("[data-testid=friend-start]");
+        await page.locator("[data-testid=friend-notice]").waitFor();
+        check(await page.locator("[data-testid=friend-notice]").getAttribute("data-notice") === "Friend_Started", "a friend quest can be started with a classmate");
+    }
+    check(await page.locator("[data-testid=friend-pair]").count() === 1, "the friend quest shows both partners and the shared progress");
+    await page.screenshot({ path: join(DOCS, "screenshot-league.png"), fullPage: true });
+    // Roleplay (phase 6): haggle with the Roman merchant; the missions tick in code, the character follows its script offline
+    await page.goto(BASE + "/Student/Roleplay");
+    check(await page.locator("[data-testid=roleplay-list] > li").count() === 4, "four roleplays to choose from");
+    await page.click("[data-testid=roleplay-market]");
+    await page.locator("[data-testid=roleplay-character]").first().waitFor();
+    check(await page.locator("[data-testid=roleplay-goal][data-met='0']").count() === 4, "the roleplay starts with four open missions");
+    await page.fill("[data-testid=roleplay-input]", "I can pay 30 sesterces. Can you give me a discount?");
+    await page.click("[data-testid=roleplay-send]");
+    await page.waitForFunction(() => document.querySelectorAll("[data-testid=roleplay-goal][data-met='1']").length === 3);
+    check(await page.locator("[data-testid=roleplay-character]").count() === 2, "the merchant answers each line");
+    await page.fill("[data-testid=roleplay-input]", "Deal! Thank you, Marcus.");
+    await page.click("[data-testid=roleplay-send]");
+    await page.locator("[data-testid=roleplay-end]").waitFor();
+    check(await page.locator("[data-testid=roleplay-end]").getAttribute("data-completed") === "1", "completing every mission ends the roleplay with a reward");
+    await page.screenshot({ path: join(DOCS, "screenshot-roleplay.png"), fullPage: true });
+    // Learning path (phase 4): units of lesson → lesson → chest → lesson → boss; the first lesson is open
+    await page.goto(BASE + "/Student/Path?area=History&level=Primary3");
+    check(await page.locator("[data-testid=path-unit]").count() >= 3, "the history path has several units");
+    check(await page.locator("[data-testid=path-node][data-state=Open]").count() === 1, "exactly one step of the path is open");
+    check(await page.locator("[data-testid=path-node][data-kind=Boss]").count() === await page.locator("[data-testid=path-unit]").count(), "every unit ends with a boss");
+    await page.screenshot({ path: join(DOCS, "screenshot-path.png") });
+    await page.click("[data-testid=path-node][data-state=Open] [data-testid=path-go]");
+    for (let i = 0; !(await page.locator("[data-testid=quiz-summary]").count()) && i < 8; i++) {
+        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().waitFor();
+        await page.locator("[data-testid=quiz-options] button:not([disabled])").first().click();
+        await page.locator("[data-testid=quiz-next]").waitFor();
+        await page.click("[data-testid=quiz-next]");
+    }
+    await page.locator("[data-testid=path-back]").waitFor();
+    check(await page.locator("[data-testid=path-back]").isVisible(), "a lesson of the path ends with 'continue the path'");
+    await page.click("[data-testid=path-back]");
+    await page.locator("[data-testid=path]").waitFor();
+    check(page.url().includes("/Student/Path"), "the student goes back to the path after a lesson");
+    await page.goto(BASE + "/Student");
     check(await page.locator("[data-testid=activity-calendar] [data-tip]").count() >= 35, "monthly activity calendar");
     await page.goto(BASE + "/Student/Explore");
     check(await page.locator("[data-testid=levels] li").count() === 10, "ten levels from early years to doctorate");
@@ -262,9 +338,16 @@ async function demo(page, role) {
     // answerQuizQuestion — task #95 tightened the frequency from every 4th answered item to every 3rd), and a drill
     // doesn't log a review entry yet (task #69's documented limitation), so only 7 of the 10 questions below are
     // expected back in the review list.
+    let trickShown = false;
     for (let i = 0; i < 10; i++) {
         await answerQuizQuestion(page, i % 4);
         await page.locator("[data-testid=quiz-next]").waitFor();
+        if (!trickShown && await page.locator("[data-testid=quiz-trick]").count()) {
+            // Phase 5: a wrong classic answer offers a memory trick (offline here: a technique filled with the real answer)
+            await page.click("[data-testid=quiz-trick]");
+            await page.waitForFunction(() => (document.querySelector("[data-testid=quiz-trick-text]")?.textContent || "").length > 40);
+            trickShown = true;
+        }
         if (i === 1) {
             check(await page.locator("[data-state=right]").count() === 1, "the right option is shown after answering");
             await page.screenshot({ path: join(DOCS, "screenshot-quiz.png") });
@@ -273,6 +356,20 @@ async function demo(page, role) {
     }
     await page.locator("[data-testid=quiz-summary]").waitFor();
     check(+(await page.locator("[data-testid=quiz-xp]").textContent()) >= 10, "XP won during the test");
+    // End-of-lesson screens (phase 1 of the Duolingo pass): stat tiles, daily goal ring and quests, all from the server
+    await page.locator("[data-testid=lesson-goal]").waitFor();
+    await page.locator("[data-testid=lesson-mascot]").waitFor();
+    check((await page.locator("[data-testid=lesson-mascot]").textContent()).trim().length > 10, "the Tutor reacts to the finished lesson");
+    check(trickShown, "a wrong answer offers a memory trick");
+    check(await page.locator("[data-testid=lesson-end] #le-time").textContent() !== "0", "the end-of-lesson screen shows the time spent");
+    check(await page.locator("[data-testid=lesson-quests] li").count() === 3, "the end-of-lesson screen shows the day's quests");
+    check(await page.locator("[data-testid=lesson-league]").count() === 1, "the end-of-lesson screen shows the place in the weekly league");
+    await page.waitForTimeout(1200); // let the count-up and the goal ring finish for the screenshot
+    await page.screenshot({ path: join(DOCS, "screenshot-lesson-end.png") });
+    check(await page.locator("#qz-sound").getAttribute("aria-pressed") === "true", "sound effects are on by default");
+    await page.click("#qz-sound");
+    check(await page.locator("#qz-sound").getAttribute("aria-pressed") === "false", "sound effects can be turned off");
+    await page.click("#qz-sound");
     await page.click("[data-testid=quiz-review]");
     await page.locator("[data-testid=review]").waitFor();
     check(await page.locator("[data-testid=review] > li").count() === 7, "the finished test is saved with its classic questions for review");
@@ -1004,6 +1101,14 @@ async function demo(page, role) {
     }
     check(defended, "a finished test with right answers offers to defend them");
     await page.click("[data-testid=quiz-defend]");
+    // The "tutor" rate limit (30/min) is shared by every e2e browser context (same IP), and the steps just before this
+    // one use it heavily: if the defence start is refused, wait for the window to reset and reload once.
+    await Promise.race([page.locator("[data-testid=defend-prompt]").waitFor(), page.locator("[data-testid=defend-error]").waitFor()]);
+    if (await page.locator("[data-testid=defend-error]").count()) {
+        console.log(`  (defence start refused: ${await page.locator("[data-testid=defend-error]").textContent()} — retrying after the rate-limit window)`);
+        await page.waitForTimeout(61000);
+        await page.reload();
+    }
     await page.locator("[data-testid=defend-prompt]").waitFor();
     await page.locator("[data-testid=defend-options] button").first().click();
     await page.fill("[data-testid=defend-why]", "Because I split the number into groups and counted them");
@@ -1202,7 +1307,7 @@ for (const dark of [false, true]) {
         await noOverflow(page, `mobile${dark ? " dark" : ""} /`);
         await demo(page, role);
         const pages = {
-            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Marketplace", "/Marketplace/Bookings", "/About"],
+            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Student/Path?area=History&level=Primary3", "/Student/League", "/Student/Shop", "/Student/Roleplay", "/Student/Roleplay?scenario=airport", "/Marketplace", "/Marketplace/Bookings", "/About"],
             teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Course?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary", "/Moderation/Ideas"],
             director: ["/Institution", "/Institution/Risk", "/Institution/Quality"],
             tutor: ["/Tutor", "/Tutor/Profile", "/Marketplace"],

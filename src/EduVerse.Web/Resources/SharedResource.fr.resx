@@ -952,17 +952,23 @@
   <data name="Topic_history_chronology" xml:space="preserve"><value>Chronologie</value></data>
   <data name="Topic_history_people" xml:space="preserve"><value>Personnages historiques</value></data>
   <data name="Topic_history_historiography" xml:space="preserve"><value>Historiographie</value></data>
+  <data name="Topic_history_civilizations" xml:space="preserve"><value>Civilisations</value></data>
+  <data name="Topic_history_concepts" xml:space="preserve"><value>Périodes et notions</value></data>
   <data name="Topic_geography_countries" xml:space="preserve"><value>Pays et drapeaux</value></data>
   <data name="Topic_geography_continents" xml:space="preserve"><value>Continents</value></data>
   <data name="Topic_geography_capitals" xml:space="preserve"><value>Capitales</value></data>
   <data name="Topic_geography_physical" xml:space="preserve"><value>Géographie physique</value></data>
   <data name="Topic_geography_climate" xml:space="preserve"><value>Climats</value></data>
   <data name="Topic_geography_theory" xml:space="preserve"><value>Théorie géographique</value></data>
+  <data name="Topic_geography_maps" xml:space="preserve"><value>Cartes et fuseaux horaires</value></data>
+  <data name="Topic_geography_population" xml:space="preserve"><value>Population</value></data>
   <data name="Topic_economics_percentages" xml:space="preserve"><value>Pourcentages</value></data>
   <data name="Topic_economics_concepts" xml:space="preserve"><value>Notions de base</value></data>
   <data name="Topic_economics_finance" xml:space="preserve"><value>Finance</value></data>
   <data name="Topic_economics_markets" xml:space="preserve"><value>Marchés</value></data>
   <data name="Topic_economics_thinkers" xml:space="preserve"><value>Économistes</value></data>
+  <data name="Topic_economics_indicators" xml:space="preserve"><value>Indicateurs économiques</value></data>
+  <data name="Topic_economics_budget" xml:space="preserve"><value>Finances personnelles</value></data>
   <data name="Topic_programming_loops" xml:space="preserve"><value>Boucles</value></data>
   <data name="Topic_programming_variables" xml:space="preserve"><value>Variables</value></data>
   <data name="Topic_programming_conditions" xml:space="preserve"><value>Conditions</value></data>
@@ -1677,4 +1683,149 @@
   <data name="Notice_Curiosity_TooLong" xml:space="preserve"><value>C'est un peu long. Peux-tu la raccourcir ?</value></data>
   <data name="Notice_Curiosity_NotAllowed" xml:space="preserve"><value>Je ne peux pas ajouter celle-ci. Essaie de la formuler autrement.</value></data>
   <data name="Notice_Curiosity_Limit" xml:space="preserve"><value>Tu as déjà beaucoup de questions en attente. Explore ou retire-en une d'abord.</value></data>
+  <data name="Js_LessonComplete" xml:space="preserve"><value>Leçon terminée !</value></data>
+  <data name="Js_LessonXp" xml:space="preserve"><value>XP</value></data>
+  <data name="Js_LessonAccuracy" xml:space="preserve"><value>Précision</value></data>
+  <data name="Js_LessonTime" xml:space="preserve"><value>Temps</value></data>
+  <data name="Js_LessonStreak" xml:space="preserve"><value>Série de {0} jours !</value></data>
+  <data name="Js_LessonStreakSub" xml:space="preserve"><value>Cette leçon a gardé ta série en vie aujourd'hui.</value></data>
+  <data name="Js_GoalOf" xml:space="preserve"><value>{0} / {1} XP aujourd'hui</value></data>
+  <data name="Js_GoalToday" xml:space="preserve"><value>Objectif du jour</value></data>
+  <data name="Js_GoalReached" xml:space="preserve"><value>Objectif du jour atteint</value></data>
+  <data name="Js_GoalJustReached" xml:space="preserve"><value>Tu viens d'atteindre ton objectif du jour !</value></data>
+  <data name="Js_HappyHourOn" xml:space="preserve"><value>XP double</value></data>
+  <data name="Quiz_Sounds" xml:space="preserve"><value>Effets sonores</value></data>
+  <data name="HappyHour_Pill" xml:space="preserve"><value>XP double</value></data>
+  <data name="HappyHour_Left" xml:space="preserve"><value>Heure joyeuse : encore {0} min</value></data>
+  <data name="HappyHour_Now" xml:space="preserve"><value>C'est l'heure joyeuse : XP double encore {0} minutes</value></data>
+  <data name="HappyHour_Pick" xml:space="preserve"><value>Heure joyeuse (XP double 30 min par jour)</value></data>
+  <data name="HappyHour_Off" xml:space="preserve"><value>Désactivée</value></data>
+  <data name="HappyHour_Hint" xml:space="preserve"><value>Chaque réponse donne le double d'XP pendant ton heure joyeuse.</value></data>
+  <data name="DailyGoal_Title" xml:space="preserve"><value>Objectif du jour</value></data>
+  <data name="DailyGoal_Of" xml:space="preserve"><value>{0} / {1} XP aujourd'hui</value></data>
+  <data name="DailyGoal_Done" xml:space="preserve"><value>atteint !</value></data>
+  <data name="DailyGoal_Pick" xml:space="preserve"><value>Combien veux-tu apprendre chaque jour ?</value></data>
+  <data name="DailyGoal_Level_10" xml:space="preserve"><value>Détente</value></data>
+  <data name="DailyGoal_Level_20" xml:space="preserve"><value>Régulier</value></data>
+  <data name="DailyGoal_Level_30" xml:space="preserve"><value>Sérieux</value></data>
+  <data name="DailyGoal_Level_50" xml:space="preserve"><value>Intense</value></data>
+  <data name="DailyGoal_Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="Nav_Shop" xml:space="preserve"><value>Boutique</value></data>
+  <data name="Game_QuestsGems" xml:space="preserve"><value>Nouvelles chaque jour · XP et {0} 💎 chacune</value></data>
+  <data name="Js_GemsWon" xml:space="preserve"><value>+{0} gemmes</value></data>
+  <data name="Js_PotionTip" xml:space="preserve"><value>Bois une potion : un cœur de plus</value></data>
+  <data name="Js_PotionDrunk" xml:space="preserve"><value>Glouglou ! Un cœur de plus. Gemmes restantes : {0}</value></data>
+  <data name="Js_PotionNoGems" xml:space="preserve"><value>Pas assez de gemmes : termine des quêtes et ton objectif du jour pour en gagner.</value></data>
+  <data name="Shop_Subtitle" xml:space="preserve"><value>Dépense les gemmes gagnées avec les quêtes, les badges et ton objectif du jour.</value></data>
+  <data name="Shop_Freezes" xml:space="preserve"><value>Protections de série</value></data>
+  <data name="Shop_StreakNow" xml:space="preserve"><value>Série actuelle : {0} jours</value></data>
+  <data name="Shop_Boost" xml:space="preserve"><value>XP double</value></data>
+  <data name="Shop_MinutesLeft" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Shop_Off" xml:space="preserve"><value>Inactif</value></data>
+  <data name="Shop_BoostHint" xml:space="preserve"><value>Chaque réponse donne le double d'XP tant qu'il dure.</value></data>
+  <data name="Shop_Frame" xml:space="preserve"><value>Cadre d'avatar</value></data>
+  <data name="Shop_FrameHint" xml:space="preserve"><value>Tes camarades le voient dans les classements.</value></data>
+  <data name="Shop_Items" xml:space="preserve"><value>Articles</value></data>
+  <data name="Shop_EarnHint" xml:space="preserve"><value>Les gemmes se gagnent seulement en apprenant : on ne peut pas les acheter.</value></data>
+  <data name="Shop_Buy" xml:space="preserve"><value>Acheter</value></data>
+  <data name="Shop_Full" xml:space="preserve"><value>Tu as le maximum</value></data>
+  <data name="Shop_Equip" xml:space="preserve"><value>Le porter</value></data>
+  <data name="Shop_TakeOff" xml:space="preserve"><value>L'enlever</value></data>
+  <data name="Shop_PotionWhere" xml:space="preserve"><value>À utiliser pendant une aventure</value></data>
+  <data name="ShopItem_StreakFreeze" xml:space="preserve"><value>Protection de série</value></data>
+  <data name="ShopItem_StreakFreeze_Text" xml:space="preserve"><value>Sauve ta série si tu rates un jour. Tu peux en garder 2.</value></data>
+  <data name="ShopItem_DoubleXp" xml:space="preserve"><value>XP double · 15 min</value></data>
+  <data name="ShopItem_DoubleXp_Text" xml:space="preserve"><value>Commence maintenant : chaque réponse compte double pendant 15 minutes.</value></data>
+  <data name="ShopItem_Potion" xml:space="preserve"><value>Potion de cœur</value></data>
+  <data name="ShopItem_Potion_Text" xml:space="preserve"><value>Un cœur de plus dans une aventure, avant que le dragon ne t'attrape.</value></data>
+  <data name="ShopItem_FrameGold" xml:space="preserve"><value>Cadre doré</value></data>
+  <data name="ShopItem_FrameGold_Text" xml:space="preserve"><value>Une lueur dorée autour de ton animal.</value></data>
+  <data name="ShopItem_FrameRainbow" xml:space="preserve"><value>Cadre arc-en-ciel</value></data>
+  <data name="ShopItem_FrameRainbow_Text" xml:space="preserve"><value>Quatre anneaux colorés pour les classements.</value></data>
+  <data name="ShopItem_FrameFire" xml:space="preserve"><value>Cadre de feu</value></data>
+  <data name="ShopItem_FrameFire_Text" xml:space="preserve"><value>Une flamme qui danse : pour les plus motivés.</value></data>
+  <data name="Notice_Shop_Bought" xml:space="preserve"><value>Acheté ! C'est à toi.</value></data>
+  <data name="Notice_Shop_Equipped" xml:space="preserve"><value>Cadre mis à jour.</value></data>
+  <data name="Notice_Shop_NotEnoughGems" xml:space="preserve"><value>Pas encore assez de gemmes : termine des quêtes et ton objectif du jour.</value></data>
+  <data name="Notice_Shop_Limit" xml:space="preserve"><value>Tu as déjà le maximum.</value></data>
+  <data name="Notice_Shop_AlreadyOwned" xml:space="preserve"><value>Tu l'as déjà.</value></data>
+  <data name="Notice_Shop_NotNow" xml:space="preserve"><value>Cet article ne s'achète pas ici.</value></data>
+  <data name="Js_Err_potion_limit" xml:space="preserve"><value>Tes cœurs sont déjà pleins.</value></data>
+  <data name="Js_Err_potion_notnow" xml:space="preserve"><value>Les potions ne marchent que pendant une aventure.</value></data>
+  <data name="Nav_League" xml:space="preserve"><value>Ligue</value></data>
+  <data name="Division_Bronze" xml:space="preserve"><value>Bronze</value></data>
+  <data name="Division_Silver" xml:space="preserve"><value>Argent</value></data>
+  <data name="Division_Gold" xml:space="preserve"><value>Or</value></data>
+  <data name="Division_Sapphire" xml:space="preserve"><value>Saphir</value></data>
+  <data name="Division_Diamond" xml:space="preserve"><value>Diamant</value></data>
+  <data name="League_Title" xml:space="preserve"><value>Ligue {0}</value></data>
+  <data name="League_EndsIn" xml:space="preserve"><value>La semaine se termine dans {0} j {1} h</value></data>
+  <data name="League_Divisions" xml:space="preserve"><value>Divisions</value></data>
+  <data name="League_Table" xml:space="preserve"><value>Classement de la semaine</value></data>
+  <data name="League_Rules" xml:space="preserve"><value>Les {0} premiers montent lundi, les {0} derniers descendent</value></data>
+  <data name="League_Up" xml:space="preserve"><value>monte</value></data>
+  <data name="League_Down" xml:space="preserve"><value>descend</value></data>
+  <data name="League_Alone" xml:space="preserve"><value>Tu es le premier de ton groupe cette semaine : les autres arrivent dès qu'ils s'entraînent.</value></data>
+  <data name="League_Off" xml:space="preserve"><value>Tu as désactivé la compétition dans l'Arène : tu ne joues pas les ligues.</value></data>
+  <data name="League_Result_Promoted" xml:space="preserve"><value>Tu montes en ligue {0} !</value></data>
+  <data name="League_Result_Demoted" xml:space="preserve"><value>Tu descends en ligue {0} : cette semaine tu peux remonter.</value></data>
+  <data name="League_Result_Stayed" xml:space="preserve"><value>Tu restes en ligue {0}.</value></data>
+  <data name="League_LastPosition" xml:space="preserve"><value>La semaine dernière tu as fini n° {0}.</value></data>
+  <data name="League_Chip" xml:space="preserve"><value>Ligue {0} · n° {1} sur {2}</value></data>
+  <data name="Js_LeaguePlace" xml:space="preserve"><value>Ligue {0} : tu es n° {1} sur {2} cette semaine</value></data>
+  <data name="Nav_Path" xml:space="preserve"><value>Parcours</value></data>
+  <data name="Path_Progress" xml:space="preserve"><value>{0} étapes sur {1}</value></data>
+  <data name="Path_Subjects" xml:space="preserve"><value>Matières</value></data>
+  <data name="Path_Unit" xml:space="preserve"><value>Unité {0}</value></data>
+  <data name="Path_Lesson" xml:space="preserve"><value>Leçon</value></data>
+  <data name="Path_Chest" xml:space="preserve"><value>Coffre</value></data>
+  <data name="Path_Boss" xml:space="preserve"><value>Boss de l'unité</value></data>
+  <data name="Path_Start" xml:space="preserve"><value>C'est parti !</value></data>
+  <data name="Path_Locked" xml:space="preserve"><value>verrouillé</value></data>
+  <data name="Notice_Chest_Opened" xml:space="preserve"><value>Le coffre contenait {0} gemmes !</value></data>
+  <data name="Notice_Chest_Locked" xml:space="preserve"><value>Ce coffre n'est pas encore ouvert : termine les leçons d'avant.</value></data>
+  <data name="Js_PathContinue" xml:space="preserve"><value>Continuer le chemin</value></data>
+  <data name="Js_Err_boss_locked" xml:space="preserve"><value>Ce boss est encore verrouillé : termine d'abord les leçons de l'unité.</value></data>
+  <data name="Story_Title" xml:space="preserve"><value>L'histoire de tes erreurs</value></data>
+  <data name="Story_Hint" xml:space="preserve"><value>Une petite aventure sur les sujets que tu as le plus ratés cette semaine, puis un petit entraînement.</value></data>
+  <data name="Story_Go" xml:space="preserve"><value>Raconte-moi mon histoire</value></data>
+  <data name="Js_StoryWriting" xml:space="preserve"><value>J'écris ton histoire…</value></data>
+  <data name="Js_StoryTopics" xml:space="preserve"><value>Sujets de l'histoire : {0}</value></data>
+  <data name="Js_StoryPractice" xml:space="preserve"><value>M'entraîner sur le premier</value></data>
+  <data name="Js_StoryNoMistakes" xml:space="preserve"><value>Aucune erreur cette semaine… donc pas encore d'histoire ! Fais un test et reviens.</value></data>
+  <data name="Js_TrickAsk" xml:space="preserve"><value>Donne-moi une astuce</value></data>
+  <data name="Js_TrickTitle" xml:space="preserve"><value>Une astuce pour le retenir</value></data>
+  <data name="Js_TrickWriting" xml:space="preserve"><value>Je cherche une astuce…</value></data>
+  <data name="Nav_Roleplay" xml:space="preserve"><value>Jeux de rôle</value></data>
+  <data name="Roleplay_Subtitle" xml:space="preserve"><value>Parle avec un personnage et accomplis les missions. Il répond dans sa langue ; tu peux écrire ou parler.</value></data>
+  <data name="Roleplay_Goals" xml:space="preserve"><value>{0} missions</value></data>
+  <data name="Roleplay_YourLine" xml:space="preserve"><value>Ta réplique…</value></data>
+  <data name="Roleplay_Mic" xml:space="preserve"><value>Parler</value></data>
+  <data name="Roleplay_Send" xml:space="preserve"><value>Le dire</value></data>
+  <data name="Roleplay_Missions" xml:space="preserve"><value>Missions</value></data>
+  <data name="Roleplay_MissionsHint" xml:space="preserve"><value>Elles se cochent quand tu dis ce qu'il faut.</value></data>
+  <data name="Js_RoleplayTurns" xml:space="preserve"><value>Encore {0} tours</value></data>
+  <data name="Js_RoleplayDone" xml:space="preserve"><value>Toutes les missions accomplies ! +{0} XP et {1} gemmes</value></data>
+  <data name="Js_RoleplayOut" xml:space="preserve"><value>Plus de tours cette fois. Réessaie : tu vas y arriver !</value></data>
+  <data name="Js_RoleplayAgain" xml:space="preserve"><value>Rejouer</value></data>
+  <data name="Js_RoleplayOthers" xml:space="preserve"><value>Autres jeux de rôle</value></data>
+  <data name="Js_RoleplayThinking" xml:space="preserve"><value>Le personnage réfléchit…</value></data>
+  <data name="Js_RoleplayListening" xml:space="preserve"><value>J'écoute…</value></data>
+  <data name="Js_RoleplayMicError" xml:space="preserve"><value>Je ne t'ai pas entendu : réessaie ou écris.</value></data>
+  <data name="Js_Err_roleplay_empty" xml:space="preserve"><value>Écris ou dis quelque chose d'abord.</value></data>
+  <data name="Js_Err_roleplay_closed" xml:space="preserve"><value>Cette conversation est terminée : commences-en une nouvelle.</value></data>
+  <data name="Friend_Title" xml:space="preserve"><value>Quête entre amis de la semaine</value></data>
+  <data name="Friend_Hint" xml:space="preserve"><value>Fais équipe avec un camarade : ensemble, gagnez {0} XP cette semaine et vous recevez chacun {1} gemmes.</value></data>
+  <data name="Friend_Pick" xml:space="preserve"><value>Avec qui veux-tu faire équipe ?</value></data>
+  <data name="Friend_Start" xml:space="preserve"><value>Faire équipe</value></data>
+  <data name="Friend_Progress" xml:space="preserve"><value>{0} / {1} XP ensemble</value></data>
+  <data name="Friend_Claim" xml:space="preserve"><value>Récupérer {0} gemmes</value></data>
+  <data name="Friend_Claimed" xml:space="preserve"><value>Gemmes récupérées. Bravo pour le travail d'équipe !</value></data>
+  <data name="Friend_NoOne" xml:space="preserve"><value>Aucun camarade n'est libre cette semaine : rejoins une classe ou réessaie la semaine prochaine.</value></data>
+  <data name="Notice_Friend_Started" xml:space="preserve"><value>Équipe formée ! Chaque XP de vous deux compte.</value></data>
+  <data name="Notice_Friend_AlreadyPaired" xml:space="preserve"><value>Tu as déjà une quête entre amis cette semaine.</value></data>
+  <data name="Notice_Friend_NotAvailable" xml:space="preserve"><value>Ce camarade ne peut pas faire équipe pour l'instant.</value></data>
+  <data name="Notice_Friend_Claimed" xml:space="preserve"><value>+{0} gemmes pour toi. Merci pour le travail d'équipe !</value></data>
+  <data name="Notice_Friend_NotYet" xml:space="preserve"><value>Pas encore : continuez à gagner de l'XP ensemble.</value></data>
+  <data name="Notice_Goal_Saved" xml:space="preserve"><value>Objectif du jour enregistré.</value></data>
 </root>

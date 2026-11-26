@@ -432,6 +432,13 @@ public static class DemoSeeder
         {
             await game.CheckAsync(ids[name], ct).ConfigureAwait(false);
         }
+
+        // This week's league: the classmates who compete start in the same Bronze group (Mia, 6, never competes)
+        var leagues = new LeagueStore(db, game);
+        foreach (var name in new[] { "Sara", "Leo", "Nora", "Alex", "Mia" })
+        {
+            await leagues.JoinAsync(ids[name], ct).ConfigureAwait(false);
+        }
     }
 
     private static async Task SeedMarketplaceAsync(EduVerseDb db, UserManager<AppUser> users, Dictionary<string, string> ids, DateTimeOffset now, CancellationToken ct)
