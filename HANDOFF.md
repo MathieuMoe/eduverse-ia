@@ -827,3 +827,26 @@ Mathieu: "puedes seguir". No schema change (DatabaseVersion stays 28). Pure code
 - Tests: `WorldTimelineTests` (overlap picks, scale monotonic and bars inside the axis) + web (one bar per era,
   French page without comma decimals). e2e: Spain's six eras green on the world timeline, the Maya era meets Roman
   times; screenshot `docs/screenshot-world-timeline.png`.
+
+## History trips, round 5: new design, country illustrations, traveller rank
+Mathieu: "Mejorar el diseño de /Student/Countries, añadir imagen en mismo estilo de los países y hacer que sea más
+divertido, gamificado". No schema change (DatabaseVersion stays 28).
+- **Illustrations** (`Web/CountryArt.cs`): one original flat SVG landmark per country, in the style of the dossier art
+  (pastel sky, flat shapes, brown ink, no people, no external images): Segovia aqueduct, Eiffel Tower, Maya pyramid,
+  Fuji + torii, Colosseum, Elizabeth Tower + red bus, Giza pyramids + Nile, Great Wall; a globe for AI countries.
+  Rendered server-side as inline SVG (`CountryArt.Svg`), numbers written with the invariant culture (CA1305), plus
+  `CountryArt.Sky(key)` so a banner can extend the sky colour.
+- **List page**: hero with the **traveller rank** (`Countries.Ranks`/`RankOf`: Tourist 🎒 0 → Explorer 🧭 3 →
+  Chronicler 📜 12 → Historian 🏛️ 24 → Master of time ⏳ 40 eras), progress to the next rank and stat tiles (eras /48,
+  stamps, gold); a big "continue your trip" card for the country in progress (next stop, reward); the **passport** as a
+  book with a slot per country (empty dashed, red stamp, gold stamp with a glow); country cards with the illustration,
+  flag badge, status ribbon (New / On the way / Stamped / Gold), era progress dots and the next stop.
+- **Timeline page**: banner in the illustration's sky colour with the art faded in on the right, the eras as a row of
+  stops (✓ green, open pulsing, 🔒 locked, tooltips), "Stop n of 6" on each era, the open era glowing with its reward
+  chip, and a "country complete" ribbon. Passing a check throws confetti (reduced motion respected); completing a
+  country slams the stamp onto the result (`.ct-slam`); winning the timeline challenge throws confetti too.
+- Strings: `Traveller_*` (not `Rank_*`, already used by the game ranks), `Countries_Stat*`, `Countries_Status*`, `Countries_Stop`…
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 820/820, full `e2e.mjs` green twice on a clean DB (343 checks), desktop and 390 px light/dark.
+- Tests: `TravellerTests` (ranks, every country has its own well-formed SVG with invariant numbers and no `<image>`).
+  e2e: gold stamp in the passport, Explorer rank after Spain, gold status on Spain's card; screenshot
+  `docs/screenshot-countries-list.png` (and `screenshot-countries.png` is now a viewport shot of a passed check).

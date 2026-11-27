@@ -27,6 +27,27 @@
 
     const root = document.getElementById("country-root");
     if (!root) return;
+    const flag = root.dataset.flag || "🛂";
+
+    // A small burst of confetti (same look as the quiz's streak milestones)
+    function confetti(target) {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const colors = ["#f6c85f", "#6fcf97", "#56ccf2", "#bb6bd9", "#f2994a"];
+        const burst = document.createElement("span");
+        burst.className = "qz-confetti";
+        for (let i = 0; i < 18; i++) {
+            const dot = document.createElement("span");
+            const angle = (Math.PI * 2 * i) / 18 + Math.random() * 0.4;
+            const dist = 50 + Math.random() * 40;
+            dot.style.setProperty("--qz-confetti-end", `translate(${Math.round(Math.cos(angle) * dist)}px, ${Math.round(Math.sin(angle) * dist - 20)}px)`);
+            dot.style.setProperty("--qz-confetti-rot", `${Math.round(Math.random() * 360)}deg`);
+            dot.style.background = colors[i % colors.length];
+            burst.appendChild(dot);
+        }
+        target.style.position ||= "relative";
+        target.appendChild(burst);
+        setTimeout(() => burst.remove(), 1100);
+    }
     const country = root.dataset.country;
 
     async function check(button) {
@@ -68,6 +89,12 @@
                 ${r.stamp ? `<p class="mt-1 text-sm font-semibold text-foreground" data-testid="country-stamp">🛂 ${esc(t("CountryStamp"))}</p>` : ""}
                 ${r.reward.badges.map((b) => `<p class="mt-1 text-sm text-foreground">${esc(b.icon)} ${esc(b.name)}</p>`).join("")}
                 <button type="button" class="mt-3 ${button.className}" data-testid="country-continue">${esc(t(r.passed ? "CountryContinue" : "CountryRetry"))}</button></div>`);
+            const result = quiz.querySelector("[data-testid=country-result]");
+            if (r.passed) confetti(result);
+            if (r.stamp) {
+                // The passport stamp slams onto the result
+                result.insertAdjacentHTML("afterbegin", `<span class="ct-slam float-end ms-3 size-20 rounded-full border-4 border-[#b8453b] bg-white/70 grid place-items-center text-4xl" aria-hidden="true">${esc(flag)}</span>`);
+            }
             quiz.querySelector("[data-testid=country-continue]").addEventListener("click", () => location.reload());
         });
         quiz.querySelector("input")?.focus();
@@ -131,6 +158,7 @@
             status.className = `mt-2 p-3 rounded-xl text-sm text-foreground ${r.won ? "tone-mint" : "tone-sun"}`;
             status.dataset.won = r.won ? "1" : "0";
             status.textContent = r.won ? `🥇 ${t("CountryOrderWon")}${r.gems ? ` · 💎 ${r.gems}` : ""}` : fmt(t("CountryOrderTry"), r.right, r.total);
+            if (r.won) confetti(status);
         } catch (err) { status.textContent = err.message; }
         orderCheck.disabled = false;
     });

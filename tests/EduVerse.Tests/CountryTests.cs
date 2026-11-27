@@ -388,3 +388,34 @@ public class WorldTimelineTests
         }
     }
 }
+
+public class TravellerTests
+{
+    [Fact]
+    public void The_traveller_rank_grows_with_the_eras_passed()
+    {
+        Assert.Equal(("Tourist", "Explorer"), (Countries.RankOf(0).Rank.Key, Countries.RankOf(0).Next!.Key));
+        Assert.Equal("Explorer", Countries.RankOf(3).Rank.Key);
+        Assert.Equal("Chronicler", Countries.RankOf(12).Rank.Key);
+        Assert.Equal("Historian", Countries.RankOf(39).Rank.Key);
+        Assert.Equal("TimeMaster", Countries.RankOf(48).Rank.Key);
+        Assert.Null(Countries.RankOf(48).Next);
+        Assert.True(Countries.Ranks[^1].From <= Countries.All.Sum(c => c.Eras.Count)); // the top rank can be reached
+    }
+
+    [Fact]
+    public void Every_country_has_its_own_illustration_as_valid_svg()
+    {
+        var bodies = Countries.All.Select(c => EduVerse.Web.CountryArt.Body(c.Key)).ToList();
+        Assert.All(Countries.All, c => Assert.True(EduVerse.Web.CountryArt.Has(c.Key), c.Key));
+        Assert.Equal(bodies.Count, bodies.Distinct().Count());
+        Assert.NotEqual(EduVerse.Web.CountryArt.Body("spain"), EduVerse.Web.CountryArt.Body("ai-123"));
+        foreach (var key in Countries.All.Select(c => c.Key).Append("ai-123"))
+        {
+            var svg = $"<svg xmlns=\"http://www.w3.org/2000/svg\">{EduVerse.Web.CountryArt.Body(key)}</svg>";
+            Assert.NotNull(System.Xml.Linq.XDocument.Parse(svg)); // well-formed
+            Assert.DoesNotMatch(@"\d,\d", svg); // invariant numbers
+            Assert.DoesNotContain("<image", svg, StringComparison.Ordinal); // drawn, no pictures
+        }
+    }
+}

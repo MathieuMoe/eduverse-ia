@@ -11,6 +11,9 @@ public sealed record HistoryEra(string Key, string Emoji, int From, int To, Cata
 /// <summary>The history of a country as a path through time. <c>Custom</c>: written by the AI for one student.</summary>
 public sealed record CountryHistory(string Key, string Flag, Catalog.Text Name, IReadOnlyList<HistoryEra> Eras, bool Custom = false);
 
+/// <summary>A traveller rank of the history trips, reached with a number of eras passed.</summary>
+public sealed record TravellerRank(string Key, string Emoji, int From);
+
 /// <summary>
 /// Trips through the history of a country: a timeline of eras walked in order, each with a short story, its main
 /// figures and a "strange but true" fact, then a 3-question check written by the code from those facts (so every
@@ -353,6 +356,28 @@ public static class Countries
                  P("Tu Youyou", "🌿", "Scientist who found a malaria medicine and won the Nobel Prize in 2015|Científica que descubrió un medicamento contra la malaria y ganó el Nobel en 2015|Scientifique qui a découvert un médicament contre le paludisme, prix Nobel 2015|Científica que va descobrir un medicament contra la malària i va guanyar el Nobel el 2015")]),
         ]),
     ];
+
+    /// <summary>Ranks of the traveller, by eras passed in every trip (the 8 built-in countries have 48).</summary>
+    public static readonly IReadOnlyList<TravellerRank> Ranks =
+    [
+        new("Tourist", "🎒", 0),
+        new("Explorer", "🧭", 3),
+        new("Chronicler", "📜", 12),
+        new("Historian", "🏛️", 24),
+        new("TimeMaster", "⏳", 40),
+    ];
+
+    /// <summary>The rank of a traveller and the next one (null at the top).</summary>
+    public static (TravellerRank Rank, TravellerRank? Next) RankOf(int eras)
+    {
+        var index = Ranks.Count - 1;
+        while (index > 0 && eras < Ranks[index].From)
+        {
+            index--;
+        }
+
+        return (Ranks[index], index + 1 < Ranks.Count ? Ranks[index + 1] : null);
+    }
 
     public static CountryHistory? Find(string? key) => All.FirstOrDefault(c => c.Key == key);
 

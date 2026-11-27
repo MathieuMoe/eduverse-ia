@@ -20,31 +20,129 @@
     }
 
     var all = Countries.All.Concat(Model.Custom).ToList();
-    var stamps = all.Where(c => Model.Passed(c) == c.Eras.Count).ToList();
+    var totalEras = Countries.All.Sum(c => c.Eras.Count);
+    var erasPassed = all.Sum(Model.Passed);
+    var stamped = all.Where(c => Model.Passed(c) == c.Eras.Count).ToList();
+    var (rank, nextRank) = Countries.RankOf(erasPassed);
+    var rankFrom = rank.From;
+    var rankTo = nextRank?.From ?? rankFrom;
+    var rankPercent = nextRank is null ? 100 : (erasPassed - rankFrom) * 100 / Math.Max(1, rankTo - rankFrom);
+    var going = all.Where(c => Model.Passed(c) > 0 && Model.Passed(c) < c.Eras.Count).OrderByDescending(Model.Passed).FirstOrDefault();
+
+    <section class="relative overflow-hidden rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-amber-100 via-rose-100 to-sky-100 dark:from-amber-500/15 dark:via-rose-500/10 dark:to-sky-500/15 border border-white/70 dark:border-white/5" data-testid="traveller">
+        <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+            <span class="size-16 sm:size-20 shrink-0 rounded-full bg-white/80 dark:bg-white/10 grid place-items-center text-4xl sm:text-5xl shadow-sm kid-float" aria-hidden="true">@rank.Emoji</span>
+            <div class="grow min-w-0 basis-56">
+                <p class="text-xs font-semibold uppercase tracking-wide text-foreground/70">@L["Countries_Rank"]</p>
+                <p class="text-xl sm:text-2xl font-semibold text-foreground" data-testid="traveller-rank" data-rank="@rank.Key">@L[$"Traveller_{rank.Key}"]</p>
+                <div class="mt-2 h-2.5 rounded-full bg-white/70 dark:bg-white/10 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@rankPercent" aria-label="@L["Countries_Rank"]">
+                    <span class="block h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-400" style="width: @rankPercent%"></span>
+                </div>
+                <p class="mt-1 text-xs text-foreground/75">@(nextRank is null ? L["Countries_RankMax"].Value : string.Format(culture, L["Countries_RankNext"], rankTo - erasPassed, L[$"Traveller_{nextRank.Key}"].Value))</p>
+            </div>
+            <dl class="grid grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto">
+                <div class="rounded-2xl bg-white/75 dark:bg-white/10 px-3 py-2 text-center"><dt class="text-[11px] font-semibold text-foreground/70">🗺️ @L["Countries_StatEras"]</dt><dd class="text-lg font-semibold text-foreground">@erasPassed<span class="text-xs text-foreground/60">/@totalEras</span></dd></div>
+                <div class="rounded-2xl bg-white/75 dark:bg-white/10 px-3 py-2 text-center"><dt class="text-[11px] font-semibold text-foreground/70">🛂 @L["Countries_StatStamps"]</dt><dd class="text-lg font-semibold text-foreground">@stamped.Count</dd></div>
+                <div class="rounded-2xl bg-white/75 dark:bg-white/10 px-3 py-2 text-center"><dt class="text-[11px] font-semibold text-foreground/70">🥇 @L["Countries_StatGold"]</dt><dd class="text-lg font-semibold text-foreground">@Model.Gold.Count</dd></div>
+            </dl>
+        </div>
+    </section>
+
+    @if (going is not null)
+    {
+        var next = going.Eras[Model.Passed(going)];
+        <a href="/Student/Countries?country=@Uri.EscapeDataString(going.Key)" class="@Ui.Card overflow-hidden flex flex-col sm:flex-row hover:-translate-y-0.5 transition-transform" data-testid="trip-continue">
+            <span class="block sm:w-64 shrink-0 h-32 sm:h-auto">@CountryArt.Svg(going.Key, going.Name.In(language), "w-full h-full block")</span>
+            <span class="p-5 flex flex-col justify-center gap-1 min-w-0">
+                <span class="text-xs font-semibold uppercase tracking-wide text-primary">@going.Flag @L["Countries_Continue"]</span>
+                <span class="text-lg font-semibold text-foreground">@string.Format(culture, L["Countries_NextStop"], next.Title.In(language))</span>
+                <span class="text-sm text-muted-foreground-1">@going.Name.In(language) · @Countries.Years(next, language)</span>
+                <span class="mt-2 flex items-center gap-2"><span class="@Ui.BtnPrimary">🚀 @L["Countries_Go"]</span><span class="@Ui.Pill tone-sun text-foreground">+@Countries.EraXp XP · 💎 @Countries.EraGems</span></span>
+            </span>
+        </a>
+    }
+
     <section class="@Ui.Card p-5" aria-labelledby="passport-title" data-testid="passport">
         <div class="flex flex-wrap items-center gap-3">
-            <span class="size-12 shrink-0 rounded-2xl tone-sun grid place-items-center text-2xl" aria-hidden="true">🛂</span>
+            <span class="size-11 shrink-0 rounded-2xl bg-[#2f3e66] text-white grid place-items-center text-xl" aria-hidden="true">🛂</span>
             <div class="min-w-0">
                 <h2 id="passport-title" class="text-base font-semibold text-foreground">@L["Countries_Passport"]</h2>
                 <p class="text-sm text-muted-foreground-1">@string.Format(culture, L["Countries_PassportHint"], Countries.StampGems)</p>
             </div>
-            <ul class="ms-auto flex flex-wrap gap-2">
-                @foreach (var c in stamps)
-                {
-                    <li class="size-12 rounded-full border-2 @(Model.Gold.Contains(c.Key) ? "border-solid border-amber-400 tone-sun" : "border-dashed border-primary") grid place-items-center text-2xl -rotate-6 tip tip-b" data-tip="@c.Name.In(language)@(Model.Gold.Contains(c.Key) ? " · 🥇" : "")" data-testid="passport-stamp"><span aria-hidden="true">@c.Flag</span><span class="sr-only">@c.Name.In(language)</span></li>
-                }
-                @if (stamps.Count == 0)
-                {
-                    <li class="text-sm text-muted-foreground-1">@L["Countries_NoStamps"]</li>
-                }
-            </ul>
         </div>
+        <ul class="mt-4 grid grid-cols-4 sm:grid-cols-8 gap-3 p-3 sm:p-4 rounded-2xl bg-[#f6efe0] dark:bg-[#2b2620] border border-dashed border-[#d8c7a4] dark:border-white/10">
+            @foreach (var c in all.Where(c => !c.Custom || Model.Passed(c) == c.Eras.Count))
+            {
+                var isStamped = Model.Passed(c) == c.Eras.Count;
+                var isGold = Model.Gold.Contains(c.Key);
+                var tilt = (c.Key.Length % 3 - 1) * 8;
+                <li class="flex flex-col items-center gap-1 min-w-0">
+                    @if (isStamped)
+                    {
+                        <span class="size-14 sm:size-16 rounded-full border-[3px] @(isGold ? "border-amber-500 bg-amber-100 dark:bg-amber-500/20 shadow-[0_0_0_4px_rgb(245_158_11/0.2)]" : "border-[#b8453b] bg-white/60 dark:bg-white/5") grid place-items-center text-2xl sm:text-3xl" style="transform: rotate(@(tilt)deg)" data-testid="passport-stamp" data-gold="@(isGold ? "1" : "0")">@c.Flag</span>
+                    }
+                    else
+                    {
+                        <span class="size-14 sm:size-16 rounded-full border-2 border-dashed border-[#cdbb95] dark:border-white/15 grid place-items-center text-2xl sm:text-3xl grayscale opacity-40" aria-hidden="true">@c.Flag</span>
+                    }
+                    <span class="text-[11px] text-center text-foreground/80 truncate max-w-full">@(isGold ? "🥇 " : "")@c.Name.In(language)</span>
+                </li>
+            }
+        </ul>
     </section>
+
+    <ul class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4" data-testid="country-list">
+        @foreach (var c in all)
+        {
+            var passed = Model.Passed(c);
+            var isStamped = passed == c.Eras.Count;
+            var isGold = Model.Gold.Contains(c.Key);
+            var (status, statusTone) = isGold ? ("🥇 " + L["Countries_Gold"].Value, "bg-amber-400 text-amber-950")
+                : isStamped ? ("🛂 " + L["Countries_StatusStamped"].Value, "bg-emerald-500 text-white")
+                : passed > 0 ? ("🚀 " + L["Countries_StatusGoing"].Value, "bg-primary text-primary-foreground")
+                : ("✨ " + L["Countries_StatusNew"].Value, "bg-white/90 text-foreground");
+            <li>
+                <a href="/Student/Countries?country=@Uri.EscapeDataString(c.Key)" class="@Ui.Card overflow-hidden h-full hover:-translate-y-1 hover:shadow-lg transition-all group" data-testid="country-@c.Key">
+                    <span class="relative block h-32 overflow-hidden">
+                        <span class="block h-full group-hover:scale-105 transition-transform duration-500">@CountryArt.Svg(c.Key, c.Name.In(language), "w-full h-full block")</span>
+                        <span class="absolute top-2 start-2 size-10 rounded-full bg-white/90 dark:bg-black/40 grid place-items-center text-2xl shadow-sm" aria-hidden="true">@c.Flag</span>
+                        <span class="absolute top-2 end-2 @Ui.Pill @statusTone shadow-sm" data-testid="country-status">@status</span>
+                    </span>
+                    <span class="p-4 flex flex-col gap-2 grow">
+                        <span class="flex items-baseline justify-between gap-2">
+                            <span class="text-base font-semibold text-foreground truncate">@c.Name.In(language)</span>
+                            @if (c.Custom)
+                            {
+                                <span class="@Ui.Pill tone-lavender text-foreground">✨ @L["Countries_ByAi"]</span>
+                            }
+                        </span>
+                        <span class="text-xs text-muted-foreground-1">@Countries.Year(c.Eras[0].From, language) → @Countries.Year(c.Eras[^1].To, language) · @string.Format(culture, L["Countries_Eras"], c.Eras.Count)</span>
+                        <span class="flex items-center gap-1.5" role="img" aria-label="@L["Countries_Progress"]: @passed / @c.Eras.Count">
+                            @for (var i = 0; i < c.Eras.Count; i++)
+                            {
+                                <span class="h-2 grow rounded-full @(i < passed ? "bg-emerald-400" : i == passed ? "bg-primary/40 animate-pulse" : "bg-surface")"></span>
+                            }
+                        </span>
+                        <span class="mt-auto text-sm text-foreground truncate">
+                            @if (isStamped)
+                            {
+                                @(isGold ? "🏆 " + L["Countries_AllDone"].Value : "⏳ " + L["Countries_OrderReady"].Value)
+                            }
+                            else
+                            {
+                                <span>@c.Eras[passed].Emoji @string.Format(culture, L["Countries_NextStop"], c.Eras[passed].Title.In(language))</span>
+                            }
+                        </span>
+                    </span>
+                </a>
+            </li>
+        }
+    </ul>
 
     <section class="@Ui.Card p-5" aria-labelledby="world-title" data-testid="world-timeline">
         <h2 id="world-title" class="text-base font-semibold text-foreground">🌍 @L["Countries_World"]</h2>
         <p class="mt-1 text-sm text-muted-foreground-1">@L["Countries_WorldHint"]</p>
-        <div class="mt-4 overflow-x-auto pb-6">
+        <div class="mt-4 overflow-x-auto pb-2">
             <div class="min-w-[640px]">
                 @foreach (var c in Countries.All)
                 {
@@ -72,32 +170,6 @@
         </div>
     </section>
 
-    <ul class="grid sm:grid-cols-2 gap-4" data-testid="country-list">
-        @foreach (var c in all)
-        {
-            var passed = Model.Passed(c);
-            <li>
-                <a href="/Student/Countries?country=@Uri.EscapeDataString(c.Key)" class="@Ui.Card p-5 flex flex-row items-start gap-4 hover:-translate-y-0.5 transition-transform h-full" data-testid="country-@c.Key">
-                    <span class="size-14 shrink-0 rounded-2xl @(passed == c.Eras.Count ? "tone-mint" : "tone-sky") grid place-items-center text-3xl" aria-hidden="true">@c.Flag</span>
-                    <span class="min-w-0 grow">
-                        <span class="block text-base font-semibold text-foreground">@c.Name.In(language)@(passed == c.Eras.Count ? " 🛂" : "")</span>
-                        <span class="block mt-1 text-sm text-muted-foreground-1">@Countries.Year(c.Eras[0].From, language) → @Countries.Year(c.Eras[^1].To, language) · @string.Format(culture, L["Countries_Eras"], c.Eras.Count)</span>
-                        <span class="mt-2 block h-2 rounded-full bg-surface overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="@c.Eras.Count" aria-valuenow="@passed" aria-label="@L["Countries_Progress"]">
-                            <span class="block h-full bg-primary rounded-full" style="width: @(c.Eras.Count == 0 ? 0 : passed * 100 / c.Eras.Count)%"></span>
-                        </span>
-                        <span class="mt-2 flex flex-wrap gap-1.5">
-                            @if (c.Custom)
-                            {
-                                <span class="@Ui.Pill tone-lavender text-foreground">✨ @L["Countries_ByAi"]</span>
-                            }
-                            <span class="@Ui.Pill bg-surface text-foreground">@passed / @c.Eras.Count</span>
-                            <span class="@Ui.Pill tone-sun text-foreground">+@Countries.EraXp XP · 💎 @Countries.EraGems</span>
-                        </span>
-                    </span>
-                </a>
-            </li>
-        }
-    </ul>
 
     <section class="@Ui.Card p-5" aria-labelledby="country-new-title">
         <h2 id="country-new-title" class="text-base font-semibold text-foreground">✨ @L["Countries_NewTitle"]</h2>
@@ -118,18 +190,48 @@ else
 {
     var view = Model.Chosen;
     var c = view.Country;
+    string EraLabel(int i) => $"{c.Eras[i].Title.In(language)} · {Countries.Years(c.Eras[i], language)}";
     EduVerse.Web.Breadcrumb.Set(ViewData, c.Name.In(language), ("/Student/Countries", L["Nav_Countries"]));
-    <section class="@Ui.Card p-5 flex flex-row flex-wrap items-center gap-4" id="country-root" data-country="@c.Key">
-        <span class="size-14 shrink-0 rounded-2xl tone-sky grid place-items-center text-3xl" aria-hidden="true">@c.Flag</span>
-        <div class="min-w-0 grow">
-            <h2 class="text-lg font-semibold text-foreground">@c.Name.In(language)@(view.Stamped ? " 🛂" : "")</h2>
-            <p class="text-sm text-muted-foreground-1">@L["Countries_TimelineHint"]</p>
+    <section class="@Ui.Card overflow-hidden" id="country-root" data-country="@c.Key" data-flag="@c.Flag">
+        <div class="flex flex-col-reverse sm:flex-row" style="background: @CountryArt.Sky(c.Key)">
+            <div class="p-5 sm:p-6 flex flex-col justify-center gap-2 grow min-w-0 text-[#3a2c24]">
+                <div class="flex items-center gap-3">
+                    <span class="size-12 sm:size-14 shrink-0 rounded-full bg-white/90 grid place-items-center text-3xl shadow-sm" aria-hidden="true">@c.Flag</span>
+                    <h2 class="text-xl sm:text-2xl font-semibold">@c.Name.In(language)@(view.Stamped ? " 🛂" : "")</h2>
+                </div>
+                <p class="text-sm opacity-80">@L["Countries_TimelineHint"]</p>
+                <div class="flex flex-wrap gap-1.5">
+                    <span class="@Ui.Pill bg-white/90 text-[#3a2c24] text-sm!" data-testid="country-done">⭐ @view.Done / @c.Eras.Count</span>
+                    @if (view.Gold)
+                    {
+                        <span class="@Ui.Pill bg-amber-400 text-amber-950 text-sm!" data-testid="country-gold">🥇 @L["Countries_Gold"]</span>
+                    }
+                    <span class="@Ui.Pill bg-white/70 text-[#3a2c24] text-sm!">@Countries.Year(c.Eras[0].From, language) → @Countries.Year(c.Eras[^1].To, language)</span>
+                </div>
+            </div>
+            <div class="sm:w-[26rem] shrink-0 aspect-[2/1] sm:[mask-image:linear-gradient(to_right,transparent,black_22%)]">@CountryArt.Svg(c.Key, c.Name.In(language), "w-full h-full block")</div>
         </div>
-        @if (view.Gold)
+        <ol class="flex items-center gap-1 p-3 sm:p-4 overflow-x-auto" aria-label="@L["Countries_Progress"]" data-testid="era-dots">
+            @for (var i = 0; i < c.Eras.Count; i++)
+            {
+                var state = view.Eras[i];
+                var dot = state switch
+                {
+                    EraState.Done => "bg-emerald-400 text-white",
+                    EraState.Open => "bg-primary text-primary-foreground ring-4 ring-primary/25 animate-pulse",
+                    _ => "bg-surface grayscale opacity-50",
+                };
+                if (i > 0)
+                {
+                    <li aria-hidden="true" class="h-1 grow min-w-3 rounded-full @(state == EraState.Locked ? "bg-surface" : "bg-emerald-300")"></li>
+                }
+                <li class="size-9 sm:size-10 shrink-0 rounded-full grid place-items-center text-lg @dot tip tip-b" data-tip="@EraLabel(i)" aria-label="@EraLabel(i)">@(state == EraState.Locked ? "🔒" : c.Eras[i].Emoji)</li>
+            }
+        </ol>
+        @if (view.Stamped)
         {
-            <span class="@Ui.Pill tone-sun text-foreground text-sm!" data-testid="country-gold">🥇 @L["Countries_Gold"]</span>
+            <p class="mx-4 mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-100 to-amber-100 dark:from-emerald-500/15 dark:to-amber-500/15 text-sm font-semibold text-foreground" data-testid="country-complete">🛂 @L["Countries_Complete"]</p>
         }
-        <span class="@Ui.Pill tone-mint text-foreground text-sm!" data-testid="country-done">@view.Done / @c.Eras.Count</span>
     </section>
 
     @if (view.Stamped)
@@ -166,7 +268,7 @@ else
             };
             <li class="relative ps-8" data-testid="country-era" data-state="@state">
                 <span class="absolute -start-[1.45rem] top-1 size-10 rounded-full grid place-items-center text-xl @tone" aria-hidden="true">@(state == EraState.Locked ? "🔒" : era.Emoji)</span>
-                <p class="text-xs font-semibold text-muted-foreground-1">@Countries.Years(era, language)</p>
+                <p class="text-xs font-semibold text-muted-foreground-1">@string.Format(culture, L["Countries_Stop"], i + 1, c.Eras.Count) · @Countries.Years(era, language)</p>
                 @if (state == EraState.Locked)
                 {
                     <h3 class="text-base font-semibold text-muted-foreground-1">@era.Title.In(language)</h3>
@@ -174,9 +276,13 @@ else
                 }
                 else
                 {
-                    <details class="@Ui.Card mt-1 p-4 sm:p-5 group" open="@(state == EraState.Open)">
+                    <details class="@Ui.Card mt-1 p-4 sm:p-5 group @(state == EraState.Open ? "ring-2 ring-primary/40 le-glow" : "")" open="@(state == EraState.Open)">
                         <summary class="cursor-pointer list-none flex items-center gap-2">
                             <h3 class="text-base font-semibold text-foreground grow">@era.Title.In(language)@(state == EraState.Done ? " ✅" : "")</h3>
+                            @if (state == EraState.Open)
+                            {
+                                <span class="@Ui.Pill tone-sun text-foreground">+@Countries.EraXp XP · 💎 @Countries.EraGems</span>
+                            }
                             <span class="text-muted-foreground-1 group-open:rotate-180 transition-transform" aria-hidden="true">⌄</span>
                         </summary>
                         <p class="mt-3 text-sm text-foreground leading-relaxed">@era.Story.In(language)</p>

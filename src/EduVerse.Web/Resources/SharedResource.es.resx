@@ -1894,4 +1894,25 @@
   <data name="Countries_World" xml:space="preserve"><value>Línea del tiempo del mundo</value></data>
   <data name="Countries_WorldHint" xml:space="preserve"><value>Todos los viajes en un mismo eje del tiempo: mira qué pasaba en cada país en el mismo momento. Las épocas verdes son las que ya has superado.</value></data>
   <data name="Countries_Meanwhile" xml:space="preserve"><value>Mientras tanto en el mundo</value></data>
+  <data name="Countries_Rank" xml:space="preserve"><value>Rango de viajero</value></data>
+  <data name="Countries_RankNext" xml:space="preserve"><value>{0} épocas más para ser {1}</value></data>
+  <data name="Countries_RankMax" xml:space="preserve"><value>Rango máximo: ¡dominas el tiempo!</value></data>
+  <data name="Traveller_Tourist" xml:space="preserve"><value>Turista</value></data>
+  <data name="Traveller_Explorer" xml:space="preserve"><value>Explorador</value></data>
+  <data name="Traveller_Chronicler" xml:space="preserve"><value>Cronista</value></data>
+  <data name="Traveller_Historian" xml:space="preserve"><value>Historiador</value></data>
+  <data name="Traveller_TimeMaster" xml:space="preserve"><value>Señor del tiempo</value></data>
+  <data name="Countries_StatEras" xml:space="preserve"><value>Épocas</value></data>
+  <data name="Countries_StatStamps" xml:space="preserve"><value>Sellos</value></data>
+  <data name="Countries_StatGold" xml:space="preserve"><value>Oro</value></data>
+  <data name="Countries_Continue" xml:space="preserve"><value>Sigue tu viaje</value></data>
+  <data name="Countries_NextStop" xml:space="preserve"><value>Próxima parada: {0}</value></data>
+  <data name="Countries_Go" xml:space="preserve"><value>¡Vamos!</value></data>
+  <data name="Countries_StatusNew" xml:space="preserve"><value>Nuevo</value></data>
+  <data name="Countries_StatusGoing" xml:space="preserve"><value>En camino</value></data>
+  <data name="Countries_StatusStamped" xml:space="preserve"><value>Sellado</value></data>
+  <data name="Countries_OrderReady" xml:space="preserve"><value>Reto de la línea del tiempo listo</value></data>
+  <data name="Countries_AllDone" xml:space="preserve"><value>Viaje completado con oro</value></data>
+  <data name="Countries_Stop" xml:space="preserve"><value>Parada {0} de {1}</value></data>
+  <data name="Countries_Complete" xml:space="preserve"><value>¡País completado! Tu sello está en el pasaporte: ahora prueba el reto de la línea del tiempo.</value></data>
 </root>

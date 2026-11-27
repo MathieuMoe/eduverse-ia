@@ -25,6 +25,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 ![Weekly league: Bronze to Diamond, promotion and demotion zones, and the friend quest of the week](docs/screenshot-league.png)
 ![Gem shop: streak freezes, double XP, heart potions and avatar frames — gems are only earned by learning](docs/screenshot-shop.png)
 ![Roleplay: haggling with a Roman merchant; the missions tick in code, the AI only plays the character](docs/screenshot-roleplay.png)
+![History trips: traveller rank, passport with stamps and one hand-drawn landmark per country](docs/screenshot-countries-list.png)
 ![History trips: the timeline of a country, its main figures and a strange-but-true fact; each era ends with a check written by the code](docs/screenshot-countries.png)
 ![Timeline challenge: put the eras of a stamped country back in order to turn its passport stamp gold](docs/screenshot-country-order.png)
 ![Clio, the time guide: ask anything about an era; the AI answers from its facts, and offline the facts answer](docs/screenshot-time-guide.png)

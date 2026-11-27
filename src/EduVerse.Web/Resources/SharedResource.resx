@@ -1894,4 +1894,25 @@
   <data name="Countries_World" xml:space="preserve"><value>World timeline</value></data>
   <data name="Countries_WorldHint" xml:space="preserve"><value>Every trip on one axis of time: see what was happening in each country at the same moment. Green eras are the ones you've passed.</value></data>
   <data name="Countries_Meanwhile" xml:space="preserve"><value>Meanwhile in the world</value></data>
+  <data name="Countries_Rank" xml:space="preserve"><value>Traveller rank</value></data>
+  <data name="Countries_RankNext" xml:space="preserve"><value>{0} more eras to become {1}</value></data>
+  <data name="Countries_RankMax" xml:space="preserve"><value>Top rank: you have mastered time!</value></data>
+  <data name="Traveller_Tourist" xml:space="preserve"><value>Tourist</value></data>
+  <data name="Traveller_Explorer" xml:space="preserve"><value>Explorer</value></data>
+  <data name="Traveller_Chronicler" xml:space="preserve"><value>Chronicler</value></data>
+  <data name="Traveller_Historian" xml:space="preserve"><value>Historian</value></data>
+  <data name="Traveller_TimeMaster" xml:space="preserve"><value>Master of time</value></data>
+  <data name="Countries_StatEras" xml:space="preserve"><value>Eras</value></data>
+  <data name="Countries_StatStamps" xml:space="preserve"><value>Stamps</value></data>
+  <data name="Countries_StatGold" xml:space="preserve"><value>Gold</value></data>
+  <data name="Countries_Continue" xml:space="preserve"><value>Continue your trip</value></data>
+  <data name="Countries_NextStop" xml:space="preserve"><value>Next stop: {0}</value></data>
+  <data name="Countries_Go" xml:space="preserve"><value>Let's go!</value></data>
+  <data name="Countries_StatusNew" xml:space="preserve"><value>New</value></data>
+  <data name="Countries_StatusGoing" xml:space="preserve"><value>On the way</value></data>
+  <data name="Countries_StatusStamped" xml:space="preserve"><value>Stamped</value></data>
+  <data name="Countries_OrderReady" xml:space="preserve"><value>Timeline challenge ready</value></data>
+  <data name="Countries_AllDone" xml:space="preserve"><value>Trip completed with gold</value></data>
+  <data name="Countries_Stop" xml:space="preserve"><value>Stop {0} of {1}</value></data>
+  <data name="Countries_Complete" xml:space="preserve"><value>Country complete! Your stamp is in the passport — now try the timeline challenge.</value></data>
 </root>

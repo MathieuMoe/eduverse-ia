@@ -451,3 +451,8 @@ aside[data-theme="programming"]::before { background: radial-gradient(circle at 
 }
 @keyframes iv-path-lit { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .iv-path-dot.is-lit { animation: none; } }
+
+/* History trips: the passport stamp slams onto the page when a country is completed */
+@keyframes ct-slam { 0% { opacity: 0; transform: scale(2.6) rotate(-30deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-12deg); } }
+.ct-slam { animation: ct-slam .6s cubic-bezier(.2,1.4,.4,1) both; }
+@media (prefers-reduced-motion: reduce) { .ct-slam { animation: none; transform: rotate(-12deg); } }

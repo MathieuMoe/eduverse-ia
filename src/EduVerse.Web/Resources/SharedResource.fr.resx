@@ -1894,4 +1894,25 @@
   <data name="Countries_World" xml:space="preserve"><value>Frise du monde</value></data>
   <data name="Countries_WorldHint" xml:space="preserve"><value>Tous les voyages sur un même axe du temps : vois ce qui se passait dans chaque pays au même moment. Les époques vertes sont celles que tu as réussies.</value></data>
   <data name="Countries_Meanwhile" xml:space="preserve"><value>Pendant ce temps dans le monde</value></data>
+  <data name="Countries_Rank" xml:space="preserve"><value>Rang de voyageur</value></data>
+  <data name="Countries_RankNext" xml:space="preserve"><value>Encore {0} époques pour devenir {1}</value></data>
+  <data name="Countries_RankMax" xml:space="preserve"><value>Rang maximum : tu maîtrises le temps !</value></data>
+  <data name="Traveller_Tourist" xml:space="preserve"><value>Touriste</value></data>
+  <data name="Traveller_Explorer" xml:space="preserve"><value>Explorateur</value></data>
+  <data name="Traveller_Chronicler" xml:space="preserve"><value>Chroniqueur</value></data>
+  <data name="Traveller_Historian" xml:space="preserve"><value>Historien</value></data>
+  <data name="Traveller_TimeMaster" xml:space="preserve"><value>Maître du temps</value></data>
+  <data name="Countries_StatEras" xml:space="preserve"><value>Époques</value></data>
+  <data name="Countries_StatStamps" xml:space="preserve"><value>Tampons</value></data>
+  <data name="Countries_StatGold" xml:space="preserve"><value>Or</value></data>
+  <data name="Countries_Continue" xml:space="preserve"><value>Continue ton voyage</value></data>
+  <data name="Countries_NextStop" xml:space="preserve"><value>Prochain arrêt : {0}</value></data>
+  <data name="Countries_Go" xml:space="preserve"><value>C'est parti !</value></data>
+  <data name="Countries_StatusNew" xml:space="preserve"><value>Nouveau</value></data>
+  <data name="Countries_StatusGoing" xml:space="preserve"><value>En route</value></data>
+  <data name="Countries_StatusStamped" xml:space="preserve"><value>Tamponné</value></data>
+  <data name="Countries_OrderReady" xml:space="preserve"><value>Défi de la frise prêt</value></data>
+  <data name="Countries_AllDone" xml:space="preserve"><value>Voyage terminé en or</value></data>
+  <data name="Countries_Stop" xml:space="preserve"><value>Arrêt {0} sur {1}</value></data>
+  <data name="Countries_Complete" xml:space="preserve"><value>Pays terminé ! Ton tampon est dans le passeport — tente maintenant le défi de la frise.</value></data>
 </root>

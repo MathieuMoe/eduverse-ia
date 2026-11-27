@@ -1894,4 +1894,25 @@
   <data name="Countries_World" xml:space="preserve"><value>Línia del temps del món</value></data>
   <data name="Countries_WorldHint" xml:space="preserve"><value>Tots els viatges en un mateix eix del temps: mira què passava a cada país en el mateix moment. Les èpoques verdes són les que ja has superat.</value></data>
   <data name="Countries_Meanwhile" xml:space="preserve"><value>Mentrestant al món</value></data>
+  <data name="Countries_Rank" xml:space="preserve"><value>Rang de viatger</value></data>
+  <data name="Countries_RankNext" xml:space="preserve"><value>{0} èpoques més per ser {1}</value></data>
+  <data name="Countries_RankMax" xml:space="preserve"><value>Rang màxim: domines el temps!</value></data>
+  <data name="Traveller_Tourist" xml:space="preserve"><value>Turista</value></data>
+  <data name="Traveller_Explorer" xml:space="preserve"><value>Explorador</value></data>
+  <data name="Traveller_Chronicler" xml:space="preserve"><value>Cronista</value></data>
+  <data name="Traveller_Historian" xml:space="preserve"><value>Historiador</value></data>
+  <data name="Traveller_TimeMaster" xml:space="preserve"><value>Mestre del temps</value></data>
+  <data name="Countries_StatEras" xml:space="preserve"><value>Èpoques</value></data>
+  <data name="Countries_StatStamps" xml:space="preserve"><value>Segells</value></data>
+  <data name="Countries_StatGold" xml:space="preserve"><value>Or</value></data>
+  <data name="Countries_Continue" xml:space="preserve"><value>Continua el teu viatge</value></data>
+  <data name="Countries_NextStop" xml:space="preserve"><value>Propera parada: {0}</value></data>
+  <data name="Countries_Go" xml:space="preserve"><value>Som-hi!</value></data>
+  <data name="Countries_StatusNew" xml:space="preserve"><value>Nou</value></data>
+  <data name="Countries_StatusGoing" xml:space="preserve"><value>En camí</value></data>
+  <data name="Countries_StatusStamped" xml:space="preserve"><value>Segellat</value></data>
+  <data name="Countries_OrderReady" xml:space="preserve"><value>Repte de la línia del temps a punt</value></data>
+  <data name="Countries_AllDone" xml:space="preserve"><value>Viatge completat amb or</value></data>
+  <data name="Countries_Stop" xml:space="preserve"><value>Parada {0} de {1}</value></data>
+  <data name="Countries_Complete" xml:space="preserve"><value>País completat! El teu segell és al passaport: ara prova el repte de la línia del temps.</value></data>
 </root>

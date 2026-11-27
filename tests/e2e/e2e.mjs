@@ -352,7 +352,10 @@ async function demo(page, role) {
         await page.locator("[data-testid=country-result]").waitFor();
         if (step === 0) {
             check(await page.locator("[data-testid=country-result]").getAttribute("data-passed") === "1", "reading the era is enough to pass its check");
-            await page.screenshot({ path: join(DOCS, "screenshot-countries.png"), fullPage: true });
+            await page.locator("[data-testid=country-quiz] fieldset").first().scrollIntoViewIfNeeded();
+            await page.mouse.wheel(0, 260);
+            await page.waitForTimeout(500); // the confetti settles
+            await page.screenshot({ path: join(DOCS, "screenshot-countries.png") });
         }
         await page.click("[data-testid=country-continue]");
         await page.locator("[data-testid=country-timeline]").waitFor();
@@ -376,7 +379,10 @@ async function demo(page, role) {
     check(await page.locator("[data-testid=order-status]").getAttribute("data-won") === "1", "the timeline challenge is won with the eras in order");
     await page.locator("[data-testid=country-order]").screenshot({ path: join(DOCS, "screenshot-country-order.png") });
     await page.goto(BASE + "/Student/Countries");
-    check(await page.locator("[data-testid=passport-stamp]").count() === 1, "Spain's stamp is in the passport");
+    check(await page.locator("[data-testid=passport-stamp][data-gold='1']").count() === 1, "Spain's gold stamp is in the passport");
+    check(await page.locator("[data-testid=traveller-rank]").getAttribute("data-rank") === "Explorer", "six eras passed make the student an Explorer");
+    check((await page.locator("[data-testid=country-spain] [data-testid=country-status]").textContent()).includes("🥇"), "Spain's card shows its gold status");
+    await page.screenshot({ path: join(DOCS, "screenshot-countries-list.png") });
     check(await page.locator("[data-testid=world-era][data-passed='1']").count() === 6, "the world timeline shows Spain's six eras as passed");
     await page.locator("[data-testid=world-timeline]").screenshot({ path: join(DOCS, "screenshot-world-timeline.png") });
     await page.goto(BASE + "/Student/Countries?country=mexico");
