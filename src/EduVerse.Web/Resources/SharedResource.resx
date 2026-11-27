@@ -1891,4 +1891,7 @@
   <data name="HistoryFact_Title" xml:space="preserve"><value>Strange but true of the day</value></data>
   <data name="HistoryFact_Continue" xml:space="preserve"><value>Continue your trip: {0} ({1}/{2})</value></data>
   <data name="HistoryFact_Go" xml:space="preserve"><value>Travel to {0}</value></data>
+  <data name="Countries_World" xml:space="preserve"><value>World timeline</value></data>
+  <data name="Countries_WorldHint" xml:space="preserve"><value>Every trip on one axis of time: see what was happening in each country at the same moment. Green eras are the ones you've passed.</value></data>
+  <data name="Countries_Meanwhile" xml:space="preserve"><value>Meanwhile in the world</value></data>
 </root>

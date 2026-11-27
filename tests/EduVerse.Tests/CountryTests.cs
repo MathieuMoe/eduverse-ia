@@ -246,6 +246,10 @@ public class CountryWebTests(App app) : IClassFixture<App>
         var list = await client.GetStringAsync("/Student/Countries");
         Assert.Contains("data-testid=\"country-spain\"", list, StringComparison.Ordinal);
         Assert.Contains("data-testid=\"passport\"", list, StringComparison.Ordinal);
+        Assert.Equal(Countries.All.Sum(c => c.Eras.Count), System.Text.RegularExpressions.Regex.Count(list, "data-testid=\"world-era\""));
+        var french = await client.GetStringAsync("/Student/Countries?culture=fr&ui-culture=fr");
+        Assert.Contains("Frise du monde", french, StringComparison.Ordinal);
+        Assert.DoesNotMatch(@"(left|width): \d+,\d", french); // invariant decimals in the styles, whatever the language
 
         var timeline = await client.GetStringAsync("/Student/Countries?country=france");
         Assert.Contains("data-testid=\"country-timeline\"", timeline, StringComparison.Ordinal);
@@ -340,5 +344,47 @@ public class TimeGuideWebTests(App app) : IClassFixture<App>
 
         var home = await client.GetStringAsync("/Student");
         Assert.Contains("data-testid=\"history-fact\"", home, StringComparison.Ordinal);
+    }
+}
+
+public class WorldTimelineTests
+{
+    [Fact]
+    public void Meanwhile_shows_the_era_of_each_other_country_that_shares_the_most_years()
+    {
+        var spain = Countries.Find("spain")!;
+        var monarchs = spain.Eras.First(e => e.Key == "catholicmonarchs");
+        var meanwhile = WorldTimeline.MeanwhileOf(spain, monarchs, Countries.All, max: 10);
+        Assert.DoesNotContain(meanwhile, m => m.Country.Key == "spain");
+        Assert.Equal(meanwhile.Count, meanwhile.Select(m => m.Country.Key).Distinct().Count());
+        Assert.Equal("renaissance", Pick("italy").Country.Eras[Pick("italy").Era].Key);
+        Assert.Equal("aztecs", Pick("mexico").Country.Eras[Pick("mexico").Era].Key);
+        Assert.Equal("yuanming", Pick("china").Country.Eras[Pick("china").Era].Key);
+        Assert.Equal(meanwhile.OrderByDescending(m => m.Overlap).Select(m => m.Overlap), meanwhile.Select(m => m.Overlap));
+        Assert.True(WorldTimeline.MeanwhileOf(spain, monarchs, Countries.All).Count <= 4);
+
+        Meanwhile Pick(string key) => meanwhile.Single(m => m.Country.Key == key);
+    }
+
+    [Fact]
+    public void Eras_that_never_meet_do_not_overlap_and_the_scale_goes_left_to_right()
+    {
+        var egypt = Countries.Find("egypt")!;
+        Assert.Equal(0, WorldTimeline.Overlap(egypt.Eras[0], egypt.Eras[^1]));
+        Assert.Equal(0, WorldTimeline.Position(WorldTimeline.First), 3);
+        Assert.Equal(100, WorldTimeline.Position(Countries.Today), 3);
+        var previous = -1.0;
+        foreach (var year in WorldTimeline.Ticks)
+        {
+            Assert.True(WorldTimeline.Position(year) > previous);
+            previous = WorldTimeline.Position(year);
+        }
+
+        foreach (var era in Countries.All.SelectMany(c => c.Eras))
+        {
+            var (left, width) = WorldTimeline.Bar(era);
+            Assert.InRange(left, 0, 100);
+            Assert.InRange(left + width, 0, 100.7);
+        }
     }
 }

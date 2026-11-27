@@ -377,6 +377,11 @@ async function demo(page, role) {
     await page.locator("[data-testid=country-order]").screenshot({ path: join(DOCS, "screenshot-country-order.png") });
     await page.goto(BASE + "/Student/Countries");
     check(await page.locator("[data-testid=passport-stamp]").count() === 1, "Spain's stamp is in the passport");
+    check(await page.locator("[data-testid=world-era][data-passed='1']").count() === 6, "the world timeline shows Spain's six eras as passed");
+    await page.locator("[data-testid=world-timeline]").screenshot({ path: join(DOCS, "screenshot-world-timeline.png") });
+    await page.goto(BASE + "/Student/Countries?country=mexico");
+    check((await page.locator("[data-testid=country-era][data-state=Open] [data-testid=meanwhile] a").allTextContents()).some((x) => x.includes("Roman")),
+        "meanwhile in the world: the Maya era meets Roman times elsewhere");
     await page.goto(BASE + "/Student");
     check(await page.locator("[data-testid=history-fact]").count() === 1, "the dashboard shows the strange-but-true history fact of the day");
     // Learning path (phase 4): units of lesson → lesson → chest → lesson → boss; the first lesson is open

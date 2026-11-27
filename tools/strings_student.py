@@ -212,6 +212,9 @@ STUDENT = {
     "HistoryFact_Title": ("Strange but true of the day", "Étrange mais vrai du jour", "Raro pero cierto del día", "Estrany però cert del dia"),
     "HistoryFact_Continue": ("Continue your trip: {0} ({1}/{2})", "Continue ton voyage : {0} ({1}/{2})", "Sigue tu viaje: {0} ({1}/{2})", "Continua el teu viatge: {0} ({1}/{2})"),
     "HistoryFact_Go": ("Travel to {0}", "Voyager en {0}", "Viajar a {0}", "Viatjar a {0}"),
+    "Countries_World": ("World timeline", "Frise du monde", "Línea del tiempo del mundo", "Línia del temps del món"),
+    "Countries_WorldHint": ("Every trip on one axis of time: see what was happening in each country at the same moment. Green eras are the ones you've passed.", "Tous les voyages sur un même axe du temps : vois ce qui se passait dans chaque pays au même moment. Les époques vertes sont celles que tu as réussies.", "Todos los viajes en un mismo eje del tiempo: mira qué pasaba en cada país en el mismo momento. Las épocas verdes son las que ya has superado.", "Tots els viatges en un mateix eix del temps: mira què passava a cada país en el mateix moment. Les èpoques verdes són les que ja has superat."),
+    "Countries_Meanwhile": ("Meanwhile in the world", "Pendant ce temps dans le monde", "Mientras tanto en el mundo", "Mentrestant al món"),
     "Notice_Goal_Saved": ("Daily goal saved.", "Objectif du jour enregistré.", "Meta diaria guardada.", "Objectiu diari desat."),
     # Navigation
     "Demo_Kid": ("Kids mode (6 years old)", "Mode enfant (6 ans)", "Modo infantil (6 años)", "Mode infantil (6 anys)"),

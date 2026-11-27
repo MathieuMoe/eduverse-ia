@@ -1891,4 +1891,7 @@
   <data name="HistoryFact_Title" xml:space="preserve"><value>Estrany però cert del dia</value></data>
   <data name="HistoryFact_Continue" xml:space="preserve"><value>Continua el teu viatge: {0} ({1}/{2})</value></data>
   <data name="HistoryFact_Go" xml:space="preserve"><value>Viatjar a {0}</value></data>
+  <data name="Countries_World" xml:space="preserve"><value>Línia del temps del món</value></data>
+  <data name="Countries_WorldHint" xml:space="preserve"><value>Tots els viatges en un mateix eix del temps: mira què passava a cada país en el mateix moment. Les èpoques verdes són les que ja has superat.</value></data>
+  <data name="Countries_Meanwhile" xml:space="preserve"><value>Mentrestant al món</value></data>
 </root>

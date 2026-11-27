@@ -1891,4 +1891,7 @@
   <data name="HistoryFact_Title" xml:space="preserve"><value>Étrange mais vrai du jour</value></data>
   <data name="HistoryFact_Continue" xml:space="preserve"><value>Continue ton voyage : {0} ({1}/{2})</value></data>
   <data name="HistoryFact_Go" xml:space="preserve"><value>Voyager en {0}</value></data>
+  <data name="Countries_World" xml:space="preserve"><value>Frise du monde</value></data>
+  <data name="Countries_WorldHint" xml:space="preserve"><value>Tous les voyages sur un même axe du temps : vois ce qui se passait dans chaque pays au même moment. Les époques vertes sont celles que tu as réussies.</value></data>
+  <data name="Countries_Meanwhile" xml:space="preserve"><value>Pendant ce temps dans le monde</value></data>
 </root>

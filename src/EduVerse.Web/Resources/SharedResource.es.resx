@@ -1891,4 +1891,7 @@
   <data name="HistoryFact_Title" xml:space="preserve"><value>Raro pero cierto del día</value></data>
   <data name="HistoryFact_Continue" xml:space="preserve"><value>Sigue tu viaje: {0} ({1}/{2})</value></data>
   <data name="HistoryFact_Go" xml:space="preserve"><value>Viajar a {0}</value></data>
+  <data name="Countries_World" xml:space="preserve"><value>Línea del tiempo del mundo</value></data>
+  <data name="Countries_WorldHint" xml:space="preserve"><value>Todos los viajes en un mismo eje del tiempo: mira qué pasaba en cada país en el mismo momento. Las épocas verdes son las que ya has superado.</value></data>
+  <data name="Countries_Meanwhile" xml:space="preserve"><value>Mientras tanto en el mundo</value></data>
 </root>

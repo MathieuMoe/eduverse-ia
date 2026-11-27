@@ -812,3 +812,18 @@ Mathieu: "sigue". No schema change (DatabaseVersion stays 28).
 - Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 816/816, full `e2e.mjs` green twice on a clean DB (338 checks).
 - Tests: `TimeGuideTests` (the three hint questions in each language, names vs title words, prompt facts and tag
   cleaning, fact of the day), `TimeGuideWebTests`, trip in progress in `CountryStoreTests`.
+
+## History trips, round 4: world timeline and "meanwhile in the world"
+Mathieu: "puedes seguir". No schema change (DatabaseVersion stays 28). Pure code from the years of the eras (`WorldTimeline`).
+- **World timeline** on `/Student/Countries`: the 8 countries as rows on one axis of time, each era a bar (link to the
+  trip, tooltip with title and years), passed eras green. `WorldTimeline.Position` is a piecewise scale (3200 BC → 500 BC
+  squeezed into 18 %, the last centuries get more room) so 5,000 years fit; ticks 3000 BC … 2000. Styles are written
+  with invariant decimals (a `fr`/`es` culture would otherwise write `12,5%` and break the bars — tested). Scrolls
+  sideways on a phone (min width 640 px).
+- **Meanwhile in the world** on every open era: for each other country, its era sharing the most years with this one
+  (`MeanwhileOf`, top 4 by overlap) as chips linking to that trip — e.g. the Catholic Monarchs ↔ Italian Renaissance,
+  Aztec empire, Ming China. Custom (AI) countries are not compared.
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 818/818, full `e2e.mjs` green twice on a clean DB (340 checks).
+- Tests: `WorldTimelineTests` (overlap picks, scale monotonic and bars inside the axis) + web (one bar per era,
+  French page without comma decimals). e2e: Spain's six eras green on the world timeline, the Maya era meets Roman
+  times; screenshot `docs/screenshot-world-timeline.png`.

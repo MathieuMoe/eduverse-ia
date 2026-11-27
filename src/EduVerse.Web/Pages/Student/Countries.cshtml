@@ -41,6 +41,37 @@
         </div>
     </section>
 
+    <section class="@Ui.Card p-5" aria-labelledby="world-title" data-testid="world-timeline">
+        <h2 id="world-title" class="text-base font-semibold text-foreground">🌍 @L["Countries_World"]</h2>
+        <p class="mt-1 text-sm text-muted-foreground-1">@L["Countries_WorldHint"]</p>
+        <div class="mt-4 overflow-x-auto pb-6">
+            <div class="min-w-[640px]">
+                @foreach (var c in Countries.All)
+                {
+                    var passed = Model.Passed(c);
+                    <div class="flex items-center gap-2 h-8">
+                        <a href="/Student/Countries?country=@c.Key" class="w-32 shrink-0 text-sm font-medium text-foreground truncate hover:underline"><span aria-hidden="true">@c.Flag</span> @c.Name.In(language)</a>
+                        <div class="relative grow h-6 rounded-full bg-surface">
+                            @for (var i = 0; i < c.Eras.Count; i++)
+                            {
+                                var era = c.Eras[i];
+                                var (left, width) = WorldTimeline.Bar(era);
+                                var tone = i < passed ? "bg-emerald-400 dark:bg-emerald-500" : i % 2 == 0 ? "bg-sky-300 dark:bg-sky-700" : "bg-violet-300 dark:bg-violet-700";
+                                <a href="/Student/Countries?country=@c.Key" class="absolute top-0.5 h-5 rounded-md border border-white/80 dark:border-black/40 hover:brightness-110 @tone tip tip-b" data-passed="@(i < passed ? "1" : "0")" style="left: @left.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%; width: @width.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%" data-tip="@era.Emoji @era.Title.In(language) · @Countries.Years(era, language)" aria-label="@c.Name.In(language): @era.Title.In(language), @Countries.Years(era, language)" data-testid="world-era"></a>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="relative h-5 ms-34 mt-1" aria-hidden="true">
+                    @foreach (var tick in WorldTimeline.Ticks)
+                    {
+                        <span class="absolute -translate-x-1/2 text-[11px] text-muted-foreground-1 whitespace-nowrap" style="left: @WorldTimeline.Position(tick).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%">@Countries.Year(tick, language)</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
     <ul class="grid sm:grid-cols-2 gap-4" data-testid="country-list">
         @foreach (var c in all)
         {
@@ -153,6 +184,20 @@ else
                             <p class="text-xs font-semibold text-foreground">🤯 @L["Countries_Oddity"]</p>
                             <p class="mt-1 text-sm text-foreground">@era.Oddity.In(language)</p>
                         </div>
+                        @{
+                            var meanwhile = WorldTimeline.MeanwhileOf(c, era, Countries.All);
+                        }
+                        @if (meanwhile.Count > 0)
+                        {
+                            <h4 class="mt-4 text-sm font-semibold text-foreground">🌍 @L["Countries_Meanwhile"]</h4>
+                            <ul class="mt-2 flex flex-wrap gap-2" data-testid="meanwhile">
+                                @foreach (var m in meanwhile)
+                                {
+                                    var other = m.Country.Eras[m.Era];
+                                    <li class="min-w-0 max-w-full"><a href="/Student/Countries?country=@m.Country.Key" class="flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-surface text-xs text-foreground hover:bg-layer-hover max-w-full"><span aria-hidden="true">@m.Country.Flag</span><span class="truncate">@other.Title.In(language)</span><span class="shrink-0 text-muted-foreground-1">@Countries.Years(other, language)</span></a></li>
+                                }
+                            </ul>
+                        }
                         <h4 class="mt-4 text-sm font-semibold text-foreground">@L["Countries_People"]</h4>
                         <ul class="mt-2 grid sm:grid-cols-2 gap-2">
                             @foreach (var p in era.People)
