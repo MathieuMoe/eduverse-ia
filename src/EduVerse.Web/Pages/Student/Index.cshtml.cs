@@ -15,7 +15,7 @@ namespace EduVerse.Web.Pages.Student;
 public sealed record SubjectCard(Subject Subject, IReadOnlyList<(Concept Concept, MasteryState? State)> Concepts, int Mastered, int Progress, NextStep Next);
 
 /// <summary>Student dashboard: subjects with their mastery map and next step, classes, settings.</summary>
-public sealed class IndexModel(LeagueStore leagues, FriendQuestStore friends, LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, EduVerse.Infrastructure.Tutor.CuriosityStore curiosity, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
+public sealed class IndexModel(CountryStore countries, LeagueStore leagues, FriendQuestStore friends, LearningStore store, ClassroomStore classrooms, GamificationStore game, QuizStore quizzes, EduVerse.Infrastructure.Tutor.OpeningStore openings, EduVerse.Infrastructure.Tutor.TeacherNoteStore teacherNotes, EduVerse.Infrastructure.Tutor.AssignmentStore assignments, EduVerse.Infrastructure.Tutor.CuriosityStore curiosity, Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> l) : PageModel
 {
     public IReadOnlyList<SubjectCard> Subjects { get; private set; } = [];
 
@@ -39,6 +39,12 @@ public sealed class IndexModel(LeagueStore leagues, FriendQuestStore friends, Le
 
     /// <summary>The evening reminder when the streak is alive but nothing was done today.</summary>
     public (int Streak, int HoursLeft, int Freezes)? StreakRisk { get; private set; }
+
+    /// <summary>The strange-but-true history fact of the day (same for everyone) and the trip it leads to.</summary>
+    public (EduVerse.Core.Gamification.CountryHistory Country, EduVerse.Core.Gamification.HistoryEra Era) HistoryFact { get; private set; }
+
+    /// <summary>A history trip started and not finished.</summary>
+    public (EduVerse.Core.Gamification.CountryHistory Country, int Passed)? Trip { get; private set; }
 
     /// <summary>This week's league (null for a young child or a student who turned competition off).</summary>
     public LeagueView? League { get; private set; }
@@ -96,6 +102,8 @@ public sealed class IndexModel(LeagueStore leagues, FriendQuestStore friends, Le
         Goal = await game.GoalAsync(userId, HttpContext.RequestAborted);
         League = await leagues.ViewAsync(userId, HttpContext.RequestAborted);
         StreakRisk = await game.StreakRiskAsync(userId, HttpContext.RequestAborted);
+        HistoryFact = EduVerse.Core.Gamification.TimeGuide.FactOfTheDay(DateOnly.FromDateTime(game.Now.UtcDateTime));
+        Trip = await countries.TripInProgressAsync(userId, HttpContext.RequestAborted);
         FriendQuest = League is null ? null : await friends.AutoPairAsync(userId, HttpContext.RequestAborted);
         var boards = await game.BoardsAsync(userId, HttpContext.RequestAborted);
         Board = boards.Count > 0 ? boards[0] : null;

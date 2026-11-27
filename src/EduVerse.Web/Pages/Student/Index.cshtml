@@ -6,6 +6,7 @@
 @{
     ViewData["Title"] = L["Nav_StudentHome"];
     var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var language = EduVerse.Web.Localization.LanguageForCurrentCulture();
     var g = Model.Game;
     var ringPercent = g.Size == 0 ? 0 : 100 * g.Into / g.Size;
     var bubble = g.Streak >= 2 ? string.Format(culture, L["Mascot_Streak"], g.Streak) : g.PlayedToday ? L["Mascot_Today"].Value : L["Mascot_Start"].Value;
@@ -181,6 +182,19 @@ else
             <button type="submit" class="@Ui.BtnLight shrink-0" data-testid="curiosity-add">@L["Curiosity_Add"]</button>
         </form>
     </section>
+
+    var fact = Model.HistoryFact;
+    var tripTo = Model.Trip?.Country ?? fact.Country;
+    <a href="/Student/Countries?country=@tripTo.Key" class="p-4 rounded-3xl tone-sky flex flex-wrap sm:flex-nowrap items-center gap-4 hover:opacity-95 min-w-0" data-testid="history-fact">
+        <span class="text-4xl" aria-hidden="true">🦉</span>
+        <span class="grow min-w-0">
+            <span class="block text-sm font-semibold text-foreground">@L["HistoryFact_Title"] · @fact.Country.Flag @fact.Era.Title.In(language)</span>
+            <span class="block mt-0.5 text-sm text-foreground/80">@fact.Era.Oddity.In(language)</span>
+        </span>
+        <span class="@Ui.BtnLight shrink-0 max-w-full truncate">@(Model.Trip is { } trip
+            ? string.Format(culture, L["HistoryFact_Continue"], trip.Country.Name.In(language), trip.Passed, trip.Country.Eras.Count)
+            : string.Format(culture, L["HistoryFact_Go"], tripTo.Name.In(language)))</span>
+    </a>
 
     @if (Model.StreakRisk is { } risk)
     {

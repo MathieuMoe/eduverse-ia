@@ -88,6 +88,39 @@
         }
     });
 
+    // The time guide: ask a question about an open era (the AI answers from its facts; offline, the facts answer)
+    async function ask(box, question) {
+        const chat = box.querySelector("[data-guide-chat]");
+        const form = box.querySelector("[data-guide-form]");
+        chat.insertAdjacentHTML("beforeend", `<li class="le-rise flex justify-end"><p class="max-w-[85%] py-1.5 px-3 rounded-2xl rounded-br-sm bg-primary text-primary-foreground text-sm">${esc(question)}</p></li>`);
+        form.querySelector("button").disabled = true;
+        try {
+            const r = await api(`/api/countries/${encodeURIComponent(country)}/eras/${box.dataset.guide}/ask`, { json: { question } });
+            chat.insertAdjacentHTML("beforeend", `<li class="le-rise flex items-start gap-2"><span class="size-8 shrink-0 rounded-full tone-sun grid place-items-center" aria-hidden="true">🦉</span>
+                <p class="max-w-[85%] py-1.5 px-3 rounded-2xl rounded-tl-sm bg-layer text-foreground text-sm" data-testid="guide-answer">${esc(r.answer)}</p></li>`);
+            if (r.fallback) chat.insertAdjacentHTML("beforeend", `<li class="text-xs text-amber-700 dark:text-amber-300">${esc(fmt(t("Fallback"), r.fallback))}</li>`);
+        } catch (err) {
+            chat.insertAdjacentHTML("beforeend", `<li class="text-sm text-red-700 dark:text-red-300" role="alert">${esc(err.message)}</li>`);
+        }
+        form.querySelector("button").disabled = false;
+    }
+
+    document.addEventListener("submit", (e) => {
+        const form = e.target.closest("[data-guide-form]");
+        if (!form) return;
+        e.preventDefault();
+        const input = form.querySelector("input");
+        const question = input.value.trim();
+        if (!question) return;
+        input.value = "";
+        ask(form.closest("[data-guide]"), question);
+    });
+
+    document.addEventListener("click", (e) => {
+        const hint = e.target.closest("[data-guide-hint]");
+        if (hint) ask(hint.closest("[data-guide]"), hint.dataset.guideHint);
+    });
+
     const orderCheck = document.getElementById("order-check");
     orderCheck?.addEventListener("click", async () => {
         const status = document.getElementById("order-status");

@@ -1882,4 +1882,13 @@
   <data name="Js_Err_order_locked" xml:space="preserve"><value>Réussis d'abord toutes les époques du pays.</value></data>
   <data name="Badge_Globetrotter" xml:space="preserve"><value>Globe-trotteur</value></data>
   <data name="BadgeHint_Globetrotter" xml:space="preserve"><value>Obtiens {0} tampons dans ton passeport d'histoire</value></data>
+  <data name="Countries_GuideTitle" xml:space="preserve"><value>Demande à Clio, la guide du temps</value></data>
+  <data name="Countries_GuidePlaceholder" xml:space="preserve"><value>Pose une question sur cette époque…</value></data>
+  <data name="Countries_GuideAsk" xml:space="preserve"><value>Demander</value></data>
+  <data name="Countries_GuideWho" xml:space="preserve"><value>Qui vivait ici ?</value></data>
+  <data name="Countries_GuideWhen" xml:space="preserve"><value>C'était quand ?</value></data>
+  <data name="Countries_GuideOdd" xml:space="preserve"><value>Raconte-moi quelque chose d'étrange</value></data>
+  <data name="HistoryFact_Title" xml:space="preserve"><value>Étrange mais vrai du jour</value></data>
+  <data name="HistoryFact_Continue" xml:space="preserve"><value>Continue ton voyage : {0} ({1}/{2})</value></data>
+  <data name="HistoryFact_Go" xml:space="preserve"><value>Voyager en {0}</value></data>
 </root>

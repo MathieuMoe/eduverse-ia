@@ -170,6 +170,21 @@ else
                                 </li>
                             }
                         </ul>
+                        <div class="mt-4 p-3 rounded-2xl bg-surface" data-guide="@i" data-testid="time-guide">
+                            <p class="text-xs font-semibold text-foreground">@TimeGuide.Emoji @L["Countries_GuideTitle"]</p>
+                            <ol class="mt-2 space-y-2" data-guide-chat aria-live="polite"></ol>
+                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                @foreach (var hint in new[] { "Countries_GuideWho", "Countries_GuideWhen", "Countries_GuideOdd" })
+                                {
+                                    <button type="button" class="@Ui.Pill py-1! bg-layer border border-layer-line text-foreground hover:bg-layer-hover" data-guide-hint="@L[hint]" data-testid="guide-hint">@L[hint]</button>
+                                }
+                            </div>
+                            <form class="mt-2 flex items-center gap-2" data-guide-form>
+                                <label class="sr-only" for="guide-@i">@L["Countries_GuidePlaceholder"]</label>
+                                <input id="guide-@i" class="@Ui.Input" maxlength="@TimeGuide.MaxQuestion" placeholder="@L["Countries_GuidePlaceholder"]" required data-testid="guide-input" />
+                                <button type="submit" class="@Ui.BtnLight shrink-0" data-testid="guide-ask">@L["Countries_GuideAsk"]</button>
+                            </form>
+                        </div>
                         <div class="mt-4" data-check-box>
                             <button type="button" class="@Ui.BtnPrimary" data-check="@i" data-testid="country-check">🧭 @string.Format(culture, L["Countries_Check"], Countries.CheckLength)</button>
                         </div>

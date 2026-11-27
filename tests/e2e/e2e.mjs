@@ -314,6 +314,16 @@ async function demo(page, role) {
         "a new country needs an AI engine (offline the page says so)");
     await page.click("[data-testid=country-spain]");
     check(await page.locator("[data-testid=country-era][data-state=Open]").count() === 1, "only the first era of the timeline is open");
+    // The time guide answers offline from the era's facts (the hint buttons ask who / when / something strange)
+    await page.locator("[data-testid=country-era][data-state=Open] [data-testid=guide-hint]").nth(2).click();
+    await page.locator("[data-testid=guide-answer]").first().waitFor();
+    check((await page.locator("[data-testid=guide-answer]").first().textContent()).includes("aqueduct"), "the time guide tells the era's strange-but-true fact offline");
+    await page.fill("[data-testid=country-era][data-state=Open] [data-testid=guide-input]", "Who was Trajan?");
+    await page.click("[data-testid=country-era][data-state=Open] [data-testid=guide-ask]");
+    await page.locator("[data-testid=guide-answer]").nth(1).waitFor();
+    check((await page.locator("[data-testid=guide-answer]").nth(1).textContent()).includes("Italica"), "the time guide knows a figure of the era by name");
+    await page.waitForTimeout(700); // let the last bubble finish rising in
+    await page.locator("[data-testid=time-guide]").first().screenshot({ path: join(DOCS, "screenshot-time-guide.png") });
     // Walk Spain's whole timeline: every right answer is a fact written on the era's card (or, for "what came
     // first", the era that comes first on the timeline)
     for (let step = 0; step < 6; step++) {
@@ -367,6 +377,8 @@ async function demo(page, role) {
     await page.locator("[data-testid=country-order]").screenshot({ path: join(DOCS, "screenshot-country-order.png") });
     await page.goto(BASE + "/Student/Countries");
     check(await page.locator("[data-testid=passport-stamp]").count() === 1, "Spain's stamp is in the passport");
+    await page.goto(BASE + "/Student");
+    check(await page.locator("[data-testid=history-fact]").count() === 1, "the dashboard shows the strange-but-true history fact of the day");
     // Learning path (phase 4): units of lesson → lesson → chest → lesson → boss; the first lesson is open
     await page.goto(BASE + "/Student/Path?area=History&level=Primary3");
     check(await page.locator("[data-testid=path-unit]").count() >= 3, "the history path has several units");
@@ -1372,7 +1384,7 @@ for (const dark of [false, true]) {
         await noOverflow(page, `mobile${dark ? " dark" : ""} /`);
         await demo(page, role);
         const pages = {
-            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Student/Path?area=History&level=Primary3", "/Student/League", "/Student/Shop", "/Student/Roleplay", "/Student/Roleplay?scenario=airport", "/Student/Roleplay?scenario=rubberduck", "/Marketplace", "/Marketplace/Bookings", "/About"],
+            student: ["/Student", "/Student/Explore", "/Student/Quiz?area=Programming&level=HighSchool", "/Student/Arena", "/Student/Achievements", "/Student/Adventures", "/Student/Teach?concept=percent", "/Student/Interview?figure=newton", "/Student/Album", "/Student/Timeline", "/Student/Learn?subject=fractions", "/Student/Learner", "/Student/Journey", "/Student/Plan", "/Student/Homework", "/Student/Letter", "/Student/Pip", "/Student/Fading", "/Student/Materials", "/Student/Writing", "/Student/NewSubject", "/Student/Path?area=History&level=Primary3", "/Student/League", "/Student/Shop", "/Student/Roleplay", "/Student/Roleplay?scenario=airport", "/Student/Roleplay?scenario=rubberduck", "/Student/Countries", "/Student/Countries?country=japan", "/Marketplace", "/Marketplace/Bookings", "/About"],
             teacher: ["/Teacher", "/Teacher/Class?id=1", "/Teacher/Course?id=1", "/Teacher/Pack", "/Teacher/Lesson", "/Teacher/Summary", "/Moderation/Ideas"],
             director: ["/Institution", "/Institution/Risk", "/Institution/Quality"],
             tutor: ["/Tutor", "/Tutor/Profile", "/Marketplace"],

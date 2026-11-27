@@ -12,6 +12,8 @@ public sealed record CountryCreateRequest(string? Name);
 
 public sealed record CountryOrderRequest(IReadOnlyList<string>? Order);
 
+public sealed record CountryAskRequest(string? Question);
+
 /// <summary>
 /// Trips through the history of a country. The checks of the eras are written and marked by the code; the AI only
 /// writes the timeline of a country that is not in the catalog (offline that needs a real engine).
@@ -51,6 +53,34 @@ public static class CountryEndpoints
                 });
         })
         .RequireRateLimiting("quiz");
+
+        // The time guide: the AI answers a question about an open era from its facts; offline, the facts answer
+        api.MapPost("/{key}/eras/{era:int}/ask", async (string key, int era, CountryAskRequest? request, HttpContext context, CountryStore store, AiEngines engines, ILogger<CountryAskRequest> logger) =>
+        {
+            var question = request?.Question?.Trim() ?? "";
+            if (question.Length is 0 or > TimeGuide.MaxQuestion)
+            {
+                return Results.BadRequest();
+            }
+
+            var userId = context.User.Id();
+            var country = await store.FindAsync(userId, key, context.RequestAborted);
+            if (country is null || era < 0 || era >= country.Eras.Count || (await store.ViewAsync(userId, country, context.RequestAborted)).Eras[era] == EraState.Locked)
+            {
+                return Results.Json(new { code = "era_locked" }, statusCode: StatusCodes.Status409Conflict);
+            }
+
+            var language = Localization.LanguageForCurrentCulture();
+            var stop = country.Eras[era];
+            return await AiRunner.GuardAsync(async () =>
+            {
+                var run = await AiRunner.RunAsync(context, engines, logger,
+                    async ai => TimeGuide.Parse(await ai.GenerateAsync(TimeGuide.Build(country, stop, question, language), context.RequestAborted)),
+                    () => Task.FromResult(TimeGuide.Offline(stop, question, language)));
+                return Results.Ok(new { answer = run.Result, engine = run.Engine, fallback = run.Fallback });
+            });
+        })
+        .RequireRateLimiting("tutor");
 
         api.MapPost("/{key}/order", async (string key, CountryOrderRequest? request, HttpContext context, CountryStore store) =>
         {

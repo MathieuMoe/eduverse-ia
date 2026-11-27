@@ -792,3 +792,23 @@ Mathieu: "sigue". No schema change (DatabaseVersion stays 28).
   the stamp, a wrong order doesn't pay, the right one pays once and turns gold, the stamp counts for the badge).
   e2e: walks all 6 eras of Spain by reading the cards, wins the timeline challenge with the arrows, checks the passport;
   screenshot `docs/screenshot-country-order.png`.
+
+## History trips, round 3: Clio the time guide, strange-but-true fact of the day
+Mathieu: "sigue". No schema change (DatabaseVersion stays 28).
+- **Clio, the time guide 🦉** (`TimeGuide`): every open era has a small chat. `POST /api/countries/{key}/eras/{era}/ask
+  {question}` (rate limit "tutor"; 409 `era_locked` on a locked era). With an engine, `TimeGuide.Build` gives the AI the
+  era's facts (story, weird fact, figures) and asks for 2–4 vivid sentences, well-established history only, neutral and
+  age-appropriate. Offline (or if the AI fails, with the usual fallback note), `TimeGuide.Offline` answers from the
+  facts by the words of the question, in the 4 languages, accents ignored: a figure's name → their role (title words
+  like "Great"/"Emperor" don't count as a name), when/cuándo/quand/quan → the years, strange/raro/étrange/estrany → the
+  weird fact, who/quién/qui → the figures, anything else → the first sentence of the story + what it can answer offline.
+  Three hint buttons (who / when / something strange) ask in one click. No history is stored.
+- **Fact of the day on the dashboard**: `TimeGuide.FactOfTheDay(day)` picks one strange-but-true fact of the 48 eras
+  (the same for everyone on a day, a different one the next); the card links to the trip in progress
+  (`CountryStore.TripInProgressAsync`: the most advanced started-but-unfinished country, "Continue your trip: Japan
+  (3/6)") or to the fact's country. Not on the kids dashboard.
+- e2e: Clio's strange fact and a figure by name offline, the dashboard card, both country pages in the mobile sweep
+  (390 px, light and dark); screenshot `docs/screenshot-time-guide.png`.
+- Verified: `dotnet build -warnaserror` 0 warnings, `dotnet test` 816/816, full `e2e.mjs` green twice on a clean DB (338 checks).
+- Tests: `TimeGuideTests` (the three hint questions in each language, names vs title words, prompt facts and tag
+  cleaning, fact of the day), `TimeGuideWebTests`, trip in progress in `CountryStoreTests`.

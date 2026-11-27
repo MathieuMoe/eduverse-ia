@@ -27,6 +27,7 @@ Built with **ASP.NET Core (.NET 10)**, **EF Core + SQLite**, **ASP.NET Core Iden
 ![Roleplay: haggling with a Roman merchant; the missions tick in code, the AI only plays the character](docs/screenshot-roleplay.png)
 ![History trips: the timeline of a country, its main figures and a strange-but-true fact; each era ends with a check written by the code](docs/screenshot-countries.png)
 ![Timeline challenge: put the eras of a stamped country back in order to turn its passport stamp gold](docs/screenshot-country-order.png)
+![Clio, the time guide: ask anything about an era; the AI answers from its facts, and offline the facts answer](docs/screenshot-time-guide.png)
 ![The story of your mistakes: the week's most-missed topics told as a short adventure](docs/screenshot-mistake-story.png)
 ![Arena: weekly ranking with nicknames, teams, class challenge, duels](docs/screenshot-arena.png)
 ![Achievements: titles, badges and their progress](docs/screenshot-achievements.png)

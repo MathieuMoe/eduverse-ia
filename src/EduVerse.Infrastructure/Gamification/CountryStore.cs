@@ -211,4 +211,13 @@ public sealed class CountryStore(EduVerseDb db, GamificationStore game)
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
         return new OrderResult(right, country.Eras.Count, gems);
     }
+
+    /// <summary>The built-in country the student has started and not finished (the most advanced), for the dashboard.</summary>
+    public async Task<(CountryHistory Country, int Passed)?> TripInProgressAsync(string userId, CancellationToken ct = default)
+    {
+        var progress = await ProgressAsync(userId, ct).ConfigureAwait(false);
+        return Countries.All.Select(c => (Country: c, Passed: progress.TryGetValue(c.Key, out var n) ? n : 0))
+            .Where(x => x.Passed > 0 && x.Passed < x.Country.Eras.Count).OrderByDescending(x => x.Passed)
+            .Select(x => ((CountryHistory, int)?)x).FirstOrDefault();
+    }
 }

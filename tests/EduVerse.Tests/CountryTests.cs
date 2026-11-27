@@ -167,12 +167,17 @@ public class CountryStoreTests(Database database) : IClassFixture<Database>
 
         Assert.Null(await store.OrderAsync(student, "japan", [.. japan.Eras.Select(e => e.Key)])); // not stamped yet
         var gemsBefore = await game.GemsAsync(student);
+        Assert.Null(await store.TripInProgressAsync(student));
         for (var era = 0; era < japan.Eras.Count; era++)
         {
             var result = await PassAsync(db, store, student, era);
             Assert.True(result.Passed);
             Assert.Equal(Countries.EraXp, result.Reward.Xp);
             Assert.Equal(era == japan.Eras.Count - 1, result.Stamp);
+            if (era == 0)
+            {
+                Assert.Equal(("japan", 1), ((await store.TripInProgressAsync(student))!.Value.Country.Key, (await store.TripInProgressAsync(student))!.Value.Passed));
+            }
         }
 
         Assert.True(await game.GemsAsync(student) >= gemsBefore + japan.Eras.Count * Countries.EraGems + Countries.StampGems);
@@ -181,6 +186,7 @@ public class CountryStoreTests(Database database) : IClassFixture<Database>
         Assert.Equal(japan.Eras.Count, (await store.ProgressAsync(student))["japan"]);
 
         Assert.Equal(1, (await game.BadgeStatsAsync(student)).Stamps);
+        Assert.Null(await store.TripInProgressAsync(student)); // finished: nothing in progress
 
         // The timeline challenge: a wrong order is only a try, the right one turns the stamp gold once
         var keys = japan.Eras.Select(e => e.Key).ToList();
@@ -267,5 +273,72 @@ public class CountryWebTests(App app) : IClassFixture<App>
         var lesson = await client.PostAsJsonAsync("/api/quiz/start", new { area = "History", level = "Primary3", mode = "Focus", topic, path = true });
         lesson.EnsureSuccessStatusCode();
         Assert.Equal("bank", (await lesson.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("engine").GetString());
+    }
+}
+
+public class TimeGuideTests
+{
+    private static HistoryEra Era(string country, string key) => Countries.Find(country)!.Eras.First(e => e.Key == key);
+
+    [Theory]
+    [InlineData(TeachLanguage.English, "Who lived here?", "When was it?", "Tell me something strange")]
+    [InlineData(TeachLanguage.French, "Qui vivait ici ?", "C'était quand ?", "Raconte-moi quelque chose d'étrange")]
+    [InlineData(TeachLanguage.Spanish, "¿Quién vivía aquí?", "¿Cuándo fue?", "Cuéntame algo raro")]
+    [InlineData(TeachLanguage.Catalan, "Qui vivia aquí?", "Quan va ser?", "Explica'm alguna cosa estranya")]
+    public void Offline_the_guide_answers_the_three_hint_questions_from_the_facts(TeachLanguage language, string who, string when, string odd)
+    {
+        var era = Era("spain", "goldenage");
+        Assert.Contains("Diego Velázquez", TimeGuide.Offline(era, who, language), StringComparison.Ordinal);
+        Assert.Contains(Countries.Years(era, language), TimeGuide.Offline(era, when, language), StringComparison.Ordinal);
+        Assert.Contains(era.Oddity.In(language), TimeGuide.Offline(era, odd, language), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Offline_the_guide_knows_a_figure_by_name_and_otherwise_tells_the_story()
+    {
+        var uk = Era("uk", "anglosaxons");
+        Assert.Contains(uk.People[0].Role.En, TimeGuide.Offline(uk, "Tell me about ALFRED", TeachLanguage.English), StringComparison.Ordinal);
+        // "great" is a title, not a name: it must not pick Alfred the Great
+        Assert.DoesNotContain(uk.People[0].Role.En, TimeGuide.Offline(uk, "What was great about the food?", TeachLanguage.English), StringComparison.Ordinal);
+        Assert.StartsWith("Angles, Saxons and Jutes", TimeGuide.Offline(uk, "What was the food like?", TeachLanguage.English), StringComparison.Ordinal);
+        Assert.Contains("Cervantes", TimeGuide.Offline(Era("spain", "goldenage"), "¿quién era cervantes?", TeachLanguage.Spanish), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void The_ai_guide_gets_the_facts_of_the_era_and_must_answer()
+    {
+        var spain = Countries.Find("spain")!;
+        var prompt = TimeGuide.Build(spain, spain.Eras[0], "<b>Why</b> roads?", TeachLanguage.French);
+        Assert.Contains(spain.Eras[0].Oddity.Fr, prompt.User, StringComparison.Ordinal);
+        Assert.Contains("<question>b Why /b  roads?</question>", prompt.User, StringComparison.Ordinal);
+        Assert.Equal("Hi", TimeGuide.Parse(JsonDocument.Parse("""{"answer":"Hi"}""").RootElement));
+        Assert.Throws<EduVerse.Core.Abstractions.AiGenerationException>(() => TimeGuide.Parse(JsonDocument.Parse("""{"answer":""}""").RootElement));
+    }
+
+    [Fact]
+    public void The_fact_of_the_day_is_the_same_all_day_and_changes_the_next()
+    {
+        var day = new DateOnly(2026, 11, 26);
+        Assert.Equal(TimeGuide.FactOfTheDay(day), TimeGuide.FactOfTheDay(day));
+        Assert.NotEqual(TimeGuide.FactOfTheDay(day).Era.Key, TimeGuide.FactOfTheDay(day.AddDays(1)).Era.Key);
+    }
+}
+
+public class TimeGuideWebTests(App app) : IClassFixture<App>
+{
+    [Fact]
+    public async Task The_guide_answers_offline_on_an_open_era_and_the_dashboard_shows_the_fact_of_the_day()
+    {
+        var client = await app.DemoAsync("Student");
+        var open = await client.PostAsJsonAsync("/api/countries/egypt/eras/0/ask", new { question = "Who lived here?" });
+        open.EnsureSuccessStatusCode();
+        var body = await open.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("demo", body.GetProperty("engine").GetString());
+        Assert.False(string.IsNullOrWhiteSpace(body.GetProperty("answer").GetString()));
+        Assert.Equal(HttpStatusCode.Conflict, (await client.PostAsJsonAsync("/api/countries/egypt/eras/3/ask", new { question = "Who?" })).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/countries/egypt/eras/0/ask", new { question = "" })).StatusCode);
+
+        var home = await client.GetStringAsync("/Student");
+        Assert.Contains("data-testid=\"history-fact\"", home, StringComparison.Ordinal);
     }
 }
